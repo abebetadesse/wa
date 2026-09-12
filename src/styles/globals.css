@@ -169,6 +169,30 @@ body {
   transform: translate(-50%, -50%);
 }
 
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .global-grid-layer,
+  .global-scanlines,
+  .global-particles,
+  .global-cursor-glow {
+    display: none;
+  }
+
+  body {
+    background-attachment: initial;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: initial;
+  }
+
+  .global-scanlines,
+  .global-vignette {
+    opacity: 0.45;
+  }
+}
+
 .boot-sequence {
   position: fixed;
   inset: 0;

@@ -6,15 +6,25 @@ export default function GlobalLayers() {
   const glowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || window.matchMedia("(pointer: coarse)").matches) {
+      return;
+    }
+
+    let frame = 0;
     const onMove = (event: MouseEvent) => {
-      if (!glowRef.current) return;
-      const x = event.clientX;
-      const y = event.clientY;
-      glowRef.current.style.transform = `translate(${x - 200}px, ${y - 200}px)`;
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (!glowRef.current) return;
+        glowRef.current.style.transform = `translate(${event.clientX - 200}px, ${event.clientY - 200}px)`;
+      });
     };
 
     window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (

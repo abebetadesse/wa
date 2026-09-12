@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
+import { getOwnedSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
+import { requireAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(
   _req: NextRequest,
@@ -7,7 +8,8 @@ export async function GET(
 ) {
   try {
     const { caseId } = await params;
-    const session = getSpiritualCase(caseId);
+    const user = await requireAuthenticatedUser();
+    const session = getOwnedSpiritualCase(caseId, user.id);
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Case not found" }, { status: 404 });

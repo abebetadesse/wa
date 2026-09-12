@@ -116,6 +116,7 @@ export interface SpiritualReport {
 
 export interface SpiritualCaseSession {
   id: string;
+  userId?: string;
   createdAt: string;
   lastUpdated: string;
   status: SpiritualCaseStatus;
@@ -378,13 +379,18 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert: E
 /**
  * Initializes a new Spiritual Case session
  */
-export function startSpiritualCase(nameGeez: string, motherNameGeez: string = ""): SpiritualCaseSession {
+export function startSpiritualCase(nameGeez: string, motherNameGeez: string = "", userId?: string): SpiritualCaseSession {
+  const normalizedName = nameGeez.trim();
+  if (!normalizedName) {
+    throw new Error("Your name is required to start Case 1.");
+  }
   const gematria = calculateFullDivination(nameGeez, motherNameGeez);
   const now = new Date().toISOString();
   const id = `spiritual-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
   const session: SpiritualCaseSession = {
     id,
+    userId,
     createdAt: now,
     lastUpdated: now,
     status: "case_received",
@@ -409,29 +415,12 @@ export function getSpiritualCase(id: string): SpiritualCaseSession | undefined {
   if (!id) return undefined;
   const existing = spiritualCases.get(id);
   if (existing) return existing;
-
-  // Resilient fallback for server restarts / hot reloads during dev/testing
-  if (id.startsWith("spiritual-")) {
-    const fallbackDivination = calculateFullDivination("ሰላማዊት", "ማርታ");
-    const restoredSession: SpiritualCaseSession = {
-      id,
-      nameGeez: "ሰላማዊት",
-      motherNameGeez: "ማርታ",
-      gematria: fallbackDivination,
-      answers: { question_category: "life_direction" },
-      status: "case_received",
-      category: "life_direction",
-      createdAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-      estimatedMinutesRemaining: 360,
-      crisisScreen: { isCrisis: false, urgencyLevel: "routine" },
-      paymentConfirmed: false,
-    };
-    spiritualCases.set(id, restoredSession);
-    return restoredSession;
-  }
-
   return undefined;
+}
+
+export function getOwnedSpiritualCase(id: string, userId: string): SpiritualCaseSession | undefined {
+  const session = getSpiritualCase(id);
+  return session?.userId === userId ? session : undefined;
 }
 
 /**
@@ -446,15 +435,18 @@ export async function submitSpiritualCase(
     throw new Error("Case not found");
   }
 
+  if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
+    throw new Error("Please provide valid answers before continuing.");
+  }
   session.answers = { ...session.answers, ...answers };
   session.category = answers.question_category || session.category || "life_direction";
   session.lastUpdated = new Date().toISOString();
 
   // Run crisis check
-  const crisisResult = evaluateSpiritualCrisis(
-    String(answers.free_text || answers.career_blocker || answers.detail_narrative || ""),
-    answers
-  );
+  const crisisText = Object.values(answers)
+    .filter((value): value is string => typeof value === "string")
+    .join(" ");
+  const crisisResult = evaluateSpiritualCrisis(crisisText, answers);
   session.crisisScreen = crisisResult;
 
   if (crisisResult.isCrisis) {

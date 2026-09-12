@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   async headers() {
     return [
       {

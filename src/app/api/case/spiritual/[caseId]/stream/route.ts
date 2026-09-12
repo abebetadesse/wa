@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { getSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
+import { getOwnedSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
+import { requireAuthenticatedUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,13 @@ export async function GET(
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   const { caseId } = await params;
-  const session = getSpiritualCase(caseId);
+  let user;
+  try {
+    user = await requireAuthenticatedUser();
+  } catch {
+    return new Response("Authentication required.", { status: 401 });
+  }
+  const session = getOwnedSpiritualCase(caseId, user.id);
 
   const encoder = new TextEncoder();
 
@@ -30,7 +37,7 @@ export async function GET(
 
       // Interval to push updates / keep alive
       const interval = setInterval(() => {
-        const current = getSpiritualCase(caseId);
+        const current = getOwnedSpiritualCase(caseId, user.id);
         if (current) {
           controller.enqueue(
             encoder.encode(

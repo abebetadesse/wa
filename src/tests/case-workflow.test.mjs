@@ -66,3 +66,37 @@ test("critical health signals gate Domain B recommendations", () => {
   assert.equal(report?.workflowContext?.domainB.length, 0);
   assert.equal(report?.causes[0]?.category, "safety");
 });
+
+test("relationship case 2 workflow supports safety-first intake and expert review", async () => {
+  const { evaluateRelationshipSafetyScreen } = await import("../lib/case-workflow/relationshipSafetyScreen.ts");
+  const { getRelationshipQuestions, hasRelationshipSafetyTrigger } = await import("../lib/case-workflow/relationshipQuestionEngine.ts");
+  const { startRelationshipCase, submitRelationshipCase, purchaseRelationshipReport, bookRelationshipConsult } = await import("../lib/case-workflow/relationshipExpertEngine.ts");
+
+  const safety = evaluateRelationshipSafetyScreen({
+    feelsSafe: "unsafe",
+    domesticViolence: "possible",
+    childSafety: "no_children",
+    immediateRisk: "no",
+  });
+  assert.equal(safety.action, "crisis_route");
+
+  const questions = getRelationshipQuestions("intake");
+  assert.ok(questions.some((question) => question.id === "relationship_status"));
+  assert.equal(hasRelationshipSafetyTrigger({ relationship_issue: "I am afraid of being hurt" }), true);
+
+  const session = startRelationshipCase({
+    userName: "Selam",
+    partnerName: "Abel",
+    answers: { relationship_status: "dating", relationship_issue: "Communication is breaking down" },
+    safetyResult: safety,
+  });
+
+  const submitted = submitRelationshipCase(session.id, { desired_outcome: "communication" });
+  assert.equal(submitted?.status, "pending_expert_review");
+  assert.ok(submitted?.compatibility?.score >= 20);
+
+  const purchased = purchaseRelationshipReport(session.id);
+  const consulted = bookRelationshipConsult(session.id, "video");
+  assert.equal(purchased?.paymentConfirmed, true);
+  assert.equal(consulted?.consultation?.booked, true);
+});

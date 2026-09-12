@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/context";
 import { useTheme } from "@/lib/theme/ThemeContext";
 import { AUTH_STATE_CHANGED } from "@/lib/auth/clientEvents";
+import { getClientUser, invalidateClientUser } from "@/lib/auth/clientState";
 
 type CurrentUser = {
   name?: string | null;
@@ -58,15 +59,8 @@ export default function Navbar() {
     }
 
     try {
-      const response = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
-      if (!response.ok) {
-        setCurrentUser(null);
-        setIsLoadingUser(false);
-        return;
-      }
-
-      const data = await response.json();
-      setCurrentUser(data.success && data.data ? data.data : null);
+      const user = await getClientUser();
+      setCurrentUser(user);
     } catch {
       setCurrentUser(null);
     } finally {
@@ -76,7 +70,10 @@ export default function Navbar() {
 
   useEffect(() => {
     void refreshUser();
-    const handleAuthChange = () => void refreshUser();
+    const handleAuthChange = () => {
+      invalidateClientUser();
+      void refreshUser();
+    };
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") void refreshUser();
     };

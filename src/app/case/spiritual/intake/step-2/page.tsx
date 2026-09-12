@@ -22,12 +22,14 @@ function SpiritualStep2Content() {
   const [gematriaData, setGematriaData] = useState<any>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [crisisState, setCrisisState] = useState<CrisisScreenResult | undefined>(undefined);
 
   // 1. Fetch case divination data
   useEffect(() => {
     if (!caseId) {
       setIsLoadingCase(false);
+      setError("This Case 1 session is missing. Start again so your responses can be saved securely.");
       return;
     }
 
@@ -89,7 +91,18 @@ function SpiritualStep2Content() {
 
   // 5. Submit answers and proceed to Stage 3
   const handleSubmit = async () => {
+    const requiredQuestions = dynamicQuestions.filter((question) => question.required);
+    const missingQuestion = requiredQuestions.find((question) => {
+      const value = answers[question.id];
+      return value === undefined || (typeof value === "string" && !value.trim());
+    });
+    if (missingQuestion) {
+      setError(`Please answer: ${missingQuestion.text}`);
+      return;
+    }
+    if (!caseId) return;
     setIsSubmitting(true);
+    setError("");
     try {
       const res = await fetch(`/api/case/spiritual/${caseId}/submit`, {
         method: "POST",
@@ -114,7 +127,7 @@ function SpiritualStep2Content() {
         throw new Error(payload.error || "Submission failed");
       }
     } catch (err) {
-      alert("Error submitting answers: " + (err instanceof Error ? err.message : "Unknown error"));
+      setError(err instanceof Error ? err.message : "Unable to submit your answers.");
       setIsSubmitting(false);
     }
   };
@@ -172,6 +185,12 @@ function SpiritualStep2Content() {
               <div className="mt-6">
                 <CrisisAlertBanner crisis={crisisState} />
               </div>
+
+              {error && (
+                <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">
+                  {error}
+                </div>
+              )}
 
               <div className="mt-6 p-6 sm:p-8 rounded-3xl bg-stone-900/50 border border-amber-500/20 shadow-2xl space-y-6">
                 {dynamicQuestions.map((q: DynamicQuestion) => (

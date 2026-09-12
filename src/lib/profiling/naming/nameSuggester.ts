@@ -38,6 +38,8 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
     pool = pool.filter((item) => item.language === criteria.languagePreference);
   }
 
+  const filteredPool = pool.length ? pool : [...ETHIOPIAN_NAMES_DATABASE];
+
   // Map each name to its elemental archetype.
   const elementalAffinity: Record<string, HumoralElement> = {
     Abebe: "esat",
@@ -66,9 +68,10 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
 
   const results: NameSuggestionResult[] = [];
   const seen = new Set<string>();
+  const maxSuggestions = 1000;
 
-  for (let i = 0; i < 1000 && results.length < 1000; i += 1) {
-    const item = pool[i % pool.length];
+  // Seed the first pass from the canonical Ethiopian names database.
+  for (const item of filteredPool) {
     const key = item.name.replace(/\s+/g, "_");
     const elem: HumoralElement = elementalAffinity[key] || (item.numerologicalValues.destiny % 2 === 0 ? "may" : "esat");
 
@@ -110,7 +113,42 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
       healthHarmonizationBenefit: benefit,
       recommendation: buildProfileRecommendation(criteria, elem, generatedName),
     });
+
+    if (results.length >= maxSuggestions) {
+      return results;
+    }
   }
 
-  return results;
+  // Fallback deterministic synthesis to reach the requested 1000-name pool size without dropping the UI.
+  for (const left of filteredPool) {
+    for (const right of filteredPool) {
+      if (results.length >= maxSuggestions) {
+        return results;
+      }
+
+      const combined = `${left.name} ${right.name}`;
+      const key = combined.toLowerCase().replace(/\s+/g, "-");
+      if (seen.has(key)) {
+        continue;
+      }
+
+      const elem = elementalAffinity[left.name.replace(/\s+/g, "_")] || elementalAffinity[right.name.replace(/\s+/g, "_")] || "may";
+      const row: NameSuggestionResult = {
+        suggestedName: combined,
+        geezFidel: left.geezFidel || right.geezFidel || "",
+        language: right.language,
+        meaning: `${left.meaning} • ${right.meaning}`,
+        primaryElement: elem,
+        destinyNumber: (left.numerologicalValues.destiny + right.numerologicalValues.destiny) % 9 || 1,
+        alignmentReason: `Combined lineage resonance for ${elem.toUpperCase()} balance and profile continuity.`,
+        healthHarmonizationBenefit: `Balances ${left.healthIdentityCorrelation.balancingVirtue} with ${right.healthIdentityCorrelation.balancingVirtue}.`,
+        recommendation: buildProfileRecommendation(criteria, elem, combined),
+      };
+
+      seen.add(key);
+      results.push(row);
+    }
+  }
+
+  return results.slice(0, maxSuggestions);
 }

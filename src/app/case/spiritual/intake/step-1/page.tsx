@@ -8,23 +8,64 @@ import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
 import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaPreview";
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
 
+const FIDEL_NAME_MIN_LENGTH = 2;
+
 export default function SpiritualStep1Page() {
   const router = useRouter();
-  const [nameGeez, setNameGeez] = useState("ሰላማዊት");
-  const [motherNameGeez, setMotherNameGeez] = useState("ፀሐይ");
+  const [nameGeez, setNameGeez] = useState("");
+  const [motherNameGeez, setMotherNameGeez] = useState("");
   const [activeInput, setActiveInput] = useState<"name" | "mother">("name");
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const gematria = useLiveGematria(nameGeez, motherNameGeez);
 
-  const { isListening, startListening, stopListening, transcript } = useGeezVoiceInput((text) => {
+  const { isListening, startListening, stopListening, error: voiceError } = useGeezVoiceInput((text) => {
+    const cleanText = (text || "").trim();
+    if (!cleanText) return;
+
     if (activeInput === "name") {
-      setNameGeez(text);
+      setNameGeez(cleanText);
     } else {
-      setMotherNameGeez(text);
+      setMotherNameGeez(cleanText);
     }
   });
+
+  useEffect(() => {
+    try {
+      const storedName = sessionStorage.getItem("spiritual_name_geez") || "";
+      const storedMother = sessionStorage.getItem("spiritual_mother_geez") || "";
+      if (storedName) {
+        setNameGeez(storedName);
+      }
+      if (storedMother) {
+        setMotherNameGeez(storedMother);
+      }
+    } catch {
+      // sessionStorage can be unavailable in certain embedded or locked browser modes.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (nameGeez.trim()) {
+      try {
+        sessionStorage.setItem("spiritual_name_geez", nameGeez);
+      } catch {
+        // ignore storage quota or privacy exceptions.
+      }
+    }
+  }, [nameGeez]);
+
+  useEffect(() => {
+    if (motherNameGeez.trim()) {
+      try {
+        sessionStorage.setItem("spiritual_mother_geez", motherNameGeez);
+      } catch {
+        // ignore storage quota or privacy exceptions.
+      }
+    }
+  }, [motherNameGeez]);
 
   const handleKeyboardInsert = (val: string) => {
     if (val === "__backspace__") {
@@ -43,9 +84,35 @@ export default function SpiritualStep1Page() {
     }
   };
 
+  const signalReadiness = Math.min(100, Math.max(14, Math.round(22 + (gematria.letters.length || 0) * 7 + (gematria.isValid ? 20 : 0))));
+  const nameLengthClass = nameGeez.trim().length >= FIDEL_NAME_MIN_LENGTH;
+  const isNameEntryReady = gematria.isValid && nameLengthClass;
+
+  const cycle3Signals = [
+    { label: "Name signal", value: nameGeez.trim() ? nameGeez.trim() : "Awaiting", status: nameGeez.trim() ? "active" : "pending" },
+    { label: "Mother signal", value: motherNameGeez.trim() ? motherNameGeez.trim() : "Unspecified", status: motherNameGeez.trim() ? "active" : "soft" },
+    { label: "Gematria arc", value: gematria.totalSum ? String(gematria.totalSum) : "—", status: gematria.isValid ? "active" : "pending" },
+    { label: "Cycle 3 route", value: isNameEntryReady ? "Synthesis ready" : "Listening", status: isNameEntryReady ? "active" : "pending" },
+  ];
+
   const handleContinue = async () => {
-    if (!nameGeez.trim()) return;
+    if (!nameGeez.trim()) {
+      setError("Enter your name in Ge’ez or Amharic before continuing.");
+      return;
+    }
+
+    if (nameGeez.trim().length < FIDEL_NAME_MIN_LENGTH) {
+      setError("Enter at least two letters or characters for a valid name signal.");
+      return;
+    }
+
+    if (!gematria.isValid) {
+      setError("Your name needs a valid Ge’ez letter structure before the intake can continue.");
+      return;
+    }
+
     setIsSubmitting(true);
+    setError("");
 
     try {
       const res = await fetch("/api/case/spiritual/start", {
@@ -65,7 +132,7 @@ export default function SpiritualStep1Page() {
         throw new Error(payload.error || "Failed to start case");
       }
     } catch (err) {
-      alert("Error starting case: " + (err instanceof Error ? err.message : "Unknown error"));
+      setError(err instanceof Error ? err.message : "Unable to start Case 1.");
       setIsSubmitting(false);
     }
   };
@@ -113,6 +180,12 @@ export default function SpiritualStep1Page() {
                 your personal lineage to the cosmos. Enter your name in Ge&apos;ez script, along with your mother&apos;s
                 name (optional but traditional), to begin your personalized Awde Negest alignment.
               </p>
+
+              {error && (
+                <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">
+                  {error}
+                </div>
+              )}
 
               <div className="mt-7 space-y-6">
                 <div className="space-y-2">
@@ -254,17 +327,23 @@ export default function SpiritualStep1Page() {
                 <div className="rounded-2xl border border-amber-500/30 bg-amber-500/8 p-5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-200">Signal Quality</span>
-                    <span className="text-emerald-300 text-xs font-bold">Online</span>
+                    <span className={`text-xs font-bold ${gematria.isValid ? "text-emerald-300" : "text-stone-400"}`}>{gematria.isValid ? "Online" : "Awaiting"}</span>
                   </div>
                   <div className="mt-4 h-2 rounded-full bg-stone-800">
-                    <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-amber-300 to-emerald-400" />
+                    <div className="h-2 rounded-full bg-gradient-to-r from-amber-300 to-emerald-400 transition-all duration-500" style={{ width: `${signalReadiness}%` }} />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-stone-500">Lineage Readiness</span>
+                    <span className="text-[10px] font-bold text-amber-200">{signalReadiness}%</span>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
                   <div className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Name Resonance</div>
                   <div className="mt-2 font-serif text-3xl font-black text-amber-100">{nameGeez || "—"}</div>
-                  <div className="mt-2 text-[11px] text-stone-400">Lineage signal: {gematria.scriptDetected ? "Detected" : "Awaiting"}</div>
+                  <div className="mt-2 text-[11px] text-stone-400">
+                    Lineage signal: <span className={gematria.scriptDetected ? "text-emerald-300" : "text-stone-500"}>{gematria.scriptDetected ? "Detected" : "Awaiting"}</span>
+                  </div>
                 </div>
 
                 <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
@@ -281,7 +360,41 @@ export default function SpiritualStep1Page() {
                       </span>
                     ))}
                   </div>
+                  <div className="mt-3 text-[11px] text-stone-400">
+                    <span className="font-bold text-amber-300">{gematria.totalSum}</span> total sum / <span className="font-bold text-emerald-300">{gematria.finalNumber}</span> final vibration
+                  </div>
                 </div>
+
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">Cycle 3 · Oracle Continuity</span>
+                    <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase border ${isNameEntryReady ? "border-emerald-400 text-emerald-200" : "border-stone-700 text-stone-500"}`}>{isNameEntryReady ? "Synced" : "Awake"}</span>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    {cycle3Signals.map((signal, idx) => (
+                      <div key={signal.label} className="flex items-center justify-between gap-3 rounded-xl bg-black/20 px-3 py-2 border border-stone-800">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400">{signal.label}</span>
+                        <span className={`font-serif text-xs ${signal.status === "active" ? "text-amber-200" : signal.status === "soft" ? "text-stone-300" : "text-stone-500"}`}>{signal.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 border-t border-emerald-500/20 pt-3 text-[10px] text-stone-400">
+                    Cycle 3 direction: <span className="text-emerald-300">{isNameEntryReady ? "Generate continuity through the living name." : "Awaiting valid name resonance."}</span>
+                  </div>
+                </div>
+
+                {(voiceError || isListening) && (
+                  <div className="rounded-2xl border border-amber-500/30 bg-black/30 p-4">
+                    <div className="text-[10px] font-black uppercase tracking-[0.21em] text-amber-200">
+                      {isListening ? "Voice Listening" : "Voice Signal"}
+                    </div>
+                    <div className="mt-1 text-xs text-stone-300">
+                      {voiceError || (isListening ? "Listening for Ge’ez / Amharic input..." : "Voice channel available")}
+                    </div>
+                  </div>
+                )}
               </div>
             </aside>
           </section>

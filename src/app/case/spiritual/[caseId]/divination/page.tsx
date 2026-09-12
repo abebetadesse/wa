@@ -51,6 +51,18 @@ export default function SpiritualDivinationPage({
 
   const gem = data?.gematria;
 
+  if (!data || !gem) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-stone-200 gap-4 px-6 text-center">
+        <p className="text-lg font-semibold">This Case 1 session is no longer available.</p>
+        <p className="text-sm text-stone-400">Start a new reading to create a secure session.</p>
+        <Link href="/case/spiritual/intake/step-1" className="rounded-xl bg-amber-500 px-5 py-3 font-bold text-black">
+          Start a new reading
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
@@ -73,7 +85,7 @@ export default function SpiritualDivinationPage({
             Your Divination Context — Live Reveal
           </h1>
           <p className="text-sm text-stone-300">
-            Based on your name <span className="text-amber-300 font-bold">{gem?.nameGeez || "ሰላማዊት"}</span>
+            Based on your name <span className="text-amber-300 font-bold">{gem.nameGeez}</span>
             {gem?.motherNameGeez ? (
               <> and mother&apos;s name <span className="text-amber-300 font-bold">{gem?.motherNameGeez}</span></>
             ) : ""}
@@ -91,26 +103,26 @@ export default function SpiritualDivinationPage({
               1. Name Lineage & Frequency (የስም ምሥጢር)
             </span>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
-              Final Number: {gem?.finalNumber || 10}
+              Final Number: {gem.finalNumber ?? "—"}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
               <span className="text-xs text-stone-400 block">Total Gematria</span>
-              <span className="text-2xl font-black font-mono text-amber-300">{gem?.totalSum || 840}</span>
+              <span className="text-2xl font-black font-mono text-amber-300">{gem.totalSum ?? "—"}</span>
             </div>
             <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
               <span className="text-xs text-stone-400 block">÷ 12 Quotient</span>
-              <span className="text-2xl font-black font-mono text-stone-200">{gem?.dividedBy12 || 70}</span>
+              <span className="text-2xl font-black font-mono text-stone-200">{gem.dividedBy12 ?? "—"}</span>
             </div>
             <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
               <span className="text-xs text-stone-400 block">Zodiac Sign</span>
-              <span className="text-lg font-bold text-amber-200">{gem?.zodiac?.name || "Nisr"} {gem?.zodiac?.symbol}</span>
+              <span className="text-lg font-bold text-amber-200">{gem.zodiac?.name || "—"} {gem.zodiac?.symbol || ""}</span>
             </div>
             <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
               <span className="text-xs text-stone-400 block">Ruling Planet</span>
-              <span className="text-lg font-bold text-amber-200">{gem?.zodiac?.rulingPlanet || "Jupiter"}</span>
+              <span className="text-lg font-bold text-amber-200">{gem.zodiac?.rulingPlanet || "—"}</span>
             </div>
           </div>
         </div>

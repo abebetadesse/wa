@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LockKeyhole } from "lucide-react";
+import { getClientUser } from "@/lib/auth/clientState";
 
 const PUBLIC_PATHS = [
   "/auth",
@@ -41,28 +42,21 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const controller = new AbortController();
     setState("checking");
 
-    fetch("/api/auth/me", {
-      credentials: "include",
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        const payload = await response.json().catch(() => null);
-        if (!response.ok || !payload?.success || !payload.data) {
+    getClientUser()
+      .then((user) => {
+        if (!user) {
           setState("guest");
           return;
         }
         setState("authenticated");
       })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
+      .catch(() => {
         setState("guest");
       });
 
-    return () => controller.abort();
+    return undefined;
   }, [pathname]);
 
   // ── Redirect unauthenticated users ───────────────────────────────────────

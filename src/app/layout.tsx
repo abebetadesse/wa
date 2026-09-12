@@ -9,7 +9,6 @@ import ClientProviders from "../components/ClientProviders";
 import PwaRegister from "../components/PwaRegister";
 import AuthGate from "../components/AuthGate";
 import GlobalLayers from "../components/layout/GlobalLayers";
-import BootSequence from "../components/layout/BootSequence";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ethio-wellness.example"),
@@ -60,10 +59,7 @@ export default function RootLayout({
         <GlobalLayers />
         <ClientProviders>
           <PwaRegister />
-          <BootSequence />
-          <Suspense fallback={null}>
-            <Navbar />
-          </Suspense>
+          <Navbar />
           <main className="flex-grow relative z-10">
             <Suspense
               fallback={
@@ -81,4 +77,3 @@ export default function RootLayout({
     </html>
   );
 }
-

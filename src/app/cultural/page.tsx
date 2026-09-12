@@ -17,6 +17,7 @@ import {
   getPagumeStatus,
   getMineralSpringsDirectory,
 } from "@/lib/cultural/seasonalTraditionsEngine";
+import ChristianBibleReading from "@/components/cultural/ChristianBibleReading";
 
 // ─── Extended Types ──────────────────────────────────────────────────────────
 interface EthiopianCalendarInfo {
@@ -156,6 +157,8 @@ export default function CulturalPage() {
           influences biochemical nutrient requirements or drug safety gating.
         </div>
       </div>
+
+      <ChristianBibleReading />
 
       {/* ─── Enhancement 13: Awde Negest ───────────────────────────────────── */}
       <div className="glass-panel p-6 md:p-8 space-y-6">
