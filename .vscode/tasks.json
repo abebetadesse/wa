@@ -1,0 +1,89 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "TypeScript check",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "TypeScript check",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Apply explicit callback typings",
+			"type": "shell",
+			"command": "python -c \"from pathlib import Path; files = [Path(r'C:\\Users\\abebe\\Desktop\\wa\\src\\lib\\knowledge\\strands\\psychologicalStrand.ts'), Path(r'C:\\Users\\abebe\\Desktop\\wa\\src\\lib\\knowledge\\strands\\socioeconomicStrand.ts')]; reps = { 'condition.clinical_symptoms?.some((s) => s.toLowerCase().includes(term))': 'condition.clinical_symptoms?.some((s: string) => s.toLowerCase().includes(term))', 'condition.risk_factors?.some((r) => r.toLowerCase().includes(term))': 'condition.risk_factors?.some((r: string) => r.toLowerCase().includes(term))', 'condition.ethiopian_context?.some((c) => c.toLowerCase().includes(term))': 'condition.ethiopian_context?.some((c: string) => c.toLowerCase().includes(term))', 'coping.strategies?.some((s) => s.toLowerCase().includes(term))': 'coping.strategies?.some((s: string) => s.toLowerCase().includes(term))', 'coping.ethiopian_context?.some((c) => c.toLowerCase().includes(term))': 'coping.ethiopian_context?.some((c: string) => c.toLowerCase().includes(term))', 'service.services?.some((s) => s.toLowerCase().includes(term))': 'service.services?.some((s: string) => s.toLowerCase().includes(term))', 'service.ethiopian_context?.some((c) => c.toLowerCase().includes(term))': 'service.ethiopian_context?.some((c: string) => c.toLowerCase().includes(term))', 'healing.practices?.some((p) => p.toLowerCase().includes(term))': 'healing.practices?.some((p: string) => p.toLowerCase().includes(term))', 'healing.ethiopian_context?.some((c) => c.toLowerCase().includes(term))': 'healing.ethiopian_context?.some((c: string) => c.toLowerCase().includes(term))', 'data.health_implications?.some((h) => h.toLowerCase().includes(term))': 'data.health_implications?.some((h: string) => h.toLowerCase().includes(term))', 'data.recommendations?.some((r) => r.toLowerCase().includes(term))': 'data.recommendations?.some((r: string) => r.toLowerCase().includes(term))', 'data.regions?.some((r) => r.name.toLowerCase().includes(region.toLowerCase()))': 'data.regions?.some((r: any) => r.name.toLowerCase().includes(region.toLowerCase()))', 'data.gender_disparity?.some((d) => d.toLowerCase().includes(\\\"women\\\"))': 'data.gender_disparity?.some((d: string) => d.toLowerCase().includes(\\\"women\\\"))', 'item.barriers?.some((b) => b.toLowerCase().includes(term))': 'item.barriers?.some((b: string) => b.toLowerCase().includes(term))', 'item.recommendations?.some((r) => r.toLowerCase().includes(term))': 'item.recommendations?.some((r: string) => r.toLowerCase().includes(term))', 'data.functions?.some((f) => f.toLowerCase().includes(term))': 'data.functions?.some((f: string) => f.toLowerCase().includes(term))' }; for p in files: text = p.read_text(); changed = False; for old, new in reps.items(): if old in text: text = text.replace(old, new); changed = True; if changed: p.write_text(text); print(f'updated {p.name}')\"",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Apply callback type fixes",
+			"type": "shell",
+			"command": "python temp_fix.py",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "TypeScript check",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Cleanup temp script",
+			"type": "shell",
+			"command": "del temp_fix.py",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Validate auth refactor",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Validate complete refactor",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run TypeScript validation",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Recheck TypeScript errors",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Validate final TypeScript",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Final TypeScript validation",
+			"type": "shell",
+			"command": "npm exec tsc -- --noEmit --pretty false",
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

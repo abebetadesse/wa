@@ -1,0 +1,330 @@
+import type { KnowledgeStrandType } from "@/lib/knowledge/types";
+import type { StrandSearchConfig } from "./types";
+
+export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConfig> = {
+  epidemiological: {
+    diseases: [
+      "malaria Ethiopia", "tuberculosis Ethiopia", "HIV AIDS Ethiopia",
+      "visceral leishmaniasis Ethiopia", "schistosomiasis Ethiopia",
+      "cholera Ethiopia", "meningitis Ethiopia", "dengue Ethiopia",
+      "hypertension Ethiopia", "diabetes mellitus Ethiopia",
+      "cervical cancer Ethiopia", "maternal mortality Ethiopia",
+      "neonatal mortality Ethiopia", "stunting Ethiopia wasting",
+    ],
+    meshTerms: ["Ethiopia[MeSH]", "Disease[MeSH]", "Epidemiology[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "incidence_rate", "prevalence_percentage", "case_fatality_rate_cfr",
+      "basic_reproduction_number_r0", "DALYs", "YLL", "YLD",
+      "age_standardized_incidence_rates_asir", "sex_disaggregated_prevalence",
+      "maternal_mortality_ratio_mmr", "infant_mortality_rate_imr", "neonatal_mortality_rate_nmr",
+      "co_infection_rates", "hospitalization_rates",
+      "asymptomatic_carrier_rates", "seroprevalence",
+      "diagnostic_sensitivity_specificity", "spatial_autocorrelation_morans_i",
+      "vaccination_coverage_impact", "spatial_clustering_hotspots", "risk_factors", "endemic_regions",
+    ],
+  },
+
+  ecological: {
+    topics: [
+      "malaria altitude expansion Ethiopia climate change",
+      "fluorosis groundwater Ethiopia Rift Valley",
+      "podoconiosis volcanic soil Ethiopia",
+      "schistosomiasis snail Ethiopia lake",
+      "Anopheles mosquito highlands Ethiopia",
+      "deforestation health Ethiopia",
+      "aflatoxin grain storage Ethiopia lowlands",
+    ],
+    meshTerms: ["Ecology[MeSH]", "Ethiopia[MeSH]", "Vector-Borne Diseases[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "vector_bionomics", "biting_rates", "sporozoite_rates",
+      "entomological_inoculation_rate_eir", "vector_competence",
+      "insecticide_resistance_status", "altitude_limits",
+      "land_use_land_cover_lulc_impacts", "ndvi_correlations",
+      "rainfall_temperature_correlations",
+      "water_physicochemical_parameters", "fluoride_concentration_ppm",
+      "heavy_metal_concentrations_water_soil", "indoor_air_pollution_pm25",
+      "zoonotic_spillover_rates", "reservoir_host_prevalence",
+      "soil_ph_microbiome_pathogens", "seasonal_patterns",
+    ],
+  },
+
+  biochemical: {
+    topics: [
+      "teff iron bioavailability Ethiopia",
+      "injera fermentation GABA mineral absorption",
+      "phytate teff antinutritional Ethiopia",
+      "highland altitude erythropoiesis iron Ethiopia",
+      "khat cathinone biochemistry Ethiopia",
+      "traditional Ethiopian herbs herb-drug interaction",
+      "nug niger seed linoleic acid Ethiopia",
+      "Ethiopian coffee chlorogenic acid health",
+    ],
+    meshTerms: ["Nutritional Status[MeSH]", "Ethiopia[MeSH]", "Biochemistry[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "phytochemical_profiles", "alkaloids_tannins_flavonoids",
+      "total_phenolic_content_tpc", "total_flavonoid_content_tfc", "antioxidant_capacity_dpph",
+      "ic50_ec50_values", "half_life_active_compounds",
+      "antinutrient_to_mineral_molar_ratios", "cyp450_pathway_effects",
+      "biomarkers_of_oxidative_stress", "lipid_profiles_hdl_ldl_tg",
+      "fasting_blood_glucose_fbg", "hba1c_levels",
+      "serum_ferritin_levels", "serum_zinc_concentrations",
+      "vitamin_d_25_oh_d_levels", "urinary_iodine_concentration_uic",
+      "hepatotoxicity_ast_alt_alp", "bioavailability_percentages",
+    ],
+  },
+
+  dietary: {
+    topics: [
+      "Ethiopian food composition nutrient analysis",
+      "Orthodox Christian fasting Ethiopia nutrition",
+      "enset kocho nutritional value Ethiopia",
+      "complementary feeding infant Ethiopia",
+      "breastfeeding Ethiopia maternal nutrition",
+      "micronutrient deficiency Ethiopia children",
+      "aflatoxin maize sorghum storage Ethiopia",
+      "moringa leaf nutritional Ethiopia",
+    ],
+    meshTerms: ["Diet[MeSH]", "Ethiopia[MeSH]", "Nutritional Sciences[MeSH]"],
+    dateRange: "last 2 years",
+    extractFields: [
+      "macronutrient_ratios", "amino_acid_profiles", "glycemic_index_gi", "glycemic_load_gl",
+      "anthropometric_z_scores_haz_waz_whz", "bmi_for_age_z_scores_baz", "mid_upper_arm_circumference_muac",
+      "severe_acute_malnutrition_sam_rates", "moderate_acute_malnutrition_mam_rates",
+      "minimum_dietary_diversity_mdd_w", "household_dietary_diversity_score_hdds",
+      "exclusive_breastfeeding_rates", "complementary_feeding_initiation",
+      "mycotoxin_levels_ppb",
+      "fermentation_time_ph_changes", "phytate_reduction_percentages",
+      "biofortification_efficacy", "caloric_deficits_kcal_day",
+    ],
+  },
+
+  medication: {
+    topics: [
+      "artemisinin resistance malaria Ethiopia",
+      "antituberculosis drug resistance Ethiopia",
+      "antiretroviral treatment Ethiopia adherence",
+      "herb drug interaction Ethiopian traditional medicine",
+      "praziquantel schistosomiasis Ethiopia",
+      "drug supply chain Ethiopia shortage",
+    ],
+    meshTerms: ["Drug Therapy[MeSH]", "Ethiopia[MeSH]", "Pharmacology[MeSH]"],
+    dateRange: "last 2 years",
+    extractFields: [
+      "pharmacokinetic_parameters_auc_cmax_tmax", "minimum_inhibitory_concentration_mic",
+      "genetic_mutation_frequencies", "pfhrp2_3_gene_deletions", "artemisinin_clearance_half_life",
+      "antimicrobial_resistance_amr_profiles", "multidrug_resistance_mdr_rates",
+      "adverse_drug_reaction_adr_incidence", "qt_prolongation_incidence", "hepatotoxicity_incidence_per_10k",
+      "treatment_failure_rates", "medication_adherence_percentages", "morisky_medication_adherence_scale_mmas",
+      "loss_to_follow_up_ltfu_rates",
+      "supply_chain_stockout_frequencies", "essential_medicine_availability_pct",
+      "out_of_pocket_drug_costs", "first_line_treatment_protocols",
+    ],
+  },
+
+  psychological: {
+    topics: [
+      "mental health Ethiopia depression anxiety",
+      "PTSD trauma Ethiopia displacement",
+      "Zar spirit possession Ethiopia mental health",
+      "schizophrenia psychosis Ethiopia treatment",
+      "substance use mental health Ethiopia khat",
+      "maternal mental health Ethiopia postpartum",
+    ],
+    meshTerms: ["Mental Disorders[MeSH]", "Ethiopia[MeSH]", "Psychology[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "psychometric_screening_scores", "phq9_gad7_translated_norms", "ptsd_checklist_pcl_5_scores",
+      "edinburgh_postnatal_depression_scale_epds", "whoqol_bref_metrics",
+      "connor_davidson_resilience_scale_cd_risc",
+      "suicide_incidence_rates", "perceived_stigma_scales", "trauma_exposure_severity",
+      "intimate_partner_violence_ipv_rates",
+      "schizophrenia_prevalence", "postpartum_psychosis_rates",
+      "extrapyramidal_side_effects_epse_incidence", "treatment_gap_percentages",
+      "relapse_rates", "cultural_context_modifiers",
+    ],
+  },
+
+  socioeconomic: {
+    topics: [
+      "poverty health access Ethiopia rural",
+      "health insurance Ethiopia community-based",
+      "child labor health Ethiopia",
+      "food insecurity Ethiopia household",
+      "clean water access Ethiopia rural urban",
+      "sanitation hygiene Ethiopia WASH",
+    ],
+    meshTerms: ["Socioeconomic Factors[MeSH]", "Ethiopia[MeSH]", "health Services Accessibility[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "out_of_pocket_oop_expenditure_pct", "catastrophic_health_expenditure_che_rates",
+      "cbhi_enrollment_rates", "distance_time_to_health_facility",
+      "wealth_quintile_disparities", "maternal_education_odds_ratios",
+      "gini_coefficient_health_impact", "multidimensional_poverty_index_mpi",
+      "rural_urban_health_discrepancy_ratios",
+      "antenatal_care_anc4_coverage", "skilled_birth_attendance_sba_rates",
+      "health_extension_worker_hew_ratio", "wash_access_percentages",
+      "access_to_improved_sanitation_pct", "household_food_insecurity_access_scale_hfias",
+    ],
+  },
+
+  addiction: {
+    topics: [
+      "khat chewing health effects Ethiopia",
+      "alcohol use disorder Ethiopia",
+      "tobacco smoking Ethiopia prevalence",
+      "substance abuse treatment Ethiopia",
+      "khat cathinone addiction dependence",
+    ],
+    meshTerms: ["Substance-Related Disorders[MeSH]", "Ethiopia[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "age_of_onset", "daily_consumption_quantities_grams",
+      "khat_cathinone_blood_plasma_levels",
+      "alcohol_use_disorders_identification_test_audit_scores",
+      "fagerstrom_test_for_nicotine_dependence_ftnd",
+      "withdrawal_symptom_severity_scores",
+      "khat_induced_hypertension_odds_ratios", "oral_cancer_incidence_khat_tobacco",
+      "neurocognitive_impairment_metrics", "substance_induced_psychosis_prevalence",
+      "occupational_impairment_days_lost",
+      "rehabilitation_success_rates", "detoxification_completion_rates",
+      "medication_assisted_treatment_mat_access", "relapse_rates",
+    ],
+  },
+
+  biological: {
+    topics: [
+      "highland adaptation physiology Ethiopia altitude",
+      "sickle cell disease Ethiopia",
+      "G6PD deficiency Ethiopia malaria",
+      "Ethiopian genetic diversity population",
+      "microbiome gut Ethiopia traditional diet",
+    ],
+    meshTerms: ["Physiology[MeSH]", "Ethiopia[MeSH]", "Genetics[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "allele_frequencies_hbs_g6pd", "hla_allele_frequencies",
+      "pharmacogenomic_cyp_variants", "copy_number_variations_cnvs",
+      "epas1_gene_polymorphisms", "endothelin_1_et_1_levels",
+      "hemoglobin_concentration_adaptations_g_dl",
+      "gut_microbiome_alpha_beta_diversity", "firmicutes_bacteroidetes_ratio",
+      "short_chain_fatty_acid_scfa_concentrations",
+      "helminth_microbiome_interactions",
+      "immunological_biomarker_baselines", "igg_igm_antibody_titers",
+      "cd4_counts_cytokine_profiles",
+      "vaccine_induced_seroconversion_rates",
+    ],
+  },
+
+  cultural: {
+    topics: [
+      "Ethiopian traditional medicine healer dabtera",
+      "holy water healing Ethiopian Orthodox health",
+      "traditional birth attendant Ethiopia",
+      "cultural beliefs health seeking behavior Ethiopia",
+      "food taboo pregnant women Ethiopia",
+    ],
+    meshTerms: ["Cultural Competency[MeSH]", "Ethiopia[MeSH]", "Medicine, Traditional[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "traditional_medicine_utilization_pct", "delay_to_facility_based_care_days",
+      "illness_explanatory_models", "evil_eye_buda_attribution_rates",
+      "ethnomedicinal_dosages", "maternal_dietary_restriction_adherence",
+      "holy_water_tsebel_substitution_for_art_pct",
+      "traditional_birth_attendant_tba_delivery_rates",
+      "postpartum_confinement_duration_days",
+      "female_genital_mutilation_cutting_fgmc_prevalence",
+      "uvulectomy_tonsillectomy_complication_rates",
+      "integration_with_modern_medicine_rates",
+      "biomedical_traditional_healer_referral_rates",
+    ],
+  },
+
+  astrological: {
+    topics: [
+      "Ethiopian calendar seasonal disease pattern",
+      "lunar cycle health Ethiopia",
+      "Orthodox fasting calendar Ethiopia nutrition",
+    ],
+    meshTerms: ["Seasons[MeSH]", "Ethiopia[MeSH]"],
+    dateRange: "last 3 years",
+    extractFields: [
+      "seasonal_incidence_multipliers", "wet_vs_dry_season_odds_ratios",
+      "kiremt_rainy_season_malaria_peaks", "bega_dry_season_meningitis_incidence",
+      "belg_short_rains_cholera_spikes",
+      "lunar_cycle_correlation_coefficients",
+      "orthodox_fasting_days_per_year_adherence_pct",
+      "lenten_fasting_hudadi_bmi_impact", "ramadan_fasting_maternal_fetal_outcomes",
+      "fasting_season_caloric_deficits", "seasonal_maternal_weight_fluctuations",
+      "harvest_season_bmi_recovery", "pre_harvest_hungry_season_sam_rates",
+      "seasonal_affective_disorder_sad_prevalence",
+    ],
+  },
+};
+
+// ─── Keyword alias banks per strand (mirrors strand alias registries) ─────────
+// Used by strandMapper for scoring articles against strands
+
+export const STRAND_KEYWORD_BANKS: Record<string, string[]> = {
+  epidemiological: [
+    "malaria", "tuberculosis", "tb", "hiv", "aids", "schistosomiasis", "bilharzia",
+    "leishmaniasis", "kala-azar", "cholera", "meningitis", "dengue", "hypertension",
+    "diabetes", "cancer", "maternal mortality", "neonatal", "stunting", "wasting",
+    "incidence", "prevalence", "mortality", "morbidity", "epidemic", "outbreak", "endemic",
+  ],
+  ecological: [
+    "malaria", "anopheles", "mosquito", "vector", "fluoride", "fluorosis", "rift valley",
+    "podoconiosis", "volcanic soil", "schistosomiasis", "snail", "leishmaniasis", "sandfly",
+    "aflatoxin", "altitude", "highlands", "lowlands", "climate change", "deforestation",
+    "ndvi", "land use", "groundwater", "lake", "sporozoite", "eir",
+  ],
+  biochemical: [
+    "teff", "injera", "fermentation", "phytate", "bioavailability", "iron absorption",
+    "khat", "cathinone", "coffee", "chlorogenic", "niger seed", "nug", "gaba",
+    "polyphenol", "flavonoid", "tannin", "antioxidant", "cyp450", "hepatotoxicity",
+    "erythropoiesis", "haemoglobin", "ferritin", "zinc", "iodine", "vitamin d",
+  ],
+  dietary: [
+    "teff", "enset", "kocho", "moringa", "injera", "pulse", "lentil", "chickpea",
+    "fasting", "orthodox", "vegan", "breastfeeding", "complementary feeding",
+    "stunting", "wasting", "malnutrition", "micronutrient", "aflatoxin",
+    "glycemic", "dietary diversity", "food security", "efct",
+  ],
+  medication: [
+    "artemisinin", "malaria treatment", "coartem", "act", "tuberculosis treatment",
+    "dots", "antiretroviral", "art", "praziquantel", "drug resistance", "mdr",
+    "adherence", "treatment failure", "herb drug interaction", "pharmacokinetics",
+    "stockout", "essential medicine",
+  ],
+  psychological: [
+    "depression", "anxiety", "ptsd", "trauma", "mental health", "schizophrenia",
+    "psychosis", "zar", "spirit possession", "suicide", "postpartum depression",
+    "phq", "gad", "mental disorder", "stigma", "treatment gap", "resilience",
+  ],
+  socioeconomic: [
+    "poverty", "rural health", "health insurance", "cbhi", "out-of-pocket", "catastrophic expenditure",
+    "water access", "sanitation", "wash", "food insecurity", "maternal education",
+    "health facility", "health extension", "hew", "antenatal care", "anc",
+  ],
+  addiction: [
+    "khat", "catha edulis", "cathinone", "alcohol", "tobacco", "smoking", "substance use",
+    "addiction", "dependence", "withdrawal", "audit", "rehabilitation", "detoxification",
+  ],
+  biological: [
+    "highland adaptation", "altitude", "hypoxia", "sickle cell", "g6pd", "genetic",
+    "allele frequency", "epas1", "microbiome", "gut flora", "bacteroidetes", "firmicutes",
+    "immunoglobulin", "cd4", "cytokine", "vaccine", "seroconversion",
+  ],
+  cultural: [
+    "traditional medicine", "healer", "dabtera", "wogesha", "holy water", "tsebel",
+    "traditional birth attendant", "tba", "cultural belief", "health seeking",
+    "food taboo", "fgm", "female genital", "uvulectomy", "buda", "evil eye", "zar",
+  ],
+  astrological: [
+    "seasonal", "kiremt", "bega", "belg", "rainy season", "dry season",
+    "fasting season", "lent", "ramadan", "lunar", "harvest season",
+    "ethiopian calendar", "orthodox fasting",
+  ],
+};
