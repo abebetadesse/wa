@@ -1,0 +1,194 @@
+export type LegalCaseStatus =
+  | "case_received"
+  | "intake_started"
+  | "pending_expert_review"
+  | "legal_aid_route"
+  | "visible_to_user"
+  | "full_report_released"
+  | "consultation_booked"
+  | "crisis_routed";
+
+export interface LegalExpert {
+  id: string;
+  name: string;
+  credential: string;
+  specialization: string;
+  languages: string[];
+  rating: number;
+  isAvailable: boolean;
+}
+
+export interface LegalCaseSession {
+  id: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt: string;
+  status: LegalCaseStatus;
+  jurisdiction?: string;
+  issueType?: string;
+  answers: Record<string, unknown>;
+  safetyResult?: {
+    action: string;
+    expertFlag?: { reason: string; priority: string };
+    crisisContent?: {
+      title: string;
+      message: string;
+      hotlines: Array<{ name: string; number: string }>;
+      safetyPlanSteps: string[];
+    };
+    legalAidContent?: {
+      title: string;
+      message: string;
+      hotlines: Array<{ name: string; number: string }>;
+      resources: string[];
+    };
+  };
+  assignedExpert?: LegalExpert;
+  report?: {
+    title: string;
+    summary: string;
+    recommendations: string[];
+  };
+  paymentConfirmed: boolean;
+  consultation?: {
+    booked: boolean;
+    format: "video" | "voice" | "chat" | "in_person";
+    feeEtb: number;
+    scheduledFor?: string;
+  };
+}
+
+export const LEGAL_EXPERTS: LegalExpert[] = [
+  {
+    id: "legal-lawyer-1",
+    name: "Mihret Bekele",
+    credential: "Licensed attorney",
+    specialization: "housing and contract disputes",
+    languages: ["am", "en"],
+    rating: 4.8,
+    isAvailable: true,
+  },
+  {
+    id: "legal-mediator-1",
+    name: "Daniel Tesfaye",
+    credential: "Verified dispute mediator",
+    specialization: "family and community mediation",
+    languages: ["am", "en", "om"],
+    rating: 4.7,
+    isAvailable: true,
+  },
+  {
+    id: "legal-aid-1",
+    name: "Aster Gashaw",
+    credential: "Legal aid specialist",
+    specialization: "tenant rights and urgent support",
+    languages: ["am", "en"],
+    rating: 4.9,
+    isAvailable: true,
+  },
+];
+
+const legalCases = new Map<string, LegalCaseSession>();
+
+export function assignLegalExpert(issueType?: string): LegalExpert {
+  if (issueType === "housing") return LEGAL_EXPERTS[2];
+  if (issueType === "family") return LEGAL_EXPERTS[1];
+  return LEGAL_EXPERTS[0];
+}
+
+export function startLegalCase(input: {
+  userId?: string;
+  jurisdiction?: string;
+  answers?: Record<string, unknown>;
+  safetyResult?: LegalCaseSession["safetyResult"];
+}): LegalCaseSession {
+  const now = new Date().toISOString();
+  const id = globalThis.crypto && typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `legal-${Date.now()}`;
+
+  const session: LegalCaseSession = {
+    id,
+    userId: input.userId,
+    createdAt: now,
+    updatedAt: now,
+    status: input.safetyResult && input.safetyResult.action === "crisis_route" ? "crisis_routed" : "intake_started",
+    jurisdiction: input.jurisdiction,
+    answers: input.answers || {},
+    safetyResult: input.safetyResult,
+    paymentConfirmed: false,
+  };
+
+  legalCases.set(id, session);
+  return session;
+}
+
+export function getLegalCase(caseId: string, userId?: string): LegalCaseSession | undefined {
+  const session = legalCases.get(caseId);
+  if (!session) return undefined;
+  if (userId && session.userId && session.userId !== userId) return undefined;
+  return session;
+}
+
+export function submitLegalCase(
+  caseId: string,
+  answers: Record<string, unknown>,
+  userId?: string
+): LegalCaseSession | undefined {
+  const session = getLegalCase(caseId, userId);
+  if (!session) return undefined;
+
+  session.answers = { ...session.answers, ...answers };
+  session.updatedAt = new Date().toISOString();
+  session.issueType = String(session.answers.issue_type || "dispute");
+  session.assignedExpert = assignLegalExpert(session.issueType);
+  session.status = session.safetyResult?.action === "legal_aid_route" ? "legal_aid_route" : "pending_expert_review";
+  session.report = {
+    title: "Legal review and next-step plan",
+    summary: `Your matter has been prepared for review in ${session.jurisdiction || "the relevant jurisdiction"}. The focus is on immediate risk, deadlines, and lawful next steps.`,
+    recommendations: [
+      "Document the issue and keep evidence in a safe place.",
+      "Confirm any deadlines or notices before taking action.",
+      "Use a licensed attorney or legal aid office for high-risk matters.",
+    ],
+  };
+
+  legalCases.set(caseId, session);
+  return session;
+}
+
+export function previewLegalCase(caseId: string, userId?: string): LegalCaseSession | undefined {
+  const session = getLegalCase(caseId, userId);
+  if (!session) return undefined;
+  session.status = session.status === "crisis_routed" ? "crisis_routed" : "visible_to_user";
+  session.updatedAt = new Date().toISOString();
+  legalCases.set(caseId, session);
+  return session;
+}
+
+export function purchaseLegalReport(caseId: string, userId?: string): LegalCaseSession | undefined {
+  const session = getLegalCase(caseId, userId);
+  if (!session) return undefined;
+  session.paymentConfirmed = true;
+  session.status = "full_report_released";
+  session.updatedAt = new Date().toISOString();
+  legalCases.set(caseId, session);
+  return session;
+}
+
+export function bookLegalConsult(
+  caseId: string,
+  format: "video" | "voice" | "chat" | "in_person",
+  userId?: string
+): LegalCaseSession | undefined {
+  const session = getLegalCase(caseId, userId);
+  if (!session) return undefined;
+  session.consultation = {
+    booked: true,
+    format,
+    feeEtb: 1500,
+    scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3).toISOString(),
+  };
+  session.status = "consultation_booked";
+  session.updatedAt = new Date().toISOString();
+  legalCases.set(caseId, session);
+  return session;
+}
