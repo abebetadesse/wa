@@ -67,6 +67,7 @@ const culturalV3Seed: KnowledgeDocument = {
       data: [
         { name: "Healer classifications", description: "Dabtera, Wogesha, Zar practitioners, and herbalists serve distinct cultural healing roles.", types: ["Dabtera", "Wogesha", "Zar practitioner", "Herbalist"], ethiopian_context: "Traditional healers remain important healthcare resources in many rural communities." },
         { name: "Regional healing traditions", description: "Northern, southern, and pastoralist communities maintain distinct healing practices and sites.", regions: ["Northern Ethiopia", "Southern Ethiopia", "Pastoralist regions"], practices: ["Holy water healing", "Sacred forest healing", "Mobile herbal practice", "Community rituals"] },
+        { name: "Supplied manuscript references", description: "User-supplied Ethiopian manuscripts can provide cultural and historical context after provenance, OCR, rights, and cultural review.", sources: ["Mets'hafe Fewus", "Mets'hafe Gitsaw", "Mets'hafe Asmat"], indexStatus: "OCR completed for scanned sources; summaries require cultural review.", integration: "Domain B reference only; keep separate from clinical evidence and do not expose unreviewed operational instructions." },
         { name: "Traditional healing rituals", description: "Community ceremonies such as Zar, Tsebel, and Waaqeffanna rituals provide spiritual and psychosocial support.", rituals: ["Zar ceremony", "Tsebel holy-water healing", "Waaqeffanna healing rituals"] }
       ]
     },

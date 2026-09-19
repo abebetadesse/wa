@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { decideSolutions, restoreSession } from "@/lib/case-workflow/engine";
 import { loadCaseSession, persistCaseSession } from "@/lib/case-workflow/repository";
 import { requireAuthenticatedUser } from "@/lib/auth";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
@@ -24,5 +25,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const session = decideSolutions(sessionId, selectedSolutionIds);
   if (!session) return NextResponse.json({ success: false, error: "Session not found." }, { status: 404 });
   await persistCaseSession(session);
+  await logAuditEvent({
+    userId: user.id,
+    action: "case_solutions_accepted",
+    resourceType: "case_session",
+    resourceId: session.id,
+    details: { caseId: session.caseId, selectedSolutionIds },
+    sessionId: session.id,
+  });
   return NextResponse.json({ success: true, data: session });
 }

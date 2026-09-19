@@ -113,7 +113,11 @@ export class IntentClassifier {
 
       for (const kw of keywords) {
         if (normalized.includes(kw.toLowerCase())) {
-          score += intentKey === "emergency" ? 40 : 15;
+          // Multi-word phrases (e.g. a named herb like "tena adam") are a stronger,
+          // more specific signal than a single generic word (e.g. "stomach"), so
+          // they must outweigh generic symptom words on a tied score.
+          const isSpecificPhrase = kw.trim().split(/\s+/).length >= 2;
+          score += intentKey === "emergency" ? 40 : isSpecificPhrase ? 20 : 15;
           matched.push(kw);
         }
       }

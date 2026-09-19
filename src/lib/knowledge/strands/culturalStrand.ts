@@ -97,7 +97,7 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       aliases: ["festival", "enkutatash", "timkat", "fasika", "meskel", "irreecha", "eid", "new year"],
     },
     {
-      title: "Gursha and Ethiopian Food Culture",
+      title: "Gursha, Buna Coffee Ceremony, and Ethiopian Food Culture",
       description: "Communal eating, gursha, injera, coffee ceremony, hospitality, and shared food are important social practices.",
       practices: ["Shared injera meals", "Gursha as affection and respect", "Buna coffee ceremony", "Conversation with elders and neighbours"],
       advice: ["Respect communal eating while accommodating allergies, diabetes, swallowing needs, and infection-control preferences.", "Coffee can support social connection; consider timing, sleep, reflux, pregnancy, and iron absorption."],

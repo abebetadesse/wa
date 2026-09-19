@@ -1561,6 +1561,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       severity: "low",
     });
 
+    // Astrological findings are always Domain B (reflective, cultural context);
+    // mark this explicitly so downstream firewall checks can rely on it.
+    for (const finding of results) {
+      finding.details = { ...finding.details, isDomainB: true };
+    }
+
     return results.sort((a, b) => b.relevanceScore - a.relevanceScore);
   }
 

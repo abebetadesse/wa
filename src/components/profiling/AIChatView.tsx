@@ -86,7 +86,8 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
 
   const handleSendMessage = async (textToSend?: string) => {
     const messageText = textToSend || inputValue;
-    if (!messageText.trim() || isLoading || isStarting || !session) return;
+    const profileContext = ctx;
+    if (!messageText.trim() || isLoading || isStarting || !session || !profileContext) return;
 
     setInputValue("");
     setIsLoading(true);
@@ -104,8 +105,56 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       const response = await fetch(`/api/chat/${encodeURIComponent(session.sessionId)}/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: messageText.trim() }),
+        body: JSON.stringify({
+          message: messageText.trim(),
+          systemPrompt: `You are a concise, safety-aware Ethiopian wellness and cultural advisor. Answer the user's question first. Use the supplied profile only as context, keep reflective cultural material separate from health guidance, and do not diagnose or prescribe. Profile: ${JSON.stringify(profileContext)}`,
+          history: [
+            ...session.messages.map((message) => ({
+              role: message.role,
+              content: message.content,
+            })),
+            { role: "user", content: messageText.trim() },
+          ].slice(-12),
+        }),
       });
+
+      if (response.headers.get("content-type")?.includes("text/event-stream") && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        const assistantId = `msg_ast_${Date.now()}`;
+        let responseText = "";
+
+        const addOrUpdateAssistant = (content: string) => {
+          setSession((current) => {
+            if (!current) return current;
+            const existing = current.messages.findIndex((message) => message.id === assistantId);
+            const assistantMessage: AIChatMessage = {
+              id: assistantId,
+              role: "assistant",
+              content,
+              timestamp: new Date().toISOString(),
+              contextBadges: ["Powered by Bionic GPT", `Grounded in ${profileContext.sunSign} Sun`, `Life Path ${profileContext.danMillmanLifePath}`],
+            };
+            if (existing === -1) {
+              return { ...current, messages: [...current.messages, assistantMessage] };
+            }
+            const messages = [...current.messages];
+            messages[existing] = assistantMessage;
+            return { ...current, messages, updatedAt: new Date().toISOString() };
+          });
+        };
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          responseText += decoder.decode(value, { stream: true });
+          addOrUpdateAssistant(responseText);
+        }
+        responseText += decoder.decode();
+        addOrUpdateAssistant(responseText);
+        return;
+      }
+
       const data = await response.json();
 
       if (!response.ok || !data.success) {

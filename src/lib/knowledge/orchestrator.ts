@@ -11,6 +11,7 @@ import { CulturalKnowledgeStrand } from "./strands/culturalStrand";
 import { AstrologicalKnowledgeStrand } from "./strands/astrologicalStrand";
 import { CrossStrandIntegrationEngine } from "./crossStrandIntegration";
 import { AIReasoningEngine } from "./ai/reasoningEngine";
+import { attachEvidenceVisuals } from "./evidenceVisuals";
 import {
   DiagnosticSolution,
   DiagnosticUrgencyLevel,
@@ -30,12 +31,16 @@ interface CacheEntry {
   };
 }
 
+type RetrievalPayload = CacheEntry["data"];
+
 export class KnowledgeRetrievalOrchestrator {
   readonly strands: Record<KnowledgeStrandType, KnowledgeStrand>;
   readonly integrationEngine: CrossStrandIntegrationEngine;
   readonly reasoningEngine: AIReasoningEngine;
   private cache = new Map<string, CacheEntry>();
+  private inFlight = new Map<string, Promise<RetrievalPayload>>();
   private cacheTTL = 3600000; // 1 hour
+  private maxCacheEntries = 100;
 
   constructor() {
     this.strands = {
@@ -84,6 +89,46 @@ export class KnowledgeRetrievalOrchestrator {
       };
     }
 
+    const pending = this.inFlight.get(cacheKey);
+    if (pending) {
+      const data = await pending;
+      return { ...data, fromCache: true };
+    }
+
+    const retrieval = this.retrieveAndSynthesize(
+      cacheKey,
+      query,
+      mode,
+      language,
+      userProfile,
+      intent,
+      urgency,
+    );
+    this.inFlight.set(cacheKey, retrieval);
+
+    try {
+      const data = await retrieval;
+      return { ...data, fromCache: false };
+    } finally {
+      this.inFlight.delete(cacheKey);
+    }
+  }
+
+  private async retrieveAndSynthesize(
+    cacheKey: string,
+    query: string,
+    mode: "text" | "voice" | "image" | "symptom",
+    language: string,
+    userProfile: UserProfile,
+    intent: string,
+    urgency: {
+      level: DiagnosticUrgencyLevel;
+      score: number;
+      action: string;
+      recommendation: string;
+      matchedSignals: string[];
+    },
+  ): Promise<RetrievalPayload> {
     // Dispatch parallel query across all 11 strands
     const strandEntries = Object.entries(this.strands) as [KnowledgeStrandType, KnowledgeStrand][];
     const strandPromises = strandEntries.map(async ([name, strand]) => {
@@ -110,6 +155,9 @@ export class KnowledgeRetrievalOrchestrator {
       if (!strandResults[key]) strandResults[key] = [];
     }
 
+    // Attach illustrated evidence (image + description) to every finding
+    attachEvidenceVisuals(strandResults);
+
     // Run Cross-Strand Integration
     const intersections = this.integrationEngine.findIntersections(strandResults, userProfile);
 
@@ -133,10 +181,12 @@ export class KnowledgeRetrievalOrchestrator {
       data: payload,
     });
 
-    return {
-      ...payload,
-      fromCache: false,
-    };
+    if (this.cache.size > this.maxCacheEntries) {
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey) this.cache.delete(oldestKey);
+    }
+
+    return payload;
   }
 
   private generateCacheKey(query: string, userProfile: UserProfile): string {

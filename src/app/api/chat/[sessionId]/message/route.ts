@@ -22,7 +22,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ session
       try {
         const messages = buildBionicMessages(
           systemPrompt || "You are a helpful Ethiopian wellness assistant.",
-          history || [{ role: "user" as const, content: message }]
+          (history || [{ role: "user" as const, content: message }]).slice(-12)
         );
 
         const stream = await bionicChatStream({ messages, temperature: 0.75, maxTokens: 800 });
@@ -30,7 +30,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ session
         return new Response(stream, {
           headers: {
             "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",
             Connection: "keep-alive",
           },
         });

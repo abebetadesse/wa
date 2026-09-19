@@ -1,7 +1,10 @@
 import { NormalizedProfile, Medication, LifestyleHabits } from "./types";
+import { ETHIOPIAN_REGION_LOCATIONS, resolveEthiopianLocation } from "@/lib/location/ethiopiaLocations";
 
-export const ETHIOPIAN_REGION_ALTITUDES: Record<string, number> = {
-  "Addis Ababa": 2400,
+export const ETHIOPIAN_REGION_ALTITUDES: Record<string, number> = Object.fromEntries(
+  ETHIOPIAN_REGION_LOCATIONS.map((location) => [location.name, location.altitudeMeters]),
+);
+Object.assign(ETHIOPIAN_REGION_ALTITUDES, {
   "Amhara (Highlands - Gondar/Debre Berhan)": 2600,
   "Amhara (Midlands - Bahir Dar)": 1800,
   "Oromia (Highlands)": 2300,
@@ -12,19 +15,18 @@ export const ETHIOPIAN_REGION_ALTITUDES: Record<string, number> = {
   "Dire Dawa / Harari": 1300,
   "Somali (Lowlands)": 600,
   "Afar (Danakil / Lowlands)": 400,
-  "Benishangul-Gumuz": 800,
-  "Gambela": 500,
-};
+});
 
 export function stage1Normalize(rawInput: any): NormalizedProfile {
   const age = Number(rawInput.age) || 30;
   const gender = (rawInput.gender === "male" || rawInput.gender === "female") ? rawInput.gender : "female";
-  const region = typeof rawInput.region === "string" && rawInput.region ? rawInput.region : "Addis Ababa";
+  const location = resolveEthiopianLocation(rawInput.city || rawInput.region);
+  const region = typeof rawInput.region === "string" && rawInput.region ? rawInput.region : location.name;
   
   // Resolve altitude
   let altitudeMeters = Number(rawInput.altitudeMeters);
   if (isNaN(altitudeMeters) || altitudeMeters <= 0) {
-    altitudeMeters = ETHIOPIAN_REGION_ALTITUDES[region] ?? 2000;
+    altitudeMeters = ETHIOPIAN_REGION_ALTITUDES[region] ?? location.altitudeMeters;
   }
 
   // Normalize activity

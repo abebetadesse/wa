@@ -45,11 +45,13 @@ export default function AwdeNegestRings({ highlightCircle = 15, size = 340 }: Aw
   const segmentAngle = 360 / AWDE_CIRCLES.length;
   const [hoveredCircle, setHoveredCircle] = useState<number | null>(null);
 
+  const roundCoordinate = (value: number) => Number(value.toFixed(6));
+
   const polarToCartesian = (cx: number, cy: number, radius: number, angleDeg: number) => {
     const angleRad = ((angleDeg - 90) * Math.PI) / 180;
     return {
-      x: cx + radius * Math.cos(angleRad),
-      y: cy + radius * Math.sin(angleRad),
+      x: roundCoordinate(cx + radius * Math.cos(angleRad)),
+      y: roundCoordinate(cy + radius * Math.sin(angleRad)),
     };
   };
 
@@ -173,8 +175,8 @@ export default function AwdeNegestRings({ highlightCircle = 15, size = 340 }: Aw
               key={`ray-${idx}`}
               x1={center}
               y1={center}
-              x2={center + maxRadius * Math.cos(radian)}
-              y2={center + maxRadius * Math.sin(radian)}
+              x2={roundCoordinate(center + maxRadius * Math.cos(radian))}
+              y2={roundCoordinate(center + maxRadius * Math.sin(radian))}
               stroke="rgba(245,158,11,0.18)"
               strokeWidth="0.8"
             />
@@ -188,8 +190,8 @@ export default function AwdeNegestRings({ highlightCircle = 15, size = 340 }: Aw
           const angle = (idx * 360) / 16 - 90 + 11.25;
           const radian = (angle * Math.PI) / 180;
           const labelRadiusInner = 96;
-          const x = center + labelRadiusInner * Math.cos(radian);
-          const y = center + labelRadiusInner * Math.sin(radian);
+          const x = roundCoordinate(center + labelRadiusInner * Math.cos(radian));
+          const y = roundCoordinate(center + labelRadiusInner * Math.sin(radian));
           const isActive = circle.n === pulseIndex;
 
           return (

@@ -9,10 +9,10 @@
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "node --loader ts-node/esm src/lib/db/seed.ts",
+    "db:seed": "npx --no-install tsx src/lib/db/seed.ts",
     "literature:dryrun": "npx tsx src/lib/literature/test-dryrun.ts",
     "literature:sync": "npx tsx -e \"import('./src/lib/literature/literatureFetcher.ts').then(m => m.getLiteratureFetcher().triggerManual())\"",
-    "test": "npx --no-install tsx --test src/tests/evaluation.test.mjs src/tests/case-workflow.test.mjs src/tests/auth.test.mjs src/tests/mechanism.test.mjs src/tests/multimodal-constitution.test.mjs src/tests/astrology-numerology-cultural.test.mjs src/tests/knowledge-retrieval.test.mjs src/tests/rbac-auth.test.mjs"
+    "test": "npx --no-install tsx --test --test-force-exit src/tests/evaluation.test.mjs src/tests/case-workflow.test.mjs src/tests/case-evaluation.test.mjs src/tests/auth.test.mjs src/tests/mechanism.test.mjs src/tests/multimodal-constitution.test.mjs src/tests/astrology-numerology-cultural.test.mjs src/tests/knowledge-retrieval.test.mjs src/tests/rbac-auth.test.mjs src/tests/career-workflow.test.mjs src/tests/diagnostic-portal.test.mjs src/tests/enhancements20.test.mjs src/tests/inquiry.test.mjs src/tests/legal-safety.test.mjs src/tests/legal-workflow.test.mjs src/tests/personal-profile.test.mjs src/tests/social-workflow.test.mjs src/tests/spiritual-dynamic-workflow.test.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

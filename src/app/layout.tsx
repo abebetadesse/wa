@@ -3,11 +3,11 @@ import { Suspense } from "react";
 import "../styles/globals.css";
 import "../styles/tokens.css";
 import "../styles/hud-effects.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ClientProviders from "../components/ClientProviders";
-import PwaRegister from "../components/PwaRegister";
-import AuthGate from "../components/AuthGate";
+import Navbar from "../components/shell/Navbar";
+import Footer from "../components/shell/Footer";
+import ClientProviders from "../components/shell/ClientProviders";
+import PwaRegister from "../components/shell/PwaRegister";
+import AuthGate from "../components/shell/AuthGate";
 import GlobalLayers from "../components/layout/GlobalLayers";
 
 export const metadata: Metadata = {

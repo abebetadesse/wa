@@ -12,6 +12,63 @@ export interface SuggestionCriteria {
   city?: string;
 }
 
+type NameSource = "Ethiopian" | "Biblical" | "Biblical place" | "Global";
+
+interface CuratedNameCandidate {
+  name: string;
+  meaning: string;
+  gender: "female" | "male" | "unisex";
+  language: string;
+  sourceTradition: NameSource;
+  destinyNumber: number;
+  element: HumoralElement;
+  geezFidel?: string;
+}
+
+// Curated from the supplied biblical-name references and common Ethiopian forms.
+// Definitions are presented as cultural/name meanings, not predictions or health claims.
+const CURATED_NAME_CANDIDATES: CuratedNameCandidate[] = [
+  { name: "Abraham", meaning: "Father of many nations", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 3, element: "afere" },
+  { name: "Sarah", meaning: "Princess; noblewoman", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 8, element: "may" },
+  { name: "Isaac", meaning: "He laughs; joy", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 6, element: "nifas" },
+  { name: "Jacob", meaning: "Heel-holder; one who perseveres", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 5, element: "esat" },
+  { name: "Joseph", meaning: "He will add; increase", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 2, element: "afere" },
+  { name: "Moses", meaning: "Drawn out; deliverer", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 7, element: "esat" },
+  { name: "David", meaning: "Beloved", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 4, element: "nifas", geezFidel: "ዳዊት" },
+  { name: "Esther", meaning: "Star; hidden or protected", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 3, element: "may" },
+  { name: "Samuel", meaning: "Heard by God", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 5, element: "nifas" },
+  { name: "Elijah", meaning: "My God is Yahweh", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 1, element: "esat" },
+  { name: "Isaiah", meaning: "Salvation of the Lord", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 8, element: "may" },
+  { name: "Ruth", meaning: "Compassionate friend", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 3, element: "may" },
+  { name: "Hannah", meaning: "Grace and favor", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 2, element: "may" },
+  { name: "Abigail", meaning: "Father's joy", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 7, element: "nifas" },
+  { name: "John", meaning: "Yahweh is gracious", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 2, element: "may" },
+  { name: "Peter", meaning: "Rock; steadfast foundation", gender: "male", language: "Greek", sourceTradition: "Biblical", destinyNumber: 7, element: "afere" },
+  { name: "Eden", meaning: "Delight; paradise", gender: "unisex", language: "Hebrew", sourceTradition: "Biblical place", destinyNumber: 5, element: "may" },
+  { name: "Shiloh", meaning: "Tranquility; place of rest", gender: "unisex", language: "Hebrew", sourceTradition: "Biblical place", destinyNumber: 6, element: "may" },
+  { name: "Zion", meaning: "Highest point; sanctuary", gender: "unisex", language: "Hebrew", sourceTradition: "Biblical place", destinyNumber: 8, element: "esat" },
+  { name: "Jordan", meaning: "Flowing down", gender: "unisex", language: "Hebrew", sourceTradition: "Biblical place", destinyNumber: 2, element: "nifas" },
+  { name: "Salem", meaning: "Peace; wholeness", gender: "unisex", language: "Hebrew", sourceTradition: "Biblical place", destinyNumber: 1, element: "may" },
+  { name: "Talitha", meaning: "Young girl", gender: "female", language: "Aramaic", sourceTradition: "Biblical", destinyNumber: 7, element: "nifas" },
+  { name: "Dawit", meaning: "Beloved; victorious shepherd and musician king", gender: "male", language: "Amharic", sourceTradition: "Ethiopian", destinyNumber: 3, element: "nifas", geezFidel: "ዳዊት" },
+  { name: "Selam", meaning: "Peace, wholeness, and safety", gender: "female", language: "Amharic", sourceTradition: "Ethiopian", destinyNumber: 6, element: "may", geezFidel: "ሰላም" },
+  { name: "Tigist", meaning: "Patience and endurance", gender: "female", language: "Amharic", sourceTradition: "Ethiopian", destinyNumber: 5, element: "may", geezFidel: "ትዕግሥት" },
+  { name: "Abebe", meaning: "He has blossomed and flourished", gender: "male", language: "Amharic", sourceTradition: "Ethiopian", destinyNumber: 1, element: "esat", geezFidel: "አበበ" },
+  { name: "Liya", meaning: "I am with you; devoted", gender: "female", language: "Amharic", sourceTradition: "Ethiopian", destinyNumber: 3, element: "nifas", geezFidel: "ልያ" },
+  { name: "Amanuel", meaning: "God is with us", gender: "male", language: "Ge'ez", sourceTradition: "Ethiopian", destinyNumber: 9, element: "nifas" },
+];
+
+function reduceNumber(value: number): number {
+  let result = Math.abs(value);
+  while (result > 9) result = String(result).split("").reduce((sum, digit) => sum + Number(digit), 0);
+  return result || 9;
+}
+
+function destinyFromBirthDate(birthDate?: string): number | undefined {
+  if (!birthDate || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return undefined;
+  return reduceNumber(birthDate.replaceAll("-", "").split("").reduce((sum, digit) => sum + Number(digit), 0));
+}
+
 function buildProfileRecommendation(criteria: SuggestionCriteria, elem: HumoralElement, name: string): string {
   const profileBase = criteria.fullName || "this client";
   const date = criteria.birthDate || "your birth date";
@@ -28,6 +85,7 @@ function buildProfileRecommendation(criteria: SuggestionCriteria, elem: HumoralE
 }
 
 export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSuggestionResult[] {
+  const targetDestinyNumber = criteria.targetDestinyNumber ?? destinyFromBirthDate(criteria.birthDate);
   let pool = [...ETHIOPIAN_NAMES_DATABASE];
 
   if (criteria.gender && criteria.gender !== "unisex") {
@@ -66,7 +124,7 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
     Tekle_Haymanot: "may",
   };
 
-  const results: NameSuggestionResult[] = [];
+  const results: Array<NameSuggestionResult & { score: number }> = [];
   const seen = new Set<string>();
   const maxSuggestions = 1000;
 
@@ -75,14 +133,11 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
     const key = item.name.replace(/\s+/g, "_");
     const elem: HumoralElement = elementalAffinity[key] || (item.numerologicalValues.destiny % 2 === 0 ? "may" : "esat");
 
-    let matchScore = 0;
-    if (criteria.targetElement && elem === criteria.targetElement) matchScore += 3;
-    if (criteria.targetDestinyNumber && item.numerologicalValues.destiny === criteria.targetDestinyNumber) matchScore += 4;
-    if (!criteria.targetElement && !criteria.targetDestinyNumber) matchScore += 2;
-
-    if (matchScore <= 0) {
-      continue;
-    }
+    const destinyMatch = targetDestinyNumber && item.numerologicalValues.destiny === targetDestinyNumber ? 30 : 0;
+    const genderMatch = criteria.gender && (item.gender === criteria.gender || item.gender === "unisex") ? 15 : criteria.gender ? 0 : 8;
+    const languageMatch = criteria.languagePreference && item.language === criteria.languagePreference ? 15 : criteria.languagePreference ? 0 : 8;
+    const meaningAlignment = criteria.targetElement && elem === criteria.targetElement ? 25 : criteria.targetElement ? 5 : 15;
+    const matchScore = destinyMatch + genderMatch + languageMatch + meaningAlignment;
 
     const generatedName = item.name;
     if (seen.has(generatedName)) {
@@ -107,6 +162,9 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
       geezFidel: item.geezFidel || "",
       language: item.language,
       meaning: item.meaning,
+      sourceTradition: "Ethiopian",
+      score: matchScore,
+      scoreBreakdown: { destinyMatch, genderMatch, languageMatch, meaningAlignment },
       primaryElement: elem,
       destinyNumber: item.numerologicalValues.destiny,
       alignmentReason: `Harmonizes with ${elem.toUpperCase()} humoral balancing, fostering a Destiny ${item.numerologicalValues.destiny} vibration of '${item.healthIdentityCorrelation.balancingVirtue}'.`,
@@ -116,6 +174,30 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
 
     if (results.length >= maxSuggestions) {
       return results;
+    }
+
+    for (const candidate of CURATED_NAME_CANDIDATES) {
+      if (criteria.gender && candidate.gender !== criteria.gender && candidate.gender !== "unisex") continue;
+      if (criteria.languagePreference && candidate.language !== criteria.languagePreference) continue;
+      const destinyMatch = targetDestinyNumber && candidate.destinyNumber === targetDestinyNumber ? 30 : 0;
+      const genderMatch = criteria.gender ? (candidate.gender === criteria.gender || candidate.gender === "unisex" ? 15 : 0) : 8;
+      const languageMatch = criteria.languagePreference ? (candidate.language === criteria.languagePreference ? 15 : 0) : 8;
+      const meaningAlignment = criteria.targetElement && candidate.element === criteria.targetElement ? 25 : criteria.targetElement ? 5 : 15;
+      const score = destinyMatch + genderMatch + languageMatch + meaningAlignment;
+      results.push({
+        suggestedName: candidate.name,
+        geezFidel: candidate.geezFidel || "",
+        language: candidate.language,
+        meaning: candidate.meaning,
+        sourceTradition: candidate.sourceTradition,
+        score,
+        scoreBreakdown: { destinyMatch, genderMatch, languageMatch, meaningAlignment },
+        primaryElement: candidate.element,
+        destinyNumber: candidate.destinyNumber,
+        alignmentReason: `Cultural meaning aligns with ${candidate.sourceTradition} naming tradition and the selected reflection criteria.`,
+        healthHarmonizationBenefit: "Reflective identity alignment only; this name does not predict health or personality.",
+        recommendation: buildProfileRecommendation(criteria, candidate.element, candidate.name),
+      });
     }
   }
 
@@ -133,11 +215,14 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
       }
 
       const elem = elementalAffinity[left.name.replace(/\s+/g, "_")] || elementalAffinity[right.name.replace(/\s+/g, "_")] || "may";
-      const row: NameSuggestionResult = {
+      const row: NameSuggestionResult & { score: number } = {
         suggestedName: combined,
         geezFidel: left.geezFidel || right.geezFidel || "",
         language: right.language,
         meaning: `${left.meaning} • ${right.meaning}`,
+        sourceTradition: "Ethiopian",
+        score: 10,
+        scoreBreakdown: { destinyMatch: 0, genderMatch: 0, languageMatch: 0, meaningAlignment: 10 },
         primaryElement: elem,
         destinyNumber: (left.numerologicalValues.destiny + right.numerologicalValues.destiny) % 9 || 1,
         alignmentReason: `Combined lineage resonance for ${elem.toUpperCase()} balance and profile continuity.`,
@@ -150,5 +235,5 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
     }
   }
 
-  return results.slice(0, maxSuggestions);
+  return results.sort((left, right) => right.score - left.score || left.suggestedName.localeCompare(right.suggestedName)).slice(0, maxSuggestions);
 }

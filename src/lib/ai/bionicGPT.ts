@@ -278,7 +278,8 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
   while (attempt <= maxRetries) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), BIONIC_REQUEST_TIMEOUT_MS);
-    if (options.signal) options.signal.addEventListener("abort", () => controller.abort());
+    const abortHandler = () => controller.abort();
+    if (options.signal) options.signal.addEventListener("abort", abortHandler, { once: true });
 
     try {
       const response = await fetch(endpoint, {
@@ -359,7 +360,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
       );
     } finally {
       clearTimeout(timeoutId);
-      if (options.signal) options.signal.removeEventListener("abort", () => controller.abort());
+      if (options.signal) options.signal.removeEventListener("abort", abortHandler);
     }
   }
   
@@ -452,7 +453,8 @@ export async function* bionicChatStreamParsed(options: BionicChatOptions): Async
 
   const endpoint = `${config.baseUrl}/v1/chat/completions`;
   const controller = new AbortController();
-  if (options.signal) options.signal.addEventListener("abort", () => controller.abort());
+  const abortHandler = () => controller.abort();
+  if (options.signal) options.signal.addEventListener("abort", abortHandler, { once: true });
 
   const response = await fetch(endpoint, {
     method: "POST",
@@ -509,7 +511,7 @@ export async function* bionicChatStreamParsed(options: BionicChatOptions): Async
     }
   } finally {
     reader.releaseLock();
-    if (options.signal) options.signal.removeEventListener("abort", () => controller.abort());
+    if (options.signal) options.signal.removeEventListener("abort", abortHandler);
   }
 }
 

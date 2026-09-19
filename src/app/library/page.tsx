@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { BookOpenText, ArrowRight, Sparkles } from "lucide-react";
+import { ETHIOPIAN_MANUSCRIPT_SOURCES } from "@/lib/cultural/manuscriptSources";
+import { ETHIOPIAN_MANUSCRIPT_INDEX } from "@/lib/cultural/manuscriptIndex";
 
 export default function LibraryPage() {
   return (
@@ -110,6 +112,71 @@ export default function LibraryPage() {
               Each circle opens a divination CTA and a contextual reading for spiritual intake.
             </li>
           </ul>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-violet-500/20 bg-violet-950/10 p-6 md:p-8">
+        <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-300">
+          <BookOpenText size={13} />
+          User-supplied manuscript sources
+        </div>
+        <h2 className="mt-3 text-2xl font-bold text-white">Healing, liturgical, and esoteric heritage references</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-stone-300">
+          These sources are incorporated as provenance-tracked Domain B cultural references. They are kept separate from
+          clinical evidence and are not used to generate diagnoses, medication advice, or unsafe ritual instructions.
+        </p>
+        <div className="mt-6 grid gap-3 md:grid-cols-3">
+          {ETHIOPIAN_MANUSCRIPT_SOURCES.map((source) => (
+            <article key={source.id} className="rounded-2xl border border-violet-500/20 bg-stone-950/60 p-4">
+              <p className="text-lg font-semibold text-white">{source.titleAmharic}</p>
+              <p className="mt-1 text-xs text-violet-300">{source.title}</p>
+              <div className="mt-3 space-y-1 text-[11px] text-stone-400">
+                <p>{source.pageCount} pages</p>
+                <p>{source.extractionStatus === "text_extracted" ? "Text extracted for review" : source.extractionStatus === "ocr_completed_needs_review" ? "OCR completed; review required" : "Scanned images; OCR required"}</p>
+                <p>{source.reviewStatus.replaceAll("_", " ")}</p>
+                {source.detectedTitleFromOcr && <p className="text-amber-300">OCR title: {source.detectedTitleFromOcr}</p>}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {source.themes.slice(0, 2).map((theme) => (
+                  <span key={theme} className="rounded-full border border-stone-700 px-2 py-1 text-[10px] text-stone-300">{theme}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className="mt-5 text-[11px] leading-relaxed text-stone-500">
+          Source files are tracked by filename, page count, and SHA-256 fingerprint. Full-page publication requires
+          permission from the rights holder and review by appropriate cultural custodians.
+        </p>
+      </section>
+
+      <section className="rounded-[28px] border border-stone-800 bg-stone-900/70 p-6 md:p-8">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-stone-400">OCR navigation index</p>
+        <h2 className="mt-3 text-2xl font-bold text-white">Reviewed themes and page references</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-stone-300">
+          OCR-derived summaries help reviewers locate themes without reproducing the books&apos; full text. Every entry remains
+          marked for cultural review and is separated from clinical recommendations.
+        </p>
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          {ETHIOPIAN_MANUSCRIPT_INDEX.map((entry) => {
+            const source = ETHIOPIAN_MANUSCRIPT_SOURCES.find((candidate) => candidate.id === entry.sourceId);
+            return (
+              <article key={entry.id} className="rounded-2xl border border-stone-800 bg-stone-950/70 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{entry.title}</p>
+                    {entry.titleAmharic && <p className="mt-1 text-sm text-amber-300">{entry.titleAmharic}</p>}
+                  </div>
+                  <span className="shrink-0 rounded-full border border-stone-700 px-2 py-1 text-[10px] uppercase tracking-wider text-stone-400">
+                    pp. {entry.pageStart}{entry.pageEnd ? `–${entry.pageEnd}` : ""}
+                  </span>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-stone-300">{entry.summary}</p>
+                <p className="mt-3 text-[11px] leading-relaxed text-emerald-300">{entry.safeUse}</p>
+                <p className="mt-3 text-[10px] text-stone-500">{source?.titleAmharic} · {entry.reviewStatus.replaceAll("_", " ")}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
     </main>

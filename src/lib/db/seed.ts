@@ -1,3 +1,5 @@
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { pool } from "./index";
 import { EFCT_MASTER_FOODS } from "../nutrition/efctDatabase";
 
@@ -126,6 +128,8 @@ export async function runSeed() {
             contraindicated: false,
             evidenceLevel: "Pharmacological In Vivo",
             sourceRef: "ETM-SAFETY-HYP-04",
+            ethiopianContext: "Ubiquitous traditional remedy for fever, common cold, and headache consumed as hot steam inhalation or tea.",
+            recommendation: "Monitor blood pressure when using Damakesse tea; avoid sudden standing from seated or recumbent positions.",
           },
         ],
       },
@@ -145,12 +149,14 @@ export async function runSeed() {
           {
             drugClass: "Anticoagulants / Antiplatelets",
             drugNameExample: "Warfarin, Aspirin, Clopidogrel",
-            severity: "high",
-            mechanism: "Furanocoumarins cause potent platelet inhibition and potentiation of INR prolongation.",
+            severity: "critical",
+            mechanism: "Furanocoumarins and rutin exert potent antithrombotic effects while inhibiting drug clearance pathways.",
             clinicalEffect: "High risk of gastrointestinal or systemic hemorrhage.",
             contraindicated: true,
             evidenceLevel: "Clinical Case Documentation",
             sourceRef: "ETM-SAFETY-WAR-01",
+            ethiopianContext: "Tena Adam is frequently added to coffee or morning tea, creating widespread hidden interaction risks with blood thinners.",
+            recommendation: "DO NOT combine Tena Adam with prescription anticoagulants or antiplatelet drugs. Discontinue herb immediately and consult your physician.",
           },
         ],
       },
@@ -170,22 +176,26 @@ export async function runSeed() {
           {
             drugClass: "Anticoagulants / Antiplatelets",
             drugNameExample: "Warfarin, Heparin",
-            severity: "high",
-            mechanism: "Hepatotoxicity risks and mucosal irritation accelerating bleeding.",
+            severity: "critical",
+            mechanism: "Kosotoxin causes direct gastric mucosal damage and hepatic metabolic stress.",
             clinicalEffect: "Internal bleeding and hepatic stress.",
             contraindicated: true,
             evidenceLevel: "Documented Toxicological Record",
             sourceRef: "ETM-SAFETY-KOS-02",
+            ethiopianContext: "Traditional anthelmintic purging remedy; historically known for narrow therapeutic index and acute toxicity.",
+            recommendation: "ABSOLUTELY CONTRAINDICATED with anticoagulants, antiplatelets, or NSAIDs. Seek certified medical anthelmintics (Albendazole) instead.",
           },
           {
             drugClass: "Hypoglycemics",
             drugNameExample: "Metformin, Insulin",
-            severity: "high",
-            mechanism: "Severe metabolic perturbation and lactic acidosis risk.",
+            severity: "critical",
+            mechanism: "Kosotoxin-induced hepatic and gastrointestinal toxicity compounds biguanide metabolic burden, precipitating lactic acidosis risk.",
             clinicalEffect: "Unstable blood glucose and metabolic acidosis.",
             contraindicated: true,
             evidenceLevel: "Toxicological Advisory",
             sourceRef: "ETM-SAFETY-KOS-03",
+            ethiopianContext: "Traditional tapeworm purge remedy that should never be used concurrently with metabolic medications.",
+            recommendation: "STRICTLY CONTRAINDICATED. Never consume Kosso while taking diabetic medications.",
           },
         ],
       },
@@ -203,13 +213,15 @@ export async function runSeed() {
         interactions: [
           {
             drugClass: "Hypoglycemics",
-            drugNameExample: "Metformin, Glimepiride",
-            severity: "moderate",
-            mechanism: "Additive glycemic lowering effect via pancreatic beta-cell stimulation and glucose uptake.",
+            drugNameExample: "Metformin, Glimepiride, Insulin",
+            severity: "high",
+            mechanism: "Thymoquinone activates AMPK pathways and stimulates beta-cell insulin release additively with oral hypoglycemic agents.",
             clinicalEffect: "Symptomatic hypoglycemia if not closely monitored.",
             contraindicated: false,
             evidenceLevel: "Clinical Randomized Trial",
             sourceRef: "ETM-SAFETY-GLU-03",
+            ethiopianContext: "Tikur Azmud oil or seeds are widely consumed as a panacea for immune and metabolic health.",
+            recommendation: "If consuming black seed preparations, close blood glucose self-monitoring is essential. Medication doses may require physician titration.",
           },
         ],
       },
@@ -234,6 +246,35 @@ export async function runSeed() {
             contraindicated: false,
             evidenceLevel: "In Vivo Pharmacological",
             sourceRef: "ETM-SAFETY-DIU-05",
+            ethiopianContext: "Feto seeds macerated in water are a common postpartum and digestive remedy.",
+            recommendation: "Monitor electrolytes and hydration when combining Feto with diuretic medications.",
+          },
+        ],
+      },
+      {
+        nameVernacular: "Garlic (Nech Shinkurt)",
+        nameScientific: "Allium sativum",
+        nameAmharic: "ነጭ ሽንኩርት",
+        traditionalUses: "Raw cloves crushed in honey, or added to Wot stews, for respiratory infections and cardiovascular protection.",
+        primaryPartsUsed: "Bulb",
+        contraindicationsGeneral: "Concentrated medicinal extracts should be avoided before surgery or with bleeding disorders.",
+        sourceRef: "ETM-DB-GAR-08",
+        compounds: [
+          { name: "Allicin", chemicalClass: "Organosulfur compound", mechanism: "Inhibits platelet thromboxane A2 synthesis." },
+          { name: "Ajoene", chemicalClass: "Organosulfur compound", mechanism: "Synergistic platelet aggregation inhibition." },
+        ],
+        interactions: [
+          {
+            drugClass: "Anticoagulants / Antiplatelets",
+            drugNameExample: "Warfarin, Aspirin",
+            severity: "high",
+            mechanism: "Allicin and ajoene inhibit platelet aggregation synergistically with anticoagulants.",
+            clinicalEffect: "Increased bleeding time and bruising.",
+            contraindicated: true,
+            evidenceLevel: "Clinical Case Documentation",
+            sourceRef: "ETM-SAFETY-GAR-01",
+            ethiopianContext: "Raw garlic crushed in honey is commonly taken for respiratory infections and cardiovascular protection.",
+            recommendation: "Avoid medicinal or concentrated garlic extracts while on blood thinners. Normal culinary use in cooked dishes is acceptable.",
           },
         ],
       },
@@ -271,10 +312,10 @@ export async function runSeed() {
 
       for (const inter of h.interactions) {
         await client.query(
-          `INSERT INTO herb_drug_interactions 
-            (herb_id, drug_class, drug_name_example, interaction_severity, mechanism, clinical_effect, contraindicated, evidence_level, source_ref)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
-          [herbId, inter.drugClass, inter.drugNameExample, inter.severity, inter.mechanism, inter.clinicalEffect, inter.contraindicated, inter.evidenceLevel, inter.sourceRef]
+          `INSERT INTO herb_drug_interactions
+            (herb_id, drug_class, drug_name_example, interaction_severity, mechanism, clinical_effect, contraindicated, evidence_level, source_ref, ethiopian_context, recommendation)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`,
+          [herbId, inter.drugClass, inter.drugNameExample, inter.severity, inter.mechanism, inter.clinicalEffect, inter.contraindicated, inter.evidenceLevel, inter.sourceRef, inter.ethiopianContext ?? null, inter.recommendation ?? null]
         );
       }
     }
@@ -330,6 +371,7 @@ export async function runSeed() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+if (isMainModule) {
   runSeed().then(() => process.exit(0)).catch(() => process.exit(1));
 }

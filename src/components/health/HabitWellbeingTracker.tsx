@@ -44,12 +44,23 @@ function StreakBadge({ streak }: { streak: number }) {
   );
 }
 
+function getStableStreak(habitId: string, index: number): HabitStreak {
+  const seed = habitId.split("").reduce((total, character) => total + character.charCodeAt(0), index * 17);
+  return {
+    habitId,
+    currentStreak: seed % 14,
+    longestStreak: (seed * 3) % 30 + 7,
+    totalCompletions: (seed * 11) % 100 + 10,
+    weeklyConsistency: (seed * 7) % 40 + 60,
+  };
+}
+
 export default function HabitWellbeingTracker() {
   const [activeTab, setActiveTab] = useState<"habits" | "mood" | "insights">("habits");
   const [habits] = useState<HabitDefinition[]>(DEFAULT_HABITS);
   const [todayEntries, setTodayEntries] = useState<Record<string, boolean>>({});
   const [streaks] = useState<Record<string, HabitStreak>>(() =>
-    Object.fromEntries(habits.map((h) => [h.id, { habitId: h.id, currentStreak: Math.floor(Math.random() * 14), longestStreak: Math.floor(Math.random() * 30) + 7, totalCompletions: Math.floor(Math.random() * 100) + 10, weeklyConsistency: Math.floor(Math.random() * 40) + 60 }]))
+    Object.fromEntries(habits.map((habit, index) => [habit.id, getStableStreak(habit.id, index)]))
   );
   const [moodLogs, setMoodLogs] = useState<MoodEntry[]>([]);
   const [moodDraft, setMoodDraft] = useState({

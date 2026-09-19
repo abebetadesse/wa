@@ -7,6 +7,7 @@ const PUBLIC_API_PATHS = [
   "/api/safety-check",
   "/api/diagnostic/assist",
   "/api/ai/bionic/test",
+  "/api/nutrition/overview",
 ];
 
 const PUBLIC_PAGE_PATHS = [

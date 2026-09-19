@@ -16,7 +16,13 @@ export async function POST(req: NextRequest) {
     };
 
     const suggestions = suggestAlternativeNames(criteria);
-    return NextResponse.json({ success: true, count: suggestions.length, suggestions });
+    return NextResponse.json({
+      success: true,
+      count: suggestions.length,
+      bestSuggestion: suggestions[0] ?? null,
+      suggestions,
+      disclaimer: "Name scores are transparent cultural-reflection matches, not predictions, diagnoses, or measures of a person's worth.",
+    });
   } catch (err) {
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
   }

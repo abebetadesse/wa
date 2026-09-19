@@ -14,6 +14,12 @@ const RISK_CONFIG = {
   low: { fill: "fill-emerald-600/50", stroke: "stroke-emerald-400", label: "Low Risk", badge: "bg-emerald-950/60 border-emerald-500/40 text-emerald-300" },
 };
 
+const formatDiseaseRate = (measure: string, value: number) => {
+  if (measure === "prevalence_pct") return `${value}% prevalence`;
+  if (measure === "mortality_per_100k") return `${value}/100k mortality`;
+  return `${value}/100k annual incidence`;
+};
+
 // Simplified Ethiopia SVG region paths (schematic polygons, not geo-accurate)
 const REGION_PATHS: Record<string, string> = {
   tigray: "M210,50 L310,50 L330,120 L290,130 L240,125 L200,110 Z",
@@ -272,10 +278,172 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
         </div>
       </div>
 
+      {region.locationSystemsProfile && (
+        <>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Ecology and geography</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p>{region.locationSystemsProfile.ecology.ecosystem}</p>
+              <p className="text-slate-400">{region.locationSystemsProfile.ecology.geography}</p>
+              <div className="grid grid-cols-2 gap-2">
+                <span>Rain: {region.locationSystemsProfile.ecology.annualPrecipitationMm.join("–")} mm</span>
+                <span>Temperature: {region.locationSystemsProfile.ecology.temperatureRangeC.join("–")}°C</span>
+              </div>
+              <p className="text-cyan-300">Water: {region.locationSystemsProfile.ecology.riversAndWaterBodies.join(", ")}</p>
+              <p className="text-slate-400">Soils: {region.locationSystemsProfile.ecology.soilTypes.join(", ")}</p>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Agriculture and natural resources</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p><span className="text-emerald-300">Crops:</span> {region.locationSystemsProfile.agriculture.crops.join(", ")}</p>
+              <p><span className="text-amber-300">Livestock:</span> {region.locationSystemsProfile.agriculture.livestock.join(", ")}</p>
+              <p><span className="text-cyan-300">Fisheries:</span> {region.locationSystemsProfile.agriculture.fisheries.join(", ")}</p>
+              <p><span className="text-slate-400">Forest products:</span> {region.locationSystemsProfile.agriculture.forestProducts.join(", ")}</p>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Industry and food systems</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p>Urbanization: <span className="text-violet-300">{region.locationSystemsProfile.industryAndUrbanization.urbanizationLevel}</span> · Built-up area: {region.locationSystemsProfile.industryAndUrbanization.builtUpAreaPct}%</p>
+              <p><span className="text-violet-300">Industries:</span> {region.locationSystemsProfile.industryAndUrbanization.leadingIndustries.join(", ")}</p>
+              <p><span className="text-emerald-300">Fermented:</span> {region.locationSystemsProfile.foodAndNutrition.fermentedFoodsAndDrinks.join(", ")}</p>
+              <p><span className="text-amber-300">Preparation:</span> {region.locationSystemsProfile.foodAndNutrition.preparationMethods.join(", ")}</p>
+              <p><span className="text-slate-400">Preservation:</span> {region.locationSystemsProfile.foodAndNutrition.preservationMethods.join(", ")}</p>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cultural heritage and common names</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p><span className="text-amber-300">Common names:</span> {region.locationSystemsProfile.culturalAndHeritage.commonNames.join(", ")}</p>
+              <p><span className="text-emerald-300">Practices:</span> {region.locationSystemsProfile.culturalAndHeritage.culturalPractices.join(", ")}</p>
+              <p><span className="text-violet-300">Traditional medicines:</span> {region.locationSystemsProfile.culturalAndHeritage.traditionalMedicines.join(", ")}</p>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Sacred places and landscapes</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p><span className="text-slate-200">Churches/monasteries:</span> {region.locationSystemsProfile.culturalAndHeritage.churchesAndMonasteries.join(", ")}</p>
+              <p><span className="text-slate-200">Mosques:</span> {region.locationSystemsProfile.culturalAndHeritage.mosques.join(", ")}</p>
+              <p><span className="text-cyan-300">Mountains:</span> {region.locationSystemsProfile.culturalAndHeritage.mountains.join(", ")}</p>
+              <p><span className="text-cyan-300">Rivers:</span> {region.locationSystemsProfile.culturalAndHeritage.rivers.join(", ")}</p>
+              <p><span className="text-cyan-300">Lakes:</span> {region.locationSystemsProfile.culturalAndHeritage.lakes.join(", ")}</p>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Location foods and composition</div>
+            <div className="space-y-2 text-[11px] text-slate-300">
+              {region.locationSystemsProfile.foodSystem.locationFoods.map((food) => (
+                <div key={food.food} className="rounded-lg border border-white/5 bg-white/[0.03] p-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-emerald-300">{food.food}</span>
+                    <span className="text-[10px] uppercase text-slate-500">{food.foodGroup}</span>
+                  </div>
+                  <p className="mt-1 text-slate-400">{food.ingredients.join(", ")}</p>
+                  <p className="mt-1">Processing: {food.processingMethods.join(", ")}</p>
+                  <p className="mt-1 text-cyan-300">
+                    Composition source: {food.compositionSource.name} · {food.compositionSource.intendedUse.replace("_", " ")}
+                  </p>
+                  {food.proximateComposition && (
+                    <p className="mt-1 text-amber-300">
+                      Proximate: {food.proximateComposition.crudeProteinPct ?? "—"}% protein · {food.proximateComposition.crudeFiberPct ?? "—"}% fibre · {food.proximateComposition.ashPct ?? "—"}% ash ({food.proximateComposition.basis.replace("_", " ")})
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Agricultural chemical records</div>
+            <div className="space-y-1.5 text-[11px] text-slate-300">
+              <p>Pesticides: {region.locationSystemsProfile.foodSystem.pesticideUse.map((record) => record.activeIngredient).join(", ")}</p>
+              <p>Insecticides: {region.locationSystemsProfile.foodSystem.insecticideUse.map((record) => record.activeIngredient).join(", ")}</p>
+              <p className="text-rose-300">Product, residue, application-rate, and pre-harvest records require local verification.</p>
+            </div>
+          </div>
+        </>
+      )}
+
+      {region.locationHealthProfile && (
+        <>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Demographic profile</div>
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+              <span>Urban: {region.locationHealthProfile.demographics.urbanPopulationPct}%</span>
+              <span>Median age: {region.locationHealthProfile.demographics.medianAgeYears}</span>
+              <span>Under five: {region.locationHealthProfile.demographics.underFivePopulationPct}%</span>
+              <span>Household: {region.locationHealthProfile.demographics.averageHouseholdSize}</span>
+              <span>Female: {region.locationHealthProfile.demographics.anthropometrics.genderDistributionPct.female}%</span>
+              <span>Births: {region.locationHealthProfile.birthRatePer1000}/1k</span>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Anthropometric profile</div>
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+              <span>Average BMI: {region.locationHealthProfile.demographics.anthropometrics.averageBmi}</span>
+              <span>Fertility: {region.locationHealthProfile.totalFertilityRate}</span>
+              <span>Height F/M: {region.locationHealthProfile.demographics.anthropometrics.averageHeightCm.female}/{region.locationHealthProfile.demographics.anthropometrics.averageHeightCm.male} cm</span>
+              <span>Weight F/M: {region.locationHealthProfile.demographics.anthropometrics.averageWeightKg.female}/{region.locationHealthProfile.demographics.anthropometrics.averageWeightKg.male} kg</span>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Family and birth indicators</div>
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+              <span>Polygamous unions: {region.locationHealthProfile.marriageAndInheritance.polygamousUnionPct}%</span>
+              <span>Scope: married unions</span>
+            </div>
+            <div className="mt-2 space-y-1.5">
+              {region.locationHealthProfile.marriageAndInheritance.birthDefects.map((indicator) => (
+                <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-300">{indicator.condition}</span>
+                  <span className="text-violet-300">{indicator.value}/10k births</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Inherited-condition indicators</div>
+            <div className="space-y-1.5">
+              {region.locationHealthProfile.marriageAndInheritance.geneticDisorders.map((indicator) => (
+                <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-300">{indicator.condition}</span>
+                  <span className="text-cyan-300">
+                    {indicator.value}{indicator.measure === "carrier_frequency_pct" ? "%" : "/10k"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Communicable disease indicators</div>
+            <div className="space-y-1.5">
+              {region.locationHealthProfile.communicableDiseaseRates.map((rate) => (
+                <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-300">{rate.condition}</span>
+                  <span className="text-rose-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Non-communicable disease indicators</div>
+            <div className="space-y-1.5">
+              {region.locationHealthProfile.nonCommunicableDiseaseRates.map((rate) => (
+                <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-300">{rate.condition}</span>
+                  <span className="text-amber-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="pt-2 border-t border-white/10">
         <p className="text-[10px] text-slate-600">
-          Population: ~{(region.population / 1_000_000).toFixed(1)}M · Source: EPHI DHS 2019
+          Population: ~{(region.population / 1_000_000).toFixed(1)}M · Nutrition source: EPHI DHS 2019
         </p>
+        {region.locationHealthProfile && <p className="mt-1 text-[10px] text-slate-600">{region.locationHealthProfile.sourceNote}</p>}
       </div>
     </div>
   );

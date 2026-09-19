@@ -668,6 +668,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
     const findings: StrandFinding[] = [];
     const dailyTargets: Record<string, number> = { iron: 18, calcium: 1000, magnesium: 310, zinc: 8, b12: 2.4, folate: 400 };
     for (const [nutrient, target] of Object.entries(dailyTargets)) {
+      if (!(nutrient in dietLog)) continue;
       const intake = Number(dietLog[nutrient] || 0);
       if (intake >= target) continue;
       const percent = Math.round((intake / target) * 100);

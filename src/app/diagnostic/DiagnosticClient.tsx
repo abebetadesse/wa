@@ -1226,15 +1226,45 @@ export default function DiagnosticClient() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">{finding.description}</p>
-                      {finding.evidence && (
-                        <p className="text-[11px] text-slate-400 mt-2 font-mono leading-relaxed">
-                          Evidence: {finding.evidence}
-                        </p>
-                      )}
-                      {finding.ethiopian_context && (
-                        <div className="mt-2 text-[10px] text-amber-300/90 font-medium">
-                          Ethiopian Context: {Array.isArray(finding.ethiopian_context) ? finding.ethiopian_context.join(" • ") : finding.ethiopian_context}
+                      {finding.evidenceItems && finding.evidenceItems.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {finding.evidenceItems.map((item, itemIdx) => (
+                            <div key={itemIdx} className="flex gap-3 items-start p-2 rounded-lg bg-black/20 border border-white/5">
+                              <img
+                                src={item.imageUrl}
+                                alt={item.imageAlt}
+                                width={40}
+                                height={40}
+                                className="w-10 h-10 rounded-full flex-shrink-0"
+                                loading="lazy"
+                              />
+                              <div className="min-w-0">
+                                {item.caption && (
+                                  <div className="text-[10px] uppercase tracking-wide text-amber-300/80 font-semibold mb-0.5">
+                                    {item.caption}
+                                  </div>
+                                )}
+                                <p className="text-[11px] text-slate-400 font-mono leading-relaxed">{item.description}</p>
+                                {item.source && (
+                                  <p className="text-[10px] text-slate-500 mt-0.5">Source: {item.source}</p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
+                      ) : (
+                        <>
+                          {finding.evidence && (
+                            <p className="text-[11px] text-slate-400 mt-2 font-mono leading-relaxed">
+                              Evidence: {finding.evidence}
+                            </p>
+                          )}
+                          {finding.ethiopian_context && (
+                            <div className="mt-2 text-[10px] text-amber-300/90 font-medium">
+                              Ethiopian Context: {Array.isArray(finding.ethiopian_context) ? finding.ethiopian_context.join(" • ") : finding.ethiopian_context}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   ))

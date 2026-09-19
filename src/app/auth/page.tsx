@@ -113,7 +113,7 @@ function AuthPageInner() {
       if (["super_admin", "admin", "editor", "reviewer", "analyst"].includes(userRole)) {
         router.push("/admin");
       } else {
-        router.push("/case");
+        router.push("/profile/onboarding");
       }
       notifyAuthStateChanged();
       router.refresh();
@@ -201,7 +201,7 @@ function AuthPageInner() {
         throw new Error(data.error || "Verification failed");
       }
 
-      router.push("/case");
+      router.push("/profile/onboarding");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed.");

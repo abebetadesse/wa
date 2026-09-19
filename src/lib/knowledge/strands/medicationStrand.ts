@@ -1,4 +1,7 @@
 import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile } from "../types";
+import { db } from "@/lib/db";
+import { herbs as herbsTable, herbDrugInteractions as herbDrugInteractionsTable } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export interface HerbDrugInteractionRule {
   herb: string;
@@ -391,6 +394,66 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
     return [...(userProfile.medications || []), ...(userProfile.health?.medications || [])].map(String);
   }
 
+  // Database-backed herb-drug interaction rules take precedence over the static
+  // offline list above when reachable (spec: DB evidence is authoritative when
+  // available; the static list remains a fallback for offline/DB-unavailable use).
+  private static dbRuleCache: { rules: HerbDrugInteractionRule[] | null; fetchedAt: number } | null = null;
+  private static readonly DB_RULE_CACHE_TTL_MS = 10 * 60 * 1000;
+  private static readonly DB_RULE_FAILURE_CACHE_TTL_MS = 60 * 1000;
+  private static readonly DB_QUERY_TIMEOUT_MS = 1200;
+
+  private async getHerbDrugRules(): Promise<HerbDrugInteractionRule[]> {
+    const cached = MedicationKnowledgeStrand.dbRuleCache;
+    const ttl = cached?.rules ? MedicationKnowledgeStrand.DB_RULE_CACHE_TTL_MS : MedicationKnowledgeStrand.DB_RULE_FAILURE_CACHE_TTL_MS;
+    if (cached && Date.now() - cached.fetchedAt < ttl) {
+      return cached.rules || this.certifiedHerbDrugInteractions;
+    }
+    try {
+      const rows = await Promise.race([
+        db
+          .select({
+            nameVernacular: herbsTable.nameVernacular,
+            nameScientific: herbsTable.nameScientific,
+            drugClass: herbDrugInteractionsTable.drugClass,
+            drugNameExample: herbDrugInteractionsTable.drugNameExample,
+            interactionSeverity: herbDrugInteractionsTable.interactionSeverity,
+            mechanism: herbDrugInteractionsTable.mechanism,
+            clinicalEffect: herbDrugInteractionsTable.clinicalEffect,
+            ethiopianContext: herbDrugInteractionsTable.ethiopianContext,
+            recommendation: herbDrugInteractionsTable.recommendation,
+          })
+          .from(herbDrugInteractionsTable)
+          .innerJoin(herbsTable, eq(herbDrugInteractionsTable.herbId, herbsTable.id)),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("herb-drug DB lookup timed out")), MedicationKnowledgeStrand.DB_QUERY_TIMEOUT_MS),
+        ),
+      ]);
+
+      if (!rows.length) throw new Error("No herb-drug interaction rows in database");
+
+      const validSeverities = new Set(["critical", "high", "moderate", "low"]);
+      const rules: HerbDrugInteractionRule[] = rows.map((row) => ({
+        herb: row.nameVernacular,
+        scientificName: row.nameScientific,
+        drug: row.drugNameExample || row.drugClass,
+        targetDrugClass: row.drugClass,
+        interaction: row.clinicalEffect,
+        severity: validSeverities.has(row.interactionSeverity) ? (row.interactionSeverity as HerbDrugInteractionRule["severity"]) : "moderate",
+        mechanism: row.mechanism,
+        ethiopian_context: row.ethiopianContext || "",
+        recommendation: row.recommendation || `Consult a clinician or pharmacist before combining ${row.nameVernacular} with ${row.drugClass}.`,
+      }));
+
+      MedicationKnowledgeStrand.dbRuleCache = { rules, fetchedAt: Date.now() };
+      return rules;
+    } catch {
+      // Database unavailable, unseeded, or slow; use the offline safety list and
+      // cache the miss briefly so a slow/unreachable DB doesn't cost every call.
+      MedicationKnowledgeStrand.dbRuleCache = { rules: null, fetchedAt: Date.now() };
+      return this.certifiedHerbDrugInteractions;
+    }
+  }
+
   async query(query: string, userProfile: UserProfile): Promise<StrandFinding[]> {
     const results: StrandFinding[] = [];
     const normalized = this.normalizeQuery(query);
@@ -537,14 +600,18 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       });
     }
 
-    // 2. Check Herb-Drug Interactions
+    // 2. Check Herb-Drug Interactions (database-backed when reachable, offline list otherwise)
     // Also scan query text for mentioned herbs and drugs
-    for (const rule of this.certifiedHerbDrugInteractions) {
+    const herbDrugRules = await this.getHerbDrugRules();
+    for (const rule of herbDrugRules) {
       let matched = false;
+      // rule.drug lists one or more specific drug names (e.g. "Warfarin / Aspirin");
+      // match against each individually rather than the whole joined string.
+      const ruleDrugNames = rule.drug.split("/").map((d) => d.trim().toLowerCase()).filter(Boolean);
       const herbInQuery = normalized.includes(rule.herb.toLowerCase()) || normalized.includes(rule.scientificName.toLowerCase());
-      const drugInQuery = normalized.includes(rule.drug.toLowerCase()) || normalized.includes(rule.targetDrugClass.toLowerCase());
+      const drugInQuery = ruleDrugNames.some((d) => normalized.includes(d)) || normalized.includes(rule.targetDrugClass.toLowerCase());
       const herbInProfile = userHerbs.some((h) => h.toLowerCase().includes(rule.herb.toLowerCase()) || rule.herb.toLowerCase().includes(h.toLowerCase()));
-      const drugInProfile = userMeds.some((m) => m.toLowerCase().includes(rule.drug.toLowerCase()) || rule.targetDrugClass.toLowerCase().includes(m.toLowerCase()));
+      const drugInProfile = userMeds.some((m) => ruleDrugNames.some((d) => d.includes(m.toLowerCase()) || m.toLowerCase().includes(d)));
 
       if ((herbInQuery && drugInQuery) || (herbInProfile && drugInProfile) || (herbInProfile && drugInQuery) || (herbInQuery && drugInProfile)) {
         matched = true;
@@ -696,8 +763,10 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
   getAntimicrobialResistanceAdvice(query: string): string[] {
     const normalized = this.normalizeQuery(query);
     return this.antimicrobialResistanceGuidance
-      .filter((guidance) => guidance.terms.some((term) => normalized.includes(term)))
-      .map((guidance) => guidance.advice);
+      .map((guidance) => ({ guidance, matchCount: guidance.terms.filter((term) => normalized.includes(term)).length }))
+      .filter(({ matchCount }) => matchCount > 0)
+      .sort((a, b) => b.matchCount - a.matchCount)
+      .map(({ guidance }) => guidance.advice);
   }
 
   getPregnancyLactationSafety(name: string): { pregnancy: string; lactation: string } | null {

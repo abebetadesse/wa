@@ -1,32 +1,52 @@
 :root {
-  --bg-deep: #050a14;
-  --bg-primary: #071621;
-  --bg-secondary: #0d1f2d;
-  --bg-panel: rgba(16, 28, 39, 0.78);
-  --bg-elevated: rgba(19, 34, 49, 0.9);
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 160 84% 30%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 45%;
+  --accent: 160 30% 93%;
+  --accent-foreground: 160 84% 20%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 88%;
+  --input: 214 32% 84%;
+  --ring: 160 84% 30%;
+  --radius: 0.8rem;
+  --bg-deep: #070b14;
+  --bg-primary: #0a1020;
+  --bg-secondary: #11192b;
+  --bg-panel: rgba(19, 27, 46, 0.84);
+  --bg-elevated: rgba(25, 35, 58, 0.94);
   --bg-overlay: rgba(3, 8, 17, 0.72);
   --bg-surface: rgba(13, 27, 39, 0.9);
   --bg-surface-subtle: rgba(15, 31, 44, 0.72);
 
-  --brand-primary: #7dd3fc;
-  --brand-accent: #38bdf8;
-  --brand-dark: #071621;
+  --brand-primary: #6ee7b7;
+  --brand-accent: #34d399;
+  --brand-dark: #071b18;
   --brand-success: #34d399;
   --brand-warning: #fbbf24;
   --brand-danger: #f87171;
   --brand-copper: #d4a017;
 
-  --neon-cyan: #7dd3fc;
-  --neon-blue: #38bdf8;
+  --neon-cyan: #6ee7b7;
+  --neon-blue: #60a5fa;
   --neon-amber: #fbbf24;
   --neon-magenta: #f472b6;
   --neon-green: #34d399;
   --neon-red: #f87171;
 
-  --text-primary: #e6f4ff;
-  --text-secondary: #d5eaf8;
-  --text-muted: #9bb8d1;
-  --text-dim: #6d8ba0;
+  --text-primary: #f8fafc;
+  --text-secondary: #dbe4f0;
+  --text-muted: #a7b4c7;
+  --text-dim: #718096;
   --text-mono: #c3ecff;
 
   --eth-gold: #d4a017;
@@ -35,8 +55,8 @@
   --eth-geez-glow: #ffd27f;
   --lemon-300: #d7f259;
 
-  --grid-line: rgba(125, 211, 252, 0.08);
-  --grid-line-bold: rgba(125, 211, 252, 0.18);
+  --grid-line: rgba(148, 163, 184, 0.06);
+  --grid-line-bold: rgba(110, 231, 183, 0.16);
 
   --glow-cyan-sm: 0 0 8px var(--neon-cyan);
   --glow-cyan-md: 0 0 16px var(--neon-cyan), 0 0 32px rgba(125, 211, 252, 0.4);

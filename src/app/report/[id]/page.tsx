@@ -11,9 +11,9 @@ import {
   healthProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import NutrientRadarChart from "@/components/NutrientRadarChart";
-import ClinicalEncounterModal from "@/components/ClinicalEncounterModal";
-import ExportPanel from "@/components/ExportPanel";
+import NutrientRadarChart from "@/components/health/NutrientRadarChart";
+import ClinicalEncounterModal from "@/components/health/ClinicalEncounterModal";
+import ExportPanel from "@/components/health/ExportPanel";
 import AwudeHeritageContext from "@/components/cultural/AwudeHeritageContext";
 import { explainGap } from "@/lib/evaluation/explainability";
 import { GapType, Severity } from "@/lib/evaluation/types";

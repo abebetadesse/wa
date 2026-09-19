@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import {
+  ETHIOPIAN_LOCATIONS,
+  type EthiopianLocationHealthProfile,
+  type EthiopianLocationSystemsProfile,
+} from "@/lib/location/ethiopiaLocations";
 
 /**
  * GET /api/atlas
@@ -40,6 +45,9 @@ export interface RegionData {
   // Rough centroid for label placement
   labelX: number;
   labelY: number;
+  representativeLocationId?: string;
+  locationHealthProfile?: EthiopianLocationHealthProfile;
+  locationSystemsProfile?: EthiopianLocationSystemsProfile;
 }
 
 const REGIONS: RegionData[] = [
@@ -310,13 +318,37 @@ const REGIONS: RegionData[] = [
 ];
 
 export async function GET() {
+  const representativeLocations: Record<string, string> = {
+    "addis-ababa": "addis-ababa",
+    amhara: "bahir-dar",
+    oromia: "adama",
+    tigray: "mekelle",
+    sidama: "hawassa",
+    snnp: "arbaminch",
+    somali: "jigjiga",
+    afar: "semera",
+    benishangul: "assosa",
+    gambella: "gambella",
+    harari: "harar",
+    "dire-dawa": "dire-dawa",
+  };
+  const regions = REGIONS.map((region) => {
+    const location = ETHIOPIAN_LOCATIONS.find((candidate) => candidate.id === representativeLocations[region.id]);
+    return {
+      ...region,
+      representativeLocationId: location?.id,
+      locationHealthProfile: location?.healthProfile,
+      locationSystemsProfile: location?.systemsProfile,
+    };
+  });
+
   return NextResponse.json(
     {
-      regions: REGIONS,
+      regions,
       dataSource: "EPHI DHS 2019 / MiNDO Survey / WHO SEARO",
       lastUpdated: "2025-01-01",
       disclaimer:
-        "Nutritional prevalence data is population-level. Individual assessments require the full 5-stage evaluation pipeline.",
+        "Nutritional prevalence and location systems data are population-level planning references. Individual assessments require the full 5-stage evaluation pipeline; ecological and food-system fields should be locally verified.",
     },
     {
       headers: {

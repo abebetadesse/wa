@@ -1110,7 +1110,17 @@ export default function ProfileClient() {
                             <span>{item.suggestedName}</span>
                             {item.geezFidel && <span className="text-amber-400 font-serif">({item.geezFidel})</span>}
                           </div>
+                          {idx === 0 && item.score !== undefined && (
+                            <span className="inline-block mt-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-300">
+                              Best match
+                            </span>
+                          )}
                           <div className="text-xs text-amber-300 italic">&quot;{item.meaning}&quot;</div>
+                          {item.sourceTradition && (
+                            <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                              {item.sourceTradition} · Score {item.score ?? "—"}/85
+                            </div>
+                          )}
                         </div>
                         <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${HUMOR_COLORS[item.primaryElement].badge}`}>
                           {item.primaryElement}

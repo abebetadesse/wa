@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ETHIOPIAN_REGION_ALTITUDES } from "@/lib/evaluation/stage1Normalize";
+import { ETHIOPIAN_LOCATIONS, resolveEthiopianLocation } from "@/lib/location/ethiopiaLocations";
 import { useLanguage } from "@/lib/i18n/context";
 
 const SAMPLE_FOODS = [
@@ -83,11 +84,13 @@ export default function IntakePage() {
   });
 
   const handleRegionChange = (newRegion: string) => {
-    const alt = ETHIOPIAN_REGION_ALTITUDES[newRegion] ?? 2000;
+    const location = resolveEthiopianLocation(newRegion);
+    const alt = location.altitudeMeters || ETHIOPIAN_REGION_ALTITUDES[newRegion] || 2000;
     setFormData((prev) => ({
       ...prev,
       region: newRegion,
       altitudeMeters: alt,
+      cultural: { ...prev.cultural, birthLocation: location.name },
     }));
   };
 
@@ -290,9 +293,9 @@ export default function IntakePage() {
                   value={formData.region}
                   onChange={(e) => handleRegionChange(e.target.value)}
                 >
-                  {Object.keys(ETHIOPIAN_REGION_ALTITUDES).map((r) => (
-                    <option key={r} value={r}>
-                      {r} (~{ETHIOPIAN_REGION_ALTITUDES[r]}m)
+                  {ETHIOPIAN_LOCATIONS.map((location) => (
+                    <option key={location.id} value={location.name}>
+                      {location.name} · {location.region} (~{location.altitudeMeters}m)
                     </option>
                   ))}
                 </select>

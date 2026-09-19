@@ -34,4 +34,6 @@ export const herbDrugInteractions = pgTable("herb_drug_interactions", {
   contraindicated: boolean("contraindicated").default(true).notNull(), // strict contraindication flag
   evidenceLevel: varchar("evidence_level", { length: 50 }).notNull(), // "Clinical Study", "In Vivo", "In Vitro Pharmacological", "Documented Case Report"
   sourceRef: varchar("source_ref", { length: 100 }).notNull(), // e.g. "ETM-SAFETY-WAR-01"
+  ethiopianContext: text("ethiopian_context"), // Local usage pattern that creates the hidden interaction risk
+  recommendation: text("recommendation"), // Actionable clinical guidance for this specific interaction
 });

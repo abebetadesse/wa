@@ -6,6 +6,7 @@ export interface LegalQuestion {
   textAmharic?: string;
   type: "text" | "textarea" | "select" | "radio" | "multi-select" | "date";
   required: boolean;
+  placeholder?: string;
   options?: Array<{ value: string; label: string; labelAmharic?: string }>;
   aiGenerated?: boolean;
   branchingReason?: string;

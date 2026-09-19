@@ -231,6 +231,14 @@ export interface NameSuggestionResult {
   geezFidel: string;
   language: string;
   meaning: string;
+  sourceTradition?: string;
+  score?: number;
+  scoreBreakdown?: {
+    destinyMatch: number;
+    genderMatch: number;
+    languageMatch: number;
+    meaningAlignment: number;
+  };
   primaryElement: HumoralElement;
   destinyNumber: number;
   alignmentReason: string;

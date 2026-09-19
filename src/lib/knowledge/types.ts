@@ -22,6 +22,14 @@ export interface PubmedEvidence {
   source: "pubmed";
 }
 
+export interface EvidenceItem {
+  description: string;
+  imageUrl: string;
+  imageAlt: string;
+  caption?: string;
+  source?: string;
+}
+
 export interface StrandFinding {
   type: string;
   strand: KnowledgeStrandType;
@@ -47,6 +55,7 @@ export interface StrandFinding {
   details?: Record<string, unknown>;
   safetyAlerts?: string[];
   pubmedEvidence?: PubmedEvidence[];
+  evidenceItems?: EvidenceItem[];
 }
 
 export interface IntersectionFinding {
