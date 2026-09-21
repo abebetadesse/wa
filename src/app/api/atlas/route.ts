@@ -15,9 +15,6 @@ import {
  * Domain A — Clinical reference data only. No cultural/astrological fields.
  */
 
-export const dynamic = "force-static";
-export const revalidate = 86400; // 24h revalidation
-
 export interface RegionData {
   id: string;
   name: string;

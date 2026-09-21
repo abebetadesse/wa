@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import ReactECharts from "echarts-for-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   ClipboardList,
@@ -19,6 +19,11 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
+
+const ReactECharts = dynamic(() => import("echarts-for-react"), {
+  ssr: false,
+  loading: () => <div className="h-[210px] animate-pulse rounded-lg bg-white/5" />,
+});
 
 const metricCards = [
   {

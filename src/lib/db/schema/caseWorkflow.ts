@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
 import { users } from "./users";
 
 export const caseCategories = pgTable("case_categories", {

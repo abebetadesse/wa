@@ -3,8 +3,6 @@ import { convertToHabeshaTime } from "@/lib/engines/chrononutritionEngine";
 import { resolveAgroEcologicalZone } from "@/lib/engines/agroEcologicalEngine";
 import { evaluateFastingStatus } from "@/lib/engines/fastingMetabolismEngine";
 
-export const dynamic = "force-dynamic";
-
 function getDailyAlignmentScore(date: Date, fasting: ReturnType<typeof evaluateFastingStatus>) {
   const dayScore = ((date.getDate() * 7 + date.getMonth() * 11) % 21) - 10;
   const fastingAdjustment = fasting.isStrictVeganDay ? 4 : 0;

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, real, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, real, jsonb, uuid } from "../mysqlSchema";
 import type { ExtractedLiteratureData } from "@/lib/literature/types";
 
 /**

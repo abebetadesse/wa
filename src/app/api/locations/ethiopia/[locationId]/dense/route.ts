@@ -2,9 +2,6 @@ import { NextResponse } from "next/server";
 import { ETHIOPIAN_LOCATIONS } from "@/lib/location/ethiopiaLocations";
 import { LOCATION_INDICATORS, validateDenseLocationData } from "@/lib/location/denseLocationData";
 
-export const dynamic = "force-static";
-export const revalidate = 86400;
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ locationId: string }> },

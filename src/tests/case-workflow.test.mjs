@@ -50,6 +50,32 @@ test("guided workflow supports the expanded case taxonomy and interest refinemen
   assert.equal(getCase("spiritual")?.name, "Spiritual & Life Direction");
 });
 
+test("case synthesis incorporates full identity, birth data, and geographic context", () => {
+  const session = startSession("health");
+  saveAnswers(session.id, {
+    challenge: "Symptoms or a new concern",
+    fullName: "Selam Bekele",
+    motherName: "Mariam",
+    birthDate: "1992-02-14",
+    birthPlace: "Addis Ababa",
+    altitudeMeters: 2400,
+    longitude: 38.74,
+    latitude: 9.03,
+    selectedInterest: "nutrition and recovery",
+    reflectionLens: "Yes, include Domain B reflection",
+    detail: "I feel exhausted and tense, especially during rainy periods.",
+  });
+
+  const report = processSession(session.id);
+  assert.ok(report?.profileSynthesis);
+  assert.equal(report.profileSynthesis.identity.name, "Selam Bekele");
+  assert.equal(report.profileSynthesis.identity.motherName, "Mariam");
+  assert.equal(report.profileSynthesis.geography.city, "Addis Ababa");
+  assert.equal(report.profileSynthesis.geography.altitudeMeters, 2400);
+  assert.ok(report.profileSynthesis.chart.some((point) => point.key === "vitality"));
+  assert.ok(report.profileSynthesis.summary.toLowerCase().includes("selam") || report.profileSynthesis.summary.length > 0);
+});
+
 test("critical health signals gate Domain B recommendations", () => {
   const session = startSession("health");
   saveAnswers(session.id, { challenge: "Symptoms or a new concern" });

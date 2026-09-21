@@ -8,9 +8,6 @@ export const metadata: Metadata = {
     "Interactive map of nutritional status, deficiency rates, and traditional medicine usage across all Ethiopian regions, based on EPHI DHS 2019 data.",
 };
 
-export const dynamic = "force-static";
-export const revalidate = 86400;
-
 async function getAtlasData(): Promise<{ regions: RegionData[] }> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5500"}/api/atlas`, {

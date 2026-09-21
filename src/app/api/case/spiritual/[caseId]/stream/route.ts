@@ -2,8 +2,6 @@ import { NextRequest } from "next/server";
 import { getOwnedSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
 import { requireAuthenticatedUser } from "@/lib/auth";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ caseId: string }> }

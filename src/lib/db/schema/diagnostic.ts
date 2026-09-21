@@ -3,7 +3,7 @@
  * Stores health inquiries, structured AI reasoning, urgency scores,
  * prioritized solutions, and 5-stage action plans.
  */
-import { pgTable, uuid, varchar, timestamp, jsonb, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, text, integer } from "../mysqlSchema";
 import { users } from "./users";
 
 export const diagnosticSessions = pgTable("diagnostic_sessions", {

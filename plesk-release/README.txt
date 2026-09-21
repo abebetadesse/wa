@@ -1,0 +1,1 @@
+Plesk deployment: upload .next, public, package.json, package-lock.json, and this folder's environment values. Set the Node.js application startup file to the Next.js start command and run npm ci --omit=dev.

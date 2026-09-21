@@ -74,13 +74,13 @@ export default function Footer() {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-amber-300 mb-1">
               <Sparkles size={13} className="text-amber-400" />
-              ETHIOPIAN WELLNESS &amp; CULTURAL INTELLIGENCE DISPATCH
+              ETHIOPIAN WISDOM &amp; CARE DISPATCH
             </div>
             <h3 className="text-lg md:text-xl font-bold text-white">
-              Stay Informed on Fasting Seasons &amp; Herb-Drug Alerts
+              Seasonal guidance for fasting, herbs, and living safely
             </h3>
             <p className="text-xs text-stone-400 mt-1">
-              Receive quarterly clinical updates from the EFCT team, astrological calendar milestones, and medicinal plant advisories.
+              Receive updates on fasting calendars, medicinal safety, cultural rituals, and professional care insights grounded in both heritage and evidence.
             </p>
           </div>
 
@@ -121,55 +121,55 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="font-bold text-slate-100 text-base">
-                Ethiopian Wisdom &amp; Wellness
+                Ethiopian Wisdom &amp; Healing House
               </span>
             </div>
             <span className="inline-block text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">
-              Regulated-Adjacent v3.0
+              Traditional practice • evidence-based care
             </span>
             <p className="text-xs text-slate-400 leading-relaxed">
-              An enterprise platform unifying biochemical nutrient profiling from the Ethiopian Food Composition Table (EFCT 2025), traditional medicine safety data (ETM-DB), and altitude-calibrated physiological requirements.
+              A professional platform that brings together Ethiopian food knowledge, healing practice, seasonal rhythm, ritual memory, and modern biological and clinical safety for practitioners and clients.
             </p>
             <div className="flex flex-col gap-1 text-[11px] font-mono">
-              <span className="text-emerald-400 font-medium">Domain A: Scientific &amp; Safety Gate</span>
-              <span className="text-amber-400 font-medium">Domain B: Firewalled Cultural Layer</span>
+              <span className="text-emerald-400 font-medium">Domain A: Scientific &amp; safety review</span>
+              <span className="text-amber-400 font-medium">Domain B: Heritage & cultural context</span>
             </div>
           </div>
 
           {/* Col 2: Platform Navigation */}
           <div>
             <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4 font-mono">
-              Primary Pathways
+              Care pathways
             </h4>
             <ul className="space-y-2.5 text-xs">
               <li>
                 <Link href="/case/spiritual/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                  <span>Spiritual &amp; Awde Negest Intake</span>
+                  <span>Spiritual healing &amp; divination</span>
                 </Link>
               </li>
               <li>
                 <Link href="/case/health/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                  <span>Clinical &amp; health Intake</span>
+                  <span>Clinical &amp; body care</span>
                 </Link>
               </li>
               <li>
                 <Link href="/case/career/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                  <span>Career &amp; Business Timing</span>
+                  <span>Life timing &amp; work guidance</span>
                 </Link>
               </li>
               <li>
                 <Link href="/case/relationships/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-pink-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-pink-400/70 transition-colors group-hover:bg-pink-300" aria-hidden="true" />
-                  <span>Relationship &amp; Family Bonding</span>
+                  <span>Family &amp; relationship balance</span>
                 </Link>
               </li>
               <li>
                 <Link href="/case/legal/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-purple-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-purple-400/70 transition-colors group-hover:bg-purple-300" aria-hidden="true" />
-                  <span>Elder Shimglina Dispute Council</span>
+                  <span>Community wisdom &amp; conflict care</span>
                 </Link>
               </li>
             </ul>

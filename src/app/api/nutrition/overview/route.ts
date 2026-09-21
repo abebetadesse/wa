@@ -3,8 +3,6 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { foods, foodNutrients, nutrients } from "@/lib/db/schema";
 
-export const dynamic = "force-dynamic";
-
 const RADAR_NUTRIENTS = ["Protein", "Iron", "Zinc", "Calcium", "Vitamin A", "Vitamin C"] as const;
 
 /**

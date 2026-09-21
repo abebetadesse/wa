@@ -1,0 +1,10 @@
+{
+  "name": "ethio-wellness-platform",
+  "private": true,
+  "scripts": {
+    "start": "next start -p ${PORT:-3000}"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -3,7 +3,7 @@
  * Stores emergency contacts, conditions, and alert logs for each user.
  * This data is also cached in the offline knowledge base (IndexedDB).
  */
-import { pgTable, uuid, varchar, timestamp, jsonb, boolean, text } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, boolean, text } from "../mysqlSchema";
 import { users } from "./users";
 
 export const emergencyProfiles = pgTable("emergency_profiles", {

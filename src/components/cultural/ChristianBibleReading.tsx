@@ -78,7 +78,7 @@ export default function ChristianBibleReading() {
           <h2 className="mt-2 text-2xl font-bold text-white">Read a chapter in Amharic</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-300">
             Because your profile identifies a Christian tradition, you can open an Amharic chapter
-            directly from WordProject. NiniMed does not copy or host the full text.
+            directly from WordProject. This platform does not copy or host the full text.
           </p>
         </div>
         <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
@@ -131,7 +131,7 @@ export default function ChristianBibleReading() {
       </div>
       <p className="mt-4 text-[11px] leading-5 text-stone-500">
         Source and copyright notice: WordProject / International Biblical Association. This link opens
-        the original external passage; NiniMed provides only navigation and a brief attributed excerpt.
+        the original external passage; Ethiopian Wisdom Atlas provides only navigation and a brief attributed excerpt.
       </p>
     </section>
   );

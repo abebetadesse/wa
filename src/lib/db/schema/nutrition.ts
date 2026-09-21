@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, numeric, text, integer, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, numeric, text, integer, primaryKey } from "../mysqlSchema";
 
 export const foods = pgTable("foods", {
   id: uuid("id").primaryKey().defaultRandom(),

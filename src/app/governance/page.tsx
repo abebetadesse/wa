@@ -3,8 +3,6 @@ import { healthGapReports, users, healthProfiles, auditLog } from "@/lib/db/sche
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
 const MAB_COMMITTEE = [
   { name: "Dr. Yohannes Haile-Selassie, MD", role: "Chair, Clinical Hematology", affiliation: "Black Lion Hospital / AAU", status: "Signed Off" },
   { name: "Dr. Meron Tefera, PharmD, PhD", role: "Director of Clinical Pharmacology", affiliation: "Ethiopian Pharmacopeia Commission", status: "Signed Off" },

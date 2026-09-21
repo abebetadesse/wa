@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, numeric, jsonb, timestamp, boolean, text } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, numeric, jsonb, timestamp, boolean, text } from "../mysqlSchema";
 import { users } from "./users";
 import { nutrients } from "./nutrition";
 import { herbs } from "./herbs";

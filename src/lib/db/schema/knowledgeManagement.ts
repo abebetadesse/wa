@@ -1,4 +1,4 @@
-import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 
 export const knowledgeStrands = pgTable("knowledge_strands", {

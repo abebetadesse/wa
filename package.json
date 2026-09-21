@@ -9,6 +9,10 @@
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate",
+    "db:check": "drizzle-kit check",
+    "deploy:plesk": "npm run build && npm prune --omit=dev",
+    "deploy:plesk:prepare": "node scripts/prepare-plesk.mjs",
     "db:seed": "npx --no-install tsx src/lib/db/seed.ts",
     "literature:dryrun": "npx tsx src/lib/literature/test-dryrun.ts",
     "literature:sync": "npx tsx -e \"import('./src/lib/literature/literatureFetcher.ts').then(m => m.getLiteratureFetcher().triggerManual())\"",
@@ -21,10 +25,9 @@
     "echarts-for-react": "^3.0.6",
     "framer-motion": "^13.2.0",
     "lucide-react": "^0.475.0",
+    "mysql2": "^3.14.1",
     "next": "15.2.1",
     "node-cron": "^4.6.0",
-    "pg": "^8.13.3",
-    "postgres": "^3.4.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "xml2js": "^0.6.2"
@@ -32,11 +35,11 @@
   "devDependencies": {
     "@types/node": "^22.13.5",
     "@types/node-cron": "^3.0.11",
-    "@types/pg": "^8.11.11",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/xml2js": "^0.4.14",
     "drizzle-kit": "^0.30.5",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3"
   }
 }

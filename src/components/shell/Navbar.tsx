@@ -91,33 +91,33 @@ export default function Navbar() {
 
   const navigationGroups = [
     {
-      label: "Core workflow",
+      label: "Care pathways",
       links: [
         { href: "/", label: t.nav.overview },
-        { href: "/case", label: "Start a holistic case", tone: "case" },
-        { href: "/discover", label: "Explore mechanisms", tone: "discover" },
-        { href: "/integrative", label: "Integrative assessment", tone: "integrative" },
+        { href: "/case", label: "Begin a healing consultation", tone: "case" },
+        { href: "/discover", label: "Read the knowledge map", tone: "discover" },
+        { href: "/integrative", label: "Whole-person assessment", tone: "integrative" },
         { href: "/intake", label: t.nav.intake },
-        { href: "/diagnostic", label: t.nav.diagnostic || "Diagnostic Portal", tone: "diagnostic" },
-        { href: "/wellness", label: "Today's Wellness" },
-        { href: "/profile", label: "Personal Profile", tone: "profile" },
+        { href: "/diagnostic", label: t.nav.diagnostic || "Clinical review", tone: "diagnostic" },
+        { href: "/wellness", label: "Daily wellness rhythm" },
+        { href: "/profile", label: "Client profile", tone: "profile" },
       ],
     },
     {
-      label: "Explore",
+      label: "Tradition & practice",
       links: [
-        { href: "/constitution", label: "Constitution" },
-        { href: "/ecology", label: "Ecology & Soils" },
-        { href: "/fasting", label: "Fasting & Timing" },
-        { href: "/zoonotic", label: "Terroir & Safety" },
-        { href: "/cultural", label: "Astral & Heritage" },
-        { href: "/somatics", label: "Coffee Somatics" },
-        { href: "/library", label: "Library" },
-        { href: "/library/medicinal-plants", label: "Medicinal Atlas" },
+        { href: "/constitution", label: "Body constitution" },
+        { href: "/ecology", label: "Land, weather & body" },
+        { href: "/fasting", label: "Fasting & lunar rhythm" },
+        { href: "/zoonotic", label: "Land medicine & safety" },
+        { href: "/cultural", label: "Astral memory & heritage" },
+        { href: "/somatics", label: "Ceremony & somatic care" },
+        { href: "/library", label: "Sacred library" },
+        { href: "/library/medicinal-plants", label: "Medicinal atlas" },
       ],
     },
     {
-      label: "Platform",
+      label: "Platform ethics",
       links: [
         { href: "/governance", label: t.nav.governance },
         { href: "/atlas", label: t.nav.atlas },
@@ -134,20 +134,20 @@ export default function Navbar() {
       <div className="app-container site-header-inner flex items-center justify-between h-20">
         {/* Logo and Brand */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-amber-500 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-950/40">
-            <span className="text-xl">ጥ</span>
+          <div className="w-10 h-10 rounded-xl bg-[#7a3d2c] flex items-center justify-center font-bold text-white shadow-lg shadow-[#7a3d2c]/20">
+            <span className="text-xl">E</span>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-slate-100 tracking-tight group-hover:text-emerald-400 transition-colors">
-                {t.nav.brand}
+              <span className="font-bold text-lg text-slate-100 tracking-tight group-hover:text-[#d9a54e] transition-colors">
+                Ethiopian Wisdom
               </span>
-              <span className="px-2 py-0.5 text-[10px] font-semibold bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-full">
-                v3.0 Enterprise
+              <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#f3d18d] border border-[#d9a54e] text-[#3d291f] rounded-full">
+                Atlas
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
-              {t.nav.tagline}
+              Heritage-led wisdom for everyday care and living
             </p>
           </div>
         </Link>

@@ -72,7 +72,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         <LockKeyhole className="mx-auto mb-4 text-amber-400" size={30} />
         <h1 className="text-xl font-semibold text-slate-100">Sign in required</h1>
         <p className="mt-2 text-sm text-slate-400">
-          Register or sign in to use NiniMed services and keep your health workflows private.
+          Register or sign in to keep your cultural care journey, personal notes, and wellbeing workflows private.
         </p>
         <Link
           href={`/auth?next=${encodeURIComponent(`${pathname}${typeof window !== "undefined" ? window.location.search : ""}`)}`}

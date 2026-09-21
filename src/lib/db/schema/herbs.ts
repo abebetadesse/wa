@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, boolean } from "../mysqlSchema";
 
 export const herbs = pgTable("herbs", {
   id: uuid("id").primaryKey().defaultRandom(),

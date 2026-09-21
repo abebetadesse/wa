@@ -19,12 +19,12 @@ type VoiceRecognition = {
 const CASE_DRAFT_KEY = "ninimed-active-case-draft";
 
 const PHASE_LABELS: Record<Phase, string> = {
-  domain: "Choose Domain",
-  challenge: "Select Challenge",
-  specific: "Your Case",
-  report: "Review Report",
-  causes: "Refine Findings",
-  solutions: "Choose Solutions",
+  domain: "Choose care path",
+  challenge: "Select the challenge",
+  specific: "Your case story",
+  report: "Review the guidance",
+  causes: "Refine the findings",
+  solutions: "Choose practical actions",
   complete: "Complete",
 };
 
@@ -1531,6 +1531,43 @@ export default function CasePage() {
                 <div className="mt-6">
                   {renderSummaryCards()}
                 </div>
+
+                {session.profileSynthesis && (
+                  <div className="mt-6 rounded-2xl border border-amber-500/25 bg-amber-950/10 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Identity + geographic synthesis</div>
+                    <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Name</div>
+                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.name}</div>
+                      </div>
+                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Mother name</div>
+                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.motherName || "Not provided"}</div>
+                      </div>
+                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Birth data</div>
+                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.birthDate}</div>
+                      </div>
+                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Birthplace</div>
+                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.geography.city}</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 rounded-xl border border-white/8 bg-slate-950/30 p-4">
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Narrative</div>
+                      <p className="mt-2 text-sm leading-6 text-slate-200">{session.profileSynthesis.summary}</p>
+                    </div>
+                    <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                      {session.profileSynthesis.chart.map((point) => (
+                        <div key={point.key} className="rounded-xl border border-white/8 bg-black/25 p-3">
+                          <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">{point.label}</div>
+                          <div className="mt-2 text-xl font-bold text-white">{point.value}</div>
+                          <div className="mt-2 text-[11px] leading-relaxed text-slate-400">{point.description}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6 grid gap-4 lg:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-black/20 p-5">

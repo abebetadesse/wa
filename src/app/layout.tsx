@@ -1,47 +1,47 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import "../styles/globals.css";
-import "../styles/tokens.css";
-import "../styles/hud-effects.css";
 import Navbar from "../components/shell/Navbar";
 import Footer from "../components/shell/Footer";
 import ClientProviders from "../components/shell/ClientProviders";
 import PwaRegister from "../components/shell/PwaRegister";
 import AuthGate from "../components/shell/AuthGate";
 import GlobalLayers from "../components/layout/GlobalLayers";
+import "../styles/globals.css";
+import "../styles/tokens.css";
+import "../styles/hud-effects.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ethio-wellness.example"),
   title: {
-    default: "Ethiopian Wisdom & Wellness Platform | Precision Nutrition & Safety",
-    template: "%s | Ethiopian Wisdom Platform",
+    default: "Ethiopian Wisdom Atlas | Heritage, ritual memory, and evidence-aware care",
+    template: "%s | Ethiopian Wisdom Atlas",
   },
   description:
-    "Enterprise-grade health gap evaluation platform combining Ethiopian food composition data (EFCT), traditional medicine safety checks (ETM-DB), and cultural personalization.",
-  applicationName: "Ethiopian Wisdom Platform",
+    "A heritage-led Ethiopian wellbeing platform for traditional healers, astrologers, numerologists, and care professionals—blending food wisdom, ritual memory, ecological context, and rigorous evidence for everyday life.",
+  applicationName: "Ethiopian Wisdom Atlas",
   manifest: "/manifest.webmanifest",
   keywords: [
-    "Ethiopian health",
+    "Ethiopian wisdom",
     "wellness platform",
-    "nutrition safety",
     "traditional medicine",
-    "clinical intelligence",
-    "AI health analytics",
-    "cultural nutrition",
+    "cultural care",
+    "food knowledge",
+    "heritage health",
+    "Ethiopian nutrition",
   ],
-  authors: [{ name: "Ethiopian Wisdom Platform" }],
+  authors: [{ name: "Ethiopian Wisdom Atlas" }],
   openGraph: {
-    title: "Ethiopian Wisdom & Wellness Platform",
-    description: "Enterprise-grade health gap evaluation platform for nutrition, safety, and culturally-aware wellness planning.",
+    title: "Ethiopian Wisdom Atlas",
+    description: "Living cultural and traditional knowledge for wellbeing, safety, and context-aware guidance.",
     url: "https://www.ethio-wellness.example",
-    siteName: "Ethiopian Wisdom Platform",
+    siteName: "Ethiopian Wisdom Atlas",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ethiopian Wisdom & Wellness Platform",
-    description: "Precision nutrition, safety intelligence, and personalized wellness pathways grounded in evidence and tradition.",
+    title: "Ethiopian Wisdom Atlas",
+    description: "Cultural knowledge, practical care, and grounded wellbeing guidance.",
   },
   alternates: {
     canonical: "/",

@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, jsonb, date, integer, boolean, text } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, date, integer, boolean, text } from "../mysqlSchema";
 
 /**
  * Enterprise Roles table defining granular RBAC privileges.

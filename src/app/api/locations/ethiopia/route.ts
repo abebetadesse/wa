@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { getEthiopianLocationOptions } from "@/lib/location/ethiopiaLocations";
 
-export const dynamic = "force-static";
-export const revalidate = 86400;
-
 export function GET() {
   return NextResponse.json({
     success: true,

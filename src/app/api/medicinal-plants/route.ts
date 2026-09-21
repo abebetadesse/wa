@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ETHIOPIAN_MEDICINAL_PLANTS, filterMedicinalPlants, type MedicinalPlant, type PubMedEvidence } from "@/lib/knowledge/ethiopianMedicinalPlants";
 import { PubMedSource } from "@/lib/literature/sources/pubmedSource";
 
-export const dynamic = "force-dynamic";
-
 function deriveModeOfActionFromEvidence(text: string): string {
   const lower = text.toLowerCase();
   if (/anti.*inflamm|inflammatory|cyclooxygenase|cox/.test(lower)) return "Anti-inflammatory / mediator modulation";
