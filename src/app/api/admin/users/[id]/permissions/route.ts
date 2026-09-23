@@ -1,37 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { requireAnyRole, getUserPermissions } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { defineRoute } from "@/lib/api/route";
+import { ADMIN_ROLES } from "@/server/admin/userPolicy";
+import { getUserPermissionSet } from "@/server/admin/users";
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await requireAnyRole(["admin", "super_admin"]);
-    const { id: userId } = await params;
-
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    if (!user) {
-      return NextResponse.json({ success: false, error: "User not found." }, { status: 404 });
-    }
-
-    const permissions = await getUserPermissions(user.id, user.role);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        userId: user.id,
-        role: user.role,
-        permissions,
-      },
-    });
-  } catch (error) {
-    console.error("Admin user permissions error:", error);
-    return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : "Failed to load permissions." },
-      { status: 500 }
-    );
-  }
-}
+export const GET = defineRoute({
+  access: { roles: ADMIN_ROLES },
+  params: z.object({ id: z.string().min(1) }),
+  handler: ({ params }) => getUserPermissionSet(params.id),
+});

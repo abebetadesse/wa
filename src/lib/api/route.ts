@@ -5,9 +5,13 @@
  *   export const POST = defineRoute({
  *     access: { roles: ["admin", "super_admin"] },
  *     body: z.object({ name: z.string().min(1) }),
- *     audit: { action: "role_created", resourceType: "role" },
  *     handler: async ({ body, user }) => createRole(body, user),
+ *     audit: { action: "role_created", resourceType: "role", resourceId: (_ctx, role) => role.id },
  *   });
+ *
+ * Declare `handler` before `audit` so the audit callback sees the handler's result type.
+ * Validate dynamic segments with `params: z.object({ id: z.string() })`. A handler may return a
+ * `Response` (files, streams) to bypass the JSON envelope.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError, type ZodType, type ZodTypeDef } from "zod";
@@ -23,7 +27,7 @@ export type RouteAccess =
   | { permission: string };
 
 type Schema<T> = ZodType<T, ZodTypeDef, unknown>;
-type Params = Record<string, string | string[]>;
+type Params = Record<string, string | string[] | undefined>;
 
 export class ApiError extends Error {
   constructor(
@@ -54,13 +58,16 @@ export interface RouteContext<A extends RouteAccess, B, Q, P extends Params> {
 
 export interface RouteDefinition<A extends RouteAccess, B, Q, P extends Params, R> {
   access: A;
+  /** Validates dynamic route segments, e.g. `z.object({ id: z.string().uuid() })`. */
+  params?: Schema<P>;
   body?: Schema<B>;
   query?: Schema<Q>;
   /** Written after a successful handler run. `resourceId` may be derived from the result. */
   audit?: {
-    action: string;
+    action: string | ((ctx: RouteContext<A, B, Q, P>, result: NoInfer<R>) => string);
     resourceType: string;
-    resourceId?: (ctx: RouteContext<A, B, Q, P>, result: R) => string | undefined;
+    resourceId?: (ctx: RouteContext<A, B, Q, P>, result: NoInfer<R>) => string | undefined;
+    details?: (ctx: RouteContext<A, B, Q, P>, result: NoInfer<R>) => Record<string, unknown>;
   };
   status?: number;
   handler: (ctx: RouteContext<A, B, Q, P>) => Promise<R> | R;
@@ -130,10 +137,11 @@ export function errorResponse(error: unknown): NextResponse {
 export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined, P extends Params = Params, R = unknown>(
   def: RouteDefinition<A, B, Q, P, R>,
 ) {
-  return async (req: NextRequest, segment?: { params?: Promise<P> }): Promise<Response> => {
+  return async (req: NextRequest, segment: { params: Promise<Params> }): Promise<Response> => {
     try {
       const user = checkAccess(def.access, await getAuthenticatedUser());
-      const params = ((await segment?.params) ?? {}) as P;
+      const rawParams = (await segment?.params) ?? {};
+      const params = (def.params ? def.params.parse(rawParams) : rawParams) as P;
       const body = (def.body ? await readBody(req, def.body) : undefined) as B;
       const query = (def.query ? readQuery(req, def.query) : undefined) as Q;
       const ctx = { req, params, body, query, user: user as UserFor<A> };
@@ -141,12 +149,16 @@ export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined,
       const result = await def.handler(ctx);
 
       if (def.audit) {
+        const { action, resourceType, resourceId, details } = def.audit;
         await logAuditEvent({
           userId: user?.originalUser?.id ?? user?.id ?? null,
-          action: def.audit.action,
-          resourceType: def.audit.resourceType,
-          resourceId: def.audit.resourceId?.(ctx, result),
-          details: user?.isImpersonating ? { impersonatedUserId: user.id } : undefined,
+          action: typeof action === "function" ? action(ctx, result) : action,
+          resourceType,
+          resourceId: resourceId?.(ctx, result),
+          details: {
+            ...details?.(ctx, result),
+            ...(user?.isImpersonating ? { impersonatedUserId: user.id } : {}),
+          },
           ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
           userAgent: req.headers.get("user-agent"),
         });

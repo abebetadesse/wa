@@ -154,7 +154,13 @@ export default function UserManagementPage() {
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to create user");
 
       setShowAddModal(false);
-      setNotification({ type: "success", text: `User ${newEmail} created successfully.` });
+      const tempPassword: string | undefined = data.data.temporaryPassword;
+      setNotification({
+        type: "success",
+        text: tempPassword
+          ? `User ${newEmail} created. Temporary password (share securely): ${tempPassword}`
+          : `User ${newEmail} created successfully.`,
+      });
       // Reset form
       setNewEmail("");
       setNewName("");
@@ -225,7 +231,7 @@ export default function UserManagementPage() {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Reset failed");
 
-      setTempPasswordResult(data.temporaryPassword);
+      setTempPasswordResult(data.data.temporaryPassword);
       setNotification({ type: "success", text: "Password reset complete." });
     } catch (err) {
       setNotification({ type: "error", text: err instanceof Error ? err.message : "Error resetting password." });
