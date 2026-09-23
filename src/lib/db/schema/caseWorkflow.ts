@@ -60,3 +60,25 @@ export const caseSolutions = pgTable("case_solutions", {
   basedOnCauses: jsonb("based_on_causes").default([]).notNull(),
   knowledgeReferences: jsonb("knowledge_references").default([]).notNull(),
 });
+
+/**
+ * Expert-reviewed case workflows (career, legal, relationship, social, spiritual).
+ * One row per case; structured sub-records are JSON (see src/server/cases/types.ts).
+ */
+export const workflowCases = pgTable("workflow_cases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  domain: varchar("domain", { length: 30 }).notNull(),
+  stage: varchar("stage", { length: 40 }).notNull(),
+  reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+  safetyAnswers: jsonb("safety_answers").default({}).notNull(),
+  safety: jsonb("safety").notNull(),
+  answers: jsonb("answers").default({}).notNull(),
+  context: jsonb("context").default({}).notNull(),
+  draft: jsonb("draft"),
+  review: jsonb("review"),
+  payment: jsonb("payment"),
+  consultation: jsonb("consultation"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

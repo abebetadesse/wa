@@ -35,6 +35,12 @@ export const users = pgTable("users", {
     yearsExperience?: number;
     verifiedAt?: string;
     verificationMethod?: string;
+    /** Title shown to case owners, e.g. "Debtera", "Career advisor". */
+    title?: string;
+    bio?: string;
+    /** Case workflow domains this practitioner may review (see src/server/cases/types.ts). */
+    domains?: string[];
+    languages?: string[];
   }>(),
   preferences: jsonb("preferences").$type<{
     attunementReminders?: boolean;

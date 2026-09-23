@@ -531,7 +531,7 @@ export interface CaseReportAiAnalysis {
   sectorInsights: string;
 }
 
-function fallbackCaseAiAnalysis(caseType: "career" | "spiritual", input: Record<string, any>): CaseReportAiAnalysis {
+function fallbackCaseAiAnalysis(caseType: string, input: Record<string, any>): CaseReportAiAnalysis {
   const base: CaseReportAiAnalysis = {
     situationSummary: `The ${caseType} case has entered an analysis and reporting workflow with a structured evidence trail and a review gate.`,
     strengths: ["Values-based orientation", "Culturally grounded assessment", "Safety-aware reporting"],
@@ -573,7 +573,7 @@ function fallbackCaseAiAnalysis(caseType: "career" | "spiritual", input: Record<
 }
 
 export async function synthesizeCaseReportAnalysis(
-  caseType: "career" | "spiritual",
+  caseType: string,
   input: Record<string, any>
 ): Promise<CaseReportAiAnalysis> {
   const fallback = fallbackCaseAiAnalysis(caseType, input);
