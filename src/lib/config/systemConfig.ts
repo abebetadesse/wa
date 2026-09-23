@@ -58,7 +58,7 @@ const DEFAULT_CONFIG: SystemConfig = {
   },
   platform: {
     name: "Ethiopian Wisdom & Wellness Platform",
-    organization: "Ministry of health & Traditional Medicine Advisory Board",
+    organization: "Ethiopian Wisdom Platform",
     supportEmail: "compliance@ethio-wellness.example",
     version: "v3.0 Enterprise Control Plane",
     environment: process.env.NODE_ENV || "development",

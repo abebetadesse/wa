@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to toggle maintenance mode.");
       setShowMaintenanceModal(false);
-      showToast(data.message);
+      showToast(data.data?.message);
       void fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Action failed.");
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to update announcement.");
       setShowAnnouncementModal(false);
-      showToast(data.message);
+      showToast(data.data?.message);
       void fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Action failed.");
@@ -236,7 +236,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to trigger sync.");
-      showToast(data.message);
+      showToast(data.data?.message);
       void fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sync trigger failed.");
@@ -254,7 +254,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to toggle emergency lock.");
-      showToast(data.message);
+      showToast(data.data?.message);
       void fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Emergency action failed.");
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to revalidate cache.");
-      showToast(data.message);
+      showToast(data.data?.message);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cache revalidation failed.");
     }
