@@ -1,80 +1,148 @@
+/*
+ * Design tokens — the single source of colour, type, radius and motion.
+ * Luminous Blue for the platform (Domain A), warm gold for cultural and reflective content (Domain B).
+ * Themes: light (default), dark (html.dark) and high contrast (html.dark.contrast-mode).
+ */
+
 :root {
-  --background: 28 38% 95%;
-  --foreground: 28 42% 18%;
-  --card: 35 50% 98%;
-  --card-foreground: 28 42% 18%;
-  --popover: 35 50% 98%;
-  --popover-foreground: 28 42% 18%;
-  --primary: 14 48% 34%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 38 45% 90%;
-  --secondary-foreground: 27 35% 20%;
-  --muted: 33 30% 94%;
-  --muted-foreground: 28 20% 38%;
-  --accent: 57 57% 46%;
-  --accent-foreground: 30 40% 18%;
-  --destructive: 0 62% 40%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 38 20% 74%;
-  --input: 38 18% 80%;
-  --ring: 28 52% 34%;
-  --radius: 0.8rem;
-  --bg-deep: #f7f0e4;
-  --bg-primary: #f7f0e4;
-  --bg-secondary: #efe0c7;
-  --bg-panel: rgba(53, 35, 22, 0.82);
-  --bg-elevated: rgba(76, 49, 32, 0.9);
-  --bg-overlay: rgba(29, 22, 18, 0.78);
-  --bg-surface: rgba(54, 36, 24, 0.9);
-  --bg-surface-subtle: rgba(72, 51, 34, 0.72);
+  --bg-primary: #f5faff;
+  --bg-secondary: #eaf4fb;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(7, 48, 78, 0.36);
 
-  --brand-primary: #7a3d2c;
-  --brand-accent: #1f6c4d;
-  --brand-dark: #3d291f;
-  --brand-success: #2d7f5a;
-  --brand-warning: #c58d2d;
-  --brand-danger: #a83c2f;
-  --brand-copper: #d9a54e;
+  --border-subtle: rgba(7, 89, 133, 0.14);
+  --border-strong: rgba(2, 132, 199, 0.32);
+  --border-gold: rgba(229, 169, 60, 0.42);
 
-  --neon-cyan: #8bd1b7;
-  --neon-blue: #b7d7a8;
-  --neon-amber: #dfb65e;
-  --neon-magenta: #d88d7f;
-  --neon-green: #4a8d67;
-  --neon-red: #b55746;
+  --brand-primary: #075985;
+  --brand-accent: #0284c7;
+  --brand-dark: #12304a;
+  --brand-contrast: #ffffff;
 
-  --text-primary: #2a211d;
-  --text-secondary: #4d3d34;
-  --text-muted: #735f52;
-  --text-dim: #8f7a6a;
-  --text-mono: #f7efe6;
+  --cultural-gold: #a86e12;
+  --cultural-gold-soft: rgba(229, 169, 60, 0.16);
 
-  --eth-gold: #d8a746;
-  --eth-red: #9b3033;
-  --eth-green: #2d7f5a;
-  --eth-geez-glow: #f1c86d;
-  --lemon-300: #d6d79c;
+  --status-success: #047857;
+  --status-warning: #b45309;
+  --status-danger: #be123c;
+  --status-info: #0369a1;
 
-  --grid-line: rgba(75, 58, 45, 0.07);
-  --grid-line-bold: rgba(122, 61, 44, 0.12);
+  --text-primary: #16324f;
+  --text-secondary: #334e68;
+  --text-muted: #58738a;
+  --text-dim: #7890a3;
 
-  --glow-cyan-sm: 0 0 8px rgba(122, 61, 44, 0.18);
-  --glow-cyan-md: 0 0 16px rgba(122, 61, 44, 0.18), 0 0 32px rgba(31, 108, 77, 0.16);
-  --glow-cyan-lg: 0 0 24px rgba(122, 61, 44, 0.18), 0 0 60px rgba(31, 108, 77, 0.18);
+  /* Inverse surfaces stay dark with light text in every theme (feature panels, footers). */
+  --surface-inverse: #12304a;
+  --surface-inverse-strong: #075985;
+  --text-inverse: #f8fafc;
+  --text-inverse-muted: #cbd5e1;
 
-  --ease-hud: cubic-bezier(0.4, 0, 0.2, 1);
-  --dur-fast: 180ms;
-  --dur-med: 320ms;
-  --dur-slow: 560ms;
-  --clip-hud: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  --shadow-panel: 0 18px 45px rgba(7, 48, 78, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(2, 132, 199, 0.25);
+  --focus-ring: var(--brand-accent);
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --motion-standard: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
 }
 
+html.dark {
+  --bg-primary: #06131f;
+  --bg-secondary: #0d2233;
+  --bg-card: rgba(13, 34, 51, 0.88);
+  --bg-card-hover: #12304a;
+  --bg-elevated: #12304a;
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+
+  --border-subtle: rgba(125, 211, 252, 0.16);
+  --border-strong: rgba(125, 211, 252, 0.32);
+  --border-gold: rgba(244, 199, 107, 0.4);
+
+  --brand-primary: #7dd3fc;
+  --brand-accent: #38bdf8;
+  --brand-dark: #071521;
+  --brand-contrast: #06131f;
+
+  --cultural-gold: #f4c76b;
+  --cultural-gold-soft: rgba(244, 199, 107, 0.14);
+
+  --status-success: #34d399;
+  --status-warning: #fbbf24;
+  --status-danger: #fb7185;
+  --status-info: #7dd3fc;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --surface-inverse: #0d2233;
+  --surface-inverse-strong: #12304a;
+
+  --shadow-panel: 0 18px 45px rgba(0, 0, 0, 0.35);
+  --shadow-focus: 0 0 0 3px rgba(125, 211, 252, 0.3);
+  --focus-ring: #7dd3fc;
+  color-scheme: dark;
+}
+
+html.dark.contrast-mode {
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-card: #000000;
+  --bg-card-hover: #0a0a0a;
+  --bg-elevated: #000000;
+  --border-subtle: #7dd3fc;
+  --border-strong: #ffffff;
+  --brand-primary: #fcd34d;
+  --brand-accent: #7dd3fc;
+  --cultural-gold: #fcd34d;
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --text-muted: #f1f5f9;
+  --text-dim: #e2e8f0;
+  --focus-ring: #fcd34d;
+}
+
+/* Semantic colours for Tailwind utilities (bg-primary, text-muted-foreground, ring-ring …). */
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-card);
+  --color-card-foreground: var(--text-primary);
+  --color-primary: var(--brand-accent);
+  --color-primary-foreground: var(--brand-contrast);
+  --color-secondary: var(--bg-secondary);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg-secondary);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--bg-secondary);
+  --color-accent-foreground: var(--brand-primary);
+  --color-destructive: var(--status-danger);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border-subtle);
+  --color-input: var(--border-strong);
+  --color-ring: var(--focus-ring);
+  --color-brand: var(--brand-accent);
+  --color-brand-strong: var(--brand-primary);
+  --color-gold: var(--cultural-gold);
+  --color-inverse: var(--surface-inverse);
+  --color-inverse-foreground: var(--text-inverse);
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-danger: var(--status-danger);
+}
+
+/* Type and shape. Emitted on :root, so var(--font-sans) / var(--radius-lg) work in plain CSS too. */
+@theme {
+  --font-sans: "DM Sans", "Segoe UI", sans-serif;
+  --font-display: "Manrope", "DM Sans", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-geez: "Noto Sans Ethiopic", "Abyssinica SIL", "Nyala", "DM Sans", sans-serif;
+
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+}

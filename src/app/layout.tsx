@@ -7,7 +7,6 @@ import PwaRegister from "../components/shell/PwaRegister";
 import AuthGate from "../components/shell/AuthGate";
 import GlobalLayers from "../components/layout/GlobalLayers";
 import "../styles/globals.css";
-import "../styles/tokens.css";
 import "../styles/hud-effects.css";
 
 export const metadata: Metadata = {
