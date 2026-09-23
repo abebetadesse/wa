@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { authSessions, users, roles } from "@/lib/db/schema";
 import { eq, and, isNull, gt, desc } from "drizzle-orm";
+import { getAuthSecret } from "./auth/secret";
 import { DEFAULT_ROLE_PERMISSIONS, roleHasPermission, RoleName } from "./db/schema/rbac";
 
 const ACCESS_COOKIE = "ethio_access";
@@ -14,10 +15,7 @@ const REFRESH_TTL_DAYS_STANDARD = 7;
 const REFRESH_TTL_DAYS_REMEMBER = 30;
 
 function authSecret(): string {
-  if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
-    throw new Error("AUTH_SECRET must be configured in production.");
-  }
-  return process.env.AUTH_SECRET || "ethiopian-holistic-wellbeing-development-secret-key-2026";
+  return getAuthSecret();
 }
 
 function encode(value: string) {

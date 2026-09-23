@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthSecret } from "@/lib/auth/secret";
 
 const PUBLIC_API_PATHS = [
   "/api/auth/",
@@ -49,7 +50,7 @@ async function hasValidAccessToken(token: string | undefined) {
   if (!encodedPayload || !encodedSignature) return false;
 
   try {
-    const secret = process.env.AUTH_SECRET || "ethiopian-holistic-wellbeing-development-secret-key-2026";
+    const secret = getAuthSecret();
     const key = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(secret),
