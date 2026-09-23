@@ -1229,7 +1229,7 @@ export default function CasePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="rounded-xl border border-white/8 bg-black/30 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">wellbeing Context</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Wellbeing Context</div>
                         <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-300">
                           <div>
                             <span className="block text-slate-500">Name</span>

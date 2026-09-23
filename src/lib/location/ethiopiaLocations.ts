@@ -219,7 +219,7 @@ const profile = (
   return {
     dataLabel: "indicative_planning_estimate" as const,
     referenceYear: 2024,
-    sourceNote: "Indicative planning estimate assembled from public Ethiopian population-wellbeing patterns; anthropometric, birth-defect, polygamy, and inherited-condition indicators are modeled town averages, not a patient diagnosis or official surveillance rate.",
+    sourceNote: "Indicative planning estimate assembled from public Ethiopian population-health patterns; anthropometric, birth-defect, polygamy, and inherited-condition indicators are modeled town averages, not a patient diagnosis or official surveillance rate.",
     demographics: {
       estimatedPopulation,
       urbanPopulationPct,
@@ -436,7 +436,7 @@ const buildSystemsProfile = (
       ingredients: [base.crops[0], "Water", "Salt where used"],
       processingMethods: ["Cleaning", "Milling", "Cooking or fermentation according to local recipe"],
       preservationMethods: ["Dry grain storage", "Sun-drying", "Hermetic or sealed storage where available"],
-      compositionSource: { name: "EFCT", reference: "Use matching EFCT food record before scientific calculations.", intendedUse: "human_food" },
+      compositionSource: { name: "EFCT", reference: "Use matching EFCT food record before clinical calculations.", intendedUse: "human_food" },
     },
     {
       food: base.livestock[0],
@@ -559,7 +559,7 @@ export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.
       observationId: `${location.id}-${rate.condition.toLowerCase().replaceAll(" ", "-")}-${location.wellbeingProfile.referenceYear}-${index + 1}`,
       locationId: location.id,
       spatialId: `urn:loc:et:${location.id}`,
-      indicatorCode: `wellbeing.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
+      indicatorCode: `health.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
       value: rate.value,
       unit: rate.measure === "prevalence_pct" ? "pct" : rate.measure === "mortality_per_100k" ? "per_100k" : "per_100k",
       method: "estimate",

@@ -101,9 +101,9 @@ const culturalV3Seed: KnowledgeDocument = {
     },
     {
       id: "cultural_identity_mental_wellbeing",
-      name: "Cultural Identity & Mental wellbeing",
-      description: "Identity, community belonging, resilience, and culturally adapted mental wellbeing support",
-      use_cases: ["Mental wellbeing counseling", "Identity-based support", "Community resilience"],
+      name: "Cultural Identity & Mental Health",
+      description: "Identity, community belonging, resilience, and culturally adapted mental health support",
+      use_cases: ["Mental Health counseling", "Identity-based support", "Community resilience"],
       data: [
         { name: "Identity and wellbeing", description: "Ethnic, religious, linguistic, family, and community belonging can provide resilience while transitions and stigma can create stress.", components: ["Ethnic identity", "Religious identity", "Community belonging", "Language preservation"], supports: ["Community groups", "Faith communities", "Traditional elders", "Culturally adapted counseling"] }
       ]
@@ -137,7 +137,7 @@ const culturalV3Seed: KnowledgeDocument = {
     },
     {
       id: "cultural_wellbeing_beliefs",
-      name: "Cultural wellbeing Beliefs",
+      name: "Cultural Wellbeing Beliefs",
       description: "Traditional beliefs about wellbeing, illness, hot-cold balance, and wellbeing-seeking behavior",
       use_cases: ["Cultural competence", "wellbeing communication", "Trust building"],
       data: [
@@ -146,7 +146,7 @@ const culturalV3Seed: KnowledgeDocument = {
     },
     {
       id: "cultural_wellbeing_integration",
-      name: "Cultural wellbeing Integration",
+      name: "Cultural Wellbeing Integration",
       description: "Referral, collaboration, and culturally competent integration with modern medicine",
       use_cases: ["wellbeing policy", "healthcare delivery", "Community wellbeing programs"],
       data: [

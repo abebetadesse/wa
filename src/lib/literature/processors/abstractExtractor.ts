@@ -274,7 +274,7 @@ export function extractStructuredData(
     if (washMatch) { data.wash_access = `${washMatch[1]}%`; hits++; }
 
     // CBHI
-    const cbhiMatch = raw.match(/(?:CBHI|community.based health insurance)[^.]{0,50}?(\d+\.?\d*)\s*%/i);
+    const cbhiMatch = raw.match(/(?:CBHI|community.based wellbeing insurance)[^.]{0,50}?(\d+\.?\d*)\s*%/i);
     if (cbhiMatch) { data.cbhi_enrollment = `${cbhiMatch[1]}%`; hits++; }
   }
 

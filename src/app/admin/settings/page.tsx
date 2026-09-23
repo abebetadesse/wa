@@ -341,7 +341,7 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      {/* SECTION 2: DebrAL & SAFETY GATES */}
+      {/* SECTION 2: SCIENTIFIC & SAFETY GATES */}
       {activeSection === "safety" && (
         <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
           <div>

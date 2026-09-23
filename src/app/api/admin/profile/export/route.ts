@@ -1,14 +1,9 @@
-import { NextResponse } from "next/server";
-import { asc } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { profileFieldDefinitions } from "@/lib/db/schema";
-import { requireKnowledgeRole } from "@/lib/adminKnowledge";
+import { defineRoute } from "@/lib/api/route";
+import { fileResponse } from "@/lib/api/upload";
+import { exportFields } from "@/server/profile/fieldAdmin";
 
-export async function GET() {
-  const auth = await requireKnowledgeRole(["admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const fields = await db.select().from(profileFieldDefinitions).orderBy(asc(profileFieldDefinitions.displayOrder));
-  return new NextResponse(JSON.stringify({ fields, exportedAt: new Date().toISOString() }, null, 2), {
-    headers: { "Content-Type": "application/json", "Content-Disposition": "attachment; filename=profile-fields.json" },
-  });
-}
+export const GET = defineRoute({
+  access: { roles: ["admin", "super_admin"] },
+  handler: async () =>
+    fileResponse(JSON.stringify(await exportFields(), null, 2), { type: "application/json", filename: "profile-fields.json" }),
+});

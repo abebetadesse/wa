@@ -69,7 +69,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         "Ethiopian populations harbor among the highest global frequencies of CYP2D6 gene duplication, necessitating cautious pharmacotherapy dosing",
       ],
       recommendations: [
-        "Exercise extreme scientific caution with prodrug analgesics like codeine or tramadol",
+        "Exercise extreme clinical caution with prodrug analgesics like codeine or tramadol",
         "Consider pharmacogenomic testing or therapeutic drug monitoring for psychiatric and cardiac medications",
       ],
     },
@@ -141,7 +141,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_components: ["Antibodies", "Memory B cells", "T cells"],
       conditions: ["Vaccine-preventable infections", "Malnutrition", "Immunosuppression"],
       ethiopian_context: ["Access and timing of routine vaccination vary by region"],
-      recommendations: ["Use local immunization services and seek scientific advice for immunocompromising conditions"],
+      recommendations: ["Use local immunization services and seek clinical advice for immunocompromising conditions"],
     },
   };
 
@@ -151,7 +151,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_components: ["DHA/EPA", "Iron", "B12", "Iodine", "Zinc"],
       conditions: ["Cognitive decline", "Brain fog", "Learning difficulty"],
       ethiopian_context: ["Lake fish, niger seed, iodized salt, and iron-rich foods are relevant local contexts"],
-      recommendations: ["Protect sleep, maintain social and physical activity, and review persistent cognitive change scientificly"],
+      recommendations: ["Protect sleep, maintain social and physical activity, and review persistent cognitive change clinically"],
     },
     sleep_neuroscience: {
       description: "Circadian rhythms and sleep regulation integrate melatonin, adenosine, GABA, and light exposure",
@@ -168,7 +168,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_processes: ["Electron transport", "ATP synthesis", "Mitochondrial biogenesis", "Fission and fusion"],
       conditions: ["Chronic fatigue", "Diabetes", "Heart failure", "Aging"],
       ethiopian_context: ["High-altitude adaptation may involve altered oxygen delivery and mitochondrial demand"],
-      recommendations: ["Use gradual activity, adequate food, and scientific assessment for persistent or severe fatigue"],
+      recommendations: ["Use gradual activity, adequate food, and clinical assessment for persistent or severe fatigue"],
     },
     oxidative_stress: {
       description: "Reactive oxygen species are balanced by cellular antioxidant and repair systems",
@@ -184,7 +184,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Heart and vascular function influenced by blood pressure, salt, activity, lipids, and body composition",
       conditions: ["Hypertension", "Stroke", "Atherosclerosis", "Heart failure"],
       ethiopian_context: ["Urbanization is associated with changing activity and dietary patterns"],
-      recommendations: ["Reduce excess salt, stay active, and obtain scientific review for chest pain or persistent high blood pressure"],
+      recommendations: ["Reduce excess salt, stay active, and obtain clinical review for chest pain or persistent high blood pressure"],
     },
     respiratory_physiology: {
       description: "Lung function and gas exchange are affected by air quality, infection, smoking, and altitude",
@@ -199,10 +199,10 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       recommendations: ["Hydrate appropriately and avoid nephrotoxic herbs or medicines without professional guidance"],
     },
     reproductive_physiology: {
-      description: "Reproductive wellbeing includes menstrual, pregnancy, fertility, menopausal, and androgen physiology",
+      description: "Reproductive health includes menstrual, pregnancy, fertility, menopausal, and androgen physiology",
       conditions: ["Menstrual disorders", "PCOS", "Infertility", "Pregnancy", "Menopause"],
       ethiopian_context: ["Early antenatal care and culturally respectful family-planning support are important"],
-      recommendations: ["Discuss preconception folate, iron, B12, and persistent reproductive symptoms with a qualified practitioner"],
+      recommendations: ["Discuss preconception folate, iron, B12, and persistent reproductive symptoms with a qualified clinician"],
     },
   };
 
@@ -226,7 +226,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Airborne Mycobacterium tuberculosis transmission is affected by ventilation, crowding, nutrition, and treatment continuity",
       diseases: ["Tuberculosis"],
       practices: ["Ventilation", "Prompt testing", "Treatment completion"],
-      recommendations: ["Persistent cough, night sweats, or unexplained weight loss needs scientific evaluation"],
+      recommendations: ["Persistent cough, night sweats, or unexplained weight loss needs clinical evaluation"],
     },
   };
 
@@ -445,7 +445,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         matches,
         recommendations: item.recommendations || [],
         management: item.recommendations || [],
-        sources: ["Molecular Biology of the Cell", "Guyton and Hall Textbook of Medical Physiology", "EPHI wellbeing guidance"],
+        sources: ["Molecular Biology of the Cell", "Guyton and Hall Textbook of Medical Physiology", "EPHI health guidance"],
         category: "Domain A",
         severity: "moderate",
       });
@@ -509,9 +509,9 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         relevanceScore: 0.95,
         confidence: 0.86,
         severity: "high",
-        safetyAlerts: ["Discuss codeine or tramadol dosing with a practitioner; do not change it independently."],
-        recommendations: ["Consider pharmacogenomic testing or therapeutic monitoring when scientificly appropriate"],
-        sources: ["scientific Pharmacogenetics Implementation Consortium"],
+        safetyAlerts: ["Discuss codeine or tramadol dosing with a clinician; do not change it independently."],
+        recommendations: ["Consider pharmacogenomic testing or therapeutic monitoring when clinically appropriate"],
+        sources: ["Clinical Pharmacogenetics Implementation Consortium"],
       });
     }
     return findings;
@@ -520,12 +520,12 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
   getMicrobiomeAdvice(symptoms: string[], diet: string[]): string[] {
     const text = `${symptoms.join(" ")} ${diet.join(" ")}`.toLowerCase();
     const advice = ["Increase dietary fiber gradually", "Choose safe fermented foods such as injera, kocho, yogurt, or Ergo", "Limit highly processed sugars"];
-    if (/diarrhea|vomit|blood|fever/.test(text)) advice.push("Seek scientific advice rather than self-treating persistent or severe gastrointestinal symptoms");
+    if (/diarrhea|vomit|blood|fever/.test(text)) advice.push("Seek clinical advice rather than self-treating persistent or severe gastrointestinal symptoms");
     return advice;
   }
 
   getAltitudeAcclimatisationAdvice(destinationAltitude: number): string[] {
-    if (destinationAltitude <= 2500) return ["No special altitude precautions are usually needed at this elevation; consider individual wellbeing factors."];
+    if (destinationAltitude <= 2500) return ["No special altitude precautions are usually needed at this elevation; consider individual health factors."];
     return ["Ascend gradually above 2,500m", "Hydrate and avoid alcohol or sedatives", "Watch for headache, nausea, dizziness, or confusion", "Descend and seek care if symptoms worsen"];
   }
 

@@ -32,7 +32,7 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
       "podoconiosis volcanic soil Ethiopia",
       "schistosomiasis snail Ethiopia lake",
       "Anopheles mosquito highlands Ethiopia",
-      "deforestation wellbeing Ethiopia",
+      "deforestation health Ethiopia",
       "aflatoxin grain storage Ethiopia lowlands",
     ],
     meshTerms: ["Ecology[MeSH]", "Ethiopia[MeSH]", "Vector-Borne Diseases[MeSH]"],
@@ -59,7 +59,7 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
       "khat cathinone biochemistry Ethiopia",
       "traditional Ethiopian herbs herb-drug interaction",
       "nug niger seed linoleic acid Ethiopia",
-      "Ethiopian coffee chlorogenic acid wellbeing",
+      "Ethiopian coffee chlorogenic acid health",
     ],
     meshTerms: ["Nutritional Status[MeSH]", "Ethiopia[MeSH]", "Biochemistry[MeSH]"],
     dateRange: "last 3 years",
@@ -126,12 +126,12 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
 
   psychological: {
     topics: [
-      "mental wellbeing Ethiopia depression anxiety",
+      "mental health Ethiopia depression anxiety",
       "PTSD trauma Ethiopia displacement",
-      "Zar spirit possession Ethiopia mental wellbeing",
+      "Zar spirit possession Ethiopia mental health",
       "schizophrenia psychosis Ethiopia treatment",
-      "substance use mental wellbeing Ethiopia khat",
-      "maternal mental wellbeing Ethiopia postpartum",
+      "substance use mental health Ethiopia khat",
+      "maternal mental health Ethiopia postpartum",
     ],
     meshTerms: ["Mental Disorders[MeSH]", "Ethiopia[MeSH]", "Psychology[MeSH]"],
     dateRange: "last 3 years",
@@ -149,9 +149,9 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
 
   socioeconomic: {
     topics: [
-      "poverty wellbeing access Ethiopia rural",
+      "poverty health access Ethiopia rural",
       "health insurance Ethiopia community-based",
-      "child labor wellbeing Ethiopia",
+      "child labor health Ethiopia",
       "food insecurity Ethiopia household",
       "clean water access Ethiopia rural urban",
       "sanitation hygiene Ethiopia WASH",
@@ -172,7 +172,7 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
 
   addiction: {
     topics: [
-      "khat chewing wellbeing effects Ethiopia",
+      "khat chewing health effects Ethiopia",
       "alcohol use disorder Ethiopia",
       "tobacco smoking Ethiopia prevalence",
       "substance abuse treatment Ethiopia",
@@ -221,9 +221,9 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
   cultural: {
     topics: [
       "Ethiopian traditional medicine healer dabtera",
-      "holy water healing Ethiopian Orthodox wellbeing",
+      "holy water healing Ethiopian Orthodox health",
       "traditional birth attendant Ethiopia",
-      "cultural beliefs wellbeing seeking behavior Ethiopia",
+      "cultural beliefs health seeking behavior Ethiopia",
       "food taboo pregnant women Ethiopia",
     ],
     meshTerms: ["Cultural Competency[MeSH]", "Ethiopia[MeSH]", "Medicine, Traditional[MeSH]"],
@@ -245,7 +245,7 @@ export const STRAND_SEARCH_CONFIGS: Record<KnowledgeStrandType, StrandSearchConf
   astrological: {
     topics: [
       "Ethiopian calendar seasonal disease pattern",
-      "lunar cycle wellbeing Ethiopia",
+      "lunar cycle health Ethiopia",
       "Orthodox fasting calendar Ethiopia nutrition",
     ],
     meshTerms: ["Seasons[MeSH]", "Ethiopia[MeSH]"],
@@ -299,12 +299,12 @@ export const STRAND_KEYWORD_BANKS: Record<string, string[]> = {
     "stockout", "essential medicine",
   ],
   psychological: [
-    "depression", "anxiety", "ptsd", "trauma", "mental wellbeing", "schizophrenia",
+    "depression", "anxiety", "ptsd", "trauma", "mental health", "schizophrenia",
     "psychosis", "zar", "spirit possession", "suicide", "postpartum depression",
     "phq", "gad", "mental disorder", "stigma", "treatment gap", "resilience",
   ],
   socioeconomic: [
-    "poverty", "rural wellbeing", "health insurance", "cbhi", "out-of-pocket", "catastrophic expenditure",
+    "poverty", "rural health", "health insurance", "cbhi", "out-of-pocket", "catastrophic expenditure",
     "water access", "sanitation", "wash", "food insecurity", "maternal education",
     "health facility", "health extension", "hew", "antenatal care", "anc",
   ],
@@ -319,7 +319,7 @@ export const STRAND_KEYWORD_BANKS: Record<string, string[]> = {
   ],
   cultural: [
     "traditional medicine", "healer", "dabtera", "wogesha", "holy water", "tsebel",
-    "traditional birth attendant", "tba", "cultural belief", "wellbeing seeking",
+    "traditional birth attendant", "tba", "cultural belief", "health seeking",
     "food taboo", "fgm", "female genital", "uvulectomy", "buda", "evil eye", "zar",
   ],
   astrological: [

@@ -128,7 +128,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <span className="text-xs text-slate-400 font-mono">EFCT 2025 Standard</span>
               </div>
               <h1 className="text-3xl font-extrabold text-white">
-                Biochemical wellbeing Gap &amp; Safety Report
+                Biochemical Wellbeing Gap &amp; Safety Report
               </h1>
               <p className="text-sm text-slate-300 mt-1">
                 Evaluated for <strong className="text-white">{user?.name || "Client"}</strong> ({profile?.age} yo {profile?.gender}, {profile?.region} &bull; {profile?.altitudeMeters}m altitude calibration)
@@ -178,7 +178,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </div>
         )}
 
-        {/* Section 1: Identified wellbeing Gaps */}
+        {/* Section 1: Identified Wellbeing Gaps */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>

@@ -42,7 +42,7 @@ export function evaluateSocialSafetyScreen(
         message:
           "If you are in immediate danger, or if isolation and hopelessness are severe, contact crisis support before continuing.",
         hotlines: [
-          { name: "Mental wellbeing & Crisis Support", number: "952" },
+          { name: "Mental Health & Crisis Support", number: "952" },
           { name: "Police Emergency", number: "911" },
           { name: "Ethiopian Red Cross Ambulance", number: "991" },
           { name: "Community crisis line", number: "+251-11-550-0800" },
@@ -68,7 +68,7 @@ export function evaluateSocialSafetyScreen(
         title: "Support can be built step by step",
         message: "You do not need to handle loneliness or disconnection alone. We can help you identify supportive people and community resources.",
         hotlines: [
-          { name: "Mental wellbeing support", number: "952" },
+          { name: "Mental Health support", number: "952" },
           { name: "Community support referral", number: "local_counselor" },
           { name: "Ethiopian Red Cross", number: "991" },
         ],

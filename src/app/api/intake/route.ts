@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const encryptedMedicalHistory = encryptRestrictedField(normalized.medicalHistory);
     const encryptedMedications = encryptRestrictedField(normalized.medications);
 
-    // Save wellbeing Profile (Domain A)
+    // Save Wellbeing Profile (Domain A)
     await db.insert(wellbeingProfiles).values({
       userId,
       age: normalized.age,

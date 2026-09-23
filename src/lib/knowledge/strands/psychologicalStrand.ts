@@ -4,16 +4,16 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  * Enhanced Psychological Knowledge Strand
  *
  * Integrates:
- * - Major mental wellbeing conditions: Depression, Anxiety, PTSD, Bipolar, Schizophrenia, OCD, Substance Use Disorders
+ * - Major mental health conditions: Depression, Anxiety, PTSD, Bipolar, Schizophrenia, OCD, Substance Use Disorders
  * - Cultural idioms of distress (somatization, thinking too much, heart fluttering, etc.)
- * - Child & adolescent mental wellbeing (ADHD, conduct disorder, developmental delay)
+ * - Child & adolescent mental health (ADHD, conduct disorder, developmental delay)
  * - Suicide prevention and self-harm
  * - Coping mechanisms & resilience (problem‑focused, emotion‑focused, community‑based)
  * - Ethiopian mental health services & policy (Amanuel, EPHI, WHO mhGAP)
  * - Traditional healing & community support (Iddir, Iqub, Mahber, Debtera, Zar)
  * - Stigma, help‑seeking, and cultural barriers
  * - Cross‑strand linking (Cultural, Epidemiological, Socioeconomic, Medication)
- * - Domain B (cultural/reflective) and Domain A (Scientific) tagging
+ * - Domain B (cultural/reflective) and Domain A (clinical) tagging
  * - Evidence‑weighted confidence and severity
  * - User‑specific risk profiling (age, trauma history, substance use)
  */
@@ -38,7 +38,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // MAJOR MENTAL wellbeing CONDITIONS
+  // MAJOR MENTAL health CONDITIONS
   // -------------------------------------------------------------------------
   private mentalwellbeingConditions = {
     depression_major: {
@@ -77,10 +77,10 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       ethiopian_context: [
         "Depression frequently presents primarily through somatic complaints: burning body sensations, migrating headaches, epigastric tightness, rather than direct affective admissions",
-        "Patients commonly consult traditional or spiritual healers (Debtera, Zar) before presenting to medical Debrs",
+        "Patients commonly consult traditional or spiritual healers (Debtera, Zar) before presenting to medical clinics",
         "Stigma is significant; many hide symptoms or use idioms of distress",
         "Higher prevalence in women, refugees, and conflict‑affected populations",
-        "Amanuel Mental Specialized Hospital reports depression as the most common diagnosis in outpatient Debrs",
+        "Amanuel Mental Specialized Hospital reports depression as the most common diagnosis in outpatient clinics",
       ],
       management: [
         "Culturally adapted cognitive‑behavioral therapy (CBT) validating somatic reality while exploring emotional triggers",
@@ -91,7 +91,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Psychoeducation for families to reduce stigma and support recovery",
       ],
       severity: "moderate to severe",
-      sources: ["Amanuel Mental Specialized Hospital Scientific Protocols", "WHO mhGAP Intervention Guide"],
+      sources: ["Amanuel Mental Specialized Hospital Clinical Protocols", "WHO mhGAP Intervention Guide"],
     },
 
     persistent_depression: {
@@ -256,7 +256,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Significant public health priority in regions recovering from conflict and displacement (Tigray, Amhara, Afar, Oromia)",
         "Traditional communal reconciliation and group storytelling rituals play a vital role in psychological re‑anchoring",
         "Women and children are disproportionately affected",
-        "Stigma around mental wellbeing may prevent disclosure of trauma",
+        "Stigma around mental health may prevent disclosure of trauma",
         "Debtera and Zar practitioners often consulted for trauma‑related symptoms",
       ],
       management: [
@@ -399,13 +399,13 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
     substance_use_disorder_khat: {
       id: "substance_use_disorder_khat",
       name: "Khat Use Disorder (የጣት ሱስ)",
-      description: "Pattern of khat (Catha edulis) use leading to scientificly significant impairment or distress",
+      description: "Pattern of khat (Catha edulis) use leading to clinically significant impairment or distress",
       icd11_code: "6C4E",
       substance: "Khat (Catha edulis) – active compounds: cathinone, cathine",
       physiological_symptoms: [
         "Craving for khat",
         "Loss of control over use (using more or longer than intended)",
-        "Continued use despite negative consequences (wellbeing, social, financial)",
+        "Continued use despite negative consequences (health, social, financial)",
         "Withdrawal symptoms: depressed mood, fatigue, irritability, insomnia",
         "Tolerance: needing more to achieve the same effect",
         "Neglect of responsibilities (work, family, social)",
@@ -413,7 +413,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       wellbeing_consequences: [
         "Cardiovascular: tachycardia, hypertension, increased risk of MI",
         "Dental: gum disease, tooth decay, oral cancer risk",
-        "Mental wellbeing: anxiety, depression, psychosis (rare, with high doses)",
+        "Mental health: anxiety, depression, psychosis (rare, with high doses)",
         "GI: constipation, gastritis, oesophageal irritation",
         "Reproductive: decreased fertility, low birth weight in babies",
       ],
@@ -438,7 +438,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Cognitive‑behavioral therapy (CBT) for substance use",
         "Motivational interviewing to enhance readiness to change",
         "Support groups (community‑based, religious organisations)",
-        "Address underlying mental wellbeing conditions (depression, anxiety)",
+        "Address underlying mental health conditions (depression, anxiety)",
         "Gradual reduction rather than abrupt cessation (withdrawal can be severe)",
         "Pharmacotherapy: none specifically approved; may require antidepressants for comorbid depression",
       ],
@@ -449,12 +449,12 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
     substance_use_disorder_alcohol: {
       id: "substance_use_disorder_alcohol",
       name: "Alcohol Use Disorder (የአልኮል ሱስ)",
-      description: "Pattern of alcohol use leading to scientificly significant impairment or distress",
+      description: "Pattern of alcohol use leading to clinically significant impairment or distress",
       icd11_code: "6C40",
       physiological_symptoms: [
         "Craving for alcohol",
         "Loss of control over drinking",
-        "Continued use despite wellbeing, social, or legal problems",
+        "Continued use despite health, social, or legal problems",
         "Withdrawal symptoms: tremors, anxiety, sweating, nausea, seizures, delirium tremens",
         "Tolerance",
         "Neglect of responsibilities",
@@ -463,7 +463,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Liver disease (cirrhosis, hepatitis)",
         "Cardiovascular: cardiomyopathy, hypertension",
         "Cancer: oesophageal, liver, breast",
-        "Mental wellbeing: depression, anxiety, psychosis",
+        "Mental health: depression, anxiety, psychosis",
         "Pancreatitis, gastritis, neuropathy",
         "Accidents and injuries (falls, RTAs, violence)",
       ],
@@ -475,7 +475,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       risk_factors: [
         "Cultural acceptance (Tella, Tej are traditional drinks)",
         "Poverty and unemployment",
-        "Mental wellbeing conditions (depression, PTSD)",
+        "Mental health conditions (depression, PTSD)",
         "Family history of alcohol use disorder",
         "Peer pressure",
       ],
@@ -489,7 +489,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "CBT for substance use",
         "12‑step programs or community support groups",
         "Pharmacotherapy: Naltrexone, Acamprosate, Disulfiram (under specialist care)",
-        "Address comorbid mental wellbeing conditions",
+        "Address comorbid mental health conditions",
         "Family therapy and community support",
       ],
       severity: "moderate to severe",
@@ -510,7 +510,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Giving away possessions",
       ],
       risk_factors: [
-        "Mental wellbeing conditions (depression, bipolar, PTSD, schizophrenia)",
+        "Mental health conditions (depression, bipolar, PTSD, schizophrenia)",
         "Substance use (khat, alcohol)",
         "Previous suicide attempts",
         "Family history of suicide",
@@ -532,7 +532,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Immediate risk assessment (ask directly about suicidal thoughts and plans)",
         "Remove means of self‑harm (medications, weapons)",
         "Crisis counselling and safety planning",
-        "Urgent mental wellbeing assessment (Amanuel, psychiatric department)",
+        "Urgent mental health assessment (Amanuel, psychiatric department)",
         "Family involvement and support",
         "Community awareness to reduce stigma and encourage help‑seeking",
         "Follow‑up: chronic risk requires long‑term care",
@@ -543,7 +543,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // CHILD & ADOLESCENT MENTAL wellbeing
+  // CHILD & ADOLESCENT MENTAL health
   // -------------------------------------------------------------------------
   private childAdolescentMentalwellbeing = {
     adhd: {
@@ -714,7 +714,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Use Iqub for financial planning to reduce economic stress",
         "Participate in Mahber or church gatherings for spiritual and emotional support",
       ],
-      sources: ["Ethiopian Journal of wellbeing Development", "Social Capital Studies"],
+      sources: ["Ethiopian Journal of health Development", "Social Capital Studies"],
     },
 
     spiritual_coping: {
@@ -738,9 +738,9 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       recommendations: [
         "Integrate spiritual practices into a comprehensive coping plan",
         "Encourage balance between spiritual and medical care",
-        "Engage religious leaders in wellbeing education",
+        "Engage religious leaders in health education",
       ],
-      sources: ["Ethiopian Journal of wellbeing Development"],
+      sources: ["Ethiopian Journal of health Development"],
     },
   };
 
@@ -755,7 +755,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Outpatient psychiatry (adults, children, adolescents)",
         "Inpatient psychiatric care (acute, chronic)",
         "Emergency psychiatric services (crisis intervention)",
-        "Community mental wellbeing outreach",
+        "Community mental health outreach",
         "Training for psychiatric nurses and residents",
         "Substance use disorder treatment",
         "Forensic psychiatry",
@@ -772,11 +772,11 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
     },
 
     who_mhgap: {
-      name: "WHO mhGAP (Mental wellbeing Gap Action Programme)",
+      name: "WHO mhGAP (Mental health Gap Action Programme)",
       description: "World health Organization programme to scale up mental health care in low‑resource settings",
       key_interventions: [
-        "Training primary care workers to diagnose and manage mental wellbeing conditions",
-        "Mental wellbeing screening and risk assessment",
+        "Training primary care workers to diagnose and manage mental health conditions",
+        "Mental health screening and risk assessment",
         "Community‑based mental health services",
         "Psychosocial support",
         "Essential psychotropic medication availability",
@@ -796,14 +796,14 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
     },
 
     national_mental_wellbeing_strategy: {
-      name: "National Mental wellbeing Strategy (Ethiopia)",
-      description: "Government strategy for mental wellbeing policy and service development",
+      name: "National Mental health Strategy (Ethiopia)",
+      description: "Government strategy for mental health policy and service development",
       pillars: [
-        "Strengthening mental wellbeing governance and financing",
-        "Integrating mental wellbeing into primary health care",
+        "Strengthening mental health governance and financing",
+        "Integrating mental health into primary health care",
         "Ensuring access to psychotropic medications",
         "Community‑based mental health services",
-        "Mental wellbeing promotion and prevention",
+        "Mental health promotion and prevention",
         "Human rights and anti‑stigma campaigns",
       ],
       targets: [
@@ -811,13 +811,13 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Reduce treatment gap to 50% by 2025",
         "Increase availability of psychotropic medications at primary care level",
       ],
-      ethiopian_context: "The strategy aligns with the wellbeing Sector Transformation Plan (HSTP‑II)",
-      sources: ["Federal Ministry of health - National Mental wellbeing Strategy"],
+      ethiopian_context: "The strategy aligns with the health Sector Transformation Plan (HSTP‑II)",
+      sources: ["Federal Ministry of health - National Mental health Strategy"],
     },
   };
 
   // -------------------------------------------------------------------------
-  // TRADITIONAL HEALING & MENTAL wellbeing
+  // TRADITIONAL HEALING & MENTAL health
   // -------------------------------------------------------------------------
   private traditionalHealingMentalwellbeing = {
     debtera_healing: {
@@ -827,7 +827,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
         "Healing scrolls (Kitabe) with prayers, biblical verses, and herbal remedies",
         "Holy water (Tsebel) healing for mental and spiritual distress",
         "Exorcism for spirit possession (often misdiagnosed as psychosis)",
-        "Astrological consultation for mental wellbeing timing",
+        "Astrological consultation for mental health timing",
         "Writing of protective amulets",
       ],
       mental_wellbeing_relevance: [
@@ -837,8 +837,8 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       integration_opportunities: [
         "Collaborate with Debtera for culturally sensitive psychosocial support",
-        "Train Debtera in mental wellbeing first aid and referral pathways",
-        "Integrate Debtera into community mental wellbeing programmes",
+        "Train Debtera in mental health first aid and referral pathways",
+        "Integrate Debtera into community mental health programmes",
       ],
       sources: ["Ethiopian Heritage Authority", "Institute of Ethiopian Studies"],
     },
@@ -860,9 +860,9 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       integration_opportunities: [
         "Acknowledge Zar as a culturally meaningful practice",
         "Encourage psychological evaluation alongside Zar ceremonies for persistent symptoms",
-        "Integrate Zar practitioners into mental wellbeing awareness programmes",
+        "Integrate Zar practitioners into mental health awareness programmes",
       ],
-      sources: ["Ethiopian Journal of wellbeing Development"],
+      sources: ["Ethiopian Journal of health Development"],
     },
   };
 
@@ -913,7 +913,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
     const traumaHistory = this.hasTraumaHistory(userProfile);
     const substanceUse = this.hasSubstanceUse(userProfile);
 
-    // ---- 1. Mental wellbeing Conditions ----
+    // ---- 1. Mental health Conditions ----
     for (const [key, condition] of Object.entries(this.mentalwellbeingConditions) as [string, any][]) {
       let score = 0;
       const matches: string[] = [];
@@ -987,8 +987,8 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
           domain: "wellbeing",
           name: condition.name.toUpperCase(),
           description: `${condition.description} [ICD-11: ${condition.icd11_code || "N/A"}]`,
-          evidence: `Scientific symptoms: ${condition.physiological_symptoms?.join("; ") || "N/A"}. Risk factors: ${condition.risk_factors?.join("; ") || "N/A"}.`,
-          ethiopian_context: condition.ethiopian_context?.join("; ") || "Ethiopian mental wellbeing context",
+          evidence: `Clinical symptoms: ${condition.physiological_symptoms?.join("; ") || "N/A"}. Risk factors: ${condition.risk_factors?.join("; ") || "N/A"}.`,
+          ethiopian_context: condition.ethiopian_context?.join("; ") || "Ethiopian mental health context",
           relevanceScore: Math.min(score / 60, 0.98),
           confidence: 0.92,
           matches,
@@ -1006,7 +1006,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 2. Child & Adolescent Mental wellbeing ----
+    // ---- 2. Child & Adolescent Mental health ----
     if (age !== undefined && age < 18) {
       for (const [key, condition] of Object.entries(this.childAdolescentMentalwellbeing) as [string, any][]) {
         let score = 0;
@@ -1038,8 +1038,8 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
             domain: "wellbeing",
             name: condition.name.toUpperCase(),
             description: `${condition.description} [ICD-11: ${condition.icd11_code || "N/A"}]`,
-            evidence: `Scientific symptoms: ${condition.physiological_symptoms?.join("; ") || "N/A"}. Risk factors: ${condition.risk_factors?.join("; ") || "N/A"}.`,
-            ethiopian_context: condition.ethiopian_context?.join("; ") || "Ethiopian child mental wellbeing context",
+            evidence: `Clinical symptoms: ${condition.physiological_symptoms?.join("; ") || "N/A"}. Risk factors: ${condition.risk_factors?.join("; ") || "N/A"}.`,
+            ethiopian_context: condition.ethiopian_context?.join("; ") || "Ethiopian child mental health context",
             relevanceScore: Math.min(score / 50, 0.90),
             confidence: 0.85,
             matches,
@@ -1089,7 +1089,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
             matches,
             recommendations: coping.recommendations || [],
             management: coping.recommendations || [],
-            sources: coping.sources || ["Ethiopian Journal of wellbeing Development"],
+            sources: coping.sources || ["Ethiopian Journal of health Development"],
             category: "Domain B",
             severity: "low",
           });
@@ -1141,7 +1141,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 5. Traditional Healing for Mental wellbeing (Domain B) ----
+    // ---- 5. Traditional Healing for Mental health (Domain B) ----
     if (this.hasAlias(normalized, "debtera") || this.hasAlias(normalized, "zar") || normalized.includes("traditional healing") || normalized.includes("spiritual")) {
       for (const [key, healing] of Object.entries(this.traditionalHealingMentalwellbeing) as [string, any][]) {
         let score = 0;
@@ -1193,7 +1193,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
   // -------------------------------------------------------------------------
 
   /**
-   * Get mental wellbeing condition by cultural idiom
+   * Get mental health condition by cultural idiom
    */
   getConditionByCulturalIdiom(idiom: string): string | null {
     const search = idiom.toLowerCase();
@@ -1250,7 +1250,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       "Immediate risk assessment: ask directly about suicidal thoughts and plans",
       "Remove means of self‑harm (medications, weapons)",
       "Crisis counselling and safety planning",
-      "Urgent mental wellbeing assessment (Amanuel Hospital, psychiatric department)",
+      "Urgent mental health assessment (Amanuel Hospital, psychiatric department)",
       "Family involvement and community support",
       "National suicide prevention helpline (if available)",
       "Follow‑up: chronic risk requires long‑term care",
@@ -1266,7 +1266,7 @@ export class PsychologicalKnowledgeStrand implements KnowledgeStrand {
       "Cognitive‑behavioural therapy (CBT) for substance use",
       "Motivational interviewing to enhance readiness to change",
       "Support groups (community‑based, religious organisations)",
-      "Address underlying mental wellbeing conditions (depression, anxiety)",
+      "Address underlying mental health conditions (depression, anxiety)",
       "For khat: reduce chewing frequency and amount; replace with healthier alternatives",
       "For alcohol: detoxification under medical supervision for severe withdrawal",
       "Naltrexone, Acamprosate, Disulfiram (under specialist care)",

@@ -150,7 +150,7 @@ export function evaluateRiftValleyFluoride(region: string): FluorideAssessment {
           title: "Avoid Heavy Fluoride-Accumulating Old Tea Leaves",
           description:
             "Mature black tea leaves hyper-accumulate fluoride. In the Rift Valley, substitute roasted barley tea or Tosign thyme infusions.",
-          evidence: "Journal of Ethiopian wellbeing Science Fluoride Pharmacokinetics",
+          evidence: "Journal of Ethiopian health Science Fluoride Pharmacokinetics",
         },
       ],
     };

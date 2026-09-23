@@ -279,7 +279,7 @@ export function evaluateSpiritualCrisis(
           { name: "Ethiopian Gender-Based Violence & Crisis Hotline", number: "952" },
           { name: "National Emergency Police", number: "911" },
           { name: "Red Cross Ambulance & Emergency Medical Services", number: "991" },
-          { name: "Mental wellbeing Support Ethiopia (Amanuel Hospital)", number: "+251 11 275 7680" },
+          { name: "Mental Health Support Ethiopia (Amanuel Hospital)", number: "+251 11 275 7680" },
         ],
         safetyPlanSteps: [
           "Reach out to a trusted elder, spiritual father (የንስሐ አባት), family member, or friend.",

@@ -62,6 +62,9 @@ export default function HomePage() {
             <Link href="/case" className="btn-pill-primary">
               Explore the five care pathways <ArrowRight size={17} />
             </Link>
+            <Link href="/horoscope" className="btn-pill-secondary">
+              Open the horoscope desk
+            </Link>
             <Link href="/discover" className="btn-pill-secondary">
               Browse the knowledge pillars
             </Link>

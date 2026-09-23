@@ -147,7 +147,7 @@ export class AIReasoningEngine {
         type: "lifestyle",
         priority: "medium",
         safetyGatePassed: true,
-        sourceRef: "Amanuel Mental wellbeing Guidance",
+        sourceRef: "Amanuel Mental Health Guidance",
       });
     }
 
@@ -178,7 +178,7 @@ export class AIReasoningEngine {
         id: "act-short-01",
         timeline: "short_term",
         title: "healthcare Provider Consultation",
-        action: "Visit your local health center or Debr for complete blood count, malaria blood film, or metabolic baseline tests",
+        action: "Visit your local health center or clinic for complete blood count, malaria blood film, or metabolic baseline tests",
         priority: "high",
         category: "scientific",
       },
@@ -226,7 +226,7 @@ export class AIReasoningEngine {
       {
         id: "act-ongo-01",
         timeline: "ongoing",
-        title: "Holistic wellbeing Maintenance",
+        title: "Holistic Wellbeing Maintenance",
         action: "Sustain balanced seasonal nutrition, stay active with daily brisk walking, and nurture strong community connections",
         priority: "low",
         category: "lifestyle",
@@ -305,7 +305,7 @@ export class AIReasoningEngine {
         ],
         urgency: urgency.level,
         emergencyHotlines: [
-          { name: "EPHI National wellbeing Hotline", number: "907", description: "Ethiopian Public health Institute 24/7 Toll-Free" },
+          { name: "EPHI National Health Hotline", number: "907", description: "Ethiopian Public health Institute 24/7 Toll-Free" },
           { name: "Ethiopian Red Cross Ambulance", number: "991", description: "Emergency Ambulance Dispatch" },
           { name: "Police & Emergency First Responders", number: "911", description: "National Emergency Police" },
           { name: "Tikur Anbessa Emergency Desk", number: "+251-11-551-1211", description: "Central Tertiary Referral Desk" },

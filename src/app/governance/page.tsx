@@ -12,7 +12,7 @@ const MAB_COMMITTEE = [
   { name: "Dr. Dawit Alemayehu, PhD", role: "Principal Ethnobotanist", affiliation: "ETM-DB Research Institute", status: "Signed Off" },
 ];
 
-const DebrAL_THRESHOLDS = [
+const SCIENTIFIC_THRESHOLDS = [
   { metric: "Deficiency Risk Alert Threshold", value: "< 70% of adjusted target", evidence: "WHO / EFCT Nutrient Guideline 2025", status: "Active" },
   { metric: "Severe Micronutrient Depletion", value: "< 40% of adjusted target", evidence: "Immediate Scientific referral trigger", status: "Active" },
   { metric: "Highland Altitude Iron Adaptation", value: "+15% (1500-2499m), +25% (≥2500m)", evidence: "WHO Altitude Hemoglobin Calibration", status: "Active" },
@@ -108,7 +108,7 @@ export default async function GovernancePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {DebrAL_THRESHOLDS.map((row, idx) => (
+                {SCIENTIFIC_THRESHOLDS.map((row, idx) => (
                   <tr key={idx} className="hover:bg-white/[0.02]">
                     <td className="p-3 font-semibold text-white">{row.metric}</td>
                     <td className="p-3 font-mono text-emerald-400 font-bold">{row.value}</td>

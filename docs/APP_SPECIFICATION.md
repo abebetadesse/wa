@@ -476,7 +476,7 @@ The Case 2 target roadmap is twelve weeks, but safety-screen and crisis-routing 
 
 ## 21. Case 3 Dynamic Workflow: Career and Business
 
-Case 3 combines practical career direction with optional Ethiopian timing and business-name reflection. Career and business decisions can affect housing, food, debt, and mental wellbeing, so financial-distress and self-harm screening must happen before gematria, AI, or payment flows.
+Case 3 combines practical career direction with optional Ethiopian timing and business-name reflection. Career and business decisions can affect housing, food, debt, and mental health, so financial-distress and self-harm screening must happen before gematria, AI, or payment flows.
 
 ### Mandatory workflow order
 

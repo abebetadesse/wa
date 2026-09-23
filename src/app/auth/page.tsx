@@ -273,7 +273,7 @@ function AuthPageInner() {
           </Link>
           <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {tab === "login" && "Sign In to Your Workspace"}
-            {tab === "register" && "Create Your Holistic wellbeing Account"}
+            {tab === "register" && "Create Your Holistic Wellbeing Account"}
             {tab === "forgot" && "Recover Your Account Password"}
           </h1>
           <p className="mt-1.5 text-xs sm:text-sm text-slate-400">

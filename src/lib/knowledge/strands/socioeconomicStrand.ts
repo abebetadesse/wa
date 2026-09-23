@@ -6,17 +6,17 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  * Integrates:
  * - Demographics (age structure, rural/urban split, ethnic composition, population projections)
  * - Poverty indicators (income levels, multidimensional poverty, regional disparities)
- * - Education factors (literacy rates, enrolment, gender disparities, wellbeing literacy)
+ * - Education factors (literacy rates, enrolment, gender disparities, health literacy)
  * - Employment patterns (agriculture, pastoralism, urban informal, migration)
  * - healthcare access (rural/urban differences, financial barriers, insurance coverage)
  * - Housing & sanitation (quality, water access, sanitation facilities)
  * - Social networks & capital (Iddir, Iqub, Mahber, community trust)
  * - Food security (food insecurity prevalence, seasonal patterns, nutrition programs)
- * - Gender & wellbeing (gender-based violence, maternal wellbeing, women's empowerment)
+ * - Gender & health (gender-based violence, maternal health, women's empowerment)
  * - Conflict & displacement (IDPs, refugees, conflict-affected populations)
  * - Economic vulnerability (climate shocks, inflation, livelihood diversification)
  * - Cross‑strand linking (Epidemiological, Psychological, Dietary, Ecological)
- * - Domain A (scientific/wellbeing) and Domain B (cultural/reflective) tagging
+ * - Domain A (clinical/health) and Domain B (cultural/reflective) tagging
  * - Evidence‑weighted confidence and severity
  * - User‑specific profiling (location, income, education, employment)
  */
@@ -31,11 +31,11 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
     // Poverty
     poverty: ["poverty", "poor", "income", "wealth", "economic", "poor", "food insecure"],
     // Education
-    education: ["education", "school", "literacy", "enrollment", "teacher", "wellbeing literacy"],
+    education: ["education", "school", "literacy", "enrollment", "teacher", "health literacy"],
     // Employment
     employment: ["job", "work", "employment", "unemployment", "farmer", "pastoralist", "labor", "salary"],
     // healthcare access
-    healthcare: ["healthcare", "Debr", "hospital", "doctor", "nurse", "health center", "cost", "insurance", "cbhi"],
+    healthcare: ["healthcare", "clinic", "hospital", "doctor", "nurse", "health center", "cost", "insurance", "cbhi"],
     // Housing & sanitation
     housing: ["housing", "shelter", "water", "sanitation", "toilet", "cooking", "smoke", "fuel"],
     // Social networks
@@ -93,22 +93,22 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "2050": "~210 million",
       },
       wellbeing_implications: [
-        "High dependency ratio (45% under 18) places pressure on wellbeing and education systems",
-        "Rapid urbanisation creates challenges for urban wellbeing infrastructure",
+        "High dependency ratio (45% under 18) places pressure on health and education systems",
+        "Rapid urbanisation creates challenges for urban health infrastructure",
         "Young population presents a demographic opportunity but requires investment",
-        "Ethnic diversity requires culturally sensitive wellbeing programming",
+        "Ethnic diversity requires culturally sensitive health programming",
       ],
       recommendations: [
-        "Invest in youth wellbeing and education to leverage demographic dividend",
+        "Invest in youth health and education to leverage demographic dividend",
         "Strengthen urban health systems to meet growing urban demand",
-        "Design culturally adapted wellbeing interventions for diverse ethnic groups",
+        "Design culturally adapted health interventions for diverse ethnic groups",
         "Scale up family planning to manage population growth",
       ],
       sources: ["Central Statistical Agency of Ethiopia", "UN Population Division"],
     },
     regional_variations: {
       id: "regional_variations",
-      title: "Regional Variations in Population & wellbeing",
+      title: "Regional Variations in Population & health",
       regions: [
         {
           name: "Oromia",
@@ -138,7 +138,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
           name: "Afar",
           population: "~2 million",
           urban_percentage: "~12%",
-          wellbeing_challenges: ["Heat stress", "Dehydration", "Pastoral wellbeing issues"],
+          wellbeing_challenges: ["Heat stress", "Dehydration", "Pastoral health issues"],
         },
         {
           name: "SNNPR / Sidama",
@@ -154,8 +154,8 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         },
       ],
       recommendations: [
-        "Tailor wellbeing interventions to regional epidemiological profiles",
-        "Strengthen wellbeing infrastructure in rapidly growing regions",
+        "Tailor health interventions to regional epidemiological profiles",
+        "Strengthen health infrastructure in rapidly growing regions",
         "Address regional disparities in healthcare access",
       ],
       sources: ["Central Statistical Agency", "EPHI Regional health Profiles"],
@@ -173,7 +173,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       poverty_metrics: {
         headcount_ratio: "~20-25% (national poverty line)",
         extreme_poverty: "~10-15% (less than $2.15/day)",
-        multidimensional_poverty_index: "~50% (deprivation in education, wellbeing, living standards)",
+        multidimensional_poverty_index: "~50% (deprivation in education, health, living standards)",
       },
       regional_disparities: {
         high_poverty: ["Somali", "Afar", "Gambella", "Benishangul-Gumuz"],
@@ -187,13 +187,13 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Poverty limits access to healthcare (out‑of‑pocket costs)",
         "Poverty drives malnutrition (food insecurity)",
         "Poverty is associated with higher rates of communicable diseases",
-        "Poverty limits wellbeing literacy and wellbeing‑seeking behaviour",
+        "Poverty limits health literacy and health‑seeking behaviour",
       ],
       recommendations: [
         "Expand social protection programmes (Productive Safety Net Programme - PSNP)",
         "Invest in poverty‑reduction strategies (agriculture, infrastructure, education)",
         "Scale up Community‑Based health Insurance (CBHI) for the poor",
-        "Target wellbeing interventions to high‑poverty regions",
+        "Target health interventions to high‑poverty regions",
       ],
       sources: ["World Bank Ethiopia Poverty Assessment", "UNDP Multidimensional Poverty Index"],
     },
@@ -211,7 +211,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         asset_ownership: "Urban households have significantly more assets",
       },
       wellbeing_implications: [
-        "Inequality drives unequal wellbeing outcomes",
+        "Inequality drives unequal health outcomes",
         "Poorer populations have higher disease burden and lower healthcare utilisation",
         "Inequality reduces social cohesion and trust",
       ],
@@ -254,41 +254,41 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       wellbeing_implications: [
         "Low maternal education is associated with higher child mortality and malnutrition",
-        "wellbeing literacy is low, limiting disease prevention and wellbeing‑seeking behaviour",
-        "Education empowers women and improves child wellbeing outcomes",
+        "health literacy is low, limiting disease prevention and health‑seeking behaviour",
+        "Education empowers women and improves child health outcomes",
       ],
       recommendations: [
         "Promote girls' education and retention in schools",
-        "Integrate wellbeing education into school curricula",
-        "Adult literacy programmes to improve wellbeing literacy",
+        "Integrate health education into school curricula",
+        "Adult literacy programmes to improve health literacy",
         "Address barriers to education (poverty, child labour, early marriage)",
       ],
       sources: ["Ministry of Education Ethiopia", "UNESCO"],
     },
     wellbeing_literacy: {
       id: "wellbeing_literacy",
-      title: "wellbeing Literacy & wellbeing Knowledge",
-      description: "wellbeing literacy is low in many areas, affecting disease prevention and healthcare utilisation",
+      title: "health Literacy & health Knowledge",
+      description: "health literacy is low in many areas, affecting disease prevention and healthcare utilisation",
       wellbeing_knowledge_gaps: [
         "Limited knowledge of HIV prevention and transmission",
         "Poor understanding of malaria prevention",
         "Low awareness of hypertension and diabetes risk factors",
         "Misconceptions about vaccination and traditional vs modern medicine",
-        "Limited knowledge of family planning and reproductive wellbeing",
+        "Limited knowledge of family planning and reproductive health",
       ],
       wellbeing_implications: [
-        "Low wellbeing literacy delays care‑seeking",
+        "Low health literacy delays care‑seeking",
         "Reduces adherence to treatment (e.g., TB, HIV)",
         "Increases risk of preventable diseases",
         "Perpetuates harmful traditional practices",
       ],
       recommendations: [
-        "Strengthen wellbeing education campaigns (radio, TV, community health workers)",
-        "Integrate wellbeing literacy into school curricula",
+        "Strengthen health education campaigns (radio, TV, community health workers)",
+        "Integrate health literacy into school curricula",
         "Use culturally appropriate communication channels (community leaders, religious institutions)",
-        "Empower health Extension Workers (HEWs) to provide wellbeing education",
+        "Empower health Extension Workers (HEWs) to provide health education",
       ],
-      sources: ["EPHI wellbeing Literacy Studies", "WHO"],
+      sources: ["EPHI health Literacy Studies", "WHO"],
     },
   };
 
@@ -322,7 +322,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       recommendations: [
         "Strengthen social protection (health insurance, social security) for informal workers",
-        "Improve occupational wellbeing and safety in agriculture and industry",
+        "Improve occupational health and safety in agriculture and industry",
         "Create decent employment opportunities, especially for youth",
         "Support livelihood diversification and skills training",
       ],
@@ -339,11 +339,11 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       pastoralism: {
         percentage: "~10-15% of the population",
         regions: ["Afar", "Somali", "Southern Ethiopia"],
-        characteristics: ["Mobility-based livestock production", "Vulnerable to drought", "Limited access to wellbeing and education"],
+        characteristics: ["Mobility-based livestock production", "Vulnerable to drought", "Limited access to health and education"],
       },
       wellbeing_implications: [
         "Agricultural labour is physically demanding and associated with injuries and ergonomic disorders",
-        "Pesticide exposure causes acute and chronic wellbeing problems",
+        "Pesticide exposure causes acute and chronic health problems",
         "Pastoralists have limited healthcare access due to mobility",
         "Zoonotic diseases (e.g., anthrax, brucellosis) are common in pastoral areas",
       ],
@@ -373,11 +373,11 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       wellbeing_implications: [
         "Informal workers lack health insurance and social protection",
         "Working conditions are often hazardous (pollution, unsafe buildings)",
-        "Stress and mental wellbeing issues are common in informal urban settings",
+        "Stress and mental health issues are common in informal urban settings",
       ],
       recommendations: [
         "Extend health insurance and social protection to informal workers",
-        "Improve occupational wellbeing and safety in informal workplaces",
+        "Improve occupational health and safety in informal workplaces",
         "Provide skills training and support for formalisation",
       ],
       sources: ["Central Statistical Agency", "World Bank Ethiopia"],
@@ -385,7 +385,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // wellbeingCARE ACCESS
+  // healthCARE ACCESS
   // -------------------------------------------------------------------------
   private healthcareAccess = {
     rural_wellbeing_extension_tier: {
@@ -410,16 +410,16 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       recommendations: [
         "Utilise local Kebele health Extension Workers for initial malaria and child nutrition triage",
-        "Plan early transport arrangements for labour or acute medical emergencies before scientific deterioration",
+        "Plan early transport arrangements for labour or acute medical emergencies before clinical deterioration",
         "Enrol in Community‑Based health Insurance (CBHI) to reduce out‑of‑pocket costs",
-        "Attend wellbeing education sessions provided by HEWs",
+        "Attend health education sessions provided by HEWs",
       ],
-      sources: ["Ethiopian Ministry of health - wellbeing Sector Transformation Plan (HSTP)", "World Bank Ethiopia Poverty & Social Assessment"],
+      sources: ["Ethiopian Ministry of health - health Sector Transformation Plan (HSTP)", "World Bank Ethiopia Poverty & Social Assessment"],
     },
     urban_tertiary_tier: {
       id: "urban_tertiary_tier",
       category: "Urban Tertiary & Specialised healthcare Tier",
-      infrastructure: "Specialised teaching and referral hospitals (Tikur Anbessa, St. Paul's Millennium Medical College, Zewditu Memorial, regional teaching hospitals) and private Debrs",
+      infrastructure: "Specialised teaching and referral hospitals (Tikur Anbessa, St. Paul's Millennium Medical College, Zewditu Memorial, regional teaching hospitals) and private clinics",
       barriers: [
         "High patient volume, long appointment waitlists, and bed shortages for elective admissions",
         "High out‑of‑pocket expenditure for advanced proprietary pharmaceuticals, CT/MRI imaging, and private laboratory diagnostics",
@@ -432,13 +432,13 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Medical research and training conducted",
       ],
       ethiopian_context: [
-        "High concentration of scientific specialists in Addis Ababa, requiring inter‑regional referrals for complex conditions",
+        "High concentration of clinical specialists in Addis Ababa, requiring inter‑regional referrals for complex conditions",
         "Private healthcare is expanding but remains expensive",
       ],
       recommendations: [
-        "Enrol in Community‑Based health Insurance (CBHI) or formal employment wellbeing schemes to reduce catastrophic out‑of‑pocket hospital costs",
+        "Enrol in Community‑Based health Insurance (CBHI) or formal employment health schemes to reduce catastrophic out‑of‑pocket hospital costs",
         "Obtain structured referral slips from primary health centres to expedite tertiary hospital registration",
-        "Use private Debrs for routine care if affordable, to avoid overcrowded public hospitals",
+        "Use private clinics for routine care if affordable, to avoid overcrowded public hospitals",
       ],
       sources: ["Ethiopian Ministry of health", "WHO Ethiopia"],
     },
@@ -449,12 +449,12 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         { name: "Community‑Based health Insurance (CBHI)", coverage: "Rural populations (~50% of rural households)", features: ["Voluntary", "Low premiums", "Covers primary and secondary care"] },
         { name: "Social health Insurance (SHI)", coverage: "Formal sector employees (~5% of population)", features: ["Mandatory", "Employer‑employee contributions", "Covers tertiary care"] },
         { name: "Private Insurance", coverage: "Wealthy urban individuals (~1-2% of population)", features: ["Premiums vary", "Covers private facilities"] },
-        { name: "Uninsured", coverage: "~40-50% of population", features: ["Out‑of‑pocket payments", "Catastrophic wellbeing expenditure risk"] },
+        { name: "Uninsured", coverage: "~40-50% of population", features: ["Out‑of‑pocket payments", "Catastrophic health expenditure risk"] },
       ],
       barriers: [
         "Limited coverage in rural areas (CBHI still expanding)",
         "High out‑of‑pocket costs for the uninsured",
-        "Catastrophic wellbeing expenditure is common (pushing families into poverty)",
+        "Catastrophic health expenditure is common (pushing families into poverty)",
       ],
       recommendations: [
         "Enrol in CBHI if eligible to reduce healthcare costs",
@@ -494,8 +494,8 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       wellbeing_implications: [
         "Overcrowding increases transmission of respiratory infections and TB",
         "Poor ventilation leads to indoor air pollution (cooking with biomass fuels)",
-        "Congested living conditions increase stress and mental wellbeing issues",
-        "Housing quality is a social determinant of wellbeing",
+        "Congested living conditions increase stress and mental health issues",
+        "Housing quality is a social determinant of health",
       ],
       recommendations: [
         "Improve housing ventilation (eave spaces, separate kitchen)",
@@ -579,7 +579,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Ensure continuous ventilation (open eave spaces, separate kitchen huts) during injera baking or hearth cooking",
         "Boil or treat all unverified drinking water with chlorine solution (Wuha Agar)",
       ],
-      sources: ["WHO Indoor Air Pollution Guidelines", "Ethiopian Ministry of health - Environmental wellbeing"],
+      sources: ["WHO Indoor Air Pollution Guidelines", "Ethiopian Ministry of health - Environmental health"],
     },
   };
 
@@ -609,9 +609,9 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       recommendations: [
         "Engage actively with Iddir for social support and financial resilience",
-        "Strengthen community‑based wellbeing promotion through Iddir networks",
+        "Strengthen community‑based health promotion through Iddir networks",
       ],
-      sources: ["Ethiopian Journal of wellbeing Development", "Social Capital Studies"],
+      sources: ["Ethiopian Journal of health Development", "Social Capital Studies"],
     },
     iqub: {
       id: "iqub",
@@ -629,7 +629,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       ethiopian_context: [
         "Very common in both urban and rural Ethiopia",
-        "Often used for household expenses, education, and wellbeing emergencies",
+        "Often used for household expenses, education, and health emergencies",
         "Strengthens community social ties",
       ],
       recommendations: [
@@ -659,7 +659,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       ],
       recommendations: [
         "Participate in Mahber for social and spiritual support",
-        "Use Mahber networks for wellbeing education and promotion",
+        "Use Mahber networks for health education and promotion",
       ],
       sources: ["Ethiopian Orthodox Church Studies", "Social Capital Studies"],
     },
@@ -694,7 +694,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       },
       wellbeing_implications: [
         "Food insecurity drives malnutrition (stunting, wasting, micronutrient deficiencies)",
-        "Food insecurity is associated with stress and mental wellbeing issues",
+        "Food insecurity is associated with stress and mental health issues",
         "Seasonal food insecurity leads to cyclical disease patterns",
       ],
       recommendations: [
@@ -708,7 +708,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // GENDER & wellbeing
+  // GENDER & health
   // -------------------------------------------------------------------------
   private genderwellbeing = {
     gender_based_violence: {
@@ -724,10 +724,10 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       },
       wellbeing_implications: [
         "Physical injuries and trauma",
-        "Mental wellbeing issues (PTSD, depression, anxiety)",
-        "Sexual and reproductive wellbeing issues",
+        "Mental health issues (PTSD, depression, anxiety)",
+        "Sexual and reproductive health issues",
         "Increased risk of HIV/STIs",
-        "Maternal and infant wellbeing complications",
+        "Maternal and infant health complications",
       ],
       prevention: [
         "Strengthen legal frameworks and enforcement",
@@ -746,8 +746,8 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
     },
     maternal_wellbeing: {
       id: "maternal_wellbeing",
-      title: "Maternal wellbeing in Ethiopia",
-      description: "Maternal wellbeing is a priority, with significant challenges but improving trends",
+      title: "Maternal health in Ethiopia",
+      description: "Maternal health is a priority, with significant challenges but improving trends",
       indicators: {
         maternal_mortality_ratio: "~412 per 100,000 live births (2020)",
         antenatal_care: "~60-70% (at least 4 visits)",
@@ -774,12 +774,12 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Enrol in CBHI to reduce healthcare costs",
         "Support maternal waiting homes near health facilities",
       ],
-      sources: ["EPHI Maternal wellbeing Reports", "WHO"],
+      sources: ["EPHI Maternal health Reports", "WHO"],
     },
     women_empowerment: {
       id: "women_empowerment",
-      title: "Women's Empowerment & wellbeing",
-      description: "Women's empowerment is key to improving maternal and child wellbeing",
+      title: "Women's Empowerment & health",
+      description: "Women's empowerment is key to improving maternal and child health",
       indicators: {
         literacy: "Female literacy ~40-50% (lower than male)",
         employment: "Women's labour force participation ~70-80% (mainly agriculture and informal)",
@@ -787,9 +787,9 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         leadership: "Women are underrepresented in political and economic leadership",
       },
       wellbeing_implications: [
-        "Empowered women have better wellbeing outcomes for themselves and their children",
+        "Empowered women have better health outcomes for themselves and their children",
         "Women's education is associated with lower child mortality and malnutrition",
-        "Women's decision‑making improves household wellbeing spending",
+        "Women's decision‑making improves household health spending",
       ],
       recommendations: [
         "Promote girls' education and female literacy",
@@ -819,15 +819,15 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       wellbeing_implications: [
         "Increased risk of communicable diseases (diarrhoea, malaria, respiratory infections)",
         "Malnutrition (food insecurity in displacement)",
-        "Mental wellbeing issues (PTSD, depression, anxiety)",
-        "Maternal and child wellbeing risks (limited healthcare access)",
+        "Mental health issues (PTSD, depression, anxiety)",
+        "Maternal and child health risks (limited healthcare access)",
         "Gender‑based violence (GBV) risk increases in displacement",
         "Limited access to healthcare and essential medicines",
       ],
       recommendations: [
         "Ensure access to clean water, sanitation, and food in IDP camps",
         "Provide emergency healthcare (immunisations, maternal care, treatment of common illnesses)",
-        "Offer mental wellbeing and psychosocial support (MHPSS)",
+        "Offer mental health and psychosocial support (MHPSS)",
         "Prevent and respond to GBV in displacement settings",
         "Support durable solutions (return, local integration, resettlement)",
       ],
@@ -844,7 +844,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Overcrowded camps increase infectious disease transmission",
         "Limited access to healthcare for chronic conditions",
         "Malnutrition and food insecurity common",
-        "Mental wellbeing issues (PTSD, trauma) are prevalent",
+        "Mental health issues (PTSD, trauma) are prevalent",
         "Limited reproductive health services",
       ],
       recommendations: [
@@ -864,7 +864,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
   private economicVulnerability = {
     climate_shocks: {
       id: "climate_shocks",
-      title: "Climate Shocks & wellbeing",
+      title: "Climate Shocks & health",
       description: "Ethiopia is highly vulnerable to climate shocks (drought, flooding, locusts)",
       types: [
         { name: "Drought", frequency: "Recurring (El Niño, La Niña)", impact: "Food insecurity, malnutrition, water scarcity" },
@@ -875,7 +875,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Drought drives acute malnutrition and water‑borne diseases",
         "Flooding increases malaria, diarrhoeal diseases, and cholera",
         "Crop loss leads to food insecurity and nutritional deficiencies",
-        "Climate shocks increase stress and mental wellbeing issues",
+        "Climate shocks increase stress and mental health issues",
       ],
       recommendations: [
         "Strengthen early warning systems and disaster preparedness",
@@ -887,13 +887,13 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
     },
     inflation_economic_stress: {
       id: "inflation_economic_stress",
-      title: "Economic Stress & wellbeing",
-      description: "Inflation and economic stress affect wellbeing through reduced purchasing power and increased stress",
+      title: "Economic Stress & health",
+      description: "Inflation and economic stress affect health through reduced purchasing power and increased stress",
       inflation_trend: "High (double‑digit) in recent years",
       impacts: [
         "Reduced purchasing power for food and healthcare",
         "Increased food insecurity and malnutrition",
-        "Higher stress and mental wellbeing issues",
+        "Higher stress and mental health issues",
         "Delayed healthcare seeking (cost)",
         "Increased reliance on informal healthcare (traditional healers)",
       ],
@@ -1064,7 +1064,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
     }
 
     // ---- 3. Education Factors ----
-    if (this.hasAlias(normalized, "education") || normalized.includes("school") || normalized.includes("literacy") || normalized.includes("wellbeing literacy")) {
+    if (this.hasAlias(normalized, "education") || normalized.includes("school") || normalized.includes("literacy") || normalized.includes("health literacy")) {
       for (const [key, data] of Object.entries(this.educationFactors) as [string, any][]) {
         let score = 0;
         const matches: string[] = [];
@@ -1177,7 +1177,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
     }
 
     // ---- 5. healthcare Access ----
-    if (this.hasAlias(normalized, "healthcare") || normalized.includes("Debr") || normalized.includes("hospital") || normalized.includes("doctor") || normalized.includes("cost") || normalized.includes("insurance")) {
+    if (this.hasAlias(normalized, "healthcare") || normalized.includes("clinic") || normalized.includes("hospital") || normalized.includes("doctor") || normalized.includes("cost") || normalized.includes("insurance")) {
       for (const [key, item] of Object.entries(this.healthcareAccess) as [string, any][]) {
         let score = 0;
         const matches: string[] = [];
@@ -1190,7 +1190,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
           matches.push("urban_access_calibration");
         }
 
-        if (normalized.includes("Debr") || normalized.includes("hospital") || normalized.includes("doctor") || normalized.includes("cost") || normalized.includes("money") || normalized.includes("water") || normalized.includes("smoke") || normalized.includes("stove") || this.hasAlias(normalized, "healthcare")) {
+        if (normalized.includes("clinic") || normalized.includes("hospital") || normalized.includes("doctor") || normalized.includes("cost") || normalized.includes("money") || normalized.includes("water") || normalized.includes("smoke") || normalized.includes("stove") || this.hasAlias(normalized, "healthcare")) {
           score += 25;
           matches.push("wellbeing_systems_query_term");
         }
@@ -1220,7 +1220,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
             matches,
             recommendations: item.recommendations || [],
             management: item.recommendations || [],
-            sources: item.sources || ["Ethiopian Ministry of health - wellbeing Sector Transformation Plan (HSTP)", "World Bank Ethiopia Poverty & Social Assessment"],
+            sources: item.sources || ["Ethiopian Ministry of health - health Sector Transformation Plan (HSTP)", "World Bank Ethiopia Poverty & Social Assessment"],
             category: "Domain A",
             severity: "moderate",
           });
@@ -1314,14 +1314,14 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
             domain: "cultural",
             name: data.name.toUpperCase(),
             description: data.description,
-            evidence: `Functions: ${data.functions?.join("; ") || "N/A"}. wellbeing implications: ${data.wellbeing_implications?.join("; ") || "N/A"}.`,
+            evidence: `Functions: ${data.functions?.join("; ") || "N/A"}. health implications: ${data.wellbeing_implications?.join("; ") || "N/A"}.`,
             ethiopian_context: data.ethiopian_context,
             relevanceScore: Math.min(score / 50, 0.85),
             confidence: 0.82,
             matches,
             recommendations: data.recommendations || [],
             management: data.recommendations || [],
-            sources: data.sources || ["Ethiopian Journal of wellbeing Development", "Social Capital Studies"],
+            sources: data.sources || ["Ethiopian Journal of health Development", "Social Capital Studies"],
             category: "Domain B",
             severity: "low",
           });
@@ -1387,7 +1387,7 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 9. Gender & wellbeing ----
+    // ---- 9. Gender & health ----
     if (this.hasAlias(normalized, "gender") || normalized.includes("women") || normalized.includes("girls") || normalized.includes("gender‑based violence") || normalized.includes("maternal") || normalized.includes("fgm")) {
       for (const [key, data] of Object.entries(this.genderwellbeing) as [string, any][]) {
         let score = 0;
@@ -1424,15 +1424,15 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
             strand: this.strandName,
             domain: "wellbeing",
             name: data.title.toUpperCase(),
-            description: data.description || "Gender and wellbeing context",
+            description: data.description || "Gender and health context",
             evidence: `Prevalence: ${data.prevalence ? Object.entries(data.prevalence).map(([k, v]) => `${k}: ${v}`).join("; ") : "N/A"}. Indicators: ${data.indicators ? Object.entries(data.indicators).map(([k, v]) => `${k}: ${v}`).join("; ") : "N/A"}.`,
-            ethiopian_context: data.ethiopian_context || "Ethiopian gender and wellbeing context",
+            ethiopian_context: data.ethiopian_context || "Ethiopian gender and health context",
             relevanceScore: Math.min(score / 50, 0.90),
             confidence: 0.88,
             matches,
             recommendations: data.recommendations || data.prevention || [],
             management: data.recommendations || data.prevention || [],
-            sources: data.sources || ["UN Women Ethiopia", "WHO Violence Against Women", "EPHI Maternal wellbeing Reports"],
+            sources: data.sources || ["UN Women Ethiopia", "WHO Violence Against Women", "EPHI Maternal health Reports"],
             category: "Domain A",
             severity: "moderate",
           });
@@ -1579,14 +1579,14 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
         "Utilise local health Extension Workers for basic care",
         "Enrol in CBHI to reduce healthcare costs",
         "Plan for transport to health centres in emergencies",
-        "Attend wellbeing education sessions provided by HEWs",
+        "Attend health education sessions provided by HEWs",
       ];
     } else {
       return [
         "Use public health facilities for subsidised care",
         "Obtain referral slips from primary centres for tertiary care",
         "Enrol in social health insurance if eligible",
-        "Consider private Debrs for routine care if affordable",
+        "Consider private clinics for routine care if affordable",
       ];
     }
   }
@@ -1641,13 +1641,13 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
   }
 
   /**
-   * Get conflict/displacement wellbeing advice
+   * Get conflict/displacement health advice
    */
   getConflictDisplacementwellbeingAdvice(): string[] {
     return [
       "Ensure access to clean water and sanitation",
-      "Seek vaccination and wellbeing screening in displacement settings",
-      "Access mental wellbeing and psychosocial support",
+      "Seek vaccination and health screening in displacement settings",
+      "Access mental health and psychosocial support",
       "Prevent and respond to gender‑based violence",
       "Maintain continuity of care for chronic conditions (HIV, TB, diabetes)",
       "Support children's education and routines",

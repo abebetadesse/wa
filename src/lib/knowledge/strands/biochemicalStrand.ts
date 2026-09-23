@@ -89,7 +89,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       conditions: ["G6PD deficiency", "Oxidative stress", "Fava bean sensitivity"],
       ethiopian_context: ["Fava bean (Baqela) can trigger hemolysis in people with G6PD deficiency"],
       interactions: ["Glutathione redox cycle", "Nucleotide synthesis"],
-      recommendations: ["If G6PD deficiency is known, seek practitioner guidance before fava beans or oxidizing medicines"],
+      recommendations: ["If G6PD deficiency is known, seek clinician guidance before fava beans or oxidizing medicines"],
     },
     urea_cycle: {
       description: "Hepatic conversion of ammonia to urea for safe excretion",
@@ -98,7 +98,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       conditions: ["Liver disease", "Hyperammonemia", "High protein diets"],
       ethiopian_context: ["Fermented milk foods are part of several Ethiopian dietary traditions"],
       interactions: ["Hepatic encephalopathy", "Cirrhosis"],
-      recommendations: ["Liver disease and high-protein changes require a qualified practitioner or dietitian"],
+      recommendations: ["Liver disease and high-protein changes require a qualified clinician or dietitian"],
     },
     gluconeogenesis: {
       description: "Glucose synthesis from lactate, amino acids, and glycerol during fasting",
@@ -173,7 +173,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Teff, pumpkin seeds, sesame, and legumes provide culturally familiar magnesium sources"],
       deficiency: "Muscle cramps, constipation, migraine, fatigue, and sleep disturbance",
       sources: ["Teff", "Pumpkin seeds", "Niger seeds", "Legumes", "Dark leafy greens"],
-      recommendations: ["Use food-first sources and confirm persistent symptoms with a practitioner before supplementing"],
+      recommendations: ["Use food-first sources and confirm persistent symptoms with a clinician before supplementing"],
     },
     vitamin_d_endocrine: {
       description: "Cutaneous 7-dehydrocholesterol photolysis to cholecalciferol and renal 1-alpha hydroxylation",
@@ -198,7 +198,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       sources: ["Beef liver", "Fish", "Fermented dairy", "Fortified nutritional yeast"],
       recommendations: [
         "Monitor B12 during prolonged fasting periods like Abiy Tsom (Lent)",
-        "Incorporate nutritional yeast or scientific cobalamin supplementation if fasting continuously",
+        "Incorporate nutritional yeast or clinical cobalamin supplementation if fasting continuously",
       ],
     },
     folate_metabolism: {
@@ -208,7 +208,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Gomen and pulses provide folate; quick cooking preserves more folate than prolonged boiling"],
       deficiency: "Megaloblastic anemia, elevated homocysteine, and neural tube risk in pregnancy",
       sources: ["Gomen", "Pulses", "Teff", "Avocado", "Fortified grains"],
-      recommendations: ["People who may become pregnant should discuss folate needs with a qualified practitioner"],
+      recommendations: ["People who may become pregnant should discuss folate needs with a qualified clinician"],
     },
     omega3_omega6_balance: {
       description: "Competition between fatty-acid pathways influences inflammatory and cardiovascular signaling",
@@ -217,7 +217,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Niger seed oil and Lake Tana fish are local food contexts for fatty-acid discussions"],
       deficiency: "Dry skin, inflammatory tendency, and possible cardiovascular risk",
       sources: ["Niger seed oil", "Lake fish", "Flaxseed", "Walnuts"],
-      recommendations: ["Favor dietary variety and discuss concentrated supplements with a practitioner"],
+      recommendations: ["Favor dietary variety and discuss concentrated supplements with a clinician"],
     },
     vitamin_k2_calcium_axis: {
       description: "Vitamin K-dependent proteins help route calcium toward bone and support vascular tissue",
@@ -232,7 +232,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
 
   private enzymeSystems = {
     cytochrome_p450: {
-      description: "Hepatic Phase I hemoprotein monooxygenases responsible for the oxidative biotransformation of 70-80% of scientific drugs",
+      description: "Hepatic Phase I hemoprotein monooxygenases responsible for the oxidative biotransformation of 70-80% of clinical drugs",
       isoforms: ["CYP1A2", "CYP2C9", "CYP2C19", "CYP2D6", "CYP3A4"],
       inducers: ["Rifampin (anti-TB)", "Carbamazepine", "Phenobarbital", "Tobacco polycyclic hydrocarbons"],
       inhibitors: ["Ciprofloxacin", "Erythromycin", "Fluconazole", "Cimetidine"],
@@ -255,7 +255,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       cofactors: ["NAD+", "Thiamine", "Zinc", "Magnesium"],
       ethiopian_context: ["Traditional Tella and Tej fermentation can produce acetaldehyde alongside alcohol"],
       deficiency: "Flushing, nausea, tachycardia, and increased alcohol-related cancer risk",
-      recommendations: ["Avoid alcohol if it causes flushing or other adverse symptoms and seek scientific advice"],
+      recommendations: ["Avoid alcohol if it causes flushing or other adverse symptoms and seek clinical advice"],
     },
     monoamine_oxidase: {
       description: "Breaks down serotonin, dopamine, and norepinephrine in mitochondria",
@@ -290,7 +290,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       nutrients: ["Iodine", "Selenium", "Zinc", "Iron", "Tyrosine"],
       conditions: ["Hypothyroidism", "Hyperthyroidism", "Goitre"],
       ethiopian_context: ["Highland iodine and selenium access can vary by location and diet"],
-      recommendations: ["Use iodized salt appropriately and obtain thyroid symptoms or labs through scientific care"],
+      recommendations: ["Use iodized salt appropriately and obtain thyroid symptoms or labs through clinical care"],
     },
     adrenal_cortisol_stress: {
       description: "The HPA axis coordinates cortisol response to stress and energy demand",
@@ -345,7 +345,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
     ampk: {
       description: "Cellular energy sensor activated when ATP is low and energy demand rises",
       signals: ["AMP", "Exercise", "Fasting", "Metformin"],
-      contexts: ["exercise", "fasting", "glucose regulation", "mitochondrial wellbeing"],
+      contexts: ["exercise", "fasting", "glucose regulation", "mitochondrial health"],
       recommendations: ["Interpret exercise and fasting effects within medication and diabetes safety context"],
     },
     pi3k_mapk: {
@@ -555,7 +555,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         matches: ["cytochrome_p450_screen"],
         recommendations: [
           "Always verify traditional herbs against prescribed medicines using the Safety Gate",
-          "Inform your doctor or scientific pharmacist about all traditional remedies used",
+          "Inform your doctor or clinical pharmacist about all traditional remedies used",
         ],
         severity: "high",
         risk_assessment: {
@@ -563,7 +563,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
           risk_factors: cyp.ethiopian_context,
           recommendations: [
             "Do not start, stop, or change a medicine or concentrated herb based on this finding.",
-            "Ask a practitioner or pharmacist to review the complete medication and supplement list.",
+            "Ask a clinician or pharmacist to review the complete medication and supplement list.",
           ],
         },
         sources: ["Fullas, F. 'Interactions of Ethiopian Herbal Medicines and Prescription Drugs'", "ETM-DB Pharmacopoeia"],
@@ -588,8 +588,8 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         relevanceScore: 0.78,
         confidence: 0.82,
         matches: ["enzyme_context_match"],
-        recommendations: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified practitioner."],
-        management: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified practitioner."],
+        recommendations: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified clinician."],
+        management: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified clinician."],
         severity: enzymeKey === "monoamine_oxidase" ? "high" : "moderate",
         sources: ["Lehninger Principles of Biochemistry, 8th Ed.", "Ethiopian traditional medicine safety context"],
       });
@@ -710,7 +710,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       confidence: 0.9,
       severity: "high",
       safetyAlerts: warnings,
-      recommendations: ["Do not start or stop a medicine or concentrated herb without a practitioner or pharmacist."],
+      recommendations: ["Do not start or stop a medicine or concentrated herb without a clinician or pharmacist."],
       sources: ["ETM-DB Pharmacopoeia", "Medication safety rules"],
     }];
   }

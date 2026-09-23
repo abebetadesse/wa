@@ -6,19 +6,19 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  * Integrates:
  * - Substance profiles: Khat, Alcohol, Tobacco (smoking & chewing), Opioids, Cannabis, Prescription Drug Abuse
  * - Detailed pharmacological mechanisms (cathinone, ethanol, nicotine, THC, morphine)
- * - Acute & chronic wellbeing effects (cardiovascular, neurological, gastrointestinal, oncological)
+ * - Acute & chronic health effects (cardiovascular, neurological, gastrointestinal, oncological)
  * - Withdrawal syndromes (symptoms, onset, peak, duration, management)
  * - Ethiopian cultural context (Bercha, Tella, Tej, Areke, Tumbakho, Gaya)
  * - Harm reduction strategies (tapering, nutritional protection, hydration)
  * - Pharmacotherapy (NRT, MAT, benzodiazepines, thiamine, disulfiram, naltrexone)
  * - Psychosocial interventions (CBT, MI, community support, faith‑based groups)
  * - Prevention programmes (school‑based, community‑based, religious‑based)
- * - Dual diagnosis (co‑occurring mental wellbeing disorders)
+ * - Dual diagnosis (co‑occurring mental health disorders)
  * - Cross‑strand linking (Medication, Psychological, Cultural, Socioeconomic)
- * - Domain A (scientific) with severity and risk assessment
+ * - Domain A (clinical) with severity and risk assessment
  * - Domain B (cultural/reflective) for traditional context
  * - Evidence‑weighted confidence, severity, and safety alerts
- * - User‑specific profiling (substance use, mental wellbeing, age, region)
+ * - User‑specific profiling (substance use, mental health, age, region)
  */
 export class AddictionKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "addiction";
@@ -133,7 +133,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Family therapy: involve family in recovery",
       ],
       prevention: [
-        "School‑based education on wellbeing risks of khat use",
+        "School‑based education on health risks of khat use",
         "Community awareness campaigns (radio, TV, local events)",
         "Promote alternative social activities (sports, arts, youth clubs)",
         "Economic alternatives to khat cultivation",
@@ -143,7 +143,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Khat use often co‑occurs with depression, anxiety, and psychotic disorders",
         "Anxiety may be exacerbated by cathinone withdrawal",
         "Psychotic symptoms: paranoia, auditory hallucinations (usually resolve with cessation)",
-        "Treatment: address both addiction and underlying mental wellbeing condition",
+        "Treatment: address both addiction and underlying mental health condition",
       ],
       sources: [
         "ETM‑DB (Ethiopian Traditional Medicine Database)",
@@ -200,7 +200,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         peak: "24 to 72 hours (seizures at 24-48h, DTs at 48-96h)",
         duration: "5 to 10 days (residual sleep disturbance, anxiety may persist longer)",
         management: [
-          "Medical detoxification under scientific supervision",
+          "Medical detoxification under clinical supervision",
           "Benzodiazepines (e.g., chlordiazepoxide, diazepam) for withdrawal symptom control (CIWA‑Ar protocol)",
           "High‑dose IV Thiamine (B1) to prevent Wernicke‑Korsakoff syndrome",
           "Folic acid and multivitamin supplementation",
@@ -254,7 +254,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Address trauma (PTSD) that may underlie drinking",
       ],
       sources: [
-        "WHO Global Status Report on Alcohol and wellbeing",
+        "WHO Global Status Report on Alcohol and health",
         "Amanuel Mental Specialized Hospital Addiction Protocols",
         "Ethiopian Public health Institute (EPHI) Alcohol Use Survey",
       ],
@@ -289,7 +289,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Gastric and pancreatic cancer",
         "Periodontal disease (gum recession, tooth loss)",
         "Cataracts and macular degeneration",
-        "Reproductive wellbeing: reduced fertility, erectile dysfunction, low birth weight, preterm birth",
+        "Reproductive health: reduced fertility, erectile dysfunction, low birth weight, preterm birth",
         "Accelerated ageing (skin wrinkling, reduced bone density)",
         "Second‑hand smoke effects on children and non‑smokers",
       ],
@@ -347,14 +347,14 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Family support: involve family in the quit process",
       ],
       prevention: [
-        "School‑based tobacco education (awareness of wellbeing risks)",
+        "School‑based tobacco education (awareness of health risks)",
         "Ban on tobacco advertising and sponsorship",
-        "Plain packaging and wellbeing warnings on cigarette packs",
+        "Plain packaging and health warnings on cigarette packs",
         "Price increases (taxation) to discourage use",
         "Smoke‑free public places (enforcement)",
       ],
       dual_diagnosis: [
-        "Tobacco use is highly comorbid with mental wellbeing conditions (depression, schizophrenia, substance use disorders)",
+        "Tobacco use is highly comorbid with mental health conditions (depression, schizophrenia, substance use disorders)",
         "Smoking cessation may lead to transient worsening of depression; monitor closely",
         "Bupropion can treat both nicotine dependence and depression",
       ],
@@ -462,7 +462,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       ],
       dual_diagnosis: [
         "Opioid use disorder frequently co‑occurs with depression, anxiety, and PTSD",
-        "Address underlying trauma and mental wellbeing conditions",
+        "Address underlying trauma and mental health conditions",
         "MAT (buprenorphine/methadone) plus psychotherapy is the most effective approach",
       ],
       sources: [
@@ -643,7 +643,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Stigma reduction to encourage help‑seeking",
       ],
       dual_diagnosis: [
-        "Prescription drug abuse often co‑occurs with mental wellbeing conditions (anxiety, insomnia, chronic pain)",
+        "Prescription drug abuse often co‑occurs with mental health conditions (anxiety, insomnia, chronic pain)",
         "Address the underlying condition to reduce misuse",
         "Non‑pharmacological alternatives for anxiety and insomnia (CBT, mindfulness)",
       ],
@@ -663,7 +663,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       name: "School‑Based Addiction Prevention",
       description: "Education and life skills training in schools to prevent substance initiation",
       components: [
-        "wellbeing education on substance risks (khat, alcohol, tobacco, drugs)",
+        "health education on substance risks (khat, alcohol, tobacco, drugs)",
         "Refusal skills training (how to say no to peer pressure)",
         "Social‑emotional learning (coping with stress, emotions)",
         "Peer education programmes (students teaching students)",
@@ -671,7 +671,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       ],
       target: "Children and adolescents (10-18 years)",
       ethiopian_context: [
-        "Schools are the primary setting for youth wellbeing education",
+        "Schools are the primary setting for youth health education",
         "Integration into existing life skills curriculum",
         "Use of Amharic, Oromo, and English materials",
       ],
@@ -714,18 +714,18 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Religious messages against substance use (khat, alcohol, tobacco)",
         "Spiritual counselling and support",
         "Faith‑based support groups",
-        "Integration of wellbeing education in religious teaching",
+        "Integration of health education in religious teaching",
       ],
       target: "Religious communities (Orthodox, Muslim, Protestant)",
       ethiopian_context: [
         "Religious institutions are trusted and influential",
-        "Orthodox fasting (Tsome) can be leveraged for wellbeing messaging",
+        "Orthodox fasting (Tsome) can be leveraged for health messaging",
         "Imams and priests can address substance use from a moral and spiritual perspective",
       ],
       effectiveness: "Effective for community engagement and support",
       recommendations: [
         "Partner with religious leaders for prevention messages",
-        "Use religious platforms for wellbeing education",
+        "Use religious platforms for health education",
         "Support faith‑based recovery groups",
       ],
       sources: ["Ethiopian Orthodox Church HIV/AIDS Prevention Programs"],
@@ -854,7 +854,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         matches.push("user_youth");
       }
 
-      // Mental wellbeing comorbidity
+      // Mental health comorbidity
       if (hasMentalwellbeing && (key === "alcohol" || key === "khat" || key === "cannabis")) {
         score += 15;
         matches.push("user_mental_wellbeing");
@@ -949,7 +949,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Access community‑based support groups (Iddir, faith‑based groups)",
         "Consider harm reduction strategies",
         "Involve family and community support",
-        "Seek treatment for any co‑occurring mental wellbeing conditions",
+        "Seek treatment for any co‑occurring mental health conditions",
         "Explore pharmacotherapy options (e.g., NRT for tobacco, MAT for opioids)",
       ];
       results.push({
@@ -1048,7 +1048,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         return data.dual_diagnosis || [];
       }
     }
-    return ["Substance use often co‑occurs with mental wellbeing conditions; address both."];
+    return ["Substance use often co‑occurs with mental health conditions; address both."];
   }
 
   /**

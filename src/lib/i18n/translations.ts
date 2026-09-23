@@ -97,7 +97,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       step5: "Review & Evaluate",
     },
     report: {
-      title: "Biochemical wellbeing Gap & Safety Report",
+      title: "Biochemical Wellbeing Gap & Safety Report",
       statusAudited: "REPORT STATUS: AUDITED & CERTIFIED",
       safetyGateVerified: "Safety Gate Verified",
       zeroInteractionGuarantee: "Zero-Interaction Guarantee",
@@ -113,11 +113,11 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       thresholdsTitle: "Evaluation Thresholds & Biomarkers",
     },
     atlas: {
-      title: "Ethiopian wellbeing Nutrition Atlas",
+      title: "Ethiopian Wellbeing Nutrition Atlas",
       subtitle: "Regional nutritional deficiency rates and traditional medicine usage",
     },
     emergency: {
-      title: "Emergency wellbeing Profile",
+      title: "Emergency Wellbeing Profile",
       subtitle: "Your contacts, conditions, and medications for emergency responders",
       sosBtn: "Send SOS Alert",
     },

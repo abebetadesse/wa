@@ -54,7 +54,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "indoor_air_pm25": "X μg/m³ or null",
   "seasonal_patterns": ["string", ...],
   "endemic_areas": ["string", ...],
-  "key_finding_summary": "One sentence: key ecological wellbeing finding for Ethiopia"
+  "key_finding_summary": "One sentence: key ecological health finding for Ethiopia"
 }`,
 
   biochemical: `Extract from this abstract (return ONLY valid JSON, no markdown):
@@ -75,7 +75,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "molar_ratios": "antinutrient:mineral ratio or null",
   "nutrients": ["nutrient names mentioned", ...],
   "oxidative_stress_biomarkers": ["biomarker names", ...],
-  "key_finding_summary": "One sentence: key biochemical finding relevant to Ethiopian diet/wellbeing"
+  "key_finding_summary": "One sentence: key biochemical finding relevant to Ethiopian diet/health"
 }`,
 
   dietary: `Extract from this abstract (return ONLY valid JSON, no markdown):
@@ -130,7 +130,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "epse_incidence": "incidence or null",
   "prevalence": "X% or null",
   "risk_factors": ["psychological risk factors", ...],
-  "key_finding_summary": "One sentence: key mental wellbeing finding for Ethiopia"
+  "key_finding_summary": "One sentence: key mental health finding for Ethiopia"
 }`,
 
   socioeconomic: `Extract from this abstract (return ONLY valid JSON, no markdown):
@@ -145,7 +145,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "wash_access": "X% or null",
   "hfias_score": "score or null",
   "risk_factors": ["socioeconomic determinants", ...],
-  "key_finding_summary": "One sentence: key socioeconomic wellbeing finding for Ethiopia"
+  "key_finding_summary": "One sentence: key socioeconomic health finding for Ethiopia"
 }`,
 
   addiction: `Extract from this abstract (return ONLY valid JSON, no markdown):
@@ -185,7 +185,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "tba_delivery_rate": "X% or null",
   "postpartum_confinement_days": "X days or null",
   "illness_explanatory_models": ["cultural illness explanations", ...],
-  "key_finding_summary": "One sentence: key cultural wellbeing practice finding for Ethiopia"
+  "key_finding_summary": "One sentence: key cultural health practice finding for Ethiopia"
 }`,
 
   astrological: `Extract from this abstract (return ONLY valid JSON, no markdown):
@@ -198,7 +198,7 @@ const STRAND_EXTRACTION_PROMPTS: Record<KnowledgeStrandType, string> = {
   "harvest_bmi_recovery": "description or null",
   "sad_prevalence": "X% or null",
   "seasonal_patterns": ["seasonal disease patterns", ...],
-  "key_finding_summary": "One sentence: key seasonal/temporal wellbeing finding for Ethiopia"
+  "key_finding_summary": "One sentence: key seasonal/temporal health finding for Ethiopia"
 }`,
 };
 
@@ -325,7 +325,7 @@ export async function llmAugmentExtraction(
   if (process.env.LITERATURE_LLM_ENRICHMENT === "false") return baseExtracted;
 
   const prompt = STRAND_EXTRACTION_PROMPTS[strand];
-  const systemMsg = `You are a precise biomedical data extraction AI focused on Ethiopian population wellbeing research. 
+  const systemMsg = `You are a precise biomedical data extraction AI focused on Ethiopian population health research. 
 Extract ONLY numeric values, percentages, and short factual descriptions from the abstract.
 Return ONLY valid JSON. Do not add commentary or markdown. Use null for fields not mentioned.`;
 

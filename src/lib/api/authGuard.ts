@@ -1,6 +1,9 @@
 import { requireAnyRole, requireAuthenticatedUser, type AuthenticatedUser } from "@/lib/auth";
 
-export type PlatformRole = "user" | "practitioner" | "reviewer" | "analyst" | "admin" | "super_admin" | "expert";
+import type { RoleName } from "@/lib/db/schema/rbac";
+
+/** Every role an account can hold. "expert" is used by the expert desk but has no RBAC row yet. */
+export type PlatformRole = RoleName | "expert";
 
 export async function requireUser() {
   try {

@@ -20,13 +20,17 @@ Identifiers follow the same rule: `wellbeingProfile`, `wellbeing_profiles`, `sci
 
 ## When the original terms stay
 
-Accurate real-world terms are kept where they refer to something **outside** the platform, because
-safety referrals and evidence labels must be unambiguous:
+The rule is about how the platform describes **itself**. Accurate terms are kept where they describe
+something **outside** the platform, because referrals, evidence and search queries must be exact:
 
-- External services and people: *healthcare*, *health professional*, *health facility*, *health worker*,
+- External services, places and people: *healthcare*, *health professional*, *health centre*, *clinic*,
   *public health*, *pharmacist*, *doctor*, *emergency services*.
-- Types of external research evidence: *clinical trial*, *clinical study*, *clinical evidence*,
-  *clinical pharmacology*.
+- Real names: *Mental Health* hotlines and hospitals, WHO *Global Health Observatory*, the
+  *Health Sector Transformation Plan*, *Ethiopian Journal of Health Development*, EPHI publications.
+- Established scientific terms and external evidence: *mental health*, *social determinants of health*,
+  *clinical trial*, *clinical study*, *clinical evidence*.
+- Scientific knowledge content (`knowledge-csv/`, `src/lib/knowledge/strands/`, engines, literature
+  search queries sent to PubMed/OpenAlex/WHO) keeps its original prose; only identifiers use platform terms.
 - Ordinary English such as *healthy fats*.
 
 The platform never claims to diagnose, prescribe or replace a qualified health professional.

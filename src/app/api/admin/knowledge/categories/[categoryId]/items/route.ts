@@ -1,19 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { knowledgeItems } from "@/lib/db/schema";
-import { requireKnowledgeRole, parseJsonObject } from "@/lib/adminKnowledge";
-import { desc, eq } from "drizzle-orm";
+import { z } from "zod";
+import { defineRoute } from "@/lib/api/route";
+import {
+  createItem,
+  itemInput,
+  KNOWLEDGE_EDITORS,
+  KNOWLEDGE_READERS,
+  listItems,
+} from "@/server/knowledge/admin";
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {
-  const auth = await requireKnowledgeRole(["editor", "reviewer", "admin", "super_admin"]); if (auth.error) return auth.error;
-  const { categoryId } = await params;
-  try { return NextResponse.json({ success: true, data: await db.select().from(knowledgeItems).where(eq(knowledgeItems.categoryId, categoryId)).orderBy(desc(knowledgeItems.updatedAt)) }); }
-  catch { return NextResponse.json({ success: false, error: "Knowledge database is unavailable." }, { status: 503 }); }
-}
+const params = z.object({ categoryId: z.string().min(1) });
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {
-  const auth = await requireKnowledgeRole(["editor", "admin", "super_admin"]); if (auth.error) return auth.error;
-  const { categoryId } = await params;
-  try { const body = await request.json(); const [item] = await db.insert(knowledgeItems).values({ categoryId, data: parseJsonObject(body.data || {}, "data"), status: "draft", createdBy: auth.user.id, updatedBy: auth.user.id }).returning(); return NextResponse.json({ success: true, data: item }, { status: 201 }); }
-  catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unable to create item." }, { status: 400 }); }
-}
+export const GET = defineRoute({
+  access: { roles: KNOWLEDGE_READERS },
+  params,
+  handler: ({ params }) => listItems(params.categoryId),
+});
+
+export const POST = defineRoute({
+  access: { roles: KNOWLEDGE_EDITORS },
+  status: 201,
+  params,
+  body: itemInput,
+  handler: ({ user, params, body }) => createItem(user, params.categoryId, body.data),
+  audit: { action: "knowledge_item_created", resourceType: "knowledge_item", resourceId: (_ctx, item) => item?.id },
+});

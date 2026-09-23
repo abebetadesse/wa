@@ -29,7 +29,7 @@ export class CausalInferenceEngine {
           { from: "n4", to: "n5", label: "scientific resolution" },
         ],
         integratedSolution: [
-          "Seek immediate blood smear microscopy or Rapid Diagnostic Test (RDT) at a Debr",
+          "Seek immediate blood smear microscopy or Rapid Diagnostic Test (RDT) at a clinic",
           "Complete full 3-day course of Artemether-Lumefantrine (Coartem) if positive",
           "Drink oral rehydration salts (ORS) or fresh lemon-honey water to restore electrolytes",
           "Sleep under Long-Lasting Insecticidal Nets (LLINs) every night",

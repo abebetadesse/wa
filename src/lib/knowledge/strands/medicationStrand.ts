@@ -69,11 +69,11 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       seriousSideEffects: ["QT prolongation", "Anaphylaxis", "Rare liver injury"],
       interactions: ["Rifampicin and other enzyme inducers may reduce exposure", "Antacids or poor food intake may reduce absorption"],
       contraindications: ["Hypersensitivity", "Severe malaria requiring parenteral treatment"],
-      pregnancyCategory: "Use only after practitioner assessment; malaria itself is high risk in pregnancy",
-      lactation: "Discuss with a practitioner; treatment decisions depend on maternal and infant context",
+      pregnancyCategory: "Use only after clinician assessment; malaria itself is high risk in pregnancy",
+      lactation: "Discuss with a clinician; treatment decisions depend on maternal and infant context",
       availability: "Commonly supplied through public health centres and pharmacies",
       costContext: "Public-sector access and private prices vary by region and supply",
-      resistanceContext: "Treatment failure requires testing and public-wellbeing follow-up rather than self-repeating a course",
+      resistanceContext: "Treatment failure requires testing and public-health follow-up rather than self-repeating a course",
       safetyNotes: ["Take the complete prescribed course and seek urgent review for breathing difficulty, fainting, or severe vomiting"],
     },
     {
@@ -87,7 +87,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["Strong enzyme inducer that can reduce warfarin, contraceptive, antiretroviral, and other medicine exposure"],
       contraindications: ["Severe active liver disease", "Hypersensitivity"],
       pregnancyCategory: "Use under TB-program or specialist supervision",
-      lactation: "Usually compatible when scientificly indicated; confirm with the treatment team",
+      lactation: "Usually compatible when clinically indicated; confirm with the treatment team",
       availability: "Widely supplied through national TB/DOTS services",
       costContext: "Often provided through public TB services",
       resistanceContext: "Never use alone for active TB; incomplete therapy increases resistance risk",
@@ -104,7 +104,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["May increase phenytoin or carbamazepine exposure", "Alcohol increases liver risk"],
       contraindications: ["Severe active liver disease", "Previous severe isoniazid reaction"],
       pregnancyCategory: "Use under TB-program or specialist supervision",
-      lactation: "Usually compatible when scientificly indicated; pyridoxine may be advised",
+      lactation: "Usually compatible when clinically indicated; pyridoxine may be advised",
       availability: "Widely supplied through TB services",
       costContext: "Often provided through public TB services",
       resistanceContext: "Must be used in an appropriate regimen to reduce resistance",
@@ -121,7 +121,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["Potassium supplements and potassium-sparing medicines", "NSAIDs may worsen kidney risk or reduce effect"],
       contraindications: ["Pregnancy", "Previous ACE-inhibitor angioedema", "Some renal artery disorders"],
       pregnancyCategory: "Avoid in pregnancy",
-      lactation: "Discuss infant age and scientific context with a practitioner",
+      lactation: "Discuss infant age and clinical context with a clinician",
       availability: "Commonly available, but continuity varies by facility",
       costContext: "Public and private prices vary by strength and supply",
       safetyNotes: ["Monitor blood pressure, kidney function, and potassium as advised"],
@@ -129,14 +129,14 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
     {
       name: "Metformin",
       className: "Biguanide antidiabetic",
-      indications: ["Type 2 diabetes and selected practitioner-directed uses"],
+      indications: ["Type 2 diabetes and selected clinician-directed uses"],
       mechanism: "Reduces hepatic glucose production and improves insulin sensitivity.",
       commonSideEffects: ["Nausea", "Diarrhoea", "Abdominal discomfort", "Long-term B12 reduction"],
       seriousSideEffects: ["Rare lactic acidosis, especially with severe kidney or acute illness"],
       interactions: ["Alcohol and dehydration increase risk", "Kidney function affects safe use"],
-      contraindications: ["Severe kidney impairment or acute hypoxia without practitioner review"],
+      contraindications: ["Severe kidney impairment or acute hypoxia without clinician review"],
       pregnancyCategory: "Use only as prescribed for the individual",
-      lactation: "Discuss with a practitioner",
+      lactation: "Discuss with a clinician",
       availability: "Commonly available through public and private services",
       costContext: "Cost varies by formulation and supply",
       safetyNotes: ["Do not change doses for fasting without a diabetes plan; ask about kidney function and B12 monitoring"],
@@ -148,7 +148,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       terms: ["cyp", "metabolism", "pharmacokinetic", "drug level", "slow metabolizer"],
       title: "Individual medicine metabolism varies",
       description: "Genetic variation, liver and kidney function, age, nutrition, infection, and interacting medicines can change exposure.",
-      recommendation: "Use the prescribed dose and review unexpected toxicity or treatment failure with a practitioner or pharmacist; ancestry alone cannot predict an individual genotype.",
+      recommendation: "Use the prescribed dose and review unexpected toxicity or treatment failure with a clinician or pharmacist; ancestry alone cannot predict an individual genotype.",
     },
     {
       terms: ["rifampicin", "enzyme inducer", "interaction"],
@@ -251,7 +251,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
   };
 
   private drugDrugInteractions = [
-    { drugs: ["rifampicin", "dolutegravir"], description: "Rifampicin lowers dolutegravir exposure; TB/HIV treatment must be coordinated by a practitioner.", severity: "high" as const },
+    { drugs: ["rifampicin", "dolutegravir"], description: "Rifampicin lowers dolutegravir exposure; TB/HIV treatment must be coordinated by a clinician.", severity: "high" as const },
     { drugs: ["warfarin", "metronidazole"], description: "Metronidazole can increase anticoagulant effect and bleeding risk.", severity: "high" as const },
     { drugs: ["ace inhibitor", "nsaid"], description: "The ACE inhibitor/NSAID combination can worsen kidney function, especially with dehydration or a diuretic.", severity: "high" as const },
     { drugs: ["tramadol", "sertraline"], description: "Combined serotonergic effects may cause serotonin toxicity and excess sedation.", severity: "moderate" as const },
@@ -299,7 +299,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interaction: "Synergistic enhancement of pancreatic insulin sensitivity and secretion risking severe nocturnal hypoglycemia",
       severity: "high",
       mechanism: "Thymoquinone activates AMPK pathways and stimulates beta-cell insulin release additively with oral hypoglycemic agents",
-      ethiopian_context: "Tikur Azmud oil or seeds are widely consumed as a panacea for immune and metabolic wellbeing",
+      ethiopian_context: "Tikur Azmud oil or seeds are widely consumed as a panacea for immune and metabolic health",
       recommendation: "If consuming black seed preparations, close blood glucose self-monitoring is essential. Medication doses may require physician titration.",
     },
     {
@@ -366,7 +366,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       reaction: "Hepatotoxicity",
       drugs: ["Isoniazid", "Rifampin", "Pyrazinamide", "Paracetamol", "Fluconazole"],
       symptoms: ["jaundice", "dark urine", "nausea", "abdominal pain", "fatigue"],
-      recommendation: "Seek urgent scientific review for jaundice, dark urine, severe nausea, or abdominal pain while taking these medicines.",
+      recommendation: "Seek urgent clinical review for jaundice, dark urine, severe nausea, or abdominal pain while taking these medicines.",
     },
     {
       reaction: "Nephrotoxicity",
@@ -441,7 +441,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         severity: validSeverities.has(row.interactionSeverity) ? (row.interactionSeverity as HerbDrugInteractionRule["severity"]) : "moderate",
         mechanism: row.mechanism,
         ethiopian_context: row.ethiopianContext || "",
-        recommendation: row.recommendation || `Consult a practitioner or pharmacist before combining ${row.nameVernacular} with ${row.drugClass}.`,
+        recommendation: row.recommendation || `Consult a clinician or pharmacist before combining ${row.nameVernacular} with ${row.drugClass}.`,
       }));
 
       MedicationKnowledgeStrand.dbRuleCache = { rules, fetchedAt: Date.now() };
@@ -515,7 +515,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           matches,
           recommendations: [
             "Take medications strictly as directed by your prescribing healthcare provider",
-            "Report any adverse symptoms or sudden side effects promptly to a scientific pharmacist or physician",
+            "Report any adverse symptoms or sudden side effects promptly to a clinical pharmacist or physician",
           ],
           management: data.interactions,
           sources: ["Ethiopian Food and Drug Authority (EFDA) Essential Medicines List", "WHO Model Formulary"],
@@ -577,7 +577,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         matches: ["pharmacokinetic_context"],
         recommendations: [context.recommendation],
         safetyAlerts: [context.recommendation],
-        sources: ["WHO medication safety guidance", "clinical pharmacology principles"],
+        sources: ["WHO medication safety guidance", "Clinical pharmacology principles"],
       });
     }
 
@@ -649,7 +649,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           matches: ["active_herb_drug_conflict"],
           recommendations: [rule.recommendation],
           management: [rule.recommendation],
-          sources: ["ETM-DB scientific Safety Gate", "Ethiopian Ministry of health Pharmacovigilance"],
+          sources: ["ETM-DB Clinical Safety Gate", "Ethiopian Ministry of health Pharmacovigilance"],
         });
       }
     }
@@ -672,7 +672,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           confidence: 0.92,
           recommendations: [dni.recommendation],
           management: [dni.recommendation],
-          sources: ["scientific Pharmacokinetics - Drug Nutrient Timing Protocols"],
+          sources: ["Clinical Pharmacokinetics - Drug Nutrient Timing Protocols"],
         });
       }
     }
@@ -740,7 +740,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         relevanceScore: 0.92,
         confidence: 0.98,
         severity: "high",
-        safetyAlerts: ["Do not begin, stop, or substitute a medicine or herbal product during pregnancy or lactation without practitioner/pharmacist review."],
+        safetyAlerts: ["Do not begin, stop, or substitute a medicine or herbal product during pregnancy or lactation without clinician/pharmacist review."],
         recommendations: ["Provide the full medicine, supplement, and herb list to antenatal or pharmacy staff.", "Seek urgent care for bleeding, severe vomiting, breathing difficulty, or reduced fetal movement."],
         sources: ["EFDA essential medicines guidance", "WHO pregnancy medication safety guidance"],
       });
@@ -783,7 +783,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
 
   getFastingMedicationAdvice(medications: string[]): string[] {
     const normalized = medications.map((medication) => medication.toLowerCase()).join(" ");
-    const advice = ["Do not change, skip, or double a prescribed medicine without the prescribing practitioner."];
+    const advice = ["Do not change, skip, or double a prescribed medicine without the prescribing clinician."];
     if (/insulin|glibenclamide|gliclazide/.test(normalized)) advice.push("Fasting can cause hypoglycaemia; arrange an individualized glucose and dose plan before fasting.");
     if (normalized.includes("metformin")) advice.push("Discuss meal timing, kidney function, and B12 monitoring during prolonged fasting.");
     if (/rifampin|isoniazid|pyrazinamide/.test(normalized)) advice.push("Continue TB treatment exactly as prescribed and ask about food timing and pyridoxine.");

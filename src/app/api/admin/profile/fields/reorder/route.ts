@@ -1,14 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { profileFieldDefinitions } from "@/lib/db/schema";
-import { requireKnowledgeRole } from "@/lib/adminKnowledge";
+import { z } from "zod";
+import { defineRoute } from "@/lib/api/route";
+import { reorderFields } from "@/server/profile/fieldAdmin";
 
-export async function PUT(request: NextRequest) {
-  const auth = await requireKnowledgeRole(["admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const body = await request.json();
-  if (!Array.isArray(body.ids) || body.ids.some((id: unknown) => typeof id !== "string")) return NextResponse.json({ success: false, error: "ids must be an array of strings." }, { status: 400 });
-  await Promise.all(body.ids.map((id: string, index: number) => db.update(profileFieldDefinitions).set({ displayOrder: index, updatedBy: auth.user.id, updatedAt: new Date() }).where(eq(profileFieldDefinitions.id, id))));
-  return NextResponse.json({ success: true });
-}
+export const PUT = defineRoute({
+  access: { roles: ["admin", "super_admin"] },
+  body: z.object({ ids: z.array(z.string().min(1), { message: "ids must be an array of strings." }) }),
+  handler: ({ user, body }) => reorderFields(user, body.ids),
+  audit: { action: "profile_fields_reordered", resourceType: "profile_field" },
+});

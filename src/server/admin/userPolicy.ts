@@ -3,6 +3,7 @@
  */
 import crypto from "node:crypto";
 import { ApiError } from "@/lib/api/route";
+export { csvCell } from "@/lib/csv";
 
 export const ADMIN_ROLES = ["admin", "super_admin"] as const;
 export const USER_STATUSES = ["active", "inactive", "suspended"] as const;
@@ -59,12 +60,4 @@ export function generateTemporaryPassword(): string {
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
   return chars.join("");
-}
-
-/** RFC 4180 CSV cell; also neutralises spreadsheet formula injection. */
-export function csvCell(value: unknown): string {
-  if (value === null || value === undefined) return "";
-  let text = value instanceof Date ? value.toISOString() : String(value);
-  if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
-  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }

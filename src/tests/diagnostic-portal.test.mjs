@@ -162,7 +162,7 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(psychFindings.length > 0, "Psychological strand should return findings");
 
     const socioStrand = new SocioEconomicKnowledgeStrand();
-    const socioFindings = await socioStrand.query("rural wellbeing Debr Debr hospital", mockProfile);
+    const socioFindings = await socioStrand.query("rural health clinic clinic hospital", mockProfile);
     assert.ok(socioFindings.length > 0, "Socioeconomic strand should return findings");
 
     const dietStrand = new DietaryKnowledgeStrand();

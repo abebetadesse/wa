@@ -703,7 +703,7 @@ export default function IntakePage() {
                 disabled={submitting}
                 className="btn-primary text-base py-3 px-8 shadow-xl"
               >
-                {submitting ? "Processing Pipeline..." : "Generate wellbeing Gap Report"}
+                {submitting ? "Processing Pipeline..." : "Generate Wellbeing Gap Report"}
               </button>
             </div>
           </div>

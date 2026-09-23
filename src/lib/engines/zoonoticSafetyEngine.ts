@@ -83,11 +83,11 @@ export function evaluateRawMeatSafety(
     ],
     kossoSafetyIntercept: {
       interceptTriggered: interceptKosso,
-      warningTitle: "CRITICAL DebrAL ALERT: Traditional High-Dose Kosso Flowers Contraindicated",
+      warningTitle: "CRITICAL SAFETY ALERT: Traditional High-Dose Kosso Flowers Contraindicated",
       scientificAlert:
         "Traditional ingestion of concentrated female flower infusions of Kosso (Hagenia abyssinica) carries severe phloroglucinol neurotoxicity. Documented toxicities include irreversible optic nerve atrophy (permanent blindness), acute toxic hepatitis, and uterine contractions causing pregnancy loss.",
       saferConventionalAlternative:
-        "Modern SCIENTIFIC antihelmintics (single-dose Niclosamide 2g or Praziquantel 5-10 mg/kg) achieve >95% cure rates with virtually zero neurotoxic or retinotoxic risk. Consult a licensed physician for stool examination and prescription.",
+        "Modern CLINICAL antihelmintics (single-dose Niclosamide 2g or Praziquantel 5-10 mg/kg) achieve >95% cure rates with virtually zero neurotoxic or retinotoxic risk. Consult a licensed physician for stool examination and prescription.",
       evidence: "Ethiopian Medical Journal / WHO Guidelines on Neglected Zoonotic Cestodiases",
     },
     culinaryHygieneRecommendations: [

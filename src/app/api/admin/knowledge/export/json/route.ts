@@ -1,17 +1,10 @@
-import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { knowledgeCategories, knowledgeItems, knowledgeStrands } from "@/lib/db/schema";
-import { requireKnowledgeRole } from "@/lib/adminKnowledge";
+import { defineRoute } from "@/lib/api/route";
+import { fileResponse } from "@/lib/api/upload";
+import { exportAll, KNOWLEDGE_ADMINS } from "@/server/knowledge/admin";
 
-export async function GET() {
-  const auth = await requireKnowledgeRole(["admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const [strands, categories, items] = await Promise.all([
-    db.select().from(knowledgeStrands),
-    db.select().from(knowledgeCategories),
-    db.select().from(knowledgeItems),
-  ]);
-  return new NextResponse(JSON.stringify({ exportedAt: new Date().toISOString(), strands, categories, items }, null, 2), {
-    headers: { "Content-Type": "application/json", "Content-Disposition": "attachment; filename=\"knowledge-backup.json\"" },
-  });
-}
+export const GET = defineRoute({
+  access: { roles: KNOWLEDGE_ADMINS },
+  handler: async () =>
+    fileResponse(JSON.stringify(await exportAll(), null, 2), { type: "application/json", filename: "knowledge-backup.json" }),
+  audit: { action: "knowledge_exported", resourceType: "knowledge_item", details: () => ({ format: "json" }) },
+});

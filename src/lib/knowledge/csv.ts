@@ -1,5 +1,6 @@
 import { KnowledgeDocument, isKnowledgeStrand } from "./catalog";
 import { KnowledgeStrandType } from "./types";
+import { parseCsvRows } from "@/lib/csv";
 
 export const KNOWLEDGE_CSV_HEADERS = [
   "strand",
@@ -11,43 +12,6 @@ export const KNOWLEDGE_CSV_HEADERS = [
   "use_cases",
   "item_json",
 ] as const;
-
-function parseCsvRows(csv: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let quoted = false;
-
-  for (let index = 0; index < csv.length; index += 1) {
-    const character = csv[index];
-    const next = csv[index + 1];
-
-    if (character === '"' && quoted && next === '"') {
-      field += '"';
-      index += 1;
-    } else if (character === '"') {
-      quoted = !quoted;
-    } else if (character === "," && !quoted) {
-      row.push(field);
-      field = "";
-    } else if ((character === "\n" || character === "\r") && !quoted) {
-      if (character === "\r" && next === "\n") index += 1;
-      row.push(field);
-      if (row.some((value) => value.trim() !== "")) rows.push(row);
-      row = [];
-      field = "";
-    } else {
-      field += character;
-    }
-  }
-
-  if (field !== "" || row.length > 0) {
-    row.push(field);
-    if (row.some((value) => value.trim() !== "")) rows.push(row);
-  }
-
-  return rows;
-}
 
 function escapeCsv(value: string): string {
   return `"${value.replaceAll('"', '""')}"`;

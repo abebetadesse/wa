@@ -32,15 +32,15 @@ export const ALL_PERMISSIONS = [
   { key: "profile:edit", label: "Edit Own Profile", category: PERMISSION_CATEGORIES.PROFILE },
 
   // Cases
-  { key: "cases:create", label: "Create wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
-  { key: "cases:view", label: "View Own wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
-  { key: "cases:edit", label: "Edit Own wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:create", label: "Create Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:view", label: "View Own Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:edit", label: "Edit Own Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
 
   // Premium Features
   { key: "ai:chat", label: "Advanced AI Chat Engine", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
   { key: "reports:full", label: "Full Multi-Disciplinary Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
-  { key: "reports:basic", label: "Basic wellbeing Gap Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
-  { key: "data:export", label: "Export wellbeing Data (JSON/CSV)", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
+  { key: "reports:basic", label: "Basic Wellbeing Gap Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
+  { key: "data:export", label: "Export Wellbeing Data (JSON/CSV)", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
 
   // Content
   { key: "content:view", label: "View Knowledge Base Items", category: PERMISSION_CATEGORIES.CONTENT },

@@ -583,7 +583,7 @@ export default function UserManagementPage() {
                   >
                     <option value="user">Standard User</option>
                     <option value="premium">Premium User</option>
-                    <option value="practitioner">wellbeing Practitioner</option>
+                    <option value="practitioner">Wellbeing Practitioner</option>
                     <option value="editor">Content Editor</option>
                     <option value="reviewer">Reviewer</option>
                     <option value="analyst">Analyst</option>

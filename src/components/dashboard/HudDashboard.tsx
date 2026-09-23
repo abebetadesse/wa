@@ -375,7 +375,7 @@ export default function HudDashboard() {
               <span className="status-dot" />
               Ancestral intelligence core
             </div>
-            <h1 className="dashboard-title ancestral-title">Ethiopian wellbeing Intelligence</h1>
+            <h1 className="dashboard-title ancestral-title">Ethiopian Wellbeing Intelligence</h1>
             <p className="dashboard-subtitle">
               Precision nutrition, safety-aware traditional medicine guidance, and cultural context fused into a living command view for care decisions.
             </p>

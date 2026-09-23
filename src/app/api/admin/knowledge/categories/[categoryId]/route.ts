@@ -1,44 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { knowledgeCategories } from "@/lib/db/schema";
-import { requireKnowledgeRole, parseJsonObject } from "@/lib/adminKnowledge";
-import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { defineRoute } from "@/lib/api/route";
+import {
+  archiveCategory,
+  categoryInput,
+  getCategory,
+  KNOWLEDGE_ADMINS,
+  KNOWLEDGE_READERS,
+  updateCategory,
+} from "@/server/knowledge/admin";
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {
-  const auth = await requireKnowledgeRole(["editor", "reviewer", "admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const { categoryId } = await params;
-  const [category] = await db.select().from(knowledgeCategories).where(eq(knowledgeCategories.id, categoryId)).limit(1);
-  if (!category) return NextResponse.json({ success: false, error: "Category not found." }, { status: 404 });
-  return NextResponse.json({ success: true, data: category });
-}
+const params = z.object({ categoryId: z.string().min(1) });
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {
-  const auth = await requireKnowledgeRole(["admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const { categoryId } = await params;
-  try {
-    const body = await request.json();
-    const [category] = await db.update(knowledgeCategories).set({
-      name: String(body.name || "").trim(),
-      description: String(body.description || ""),
-      schema: parseJsonObject(body.schema || { fields: [] }, "schema"),
-      displayOrder: Number(body.displayOrder || 0),
-      isActive: body.isActive !== false,
-      updatedAt: new Date(),
-    }).where(eq(knowledgeCategories.id, categoryId)).returning();
-    if (!category) return NextResponse.json({ success: false, error: "Category not found." }, { status: 404 });
-    return NextResponse.json({ success: true, data: category });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unable to update category." }, { status: 400 });
-  }
-}
+export const GET = defineRoute({
+  access: { roles: KNOWLEDGE_READERS },
+  params,
+  handler: ({ params }) => getCategory(params.categoryId),
+});
 
-export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ categoryId: string }> }) {
-  const auth = await requireKnowledgeRole(["admin", "super_admin"]);
-  if (auth.error) return auth.error;
-  const { categoryId } = await params;
-  const [category] = await db.update(knowledgeCategories).set({ isActive: false, updatedAt: new Date() }).where(eq(knowledgeCategories.id, categoryId)).returning();
-  if (!category) return NextResponse.json({ success: false, error: "Category not found." }, { status: 404 });
-  return NextResponse.json({ success: true, data: category });
-}
+export const PUT = defineRoute({
+  access: { roles: KNOWLEDGE_ADMINS },
+  params,
+  body: categoryInput,
+  handler: ({ params, body }) => updateCategory(params.categoryId, body),
+  audit: { action: "knowledge_category_updated", resourceType: "knowledge_category", resourceId: ({ params }) => params.categoryId },
+});
+
+export const DELETE = defineRoute({
+  access: { roles: KNOWLEDGE_ADMINS },
+  params,
+  handler: ({ params }) => archiveCategory(params.categoryId),
+  audit: { action: "knowledge_category_archived", resourceType: "knowledge_category", resourceId: ({ params }) => params.categoryId },
+});

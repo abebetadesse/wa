@@ -21,7 +21,7 @@ export default function ProfileFieldsAdminPage() {
   async function load() {
     const response = await fetch("/api/admin/profile/fields");
     const result = await response.json();
-    if (response.ok) setFields(result.fields || []);
+    if (response.ok) setFields(result.data?.fields || []);
     else setMessage(result.error || "Unable to load fields.");
   }
   useEffect(() => { load(); }, []);

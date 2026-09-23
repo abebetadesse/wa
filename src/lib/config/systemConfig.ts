@@ -36,7 +36,7 @@ export interface SystemConfig {
 const DEFAULT_CONFIG: SystemConfig = {
   maintenance: {
     enabled: false,
-    message: "The Ethiopian wellbeing Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
+    message: "The Ethiopian Wellbeing Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
     startedAt: null,
   },
   announcement: {

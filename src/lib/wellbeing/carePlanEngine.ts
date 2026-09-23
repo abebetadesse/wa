@@ -1,6 +1,6 @@
 /**
  * Care Plan Generator
- * Inspired by NaraCare.AI - Personalized AI-Driven wellbeing Journeys
+ * Inspired by NaraCare.AI - Personalized AI-Driven Wellbeing Journeys
  */
 
 import {

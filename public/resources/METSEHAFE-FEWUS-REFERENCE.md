@@ -5,7 +5,7 @@
 
 > **Domain B Firewall Notice**: All content in this document is cultural,
 > historical, and philosophical documentation only. It is NOT medical advice,
-> NOT a scientific diagnostic tool, and must NEVER override Domain A scientific
+> NOT a clinical diagnostic tool, and must NEVER override Domain A clinical
 > urgency flags or safety protocols in any automated evaluation system.
 
 ---
@@ -140,10 +140,10 @@ to combat Bärya:
 > *"...against the terrible Bārya, a demon causing diseases of the belly,
 > especially in women, and against other devils."*
 
-**Domain A scientific Correlates** (strictly firewall-separated, for expert context only):
-The condition called "Bärya" in the cultural tradition may scientificly correlate with
+**Domain A Clinical Correlates** (strictly firewall-separated, for expert context only):
+The condition called "Bärya" in the cultural tradition may clinically correlate with
 intestinal parasitosis, pelvic inflammatory disease, irritable bowel syndrome, or
-functional dyspepsia. **Domain A scientific evaluation is always required independently.**
+functional dyspepsia. **Domain A clinical evaluation is always required independently.**
 
 ---
 
@@ -204,7 +204,7 @@ layer of the case evaluation engine via:
 
 ### Registered Scroll IDs
 
-| ID | Ge'ez Title | scientific Scope (Domain B) |
+| ID | Ge'ez Title | Clinical Scope (Domain B) |
 |---|---|---|
 | `AWDE-HEART-VITALITY-01` | *Mets'hafe Fewus Ze'Awde Tsehay* | Solar cardiac / fatigue |
 | `AWDE-HUMORAL-COOLING-02` | *Mets'hafe Mastesrey Ze'Kers* | Digestive / lunar cooling |

@@ -111,6 +111,7 @@ export default function Navbar() {
         { href: "/fasting", label: "Fasting & lunar rhythm" },
         { href: "/zoonotic", label: "Land medicine & safety" },
         { href: "/cultural", label: "Astral memory & heritage" },
+        { href: "/horoscope", label: "Daily horoscope" },
         { href: "/somatics", label: "Ceremony & somatic care" },
         { href: "/library", label: "Sacred library" },
         { href: "/library/medicinal-plants", label: "Medicinal atlas" },

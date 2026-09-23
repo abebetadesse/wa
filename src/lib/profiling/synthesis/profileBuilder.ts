@@ -48,7 +48,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   // Composite constitutional type title
   const constitutionalType = `${astro.sunSign} Sun • ${astro.ethiopianZodiacSign.geezName} • Life Path ${num.lifePath.number} (${num.lifePath.name})`;
 
-  // Primary wellbeing Risks synthesis
+  // Primary Wellbeing Risks synthesis
   const primarywellbeingRisks = Array.from(
     new Set([
       ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.wellbeingAssociations.potentialVulnerabilities || [],
@@ -66,7 +66,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
     ])
   ).slice(0, 5);
 
-  // Seasonal wellbeing Patterns (Ethiopian 4 Seasons)
+  // Seasonal Wellbeing Patterns (Ethiopian 4 Seasons)
   const seasonalPatterns: SeasonalwellbeingPattern[] = [
     {
       season: "Kiremt (Rainy)",

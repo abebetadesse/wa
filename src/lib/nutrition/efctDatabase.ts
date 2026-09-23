@@ -537,7 +537,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 290.0, bioavailabilityFactor: 1.0, note: "Low-sodium electrolyte" },
     ],
     physiologicalNotes: {
-      primaryIndications: ["Eye wellbeing & night vision", "Mild digestive detox", "Caloric balance during fasting"],
+      primaryIndications: ["Eye health & night vision", "Mild digestive detox", "Caloric balance during fasting"],
       bioactiveCompounds: ["Carotenoids (alpha and beta-carotene)", "Lutein"],
       digestiveTolerance: "Light, sweet, and soothing for all ages.",
     },
@@ -664,7 +664,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Calcium", symbol: "Ca", unit: "mg", amountPer100g: 43.0, bioavailabilityFactor: 1.0, note: "Bioavailable post-boiling" },
     ],
     physiologicalNotes: {
-      primaryIndications: ["Hypertension management (high potassium-to-sodium ratio)", "Colon wellbeing"],
+      primaryIndications: ["Hypertension management (high potassium-to-sodium ratio)", "Colon health"],
       bioactiveCompounds: ["Water-soluble mucilage polysaccharides"],
       digestiveTolerance: "Must be thoroughly boiled; never consume raw.",
     },
@@ -761,7 +761,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 4.0, bioavailabilityFactor: 1.0, note: "Digestive roughage" },
     ],
     physiologicalNotes: {
-      primaryIndications: ["Bone density fortification during dairy-free fasting", "Retinal macular wellbeing via lutein", "Cellular detoxification"],
+      primaryIndications: ["Bone density fortification during dairy-free fasting", "Retinal macular health via lutein", "Cellular detoxification"],
       bioactiveCompounds: ["Glucosinolates (allyl isothiocyanate precursors)", "Lutein & zeaxanthin"],
       digestiveTolerance: "Cooking deactivates mild goitrogens; very gentle on digestion.",
     },
@@ -823,7 +823,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin C", symbol: "VitC", unit: "mg", amountPer100g: 15.0, bioavailabilityFactor: 0.8, note: "Vegetable vitamin C" },
     ],
     physiologicalNotes: {
-      primaryIndications: ["Visual pigment regeneration", "Prostate and urinary wellbeing", "Gentle fasting nourishment"],
+      primaryIndications: ["Visual pigment regeneration", "Prostate and urinary health", "Gentle fasting nourishment"],
       bioactiveCompounds: ["Beta-cryptoxanthin", "Cucurbitacins"],
       digestiveTolerance: "Very gentle and easy on the intestines.",
     },
@@ -1137,7 +1137,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 1.9, bioavailabilityFactor: 1.4, note: "Freshwater fish zinc" },
     ],
     physiologicalNotes: {
-      primaryIndications: ["Cognitive brain wellbeing", "Cardiovascular support", "Gentle non-red-meat protein"],
+      primaryIndications: ["Cognitive brain health", "Cardiovascular support", "Gentle non-red-meat protein"],
       bioactiveCompounds: ["EPA & DHA omega-3 precursors", "Selenium"],
       digestiveTolerance: "Light, easily digestible, and anti-inflammatory.",
     },

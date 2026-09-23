@@ -54,18 +54,18 @@ function treatmentText(value: unknown): string | undefined {
  *
  * Integrates:
  * - Communicable diseases: Malaria, Tuberculosis, HIV/AIDS, Diarrhoeal diseases, Hepatitis, Meningitis, COVID-19, Leishmaniasis, Schistosomiasis
- * - Non-communicable diseases: Hypertension, Diabetes, Cardiovascular disease, Cancers (cervical, breast, liver), Mental wellbeing disorders
+ * - Non-communicable diseases: Hypertension, Diabetes, Cardiovascular disease, Cancers (cervical, breast, liver), Mental health disorders
  * - Nutritional deficiencies: Anaemia, Vitamin A deficiency, Iodine deficiency, Stunting, Wasting
  * - Injuries & accidents: Road traffic accidents, Falls, Burns
- * - Maternal & child wellbeing: Maternal mortality, Neonatal mortality, Preterm birth
+ * - Maternal & child health: Maternal mortality, Neonatal mortality, Preterm birth
  * - Detailed epidemiological data: Incidence, prevalence, mortality, DALYs
  * - Seasonal & regional patterns
- * - High‑risk groups & scientific hallmarks
+ * - High‑risk groups & clinical hallmarks
  * - Prevention & control protocols
  * - First‑line treatment & management
  * - Ethiopian Ministry of health priorities & targets
  * - Cross‑strand linking (Ecological, Dietary, Medication, Socioeconomic)
- * - Domain A (scientific) with severity and risk assessment
+ * - Domain A (clinical) with severity and risk assessment
  * - Evidence‑weighted confidence scoring
  * - User‑specific region/age/condition matching
  */
@@ -117,7 +117,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "In lowlands: perennial transmission with seasonal peaks"
       ],
       incidence_mortality: {
-        annual_cases: "Estimated 1–2 million scientific cases per year",
+        annual_cases: "Estimated 1–2 million clinical cases per year",
         annual_deaths: "Approximately 5,000–10,000 deaths (mostly children <5)",
         trend: "Decreasing but still a major public health challenge"
       },
@@ -143,7 +143,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       first_line_standard_treatment: "Artemether‑Lumefantrine (Coartem) for confirmed uncomplicated P. falciparum; Chloroquine + 14‑day Primaquine for P. vivax (if G6PD normal)",
       emergency_treatment: "IV Artesunate or Quinine for severe malaria, with supportive care",
-      ethiopian_context: "Malaria is a major priority in the wellbeing Sector Transformation Plan; drug resistance and climate change are emerging challenges",
+      ethiopian_context: "Malaria is a major priority in the health Sector Transformation Plan; drug resistance and climate change are emerging challenges",
       ecological_links: ["Flooding after Kiremt increases breeding sites", "Land use (irrigation) expands mosquito habitats"],
     },
     tuberculosis: {
@@ -351,14 +351,14 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "High dietary sodium (salt >5g/day)",
         "Physical inactivity",
         "Obesity",
-        "Stress and mental wellbeing disorders",
+        "Stress and mental health disorders",
         "Khat use (sympathomimetic effect)",
         "Family history",
         "Age > 35"
       ],
       regional_patterns: ["Highest in urban areas (Addis Ababa, Dire Dawa, Hawassa)", "Rising in rural areas with transition"],
       physiological_hallmarks: [
-        "Often scientificly silent ('Silent Killer')",
+        "Often clinically silent ('Silent Killer')",
         "Occipital early‑morning headaches",
         "Exertional dyspnoea",
         "Epistaxis",
@@ -444,24 +444,24 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "HPV vaccination for girls (9‑14 years)",
         "Cervical cancer screening (VIA/VILI or HPV DNA test)",
         "Treatment of pre‑cancerous lesions (cryotherapy, LEEP)",
-        "wellbeing education on risk factors"
+        "health education on risk factors"
       ],
       first_line_standard_treatment: "Surgery (hysterectomy), radiotherapy, chemotherapy for invasive disease",
       ethiopian_context: "Screening is limited; many cases present at advanced stage. Vaccination is being rolled out.",
-      ecological_links: ["HIV co‑infection increases risk", "Lack of wellbeing infrastructure contributes to late diagnosis"],
+      ecological_links: ["HIV co‑infection increases risk", "Lack of health infrastructure contributes to late diagnosis"],
     },
     breast_cancer: {
       disease: "Breast Cancer (የጡት ካንሰር)",
       prevalence: "Increasing incidence in Ethiopia; now among top three cancers in women",
       high_risk_groups: ["Age >40", "Family history", "Early menarche / late menopause", "Nulliparity", "BRCA1/2 mutations (rare)"],
       physiological_hallmarks: ["Palpable breast lump (usually painless)", "Skin changes (peau d'orange, dimpling)", "Nipple discharge or inversion", "Axillary lymphadenopathy"],
-      prevention_protocols: ["Breast self‑examination", "scientific breast examination", "Mammography (where available)", "Risk reduction: healthy weight, physical activity, limit alcohol"],
+      prevention_protocols: ["Breast self‑examination", "Clinical breast examination", "Mammography (where available)", "Risk reduction: healthy weight, physical activity, limit alcohol"],
       first_line_standard_treatment: "Surgery, chemotherapy, radiotherapy, hormonal therapy, targeted therapy (depending on subtype and stage)",
       ethiopian_context: "Late presentation is common; awareness and early detection are critical.",
       ecological_links: ["Urbanisation associated with lifestyle changes"],
     },
     mental_wellbeing_disorders: {
-      disease: "Mental wellbeing Disorders (የአእምሮ ጤና ችግሮች)",
+      disease: "Mental health Disorders (የአእምሮ ጤና ችግሮች)",
       categories: ["Depression", "Anxiety disorders", "Bipolar disorder", "Schizophrenia", "Post‑traumatic stress disorder (PTSD)", "Substance use disorders (khat, alcohol)"],
       prevalence: "Depression: 5‑10%; anxiety: 5‑8%; schizophrenia: ~1%; PTSD: higher in conflict‑affected areas",
       risk_factors: ["Poverty", "Conflict and displacement", "Gender‑based violence", "Substance use (khat/alcohol)", "Trauma", "Loss of social support"],
@@ -473,13 +473,13 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       prevention_protocols: [
         "Strengthen community and family support networks",
-        "Reduce stigma through wellbeing education",
-        "Integrate mental wellbeing into primary care (WHO mhGAP)",
+        "Reduce stigma through health education",
+        "Integrate mental health into primary care (WHO mhGAP)",
         "Provide psychosocial support in conflict‑affected areas"
       ],
       first_line_standard_treatment: "Psychotherapy (CBT, IPT), antidepressants (SSRIs), antipsychotics, mood stabilisers – guided by diagnosis",
       ethiopian_context: "Mental health services are limited; treatment gap >90%. Cultural expression often involves somatic complaints.",
-      ecological_links: ["Conflict, displacement, and drought increase mental wellbeing burden"],
+      ecological_links: ["Conflict, displacement, and drought increase mental health burden"],
     },
   };
 
@@ -601,7 +601,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // MATERNAL & CHILD wellbeing
+  // MATERNAL & CHILD health
   // -------------------------------------------------------------------------
   private maternalChildwellbeing = {
     maternal_mortality: {
@@ -637,10 +637,10 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       first_line_standard_treatment: "Neonatal resuscitation, antibiotics, thermoregulation, respiratory support",
       ethiopian_context: "Neonatal deaths now account for a large proportion of under‑5 mortality; interventions are cost‑effective.",
-      ecological_links: ["Maternal nutrition and wellbeing affect birth outcomes", "Seasonal food shortages affect birth weight"],
+      ecological_links: ["Maternal nutrition and health affect birth outcomes", "Seasonal food shortages affect birth weight"],
     },
     child_wellbeing: {
-      disease: "Child wellbeing – Under‑5 Mortality",
+      disease: "Child health – Under‑5 Mortality",
       definition: "Death of children under 5 years of age",
       rate: "Approximately 55 per 1,000 live births (declining)",
       main_causes: ["Pneumonia", "Diarrhoea", "Malaria", "Malnutrition", "Preterm complications"],
@@ -767,14 +767,14 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
           domain: "wellbeing",
           name: disease.disease.toUpperCase(),
           description: `Pathogens: ${((disease as any).pathogens || ((disease as any).pathogen ? [(disease as any).pathogen] : [])).join("; ") || (disease as any).transmission || "N/A"}. Endemic regions: ${disease.endemic_regions?.join("; ") || "N/A"}.`,
-          evidence: `scientific hallmarks: ${textList(disease.physiological_hallmarks).join("; ") || "N/A"}. Standard scientific protocol: ${cureStr}.`,
+          evidence: `Clinical hallmarks: ${textList(disease.physiological_hallmarks).join("; ") || "N/A"}. Standard clinical protocol: ${cureStr}.`,
           ethiopian_context: disease.ethiopian_context || "Major public health concern in Ethiopia",
           relevanceScore: Math.min(score / 60, 0.98),
           confidence: 0.92,
           matches,
           recommendations: disease.prevention_protocols || [],
           management: [cureStr],
-          sources: ["EPHI National Disease Surveillance", "WHO Global wellbeing Observatory"],
+          sources: ["EPHI National Disease Surveillance", "WHO Global health Observatory"],
           category: "Domain A",
           severity: isSevere ? "critical" : score > 40 ? "high" : "moderate",
           risk_assessment: {
@@ -923,7 +923,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
             domain: "wellbeing",
             name: def.disease.toUpperCase(),
             description: `Definition: ${def.definition || "N/A"}. Prevalence: ${def.prevalence || "N/A"}.`,
-            evidence: `Risk factors: ${def.risk_factors?.join("; ") || "N/A"}. scientific hallmarks: ${textList(def.physiological_hallmarks).join("; ") || "N/A"}.`,
+            evidence: `Risk factors: ${def.risk_factors?.join("; ") || "N/A"}. Clinical hallmarks: ${textList(def.physiological_hallmarks).join("; ") || "N/A"}.`,
             ethiopian_context: def.ethiopian_context || "Public health nutrition priority in Ethiopia",
             relevanceScore: Math.min(score / 50, 0.92),
             confidence: 0.88,
@@ -974,7 +974,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
             domain: "wellbeing",
             name: inj.disease.toUpperCase(),
             description: `Etiology: ${inj.etiology || "N/A"}. Risk factors: ${inj.risk_factors?.join("; ") || "N/A"}.`,
-            evidence: `scientific hallmarks: ${textList(inj.physiological_hallmarks).join("; ") || "N/A"}.`,
+            evidence: `Clinical hallmarks: ${textList(inj.physiological_hallmarks).join("; ") || "N/A"}.`,
             ethiopian_context: inj.ethiopian_context || "Preventable injury burden in Ethiopia",
             relevanceScore: Math.min(score / 50, 0.85),
             confidence: 0.80,
@@ -989,7 +989,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 5. Maternal & Child wellbeing ----
+    // ---- 5. Maternal & Child health ----
     if (pregnant || normalized.includes("maternal") || normalized.includes("child") || normalized.includes("neonatal") || normalized.includes("childbirth")) {
       for (const [key, mch] of Object.entries(this.maternalChildwellbeing) as [string, EpidemiologyRecord][]) {
         let score = 0;
@@ -1031,13 +1031,13 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
             name: mch.disease.toUpperCase(),
             description: `Definition: ${mch.definition || "N/A"}. Rate: ${mch.rate || mch.ratio || "N/A"}.`,
             evidence: `Causes: ${textList(mch.causes).join("; ") || "N/A"}. Risk factors: ${mch.risk_factors?.join("; ") || "N/A"}.`,
-            ethiopian_context: mch.ethiopian_context || "Maternal and child wellbeing is a priority for Ethiopia",
+            ethiopian_context: mch.ethiopian_context || "Maternal and child health is a priority for Ethiopia",
             relevanceScore: Math.min(score / 50, 0.92),
             confidence: 0.88,
             matches,
             recommendations: mch.prevention_protocols || [],
             management: [treatmentText(mch.first_line_standard_treatment) || "Skilled care and referral"],
-            sources: ["EPHI Maternal and Child wellbeing Reports", "WHO Maternal Mortality"],
+            sources: ["EPHI Maternal and Child health Reports", "WHO Maternal Mortality"],
             category: "Domain A",
             severity: "high",
           });
@@ -1094,7 +1094,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   /**
-   * Get scientific hallmarks for a disease
+   * Get clinical hallmarks for a disease
    */
   getScientificHallmarks(diseaseName: string): string[] {
     const search = diseaseName.toLowerCase();

@@ -79,7 +79,7 @@ export class CrossStrandIntegrationEngine {
         strands: ["psychological", "addiction"],
         description: `Symptom overlap: ${psychDistress.name} is closely linked with the use patterns and post-use withdrawal crashes of ${addictionUse.name}.`,
         evidence: "Sympathomimetic stimulant crash and chronic dopamine receptor downregulation intensify secondary anxiety and depressive anhedonia.",
-        recommendation: "Address substance cessation alongside mental wellbeing support. Tapering substance use is necessary to stabilize mood and sleep.",
+        recommendation: "Address substance cessation alongside mental health support. Tapering substance use is necessary to stabilize mood and sleep.",
         severity: "high",
         priority: 2,
         confidence: 0.91,

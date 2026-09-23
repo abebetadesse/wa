@@ -56,9 +56,9 @@ export function evaluateCareerSafetyScreen(
           "Please reach out to one of these services now. This information is free " +
           "and always available — no payment, no registration required.",
         hotlines: [
-          { name: "Mental wellbeing Crisis Line (GBV & All)", number: "952" },
+          { name: "Mental Health Crisis Line (GBV & All)", number: "952" },
           { name: "EPHI Hotline", number: "907" },
-          { name: "Amanuel Mental wellbeing Hospital", number: "+251-11-275-1234" },
+          { name: "Amanuel Mental Health Hospital", number: "+251-11-275-1234" },
           { name: "Police Emergency", number: "911" },
           { name: "Ethiopian Red Cross Ambulance", number: "991" },
         ],
@@ -66,7 +66,7 @@ export function evaluateCareerSafetyScreen(
           "If you are in immediate danger, call 911 now.",
           "Reach out to a trusted friend, family member, or elder.",
           "Consider going to the nearest health facility for in-person support.",
-          "Call 952 — the confidential mental wellbeing and crisis support line.",
+          "Call 952 — the confidential mental health and crisis support line.",
           "You are not alone. Support is available right now, for free.",
         ],
       },
@@ -87,7 +87,7 @@ export function evaluateCareerSafetyScreen(
         hotlines: [
           { name: "Ethiopian Red Cross Assistance", number: "991" },
           { name: "Social Services Hotline", number: "0800-000-0000" },
-          { name: "Mental wellbeing Support", number: "952" },
+          { name: "Mental Health Support", number: "952" },
         ],
         safetyPlanSteps: [
           "Contact a social worker at your local health center.",

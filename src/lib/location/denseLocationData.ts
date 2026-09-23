@@ -227,7 +227,7 @@ export interface SpatialUnit {
 
 export interface PointFeature {
   featureUid: string;
-  featureType: "water_sample" | "well" | "Debr" | "school" | "market" | "weather_station" | "beekeeper";
+  featureType: "water_sample" | "well" | "clinic" | "school" | "market" | "weather_station" | "beekeeper";
   locationId: string;
   spatialId?: string;
   name?: string;
@@ -523,8 +523,8 @@ export interface NutritionSurvey {
 }
 
 export const LOCATION_INDICATORS: IndicatorDefinition[] = [
-  { indicatorUid: "urn:ind:et:wellbeing:malaria-incidence", code: "wellbeing.malaria.incidence", name: "Malaria incidence", domain: "wellbeing", preferredUnit: "/[100000].a", valueType: "rate", scaleType: "ratio", legalOperations: ["rate", "trend"], ontology: "ICD11:1F40", direction: "higher_is_worse", recommendedAxes: ["age", "sex", "residence"] },
-  { indicatorUid: "urn:ind:et:wellbeing:hypertension-prevalence", code: "wellbeing.hypertension.prevalence", name: "Hypertension prevalence", domain: "wellbeing", preferredUnit: "%", valueType: "proportion", scaleType: "absolute", legalOperations: ["difference", "ratio"], ontology: "ICD11:BA00", direction: "higher_is_worse", recommendedAxes: ["age", "sex"] },
+  { indicatorUid: "urn:ind:et:health:malaria-incidence", code: "health.malaria.incidence", name: "Malaria incidence", domain: "wellbeing", preferredUnit: "/[100000].a", valueType: "rate", scaleType: "ratio", legalOperations: ["rate", "trend"], ontology: "ICD11:1F40", direction: "higher_is_worse", recommendedAxes: ["age", "sex", "residence"] },
+  { indicatorUid: "urn:ind:et:health:hypertension-prevalence", code: "health.hypertension.prevalence", name: "Hypertension prevalence", domain: "wellbeing", preferredUnit: "%", valueType: "proportion", scaleType: "absolute", legalOperations: ["difference", "ratio"], ontology: "ICD11:BA00", direction: "higher_is_worse", recommendedAxes: ["age", "sex"] },
   { indicatorUid: "urn:ind:et:demography:population-total", code: "demo.population.total", name: "Estimated population", domain: "demography", preferredUnit: "1", valueType: "count", scaleType: "absolute", legalOperations: ["sum", "difference"], direction: "descriptive" },
   { indicatorUid: "urn:ind:et:food:consumption", code: "food.consumption", name: "Food consumption", domain: "food", preferredUnit: "g/d", valueType: "mean", scaleType: "ratio", legalOperations: ["mean", "median"], ontology: "FAO/INFOODS", direction: "descriptive" },
   { indicatorUid: "urn:ind:et:food:protein", code: "food.composition.protein", name: "Crude protein", domain: "food", preferredUnit: "g/100g", valueType: "concentration", scaleType: "ratio", legalOperations: ["mean", "median"], ontology: "INFOODS:PROCNT", direction: "descriptive" },

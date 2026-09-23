@@ -808,11 +808,11 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Subsystem & Micro-Service wellbeing Matrix */}
+          {/* Subsystem & Micro-Service Wellbeing Matrix */}
           <div className="glass-panel p-6 rounded-2xl border border-white/10">
             <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
               <Activity size={16} className="text-emerald-400" />
-              <span>Platform Subsystems wellbeing Matrix</span>
+              <span>Platform Subsystems Wellbeing Matrix</span>
             </h2>
             <p className="text-[11px] text-slate-400 mb-4">Real-time status of Scientific, security, and knowledge engines</p>
 
@@ -1174,7 +1174,7 @@ export default function AdminDashboardPage() {
                 rows={3}
                 value={maintenanceMessage}
                 onChange={(e) => setMaintenanceMessage(e.target.value)}
-                placeholder="The Ethiopian wellbeing Platform is undergoing scheduled regulatory updates..."
+                placeholder="The Ethiopian Wellbeing Platform is undergoing scheduled regulatory updates..."
                 className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-rose-500/50"
               />
             </div>

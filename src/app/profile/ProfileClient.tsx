@@ -779,7 +779,7 @@ export default function ProfileClient() {
                     </ul>
                   </div>
 
-                  {/* Primary wellbeing Risks */}
+                  {/* Primary Wellbeing Risks */}
                   <div className="glass-panel p-6 border border-rose-500/20 space-y-4">
                     <h3 className="text-base font-bold text-rose-400 flex items-center gap-2">
                       <span>⚠️</span> Primary Constitutional Vulnerabilities
@@ -1126,7 +1126,7 @@ export default function ProfileClient() {
                       <div className="text-xs text-slate-400">{item.alignmentReason}</div>
 
                       <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
-                        <strong>wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
+                        <strong>Wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
                       </div>
 
                       {item.recommendation && (

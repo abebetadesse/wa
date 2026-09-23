@@ -331,7 +331,7 @@ export default function ConstitutionCarePlanView() {
             </div>
 
             <div className="mb-4">
-              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">wellbeing Goals (select up to 3)</label>
+              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Wellbeing Goals (select up to 3)</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   "Improve energy and vitality", "Optimize digestion", "Reduce stress and anxiety",
