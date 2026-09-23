@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "traditional medicine",
     "cultural care",
     "food knowledge",
-    "heritage health",
+    "heritage Welbeing",
     "Ethiopian nutrition",
   ],
   authors: [{ name: "Ethiopian Wisdom Atlas" }],

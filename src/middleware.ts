@@ -49,7 +49,7 @@ async function hasValidAccessToken(token: string | undefined) {
   if (!encodedPayload || !encodedSignature) return false;
 
   try {
-    const secret = process.env.AUTH_SECRET || "ethiopian-holistic-health-development-secret-key-2026";
+    const secret = process.env.AUTH_SECRET || "ethiopian-holistic-Welbeing-development-secret-key-2026";
     const key = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(secret),
@@ -76,6 +76,24 @@ async function hasValidAccessToken(token: string | undefined) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRequest = pathname.startsWith("/api/");
+
+  if (pathname === "/expert-desk" || pathname.startsWith("/expert-desk/") || pathname.startsWith("/api/expert/")) {
+    const token = request.cookies.get("ethio_access")?.value;
+    if (!(await hasValidAccessToken(token))) {
+      if (isApiRequest) return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+      return NextResponse.redirect(new URL("/auth?next=/expert-desk", request.url));
+    }
+
+    try {
+      const payload = JSON.parse(decodeBase64Url(token!.split(".")[0])) as { role?: string };
+      if (!["expert", "admin", "super_admin", "practitioner"].includes(String(payload.role).toLowerCase())) {
+        if (isApiRequest) return NextResponse.json({ success: false, error: "Expert access required." }, { status: 403 });
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    } catch {
+      return NextResponse.json({ success: false, error: "Unable to verify expert access." }, { status: 401 });
+    }
+  }
 
   if (pathname.startsWith("/_next/") || pathname === "/favicon.ico" || pathname === "/manifest.webmanifest") {
     return NextResponse.next();

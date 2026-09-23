@@ -46,7 +46,7 @@ function downloadAssessment(assessment: ConstitutionAssessment) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "ninimed-constitution-assessment.json";
+  link.download = "Debtera-constitution-assessment.json";
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -142,11 +142,10 @@ export default function ConstitutionExperience() {
                 key={option.value}
                 type="button"
                 onClick={() => choose(option.value)}
-                className={`rounded-xl border p-4 text-left transition ${
-                  answers[question.key] === option.value
+                className={`rounded-xl border p-4 text-left transition ${answers[question.key] === option.value
                     ? "border-sky-600 bg-sky-50 ring-2 ring-sky-200 dark:bg-sky-950/40"
                     : "border-slate-200 hover:border-sky-400 dark:border-slate-700"
-                }`}
+                  }`}
               >
                 <span className="font-medium">{option.label}</span>
                 <span className="mt-1 block text-xs text-slate-500">Score {option.value} of 3</span>

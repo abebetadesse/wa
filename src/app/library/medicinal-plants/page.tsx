@@ -230,7 +230,7 @@ export default function MedicinalPlantsPage() {
 
           <div className="mt-4 border-t border-stone-800 pt-4 text-[10px] uppercase tracking-[0.12em] text-stone-500">
             <div className="mb-2 flex items-center gap-2"><ShieldAlert size={12} /> Safety note</div>
-            <p className="leading-relaxed text-stone-400">Documented source entry from chapter 66996. Review with ETM-DB safety gates before clinical use.</p>
+            <p className="leading-relaxed text-stone-400">Documented source entry from chapter 66996. Review with ETM-DB safety gates before Debral use.</p>
           </div>
 
           <div className="mt-4 text-[10px] uppercase tracking-[0.12em] text-stone-600">

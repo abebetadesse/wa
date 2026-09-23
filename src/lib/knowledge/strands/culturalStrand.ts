@@ -12,7 +12,7 @@ type CulturalEntry = {
 
 /**
  * Domain B cultural context. These findings support culturally responsive care;
- * they never diagnose, prescribe, or replace urgent clinical evaluation.
+ * they never diagnose, prescribe, or replace urgent Debral evaluation.
  */
 export class CulturalKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "cultural";
@@ -22,7 +22,7 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       title: "Wogesha (ወገሻ) - Traditional Bone-Setters",
       description: "Community practitioners associated with fracture setting, splinting, massage, and joint care.",
       practices: ["Manual traction and splinting", "Joint manipulation", "Herbal or butter compresses", "Apprenticeship-based knowledge"],
-      advice: ["Use certified emergency and orthopedic services for open, displaced, or circulation-threatening fractures.", "Traditional support may be discussed as complementary care after clinical assessment."],
+      advice: ["Use certified emergency and orthopedic services for open, displaced, or circulation-threatening fractures.", "Traditional support may be discussed as complementary care after Debral assessment."],
       context: "Wogesha practitioners are important first points of care in some rural Ethiopian communities.",
       safety: "Severe pain, deformity, numbness, loss of pulse, or an open wound requires urgent medical evaluation.",
       aliases: ["wogesha", "bone setter", "fracture", "joint"],
@@ -33,7 +33,7 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       practices: ["Prayer and spiritual counselling", "Holy water traditions", "Community and family support", "Protective texts and blessings"],
       advice: ["Spiritual support can complement medical or psychological care.", "Do not delay evaluation for severe physical symptoms, psychosis, seizures, or suicidal thoughts."],
       context: "Debtera and church communities may act as trusted cultural brokers and sources of emotional support.",
-      safety: "Spiritual explanations should not be used to exclude urgent medical or mental-health assessment.",
+      safety: "Spiritual explanations should not be used to exclude urgent medical or mental-Welbeing assessment.",
       aliases: ["debtera", "church", "tewahedo", "holy water", "spiritual"],
     },
     {
@@ -67,15 +67,15 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       title: "Ethiopian Naming and Identity",
       description: "Names, baptismal and aqiqah traditions, family histories, and language can be important sources of identity and resilience.",
       practices: ["Orthodox naming and baptism", "Islamic Aqiqah", "Moggaatii and regional naming customs", "Storytelling about names and ancestors"],
-      advice: ["Ask how the person wants their name, language, family, and identity represented in care.", "Use identity and naming stories to support belonging without assigning health traits to ethnicity or names."],
+      advice: ["Ask how the person wants their name, language, family, and identity represented in care.", "Use identity and naming stories to support belonging without assigning Welbeing traits to ethnicity or names."],
       context: "Naming traditions differ across Ethiopian communities, religions, and diaspora families.",
       aliases: ["name", "naming", "aqiqah", "baptism", "moggaatii", "identity", "language"],
     },
     {
       title: "Islamic, Waaqeffanna, and Other Faith Contexts",
-      description: "Faith, prayer, fasting, family, and community practices may shape health decisions and preferred support.",
+      description: "Faith, prayer, fasting, family, and community practices may shape Welbeing decisions and preferred support.",
       practices: ["Ramadan and Eid traditions", "Mosque and family support", "Waaqeffanna and sacred nature traditions", "Prayer and religious counselling"],
-      advice: ["Ask which practices the person wants included in care and how fasting affects food, hydration, and medication timing.", "Respect religious choice while maintaining urgent clinical safety and informed consent."],
+      advice: ["Ask which practices the person wants included in care and how fasting affects food, hydration, and medication timing.", "Respect religious choice while maintaining urgent Debral safety and informed consent."],
       context: "Ethiopia includes diverse Muslim, Orthodox, Protestant, Catholic, Waaqeffanna, and other faith communities.",
       safety: "Religious practice should not prevent emergency treatment or essential medication review.",
       aliases: ["islam", "muslim", "ramadan", "eid", "waaqeffanna", "mosque", "faith", "religion"],
@@ -89,10 +89,10 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       aliases: ["family", "elder", "clan", "marriage", "funeral", "birth rite", "mourning", "community"],
     },
     {
-      title: "Ethiopian Festivals and health",
+      title: "Ethiopian Festivals and Welbeing",
       description: "Enkutatash, Timkat, Fasika, Meskel, Irreecha, Eid, and other celebrations combine food, worship, travel, family, and community.",
       practices: ["Family and community gatherings", "Fasting and feast transitions", "Water and outdoor ceremonies", "Coffee, shared meals, singing, and prayer"],
-      advice: ["Break prolonged fasts gradually, hydrate, and monitor glucose when relevant.", "During crowded events, protect sleep, hygiene, respiratory health, and safe transport.", "Limit smoke exposure around bonfires and seek shade and water during outdoor gatherings."],
+      advice: ["Break prolonged fasts gradually, hydrate, and monitor glucose when relevant.", "During crowded events, protect sleep, hygiene, respiratory Welbeing, and safe transport.", "Limit smoke exposure around bonfires and seek shade and water during outdoor gatherings."],
       context: "Festivals can strengthen connection and wellbeing while changing food, sleep, medication, and exposure patterns.",
       aliases: ["festival", "enkutatash", "timkat", "fasika", "meskel", "irreecha", "eid", "new year"],
     },
@@ -101,11 +101,11 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       description: "Communal eating, gursha, injera, coffee ceremony, hospitality, and shared food are important social practices.",
       practices: ["Shared injera meals", "Gursha as affection and respect", "Buna coffee ceremony", "Conversation with elders and neighbours"],
       advice: ["Respect communal eating while accommodating allergies, diabetes, swallowing needs, and infection-control preferences.", "Coffee can support social connection; consider timing, sleep, reflux, pregnancy, and iron absorption."],
-      context: "Food culture is a strength and should be included rather than treated as a barrier to health advice.",
+      context: "Food culture is a strength and should be included rather than treated as a barrier to Welbeing advice.",
       aliases: ["gursha", "injera", "food", "eating", "coffee", "buna"],
     },
     {
-      title: "Diaspora and Cultural Identity health",
+      title: "Diaspora and Cultural Identity Welbeing",
       description: "Migration can affect language, access, family roles, diet, discrimination, identity, and continuity of care.",
       practices: ["Community connection", "Culturally competent interpretation", "Traditional food adaptation", "Intergenerational dialogue"],
       advice: ["Offer interpreters and culturally responsive services.", "Ask about migration stress, isolation, discrimination, insurance, and family support without stereotyping."],
@@ -164,13 +164,13 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
         matches: matches.length ? matches : ["cultural_context"],
         recommendations: entry.advice,
         management: entry.advice,
-        sources: ["Ethiopian cultural health context", "Culturally responsive care guidance"],
+        sources: ["Ethiopian cultural Welbeing context", "Culturally responsive care guidance"],
         category: "Domain B",
         severity: "low",
         details: {
           isDomainB: true,
           crossStrands: ["psychological", "dietary", "astrological", "epidemiological"],
-          notice: "Cultural context is reflective and advisory; it does not change clinical triage or treatment decisions.",
+          notice: "Cultural context is reflective and advisory; it does not change Debral triage or treatment decisions.",
         },
       });
     }
@@ -183,10 +183,10 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
     const matches = this.entries
       .filter((entry) => entry.aliases.some((alias) => normalized.includes(alias)) || entry.title.toLowerCase().includes(normalized))
       .flatMap((entry) => [entry.title, ...entry.advice]);
-    return matches.length ? matches : ["Discuss culturally familiar support with a qualified clinician; do not delay necessary medical care."];
+    return matches.length ? matches : ["Discuss culturally familiar support with a qualified Debrian; do not delay necessary medical care."];
   }
 
-  getFestivalhealthAdvice(festivalName: string): string[] {
+  getFestivalWelbeingAdvice(festivalName: string): string[] {
     const normalized = this.normalize(festivalName);
     const festival = this.entries.find((entry) => entry.aliases.some((alias) => normalized.includes(alias)) && /festival|food/.test(entry.title.toLowerCase()));
     return festival?.advice ?? ["Hydrate, plan medication and transport needs, and seek care for urgent symptoms during gatherings."];
@@ -198,7 +198,7 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
     return entry?.advice ?? ["Ask what language, community, family, and identity supports would make care feel safe and respectful."];
   }
 
-  getDiasporahealthRecommendations(): string[] {
+  getDiasporaWelbeingRecommendations(): string[] {
     return this.entries.find((entry) => entry.title.startsWith("Diaspora"))?.advice ?? [];
   }
 
@@ -206,12 +206,12 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
     return this.entries.find((entry) => entry.title.startsWith("Gursha"))?.advice ?? [];
   }
 
-  getNameMeaningAndhealthInsight(name: string): { meaning: string; healthInsight: string } | null {
-    const meanings: Record<string, { meaning: string; healthInsight: string }> = {
-      abebe: { meaning: "Flourished or bloomed", healthInsight: "A personal story of growth and resilience" },
-      selamawit: { meaning: "Peaceful", healthInsight: "A possible source of identity and calm" },
-      girma: { meaning: "Majesty", healthInsight: "A family association with dignity and confidence" },
-      taye: { meaning: "Seen or protected", healthInsight: "A possible connection to belonging and care" },
+  getNameMeaningAndWelbeingInsight(name: string): { meaning: string; WelbeingInsight: string } | null {
+    const meanings: Record<string, { meaning: string; WelbeingInsight: string }> = {
+      abebe: { meaning: "Flourished or bloomed", WelbeingInsight: "A personal story of growth and resilience" },
+      selamawit: { meaning: "Peaceful", WelbeingInsight: "A possible source of identity and calm" },
+      girma: { meaning: "Majesty", WelbeingInsight: "A family association with dignity and confidence" },
+      taye: { meaning: "Seen or protected", WelbeingInsight: "A possible connection to belonging and care" },
     };
     return meanings[this.normalize(name)] ?? null;
   }

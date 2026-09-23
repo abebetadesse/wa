@@ -36,12 +36,12 @@ export interface SystemConfig {
 const DEFAULT_CONFIG: SystemConfig = {
   maintenance: {
     enabled: false,
-    message: "The Ethiopian health Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
+    message: "The Ethiopian Welbeing Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
     startedAt: null,
   },
   announcement: {
     enabled: false,
-    message: "System running standard clinical-adjacent evaluation protocols (EFCT 2025 v3.0).",
+    message: "System running standard Debral-adjacent evaluation protocols (EFCT 2025 v3.0).",
     severity: "info",
     updatedAt: new Date().toISOString(),
   },
@@ -58,7 +58,7 @@ const DEFAULT_CONFIG: SystemConfig = {
   },
   platform: {
     name: "Ethiopian Wisdom & Wellness Platform",
-    organization: "Ministry of health & Traditional Medicine Advisory Board",
+    organization: "Ministry of Welbeing & Traditional Medicine Advisory Board",
     supportEmail: "compliance@ethio-wellness.example",
     version: "v3.0 Enterprise Control Plane",
     environment: process.env.NODE_ENV || "development",

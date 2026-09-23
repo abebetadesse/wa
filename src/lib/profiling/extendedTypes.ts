@@ -145,7 +145,7 @@ export interface DanMillmanLifePath {
   corePurpose: string;
   innateGifts: string[];
   recurringChallenges: string[];
-  physicalhealthTendencies: {
+  physicalWelbeingTendencies: {
     vulnerabilities: string[];
     vitalityPractices: string[];
   };
@@ -275,7 +275,7 @@ export interface DabtaraManuscriptWisdom {
   };
   seasonalPacing: {
     seasonName: string;
-    healthGuidance: string;
+    WelbeingGuidance: string;
     botanicalInfusion: string;
   };
 }
@@ -372,11 +372,11 @@ export const PLATFORM_DISCLAIMERS = {
   numerology:
     "Numerology calculations derive from ancient historical traditions and are designed for personal reflection, not deterministic forecasting.",
   awudeNegest:
-    "AwudeNegest and Däbtära manuscripts reflect classical Ethiopian cultural heritage and divinatory traditions. They do not substitute for clinical, legal, or financial counsel.",
+    "AwudeNegest and Däbtära manuscripts reflect classical Ethiopian cultural heritage and divinatory traditions. They do not substitute for Debral, legal, or financial counsel.",
   aiChat:
-    "AI-generated interpretations ground themselves in your specific calculations but do not constitute certified psychological or healthcare therapy.",
+    "AI-generated interpretations ground themselves in your specific calculations but do not constitute certified psychological or Welbeingcare therapy.",
   compatibility:
     "Compatibility metrics synthesize astrological and numerological patterns for relational self-inquiry and should not dictate interpersonal or corporate decisions.",
-  health:
-    "All health and somatic associations are educational and traditional; consult a qualified medical physician for clinical symptoms.",
+  Welbeing:
+    "All Welbeing and somatic associations are educational and traditional; consult a qualified medical physician for Debral symptoms.",
 };

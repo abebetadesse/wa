@@ -1,4 +1,4 @@
-export const AUTH_STATE_CHANGED = "ninimed:auth-state-changed";
+export const AUTH_STATE_CHANGED = "Debtera:auth-state-changed";
 
 export function notifyAuthStateChanged() {
   if (typeof window !== "undefined") {

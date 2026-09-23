@@ -25,7 +25,7 @@ export default function AnalyticsPage() {
       <div className="border-b border-white/10 pb-5">
         <h1 className="text-2xl font-bold text-white tracking-tight">Platform Analytics & Demographic Intelligence</h1>
         <p className="text-xs text-slate-400 mt-0.5">
-          System telemetry, Ethiopian regional coverage, language engagement, and security health.
+          System telemetry, Ethiopian regional coverage, language engagement, and security Welbeing.
         </p>
       </div>
       {error && <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">{error}</div>}
@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="glass-panel p-5 rounded-2xl border border-white/10">
-          <span className="text-xs text-slate-400">Authentication health</span>
+          <span className="text-xs text-slate-400">Authentication Welbeing</span>
           <div className="text-2xl font-extrabold text-emerald-400 mt-2">{data?.security?.successRate ?? "—"}%</div>
           <span className="text-[11px] text-slate-400 font-mono mt-1 block">
             {data?.security?.successLogins ?? "—"} Successes / {data?.security?.failedLogins ?? "—"} Flags
@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="glass-panel p-5 rounded-2xl border border-white/10">
-          <span className="text-xs text-slate-400">Clinical Cases Evaluated</span>
+          <span className="text-xs text-slate-400">Debral Cases Evaluated</span>
           <div className="text-2xl font-extrabold text-sky-400 mt-2">{data?.operations?.totalCases ?? "—"}</div>
           <span className="text-[11px] text-slate-400 font-mono mt-1 block">EFCT 2025 Multi-Strand Checks</span>
         </div>
@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Security health & Lockout Diagnostics */}
+      {/* Security Welbeing & Lockout Diagnostics */}
       <div className="glass-panel p-6 rounded-2xl border border-white/10">
         <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
           <Shield size={16} className="text-emerald-400" />

@@ -107,7 +107,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: messageText.trim(),
-          systemPrompt: `You are a concise, safety-aware Ethiopian wellness and cultural advisor. Answer the user's question first. Use the supplied profile only as context, keep reflective cultural material separate from health guidance, and do not diagnose or prescribe. Profile: ${JSON.stringify(profileContext)}`,
+          systemPrompt: `You are a concise, safety-aware Ethiopian wellness and cultural advisor. Answer the user's question first. Use the supplied profile only as context, keep reflective cultural material separate from Welbeing guidance, and do not diagnose or prescribe. Profile: ${JSON.stringify(profileContext)}`,
           history: [
             ...session.messages.map((message) => ({
               role: message.role,
@@ -164,11 +164,11 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       setSession((current) =>
         current
           ? {
-              ...current,
-              userContext: data.userContext || current.userContext,
-              messages: [...current.messages, data.message],
-              updatedAt: new Date().toISOString(),
-            }
+            ...current,
+            userContext: data.userContext || current.userContext,
+            messages: [...current.messages, data.message],
+            updatedAt: new Date().toISOString(),
+          }
           : current
       );
     } catch (err) {
@@ -247,11 +247,10 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
           {messages.map((msg, i) => (
             <div key={msg.id || i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-lg ${
-                  msg.role === "user"
+                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-lg ${msg.role === "user"
                     ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-br-none"
                     : "bg-slate-950/80 border border-slate-800 text-slate-200 rounded-bl-none"
-                }`}
+                  }`}
               >
                 {msg.role === "assistant" && msg.contextBadges && (
                   <div className="flex flex-wrap gap-1 mb-1">
@@ -367,7 +366,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
 
       {/* Compliance Disclaimer Footer */}
       <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-500 leading-relaxed">
-        <strong>Compliance Notice:</strong> {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.health}
+        <strong>Compliance Notice:</strong> {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.Welbeing}
       </div>
     </div>
   );

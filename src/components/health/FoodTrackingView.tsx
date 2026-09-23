@@ -5,12 +5,12 @@ import {
   ScannedFoodItem,
   MealLog,
   DailyNutritionSummary,
-} from "@/lib/health/healthTypes";
+} from "@/lib/Welbeing/WelbeingTypes";
 import {
   ETHIOPIAN_FOOD_DATABASE,
   searchFoodDatabase,
   generateDailySummary,
-} from "@/lib/health/foodTrackingEngine";
+} from "@/lib/Welbeing/foodTrackingEngine";
 
 type MealType = MealLog["mealType"];
 
@@ -168,7 +168,7 @@ export default function FoodTrackingView() {
                       {food.bioavailabilityModifiers.fermented && (
                         <span className="text-[10px] text-emerald-400 font-semibold">🧫 Fermented</span>
                       )}
-                      {food.healthFlags.slice(0, 2).map((flag: string) => (
+                      {food.WelbeingFlags.slice(0, 2).map((flag: string) => (
                         <span key={flag} className="text-[10px] text-slate-400 font-mono">{flag}</span>
                       ))}
                     </div>
@@ -344,8 +344,8 @@ export default function FoodTrackingView() {
                   <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Ethiopian Food Alignment Score</div>
                   <p className="text-sm text-white font-semibold">
                     {todaySummary.ethioAlignmentScore >= 70 ? "Excellent — Deeply aligned with Ethiopian nutritional wisdom" :
-                     todaySummary.ethioAlignmentScore >= 50 ? "Good — Some traditional practices incorporated" :
-                     "Developing — Increase fermented foods, traditional spices, and cultural staples"}
+                      todaySummary.ethioAlignmentScore >= 50 ? "Good — Some traditional practices incorporated" :
+                        "Developing — Increase fermented foods, traditional spices, and cultural staples"}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">Based on EFCT 2025 criteria, fermented food inclusion, and cultural pattern alignment.</p>
                 </div>

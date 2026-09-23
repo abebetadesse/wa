@@ -1,6 +1,6 @@
 /**
- * Health data visualization and clinical encounter components.
+ * Welbeing data visualization and Debral encounter components.
  */
-export { default as ClinicalEncounterModal } from "./ClinicalEncounterModal";
+export { default as DebralEncounterModal } from "./DebralEncounterModal";
 export { default as ExportPanel } from "./ExportPanel";
 export { default as NutrientRadarChart } from "./NutrientRadarChart";

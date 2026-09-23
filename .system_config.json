@@ -1,7 +1,7 @@
 {
   "maintenance": {
     "enabled": false,
-    "message": "The Ethiopian health Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
+    "message": "The Ethiopian Welbeing Platform is undergoing scheduled regulatory updates. We will be back online shortly.",
     "startedAt": null
   },
   "announcement": {
@@ -23,7 +23,7 @@
   },
   "platform": {
     "name": "Ethiopian Wisdom & Wellness Platform",
-    "organization": "Ministry of health & Traditional Medicine Advisory Board",
+    "organization": "Ministry of Welbeing & Traditional Medicine Advisory Board",
     "supportEmail": "compliance@ethio-wellness.example",
     "version": "v3.0 Enterprise Control Plane",
     "environment": "development"

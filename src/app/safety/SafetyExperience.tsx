@@ -18,7 +18,7 @@ const MED_OPTIONS = [
   { name: "Metformin", drugClass: "Hypoglycemics" },
   { name: "Lisinopril", drugClass: "Antihypertensives" },
   { name: "Furosemide (Lasix)", drugClass: "Diuretics" },
-  { name: "None (healthy individual)", drugClass: "None" },
+  { name: "None (Welbeingy individual)", drugClass: "None" },
 ];
 
 export default function SafetyExperience() {
@@ -51,11 +51,10 @@ export default function SafetyExperience() {
                 <div
                   key={h.name}
                   onClick={() => setSelectedHerb(h)}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                    selectedHerb.name === h.name
-                      ? "bg-emerald-950/40 border-emerald-500/50 shadow-md shadow-emerald-950/30"
-                      : "bg-black/30 border-white/5 hover:border-white/20"
-                  }`}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${selectedHerb.name === h.name
+                    ? "bg-emerald-950/40 border-emerald-500/50 shadow-md shadow-emerald-950/30"
+                    : "bg-black/30 border-white/5 hover:border-white/20"
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-white text-sm">{h.name}</span>
@@ -77,11 +76,10 @@ export default function SafetyExperience() {
                 <div
                   key={m.name}
                   onClick={() => setSelectedMed(m)}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                    selectedMed.name === m.name
-                      ? "bg-rose-950/40 border-rose-500/50 shadow-md shadow-rose-950/30"
-                      : "bg-black/30 border-white/5 hover:border-white/20"
-                  }`}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${selectedMed.name === m.name
+                    ? "bg-rose-950/40 border-rose-500/50 shadow-md shadow-rose-950/30"
+                    : "bg-black/30 border-white/5 hover:border-white/20"
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-white text-sm">{m.name}</span>
@@ -94,11 +92,10 @@ export default function SafetyExperience() {
 
           <div className="md:col-span-4 flex flex-col">
             <div
-              className={`glass-panel p-6 flex-grow flex flex-col justify-between border-2 ${
-                safetyResult.status === "flagged"
-                  ? "border-rose-500/60 bg-rose-950/15"
-                  : "border-emerald-500/60 bg-emerald-950/15"
-              }`}
+              className={`glass-panel p-6 flex-grow flex flex-col justify-between border-2 ${safetyResult.status === "flagged"
+                ? "border-rose-500/60 bg-rose-950/15"
+                : "border-emerald-500/60 bg-emerald-950/15"
+                }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -106,9 +103,8 @@ export default function SafetyExperience() {
                     Safety Gate Decision
                   </span>
                   <span
-                    className={`badge ${
-                      safetyResult.status === "flagged" ? "badge-flagged" : "badge-safe"
-                    }`}
+                    className={`badge ${safetyResult.status === "flagged" ? "badge-flagged" : "badge-safe"
+                      }`}
                   >
                     {safetyResult.status === "flagged" ? "BLOCKED / CULLED" : "PASSED SAFETY GATE"}
                   </span>
@@ -123,7 +119,7 @@ export default function SafetyExperience() {
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
                   {safetyResult.status === "flagged"
                     ? `The algorithm flags ${selectedHerb.name} due to adverse pharmacological interaction with ${selectedMed.name} (${selectedMed.drugClass}). This remedy is NEVER shown to the client.`
-                    : `No documented high-severity clinical contraindication exists between ${selectedHerb.name} and ${selectedMed.name}. The remedy is safe to surface.`}
+                    : `No documented high-severity Debral contraindication exists between ${selectedHerb.name} and ${selectedMed.name}. The remedy is safe to surface.`}
                 </p>
 
                 {safetyResult.status === "flagged" && (
@@ -134,8 +130,8 @@ export default function SafetyExperience() {
                     </div>
 
                     <div>
-                      <span className="text-rose-400 font-semibold block mb-0.5">Clinical Adverse Effect:</span>
-                      <p className="text-slate-300">{safetyResult.clinicalEffect}</p>
+                      <span className="text-rose-400 font-semibold block mb-0.5">Debral Adverse Effect:</span>
+                      <p className="text-slate-300">{safetyResult.DebralEffect}</p>
                     </div>
 
                     <div className="pt-2 border-t border-rose-500/20 text-[10px] font-mono text-slate-400">

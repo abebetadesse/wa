@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     await logUserActivity({
       userId: newUser.id,
       activityType: "registration",
-      description: "Created new holistic health account",
+      description: "Created new holistic Welbeing account",
       metadata: { preferredLanguage, region },
     });
 

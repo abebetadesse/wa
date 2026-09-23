@@ -255,7 +255,7 @@ export default function ProfileClient() {
       setMultiNumeroData(mNum);
 
       // 5. AwudeNegest
-      const aw = calculateAwudeNegestReading({ name: targetName, category: "health" });
+      const aw = calculateAwudeNegestReading({ name: targetName, category: "Welbeing" });
       setAwudeReadingData(aw);
     } catch (err) {
       console.error("Failed to generate profile:", err);
@@ -312,7 +312,7 @@ export default function ProfileClient() {
               Astrology, Numerology &amp; Cultural Profiling
             </h1>
             <Link href="/profile/edit" className="mt-4 inline-block btn-pill-primary">
-              Edit health profile
+              Edit Welbeing profile
             </Link>
             <p className="text-slate-300 text-sm md:text-base mt-2 max-w-3xl">
               World-class profiling unifying Western &amp; Vedic Astrology, Dan Millman's 45-path framework, the 16 Circular Tables of AwudeNegest, Däbtära healing scrolls, and multi-dimensional relationship compatibility.
@@ -411,7 +411,7 @@ export default function ProfileClient() {
               </p>
             </div>
             <Link href="/profile/edit" className="btn-pill-secondary text-xs whitespace-nowrap">
-              Edit health fields
+              Edit Welbeing fields
             </Link>
           </div>
           {accountLoading ? (
@@ -669,23 +669,21 @@ export default function ProfileClient() {
             <div className="flex rounded-2xl bg-stone-900/60 p-2 border border-white/10 overflow-x-auto no-scrollbar gap-1.5 mb-8 shadow-inner backdrop-blur-md">
               <button
                 onClick={() => setActiveTab("synthesis")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "synthesis"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "synthesis"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>🌿</span>
-                <span>Synthesis &amp; health</span>
+                <span>Synthesis &amp; Welbeing</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("astrology")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "astrology"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "astrology"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>🌌</span>
                 <span>Astrology</span>
@@ -693,11 +691,10 @@ export default function ProfileClient() {
 
               <button
                 onClick={() => setActiveTab("numerology")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "numerology"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "numerology"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>🔢</span>
                 <span>Numerology</span>
@@ -705,11 +702,10 @@ export default function ProfileClient() {
 
               <button
                 onClick={() => setActiveTab("awudenegest")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "awudenegest"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "awudenegest"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>👑</span>
                 <span>AwudeNegest</span>
@@ -717,11 +713,10 @@ export default function ProfileClient() {
 
               <button
                 onClick={() => setActiveTab("aichat")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "aichat"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "aichat"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>🧠</span>
                 <span>AI Chat</span>
@@ -729,11 +724,10 @@ export default function ProfileClient() {
 
               <button
                 onClick={() => setActiveTab("compatibility")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "compatibility"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "compatibility"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>❤️</span>
                 <span>Compatibility</span>
@@ -741,11 +735,10 @@ export default function ProfileClient() {
 
               <button
                 onClick={() => setActiveTab("naming")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "naming"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "naming"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>📜</span>
                 <span>Naming &amp; Identity</span>
@@ -756,18 +749,17 @@ export default function ProfileClient() {
                   setActiveTab("suggester");
                   if (suggestions.length === 0) handleFetchSuggestions();
                 }}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === "suggester"
+                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "suggester"
                     ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
                 <span>✨</span>
                 <span>Name Suggester</span>
               </button>
             </div>
 
-            {/* TAB 1: SYNTHESIS & health BLUEPRINT */}
+            {/* TAB 1: SYNTHESIS & Welbeing BLUEPRINT */}
             {activeTab === "synthesis" && (
               <div className="space-y-8">
                 {/* Strengths & Vulnerabilities Grid */}
@@ -787,13 +779,13 @@ export default function ProfileClient() {
                     </ul>
                   </div>
 
-                  {/* Primary health Risks */}
+                  {/* Primary Welbeing Risks */}
                   <div className="glass-panel p-6 border border-rose-500/20 space-y-4">
                     <h3 className="text-base font-bold text-rose-400 flex items-center gap-2">
                       <span>⚠️</span> Primary Constitutional Vulnerabilities
                     </h3>
                     <ul className="space-y-2.5">
-                      {profile.synthesis.primaryhealthRisks.map((risk, i) => (
+                      {profile.synthesis.primaryWelbeingRisks.map((risk, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-sm text-slate-200">
                           <span className="text-rose-400 mt-1">!</span>
                           <span>{risk}</span>
@@ -1003,8 +995,8 @@ export default function ProfileClient() {
 
                   {/* Overall Identity Synergy */}
                   <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 text-xs text-slate-300">
-                    <span className="font-bold text-white block">Holistic Identity &amp; health Behavior Synthesis:</span>
-                    <p>{profile.naming.overallNameIdentitySynergy.healthBehaviorInfluence}</p>
+                    <span className="font-bold text-white block">Holistic Identity &amp; Welbeing Behavior Synthesis:</span>
+                    <p>{profile.naming.overallNameIdentitySynergy.WelbeingBehaviorInfluence}</p>
                     <p>{profile.naming.overallNameIdentitySynergy.mindBodyResilience}</p>
                   </div>
                 </div>
@@ -1134,7 +1126,7 @@ export default function ProfileClient() {
                       <div className="text-xs text-slate-400">{item.alignmentReason}</div>
 
                       <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
-                        <strong>health Benefit:</strong> {item.healthHarmonizationBenefit}
+                        <strong>Welbeing Benefit:</strong> {item.WelbeingHarmonizationBenefit}
                       </div>
 
                       {item.recommendation && (
@@ -1157,7 +1149,7 @@ export default function ProfileClient() {
             <span>Domain B Compliance &amp; Multi-Tradition Disclaimers</span>
           </div>
           <p className="leading-relaxed">
-            {PLATFORM_DISCLAIMERS.astrology} {PLATFORM_DISCLAIMERS.numerology} {PLATFORM_DISCLAIMERS.awudeNegest} {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.compatibility} {PLATFORM_DISCLAIMERS.health}
+            {PLATFORM_DISCLAIMERS.astrology} {PLATFORM_DISCLAIMERS.numerology} {PLATFORM_DISCLAIMERS.awudeNegest} {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.compatibility} {PLATFORM_DISCLAIMERS.Welbeing}
           </p>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { UrgencyDetector } from "@/lib/knowledge/parsing/urgencyDetector";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
 import { UserProfile } from "@/lib/knowledge/types";
 import { db } from "@/lib/db";
-import { diagnosticSessions, healthProfiles } from "@/lib/db/schema";
+import { diagnosticSessions, WelbeingProfiles } from "@/lib/db/schema";
 import { decryptRestrictedField } from "@/lib/security/encryption";
 import { desc, eq } from "drizzle-orm";
 
@@ -18,9 +18,9 @@ async function loadPersistedProfile(userId?: string): Promise<UserProfile> {
 
   const [stored] = await db
     .select()
-    .from(healthProfiles)
-    .where(eq(healthProfiles.userId, userId))
-    .orderBy(desc(healthProfiles.updatedAt))
+    .from(WelbeingProfiles)
+    .where(eq(WelbeingProfiles.userId, userId))
+    .orderBy(desc(WelbeingProfiles.updatedAt))
     .limit(1);
 
   if (!stored) return {};
@@ -34,7 +34,7 @@ async function loadPersistedProfile(userId?: string): Promise<UserProfile> {
       region: stored.region ?? undefined,
     },
     medications: decryptRestrictedField<any[]>(stored.medications) ?? [],
-    health: {
+    Welbeing: {
       medications: decryptRestrictedField<any[]>(stored.medications) ?? [],
       conditions: decryptRestrictedField<string[]>(stored.medicalHistory) ?? [],
       allergies: Array.isArray(stored.allergies) ? stored.allergies.map(String) : [],
@@ -58,15 +58,15 @@ export async function POST(request: NextRequest) {
     const originalQuery = typeof body.query === "string" ? body.query.trim() : "";
     let query = originalQuery;
     const mode = body.mode || "text";
-    const allowedDomains = new Set(["health", "peace", "power", "money", "career", "relationships", "spiritual", "legal", "social"]);
-    const requestedDomain = typeof body.domain === "string" ? body.domain.toLowerCase() : "health";
-    const domain = allowedDomains.has(requestedDomain) ? requestedDomain : "health";
-    const domainLabel = typeof body.domainLabel === "string" && body.domainLabel.trim() ? body.domainLabel.trim() : "health";
+    const allowedDomains = new Set(["Welbeing", "peace", "power", "money", "career", "relationships", "spiritual", "legal", "social"]);
+    const requestedDomain = typeof body.domain === "string" ? body.domain.toLowerCase() : "Welbeing";
+    const domain = allowedDomains.has(requestedDomain) ? requestedDomain : "Welbeing";
+    const domainLabel = typeof body.domainLabel === "string" && body.domainLabel.trim() ? body.domainLabel.trim() : "Welbeing";
     const requestedLanguage = body.language || "en";
     const selectedSymptoms = Array.isArray(body.symptoms) ? body.symptoms : [];
     const requestProfile: UserProfile = body.userProfile || {};
 
-    if (domain && domain !== "health") {
+    if (domain && domain !== "Welbeing") {
       query = `Case domain focus: ${domainLabel}. ${query}`.trim();
     }
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     if (!query || query.length < 2) {
       return NextResponse.json(
-        { success: false, error: "Please describe your health concern or select symptoms." },
+        { success: false, error: "Please describe your Welbeing concern or select symptoms." },
         { status: 400 }
       );
     }
@@ -101,13 +101,13 @@ export async function POST(request: NextRequest) {
     try {
       persistedProfile = await loadPersistedProfile(requestProfile.userId);
     } catch (profileError) {
-      console.warn("Could not load persisted health profile for diagnostic:", profileError);
+      console.warn("Could not load persisted Welbeing profile for diagnostic:", profileError);
     }
     const userProfile: UserProfile = {
       ...persistedProfile,
       ...requestProfile,
       demographics: { ...persistedProfile.demographics, ...requestProfile.demographics },
-      health: { ...persistedProfile.health, ...requestProfile.health },
+      Welbeing: { ...persistedProfile.Welbeing, ...requestProfile.Welbeing },
       lifestyle: { ...persistedProfile.lifestyle, ...requestProfile.lifestyle },
       location: {
         region: requestProfile.location?.region || persistedProfile.location?.region || "Addis Ababa",
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Diagnostic analyze error:", error);
     return NextResponse.json(
-      { success: false, error: "An unexpected error occurred while analyzing this health query." },
+      { success: false, error: "An unexpected error occurred while analyzing this Welbeing query." },
       { status: 500 }
     );
   }

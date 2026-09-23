@@ -5,7 +5,7 @@ import { PLATFORM_DISCLAIMERS } from "@/lib/profiling/extendedTypes";
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { category = "health" } = body;
+    const { category = "Welbeing" } = body;
 
     const wisdom = getDabtaraWisdom(category);
 

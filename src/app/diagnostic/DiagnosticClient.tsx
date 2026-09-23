@@ -35,7 +35,7 @@ const quickSuggestions = [
 ];
 
 const domainOptions = [
-  { id: "health", label: "health", icon: "✚", description: "Symptoms, recovery, nutrition, medication safety, and preventive care." },
+  { id: "Welbeing", label: "Welbeing", icon: "✚", description: "Symptoms, recovery, nutrition, medication safety, and preventive care." },
   { id: "peace", label: "Peace", icon: "☼", description: "Stress, safety, sleep, emotional steadiness, and restoration." },
   { id: "power", label: "Power", icon: "◇", description: "Agency, boundaries, energy, motivation, and leadership." },
   { id: "money", label: "Money", icon: "◈", description: "Stability, obligations, planning, and resource pressure." },
@@ -47,8 +47,8 @@ const domainOptions = [
 ];
 
 const domainInsightMap: Record<string, { headline: string; emphasis: string; questions: string[] }> = {
-  health: {
-    headline: "health-focused synthesis",
+  Welbeing: {
+    headline: "Welbeing-focused synthesis",
     emphasis: "The analysis is anchored on symptoms, physiology, medication-herb safety, nutrition, and recovery patterns.",
     questions: ["What is changing most in your body or daily function?", "Have you started any new medicines, herbs, supplements, or fasting patterns?", "What is making symptoms worse or better?"],
   },
@@ -79,7 +79,7 @@ const domainInsightMap: Record<string, { headline: string; emphasis: string; que
   },
   spiritual: {
     headline: "Spiritual & Life Direction synthesis",
-    emphasis: "This lens emphasizes purpose, life direction, ritual meaning, and reflective guidance while keeping mental-health safety distinct.",
+    emphasis: "This lens emphasizes purpose, life direction, ritual meaning, and reflective guidance while keeping mental-Welbeing safety distinct.",
     questions: ["What area of life feels most unclear or spiritually heavy right now?", "What traditions or questions feel most meaningful to you?", "What would help you feel more grounded in purpose?"],
   },
   legal: {
@@ -149,8 +149,8 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 export default function DiagnosticClient() {
   const [mode, setMode] = useState<InputMode>("text");
   const [query, setQuery] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState<string>("health");
-  const [analyzedDomain, setAnalyzedDomain] = useState<string>("health");
+  const [selectedDomain, setSelectedDomain] = useState<string>("Welbeing");
+  const [analyzedDomain, setAnalyzedDomain] = useState<string>("Welbeing");
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [selectedBotanical, setSelectedBotanical] = useState<string | null>(null);
   const [userRegion, setUserRegion] = useState("Addis Ababa (2,400m)");
@@ -237,11 +237,11 @@ export default function DiagnosticClient() {
         .map((s) => s.label);
       finalQuery = `Patient reports experiencing: ${symptomLabels.join(", ")}. ${query}`.trim();
     } else if (mode === "image" && selectedBotanical) {
-      finalQuery = `Botanical photo inspection of ${selectedBotanical}. Clinical inquiry: ${query || "Assess medicinal safety and interactions"}`.trim();
+      finalQuery = `Botanical photo inspection of ${selectedBotanical}. Debral inquiry: ${query || "Assess medicinal safety and interactions"}`.trim();
     }
 
     if (!finalQuery || finalQuery.trim().length < 2) {
-      setError("Please describe your health concern or select symptoms first.");
+      setError("Please describe your Welbeing concern or select symptoms first.");
       return;
     }
 
@@ -260,7 +260,7 @@ export default function DiagnosticClient() {
         ? userMedications.split(",").map((m) => m.trim()).filter(Boolean)
         : [];
 
-      const domainLabel = domainOptions.find((d) => d.id === selectedDomain)?.label || "health";
+      const domainLabel = domainOptions.find((d) => d.id === selectedDomain)?.label || "Welbeing";
 
       const response = await fetch("/api/diagnostic/analyze", {
         method: "POST",
@@ -351,7 +351,7 @@ export default function DiagnosticClient() {
               Intelligent Diagnostic Portal
             </h1>
             <p className="text-sm md:text-base text-slate-400 mt-2 max-w-2xl leading-relaxed">
-              Processes health concerns across <strong className="text-emerald-400">11 specialized knowledge domains</strong> with cross-strand causal inference, ETM-DB safety gates, and 5-stage action plans.
+              Processes Welbeing concerns across <strong className="text-emerald-400">11 specialized knowledge domains</strong> with cross-strand causal inference, ETM-DB safety gates, and 5-stage action plans.
             </p>
           </div>
 
@@ -391,11 +391,10 @@ export default function DiagnosticClient() {
                     setMode(m);
                     setError("");
                   }}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all flex items-center gap-2 ${
-                    mode === m
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all flex items-center gap-2 ${mode === m
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
                 >
                   <span>{m === "text" ? "⌨️ Text" : m === "voice" ? "🎙️ Voice" : m === "image" ? "📷 Botanical Photo" : "🩺 Symptom Grid"}</span>
                 </button>
@@ -449,11 +448,10 @@ export default function DiagnosticClient() {
                   key={domain.id}
                   type="button"
                   onClick={() => setSelectedDomain(domain.id)}
-                  className={`p-3 rounded-xl border text-left transition-all ${
-                    active
-                      ? "border-emerald-500/60 bg-emerald-950/30 text-white shadow-lg shadow-emerald-950/20"
-                      : "border-white/10 bg-black/25 text-slate-300 hover:border-white/20"
-                  }`}
+                  className={`p-3 rounded-xl border text-left transition-all ${active
+                    ? "border-emerald-500/60 bg-emerald-950/30 text-white shadow-lg shadow-emerald-950/20"
+                    : "border-white/10 bg-black/25 text-slate-300 hover:border-white/20"
+                    }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <span className="text-xl">{domain.icon}</span>
@@ -483,11 +481,11 @@ export default function DiagnosticClient() {
           {/* Mode 1: Text Input */}
           {mode === "text" && (
             <div>
-              <label htmlFor="health-query" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+              <label htmlFor="Welbeing-query" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
                 Describe your symptoms, duration, triggers &amp; concerns
               </label>
               <textarea
-                id="health-query"
+                id="Welbeing-query"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={domainInsightMap[selectedDomain]?.questions[0] || "Describe what is happening and what you need help with..."}
@@ -518,18 +516,16 @@ export default function DiagnosticClient() {
                 <button
                   type="button"
                   onClick={() => setSpeechLang("en-US")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                    speechLang === "en-US" ? "bg-emerald-600 text-white" : "bg-white/5 text-slate-400"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold ${speechLang === "en-US" ? "bg-emerald-600 text-white" : "bg-white/5 text-slate-400"
+                    }`}
                 >
                   English (US)
                 </button>
                 <button
                   type="button"
                   onClick={() => setSpeechLang("am-ET")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                    speechLang === "am-ET" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold ${speechLang === "am-ET" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400"
+                    }`}
                 >
                   Amharic (አማርኛ)
                 </button>
@@ -540,11 +536,10 @@ export default function DiagnosticClient() {
                   type="button"
                   onClick={startVoiceRecognition}
                   disabled={isListening}
-                  className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl transition-all shadow-xl ${
-                    isListening
-                      ? "bg-rose-600 text-white animate-pulse shadow-rose-950/80 scale-110"
-                      : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950/50 hover:scale-105"
-                  }`}
+                  className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl transition-all shadow-xl ${isListening
+                    ? "bg-rose-600 text-white animate-pulse shadow-rose-950/80 scale-110"
+                    : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950/50 hover:scale-105"
+                    }`}
                 >
                   🎙️
                 </button>
@@ -582,11 +577,10 @@ export default function DiagnosticClient() {
                       setSelectedBotanical(specimen.name);
                       setQuery(`Inquiry regarding safety and indications of ${specimen.name}`);
                     }}
-                    className={`p-4 rounded-xl border text-left transition-all ${
-                      selectedBotanical === specimen.name
-                        ? "bg-emerald-950/40 border-emerald-400 text-white shadow-md shadow-emerald-950/40"
-                        : "bg-white/[0.02] border-white/10 text-slate-300 hover:border-white/20"
-                    }`}
+                    className={`p-4 rounded-xl border text-left transition-all ${selectedBotanical === specimen.name
+                      ? "bg-emerald-950/40 border-emerald-400 text-white shadow-md shadow-emerald-950/40"
+                      : "bg-white/[0.02] border-white/10 text-slate-300 hover:border-white/20"
+                      }`}
                   >
                     <span className="text-2xl mb-2 block">{specimen.icon}</span>
                     <h4 className="text-xs font-bold text-white">{specimen.name}</h4>
@@ -634,13 +628,12 @@ export default function DiagnosticClient() {
                       key={sym.id}
                       type="button"
                       onClick={() => toggleSymptom(sym.id)}
-                      className={`p-3 rounded-xl border text-left text-xs transition-all ${
-                        isSelected
-                          ? isCritical
-                            ? "bg-rose-950/60 border-rose-400 text-rose-100 shadow-md shadow-rose-950/50"
-                            : "bg-emerald-950/60 border-emerald-400 text-emerald-100 shadow-md shadow-emerald-950/40"
-                          : "bg-black/30 border-white/10 text-slate-300 hover:border-white/20"
-                      }`}
+                      className={`p-3 rounded-xl border text-left text-xs transition-all ${isSelected
+                        ? isCritical
+                          ? "bg-rose-950/60 border-rose-400 text-rose-100 shadow-md shadow-rose-950/50"
+                          : "bg-emerald-950/60 border-emerald-400 text-emerald-100 shadow-md shadow-emerald-950/40"
+                        : "bg-black/30 border-white/10 text-slate-300 hover:border-white/20"
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold">{sym.label.split("/")[0]}</span>
@@ -738,13 +731,12 @@ export default function DiagnosticClient() {
                 return (
                   <div
                     key={s.step}
-                    className={`p-3.5 rounded-xl border transition-all ${
-                      isDone
-                        ? "bg-emerald-950/50 border-emerald-500/50 text-emerald-100"
-                        : isCurrent
+                    className={`p-3.5 rounded-xl border transition-all ${isDone
+                      ? "bg-emerald-950/50 border-emerald-500/50 text-emerald-100"
+                      : isCurrent
                         ? "bg-emerald-500/20 border-emerald-400 text-white animate-pulse"
                         : "bg-black/30 border-white/5 text-slate-500"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-bold">Step {s.step}</span>
@@ -764,25 +756,23 @@ export default function DiagnosticClient() {
           <div className="space-y-8 animate-fadeIn" aria-live="polite">
             {/* 1. Urgency Alert Banner */}
             <div
-              className={`rounded-2xl border p-6 md:p-8 shadow-2xl ${
-                urgencyBadgeStyles[result.summary.urgency].border
-              } ${urgencyBadgeStyles[result.summary.urgency].bg}`}
+              className={`rounded-2xl border p-6 md:p-8 shadow-2xl ${urgencyBadgeStyles[result.summary.urgency].border
+                } ${urgencyBadgeStyles[result.summary.urgency].bg}`}
             >
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
-                        urgencyBadgeStyles[result.summary.urgency].badgeBg
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${urgencyBadgeStyles[result.summary.urgency].badgeBg
+                        }`}
                     >
                       {result.summary.urgency === "critical"
                         ? "🔥 CRITICAL EMERGENCY"
                         : result.summary.urgency === "high"
-                        ? "⚠️ HIGH URGENCY"
-                        : result.summary.urgency === "medium"
-                        ? "ℹ️ MODERATE REVIEW"
-                        : "✅ ROUTINE GUIDANCE"}
+                          ? "⚠️ HIGH URGENCY"
+                          : result.summary.urgency === "medium"
+                            ? "ℹ️ MODERATE REVIEW"
+                            : "✅ ROUTINE GUIDANCE"}
                     </span>
                     <span className="text-xs font-mono text-slate-300">
                       Urgency Score: <strong className="text-white">{result.summary.urgencyScore}/100</strong>
@@ -838,7 +828,7 @@ export default function DiagnosticClient() {
                 <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3">
                   <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 font-bold mb-2">Domain lens</div>
                   <div className="text-sm font-semibold text-white">
-                    {domainInsightMap[analyzedDomain]?.headline || "health-focused synthesis"}
+                    {domainInsightMap[analyzedDomain]?.headline || "Welbeing-focused synthesis"}
                   </div>
                   <p className="text-xs text-slate-300 mt-2 leading-relaxed">
                     {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
@@ -858,7 +848,7 @@ export default function DiagnosticClient() {
               </div>
 
               <div className="glass-panel p-5 text-center flex flex-col justify-between">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Clinical Intent</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Debral Intent</div>
                 <div className="my-2">
                   <span className="text-xl font-extrabold text-amber-300 capitalize">{result.summary.intent}</span>
                   <p className="text-xs text-slate-400 mt-1">Language: {result.language.toUpperCase()}</p>
@@ -870,7 +860,7 @@ export default function DiagnosticClient() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="glass-panel p-6">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">What this domain is asking</div>
-                <h3 className="text-lg font-bold text-white mb-3">{domainInsightMap[analyzedDomain]?.headline || "health-focused synthesis"}</h3>
+                <h3 className="text-lg font-bold text-white mb-3">{domainInsightMap[analyzedDomain]?.headline || "Welbeing-focused synthesis"}</h3>
                 <p className="text-xs text-slate-300 leading-relaxed mb-4">
                   {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
                 </p>
@@ -889,7 +879,7 @@ export default function DiagnosticClient() {
                 <div className="space-y-3">
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Primary focus</div>
-                    <div className="text-sm font-semibold text-white">{domainOptions.find((d) => d.id === analyzedDomain)?.label || "health"}</div>
+                    <div className="text-sm font-semibold text-white">{domainOptions.find((d) => d.id === analyzedDomain)?.label || "Welbeing"}</div>
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Urgency signal</div>
@@ -983,10 +973,10 @@ export default function DiagnosticClient() {
                     sol.priority === "critical"
                       ? "border-rose-500/50 bg-rose-950/30"
                       : sol.priority === "high"
-                      ? "border-orange-500/50 bg-orange-950/20"
-                      : sol.priority === "medium"
-                      ? "border-amber-500/40 bg-amber-950/20"
-                      : "border-emerald-500/40 bg-emerald-950/20";
+                        ? "border-orange-500/50 bg-orange-950/20"
+                        : sol.priority === "medium"
+                          ? "border-amber-500/40 bg-amber-950/20"
+                          : "border-emerald-500/40 bg-emerald-950/20";
 
                   return (
                     <div key={sol.id} className={`p-5 rounded-2xl border ${priorityStyles} flex flex-col justify-between`}>
@@ -1051,16 +1041,15 @@ export default function DiagnosticClient() {
                           <div
                             key={item.id}
                             onClick={() => toggleActionCheck(item.id)}
-                            className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
-                              isDone
-                                ? "bg-emerald-950/20 border-emerald-500/30 opacity-70 line-through text-slate-400"
-                                : "bg-black/40 border-white/10 hover:border-white/20 text-slate-200"
-                            }`}
+                            className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${isDone
+                              ? "bg-emerald-950/20 border-emerald-500/30 opacity-70 line-through text-slate-400"
+                              : "bg-black/40 border-white/10 hover:border-white/20 text-slate-200"
+                              }`}
                           >
                             <input
                               type="checkbox"
                               checked={isDone}
-                              onChange={() => {}}
+                              onChange={() => { }}
                               className="mt-0.5 rounded text-emerald-500 focus:ring-0 cursor-pointer"
                             />
                             <div className="flex-1 text-xs">
@@ -1090,7 +1079,7 @@ export default function DiagnosticClient() {
                   Potential Herb-Drug &amp; Nutrient Interactions Detected
                 </h3>
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-                  The clinical safety gate intercepted potential adverse biochemical interactions between traditional remedies and prescription drugs:
+                  The Debral safety gate intercepted potential adverse biochemical interactions between traditional remedies and prescription drugs:
                 </p>
                 <div className="space-y-3">
                   {result.safety.herbDrugInteractions.map((hdi) => (
@@ -1199,11 +1188,10 @@ export default function DiagnosticClient() {
                     key={st}
                     type="button"
                     onClick={() => setActiveStrandTab(st)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-colors ${
-                      activeStrandTab === st
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-colors ${activeStrandTab === st
+                      ? "bg-emerald-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      }`}
                   >
                     {st} ({result.rawFindings[st]?.length || 0})
                   </button>
@@ -1277,7 +1265,7 @@ export default function DiagnosticClient() {
               <div>
                 <h4 className="text-sm font-bold text-white">Save or Share Your Diagnostic Report</h4>
                 <p className="text-xs text-slate-400">
-                  Export machine-readable JSON or generate a printable clinical summary for your practitioner.
+                  Export machine-readable JSON or generate a printable Debral summary for your practitioner.
                 </p>
               </div>
 
@@ -1315,7 +1303,7 @@ export default function DiagnosticClient() {
                       navigator.share({
                         title: "Ethiopian Wisdom Diagnostic Summary",
                         text: `Diagnostic Result: ${result.summary.problem} (${result.summary.urgency.toUpperCase()} priority). Consult: ${result.referral.type}`,
-                      }).catch(() => {});
+                      }).catch(() => { });
                     } else {
                       navigator.clipboard.writeText(
                         `Ethiopian Wisdom Diagnostic Summary:\n${result.summary.problem}\nUrgency: ${result.summary.urgency.toUpperCase()}\nRecommendation: ${result.referral.message}`
@@ -1332,7 +1320,7 @@ export default function DiagnosticClient() {
 
             {/* Legal Disclaimers */}
             <div className="text-[11px] text-slate-500 space-y-1.5 p-4 rounded-xl bg-black/30 border border-white/5">
-              <p className="font-bold text-slate-400">Official Clinical Governance Notice:</p>
+              <p className="font-bold text-slate-400">Official Debral Governance Notice:</p>
               {result.safety.disclaimers.map((disc, idx) => (
                 <p key={idx} className="leading-relaxed">&bull; {disc}</p>
               ))}
@@ -1364,7 +1352,7 @@ export default function DiagnosticClient() {
 
               <div className="space-y-3 mb-6">
                 {[
-                  { name: "EPHI Toll-Free Public health Hotline", number: "907", desc: "Ethiopian Public health Institute (24/7 National Dispatch)" },
+                  { name: "EPHI Toll-Free Public Welbeing Hotline", number: "907", desc: "Ethiopian Public Welbeing Institute (24/7 National Dispatch)" },
                   { name: "Ethiopian Red Cross Ambulance", number: "991", desc: "Emergency medical transport across major cities" },
                   { name: "National Emergency Police", number: "911", desc: "Addis Ababa & Regional Emergency Response" },
                   { name: "Tikur Anbessa Hospital Emergency Desk", number: "+251-11-551-1211", desc: "Central tertiary trauma & acute care referral center" },
@@ -1430,13 +1418,12 @@ export default function DiagnosticClient() {
                         className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] uppercase font-mono font-bold px-1.5 py-0.5 rounded ${
-                            item.urgencyLevel === "critical"
-                              ? "bg-rose-950 text-rose-300"
-                              : item.urgencyLevel === "high"
+                          <span className={`text-[10px] uppercase font-mono font-bold px-1.5 py-0.5 rounded ${item.urgencyLevel === "critical"
+                            ? "bg-rose-950 text-rose-300"
+                            : item.urgencyLevel === "high"
                               ? "bg-orange-950 text-orange-300"
                               : "bg-emerald-950 text-emerald-300"
-                          }`}>
+                            }`}>
                             {item.urgencyLevel}
                           </span>
                           <span className="text-[10px] text-slate-500">

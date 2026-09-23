@@ -10,7 +10,7 @@ const STRAND_VISUALS: Record<KnowledgeStrandType, { imageUrl: string; imageAlt: 
   medication: { imageUrl: "/images/evidence/strand-medication.svg", imageAlt: "Medication safety illustration" },
   addiction: { imageUrl: "/images/evidence/strand-addiction.svg", imageAlt: "Substance-use pattern illustration" },
   ecological: { imageUrl: "/images/evidence/strand-ecological.svg", imageAlt: "Highland ecology illustration" },
-  epidemiological: { imageUrl: "/images/evidence/strand-epidemiological.svg", imageAlt: "Regional health-risk illustration" },
+  epidemiological: { imageUrl: "/images/evidence/strand-epidemiological.svg", imageAlt: "Regional Welbeing-risk illustration" },
   psychological: { imageUrl: "/images/evidence/strand-psychological.svg", imageAlt: "Mind and stress-response illustration" },
   socioeconomic: { imageUrl: "/images/evidence/strand-socioeconomic.svg", imageAlt: "Household resources illustration" },
   dietary: { imageUrl: "/images/evidence/strand-dietary.svg", imageAlt: "Ethiopian food and nutrition illustration" },

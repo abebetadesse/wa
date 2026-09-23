@@ -29,7 +29,7 @@ export default async function AuditPage() {
             Immutable Audit Trail &amp; Compliance Lineage
           </h1>
           <p className="text-sm text-slate-300 leading-relaxed">
-            Every execution of the evaluation engine, every intercepted traditional remedy, and every clinical report generation is permanently recorded in the append-only <code>audit_log</code> table. Rows in this table are immutable and cannot be updated or overwritten.
+            Every execution of the evaluation engine, every intercepted traditional remedy, and every Debral report generation is permanently recorded in the append-only <code>audit_log</code> table. Rows in this table are immutable and cannot be updated or overwritten.
           </p>
         </div>
 
@@ -40,7 +40,7 @@ export default async function AuditPage() {
               Data Proclamation Compliance
             </span>
             <p className="text-slate-300">
-              Complies with Ethiopian Personal Data Protection Proclamation &amp; GDPR health data residency standards.
+              Complies with Ethiopian Personal Data Protection Proclamation &amp; GDPR Welbeing data residency standards.
             </p>
           </div>
 
@@ -100,13 +100,12 @@ export default async function AuditPage() {
                         </td>
                         <td className="p-3">
                           <span
-                            className={`badge ${
-                              log.eventType === "gap_report_generated"
-                                ? "badge-safe"
-                                : log.eventType === "system_initialized"
+                            className={`badge ${log.eventType === "gap_report_generated"
+                              ? "badge-safe"
+                              : log.eventType === "system_initialized"
                                 ? "badge-low"
                                 : "badge-moderate"
-                            } text-[10px]`}
+                              } text-[10px]`}
                           >
                             {log.eventType}
                           </span>

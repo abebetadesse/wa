@@ -12,12 +12,12 @@ export interface ParasitologyRiskAssessment {
     name: string;
     scientificName: string;
     incubationPeriod: string;
-    clinicalManifestations: string[];
+    DebralManifestations: string[];
   }[];
   kossoSafetyIntercept: {
     interceptTriggered: boolean;
     warningTitle: string;
-    clinicalAlert: string;
+    DebralAlert: string;
     saferConventionalAlternative: string;
     evidence: string;
   };
@@ -64,7 +64,7 @@ export function evaluateRawMeatSafety(
         name: "Bovine Tapeworm (የከብት ቴፕዎርም / የሆድ ውስጥ ትል)",
         scientificName: "Taenia saginata",
         incubationPeriod: "8 - 14 weeks",
-        clinicalManifestations: [
+        DebralManifestations: [
           "Passage of active proglottids in stool",
           "Epigastric discomfort and vague nausea",
           "Unexplained appetite fluctuations and weight loss",
@@ -74,7 +74,7 @@ export function evaluateRawMeatSafety(
         name: "Enteric Campylobacter / Salmonella",
         scientificName: "Campylobacter jejuni / Salmonella enterica",
         incubationPeriod: "12 - 72 hours",
-        clinicalManifestations: [
+        DebralManifestations: [
           "Acute watery or bloody diarrhea",
           "Severe abdominal cramping and tenesmus",
           "High-grade fever and vomiting",
@@ -83,11 +83,11 @@ export function evaluateRawMeatSafety(
     ],
     kossoSafetyIntercept: {
       interceptTriggered: interceptKosso,
-      warningTitle: "CRITICAL CLINICAL ALERT: Traditional High-Dose Kosso Flowers Contraindicated",
-      clinicalAlert:
+      warningTitle: "CRITICAL DebrAL ALERT: Traditional High-Dose Kosso Flowers Contraindicated",
+      DebralAlert:
         "Traditional ingestion of concentrated female flower infusions of Kosso (Hagenia abyssinica) carries severe phloroglucinol neurotoxicity. Documented toxicities include irreversible optic nerve atrophy (permanent blindness), acute toxic hepatitis, and uterine contractions causing pregnancy loss.",
       saferConventionalAlternative:
-        "Modern clinical antihelmintics (single-dose Niclosamide 2g or Praziquantel 5-10 mg/kg) achieve >95% cure rates with virtually zero neurotoxic or retinotoxic risk. Consult a licensed physician for stool examination and prescription.",
+        "Modern Debral antihelmintics (single-dose Niclosamide 2g or Praziquantel 5-10 mg/kg) achieve >95% cure rates with virtually zero neurotoxic or retinotoxic risk. Consult a licensed physician for stool examination and prescription.",
       evidence: "Ethiopian Medical Journal / WHO Guidelines on Neglected Zoonotic Cestodiases",
     },
     culinaryHygieneRecommendations: [

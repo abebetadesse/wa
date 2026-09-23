@@ -13,7 +13,7 @@ function SpiritualPaymentContent({ caseId }: { caseId: string }) {
   const [paymentMethod, setPaymentMethod] = useState(initialMethod);
   const [phoneNumber, setPhoneNumber] = useState("0911234567");
   const [fullName, setFullName] = useState("Selamawit");
-  const [email, setEmail] = useState("seeker@ethiohealth.com");
+  const [email, setEmail] = useState("seeker@ethioWelbeing.com");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -115,11 +115,10 @@ function SpiritualPaymentContent({ caseId }: { caseId: string }) {
               ].map((m) => (
                 <label
                   key={m.id}
-                  className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
-                    paymentMethod === m.id
+                  className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${paymentMethod === m.id
                       ? "bg-amber-950/40 border-amber-500 text-white shadow-md"
                       : "bg-black/40 border-stone-800 text-stone-300 hover:border-stone-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <input
@@ -185,13 +184,12 @@ function SpiritualPaymentContent({ caseId }: { caseId: string }) {
           {/* Status Message */}
           {statusMessage && (
             <div
-              className={`p-4 rounded-2xl text-xs text-center font-medium ${
-                status === "completed"
+              className={`p-4 rounded-2xl text-xs text-center font-medium ${status === "completed"
                   ? "bg-emerald-950/60 border border-emerald-500/40 text-emerald-200"
                   : status === "failed"
-                  ? "bg-rose-950/60 border border-rose-500/40 text-rose-200"
-                  : "bg-amber-950/40 border border-amber-500/30 text-amber-300 animate-pulse"
-              }`}
+                    ? "bg-rose-950/60 border border-rose-500/40 text-rose-200"
+                    : "bg-amber-950/40 border border-amber-500/30 text-amber-300 animate-pulse"
+                }`}
             >
               {statusMessage}
             </div>

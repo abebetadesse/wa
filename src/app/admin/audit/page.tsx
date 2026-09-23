@@ -69,7 +69,7 @@ export default function AuditLogPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Audit Trail & Compliance Log</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Immutable trace of administrative interventions, clinical evaluations, and authorization events.
+            Immutable trace of administrative interventions, Debral evaluations, and authorization events.
           </p>
         </div>
 

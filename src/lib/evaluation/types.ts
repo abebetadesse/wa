@@ -100,7 +100,7 @@ export interface SafetyCheckResult {
   flaggedMedication?: string;
   severity?: "high" | "moderate" | "caution";
   mechanism?: string;
-  clinicalEffect?: string;
+  DebralEffect?: string;
   contraindicated?: boolean;
   sourceRef: string;
 }

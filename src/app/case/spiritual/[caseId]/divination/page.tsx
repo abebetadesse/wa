@@ -25,7 +25,7 @@ export default function SpiritualDivinationPage({
           setData(payload.data);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
 
     // Staggered reveal animation
@@ -94,9 +94,8 @@ export default function SpiritualDivinationPage({
 
         {/* Step 1: Name Resonance Summary */}
         <div
-          className={`p-6 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl transition-all duration-700 ${
-            revealStep >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`p-6 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl transition-all duration-700 ${revealStep >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           <div className="flex items-center justify-between border-b border-stone-800 pb-3 mb-4">
             <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold">
@@ -129,18 +128,16 @@ export default function SpiritualDivinationPage({
 
         {/* Step 2: Animated Awde Negest Circle */}
         <div
-          className={`space-y-4 transition-all duration-700 ${
-            revealStep >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`space-y-4 transition-all duration-700 ${revealStep >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           <AwdeCircleVisualizer circle={gem?.awdeCircle} segment={gem?.awdeSegment} />
         </div>
 
         {/* Step 3: Talismanic Character Reveal */}
         <div
-          className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-950/40 via-stone-900 to-black border border-purple-500/30 shadow-2xl transition-all duration-700 ${
-            revealStep >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-950/40 via-stone-900 to-black border border-purple-500/30 shadow-2xl transition-all duration-700 ${revealStep >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           <div className="flex items-center justify-between border-b border-purple-500/20 pb-3 mb-4">
             <span className="text-xs uppercase tracking-wider text-purple-300 font-mono font-bold">
@@ -173,9 +170,8 @@ export default function SpiritualDivinationPage({
 
         {/* Step 4: Cultural Disclaimer */}
         <div
-          className={`p-5 rounded-2xl bg-stone-900/60 border border-stone-800 text-xs text-stone-400 space-y-2 transition-all duration-700 ${
-            revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          className={`p-5 rounded-2xl bg-stone-900/60 border border-stone-800 text-xs text-stone-400 space-y-2 transition-all duration-700 ${revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
           <div className="flex items-center gap-2 font-bold text-amber-300">
             <span>⚠️</span>
@@ -184,7 +180,7 @@ export default function SpiritualDivinationPage({
           <p className="leading-relaxed">
             This divination is grounded in classical Ethiopian parchment traditions. It provides a mirror for spiritual
             self-reflection and personal clarity. It does NOT predict specific deterministic events, guarantee commercial
-            outcomes, or replace medical, legal, or licensed mental health counsel. Your reading is personally verified by
+            outcomes, or replace medical, legal, or licensed mental Welbeing counsel. Your reading is personally verified by
             a certified debtera.
           </p>
         </div>

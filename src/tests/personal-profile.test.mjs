@@ -104,7 +104,7 @@ async function runTests() {
     }
   });
 
-  test("health-identity correlation handles psychosomatic and emotional patterns", () => {
+  test("Welbeing-identity correlation handles psychosomatic and emotional patterns", () => {
     const sampleRecord = {
       name: "Tigist",
       psychosomaticTendency: "Gastrointestinal somatization (acid buildup / stomach tension) and upper shoulder holding from chronic patience.",

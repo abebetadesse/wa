@@ -1,6 +1,6 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { parsehealthInquiry } from "../lib/inquiry/parser.ts";
+import { parseWelbeingInquiry } from "../lib/inquiry/parser.ts";
 import { retrieveInquiryKnowledge } from "../lib/inquiry/knowledgeRetrieval.ts";
 import { BiochemicalKnowledgeStrand } from "../lib/knowledge/strands/biochemicalStrand.ts";
 import { BiologicalKnowledgeStrand } from "../lib/knowledge/strands/biologicalStrand.ts";
@@ -9,7 +9,7 @@ import { CulturalKnowledgeStrand } from "../lib/knowledge/strands/culturalStrand
 
 describe("Multi-strand inquiry retrieval", () => {
   test("returns medication safety context for a herb and medication query", async () => {
-    const inquiry = parsehealthInquiry("I take warfarin and want to use Kosso");
+    const inquiry = parseWelbeingInquiry("I take warfarin and want to use Kosso");
     const result = await retrieveInquiryKnowledge(inquiry);
     const safetyFinding = result.findings.find((finding) => finding.strand === "medication");
 
@@ -20,7 +20,7 @@ describe("Multi-strand inquiry retrieval", () => {
   });
 
   test("connects fatigue to biochemical context without diagnosing", async () => {
-    const inquiry = parsehealthInquiry("I feel tired and low energy");
+    const inquiry = parseWelbeingInquiry("I feel tired and low energy");
     const result = await retrieveInquiryKnowledge(inquiry);
     const biochemical = result.findings.find((finding) => finding.strand === "biochemical");
 
@@ -32,7 +32,7 @@ describe("Multi-strand inquiry retrieval", () => {
     const strand = new BiochemicalKnowledgeStrand();
     const findings = await strand.query("I feel exhausted with numbness and poor digestion", {
       deficiencies: ["iron"],
-      health: { medications: ["Metformin"] },
+      Welbeing: { medications: ["Metformin"] },
     });
 
     assert.ok(findings.some((finding) => finding.name.includes("KREBS CYCLE")));
@@ -68,7 +68,7 @@ describe("Multi-strand inquiry retrieval", () => {
     const strand = new BiologicalKnowledgeStrand();
     const findings = await strand.query("bloating, poor sleep, and breathing problems", {
       region: "Amhara Highlands",
-      guthealth: { problems: ["IBS"] },
+      gutWelbeing: { problems: ["IBS"] },
     });
 
     assert.ok(findings.some((finding) => finding.name === "GUT MICROBIOME"));
@@ -84,7 +84,7 @@ describe("Multi-strand inquiry retrieval", () => {
   test("covers medication interactions, fasting, pregnancy, and adverse reactions", async () => {
     const strand = new MedicationKnowledgeStrand();
     const findings = await strand.query("fasting jaundice pregnancy warfarin metronidazole", {
-      health: { medications: ["Warfarin", "Isoniazid"], pregnant: true },
+      Welbeing: { medications: ["Warfarin", "Isoniazid"], pregnant: true },
       lifestyle: { fasting: true },
     });
 
@@ -94,7 +94,7 @@ describe("Multi-strand inquiry retrieval", () => {
     assert.ok(findings.some((finding) => finding.type === "drug_drug_interaction"));
   });
 
-  test("returns culturally specific Domain B context without clinical substitution", async () => {
+  test("returns culturally specific Domain B context without Debral substitution", async () => {
     const strand = new CulturalKnowledgeStrand();
     const findings = await strand.query("Wogesha fracture and Buna coffee ceremony", {
       cultural: { language: "am", ethnicity: "Amhara" },
@@ -105,7 +105,7 @@ describe("Multi-strand inquiry retrieval", () => {
     assert.ok(findings.every((finding) => finding.domain === "cultural"));
     assert.ok(findings.every((finding) => finding.details?.isDomainB === true));
     assert.ok(findings.some((finding) => finding.evidence?.match(/urgent|medical/i)));
-    assert.deepEqual(strand.getNameMeaningAndhealthInsight("Abebe")?.meaning, "Flourished or bloomed");
+    assert.deepEqual(strand.getNameMeaningAndWelbeingInsight("Abebe")?.meaning, "Flourished or bloomed");
   });
 
   test("exposes essential medicine, pharmacokinetic, AMR, and pregnancy safety context", async () => {

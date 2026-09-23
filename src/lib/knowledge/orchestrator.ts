@@ -196,12 +196,12 @@ export class KnowledgeRetrievalOrchestrator {
       gender: userProfile.demographics?.gender || null,
       region: userProfile.location?.region || userProfile.demographics?.region || "highlands",
       altitude: userProfile.location?.altitude ?? null,
-      medications: [...(userProfile.medications || userProfile.health?.medications || [])].map(String).sort(),
-      conditions: [...(userProfile.conditions || userProfile.health?.conditions || [])].map(String).sort(),
-      allergies: [...(userProfile.health?.allergies || [])].map(String).sort(),
+      medications: [...(userProfile.medications || userProfile.Welbeing?.medications || [])].map(String).sort(),
+      conditions: [...(userProfile.conditions || userProfile.Welbeing?.conditions || [])].map(String).sort(),
+      allergies: [...(userProfile.Welbeing?.allergies || [])].map(String).sort(),
       diet: userProfile.diet || userProfile.lifestyle?.diet || null,
       substanceUse: [...(userProfile.substanceUse || userProfile.lifestyle?.substanceUse || [])].map(String).sort(),
-      pregnant: userProfile.pregnant ?? userProfile.health?.pregnant ?? false,
+      pregnant: userProfile.pregnant ?? userProfile.Welbeing?.pregnant ?? false,
     };
     return `${query.toLowerCase().trim()}__${JSON.stringify(profileFingerprint)}`;
   }

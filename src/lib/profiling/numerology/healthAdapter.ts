@@ -1,6 +1,6 @@
 import { getNumerologyMeaning } from "./meaningMapper";
 
-export function getSomatichealthSummary(
+export function getSomaticWelbeingSummary(
   lifePathNum: number,
   destinyNum: number
 ): {
@@ -50,7 +50,7 @@ export function getSomatichealthSummary(
   );
 
   const preventiveHabits = Array.from(
-    new Set([...lp.healthPatterns.lifestyleRecommendations, ...dest.healthPatterns.lifestyleRecommendations])
+    new Set([...lp.WelbeingPatterns.lifestyleRecommendations, ...dest.WelbeingPatterns.lifestyleRecommendations])
   );
 
   return {

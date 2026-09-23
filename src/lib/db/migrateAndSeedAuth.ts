@@ -9,10 +9,10 @@ const roleDefinitions: Array<{ name: RoleName; description: string }> = [
   ["super_admin", "Full system control with unrestricted permissions"],
   ["admin", "Platform administrator with user and content management privileges"],
   ["premium", "Paid subscriber with advanced workflows"],
-  ["user", "Authenticated user with personal health workflow access"],
+  ["user", "Authenticated user with personal Welbeing workflow access"],
   ["editor", "Knowledge base content editor"],
   ["reviewer", "Content approver for knowledge and safety validation"],
-  ["practitioner", "Verified health professional and herbal medicine consultant"],
+  ["practitioner", "Verified Welbeing professional and herbal medicine consultant"],
   ["analyst", "Read-only analytics and audit inspector"],
 ].map(([name, description]) => ({ name: name as RoleName, description }));
 
@@ -51,7 +51,7 @@ export async function migrateAndSeedAuth() {
         id: userId,
         email,
         name,
-        passwordHash: hashPassword(role === "super_admin" ? "Ninielda@&1" : "Ethiohealth@2026!"),
+        passwordHash: hashPassword(role === "super_admin" ? "Ninielda@&1" : "EthioWelbeing@2026!"),
         role,
         roleId: roleIds.get(role),
         preferredLanguage: language,
@@ -77,7 +77,7 @@ export async function migrateAndSeedAuth() {
       await tx.insert(userActivities).values({
         id: randomUUID(),
         userId: admin.id,
-        activityType: "system_health",
+        activityType: "system_Welbeing",
         description: "Completed MySQL auth and RBAC seed",
         metadata: { version: "4.0.0" },
       });

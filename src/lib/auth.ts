@@ -17,7 +17,7 @@ function authSecret(): string {
   if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
     throw new Error("AUTH_SECRET must be configured in production.");
   }
-  return process.env.AUTH_SECRET || "ethiopian-holistic-health-development-secret-key-2026";
+  return process.env.AUTH_SECRET || "ethiopian-holistic-Welbeing-development-secret-key-2026";
 }
 
 function encode(value: string) {

@@ -19,8 +19,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem("ninimed-theme");
-    const storedContrast = window.localStorage.getItem("ninimed-contrast");
+    const storedTheme = window.localStorage.getItem("Debtera-theme");
+    const storedContrast = window.localStorage.getItem("Debtera-contrast");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setTheme(storedTheme === "dark" || (!storedTheme && prefersDark) ? "dark" : "light");
     setHighContrast(storedContrast === "true");
@@ -32,8 +32,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.classList.toggle("contrast-mode", theme === "dark" && highContrast);
-    window.localStorage.setItem("ninimed-theme", theme);
-    window.localStorage.setItem("ninimed-contrast", String(highContrast));
+    window.localStorage.setItem("Debtera-theme", theme);
+    window.localStorage.setItem("Debtera-contrast", String(highContrast));
   }, [theme, highContrast, isHydrated]);
 
   return (

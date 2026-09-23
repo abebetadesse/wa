@@ -6,23 +6,23 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  * Integrates:
  * - Substance profiles: Khat, Alcohol, Tobacco (smoking & chewing), Opioids, Cannabis, Prescription Drug Abuse
  * - Detailed pharmacological mechanisms (cathinone, ethanol, nicotine, THC, morphine)
- * - Acute & chronic health effects (cardiovascular, neurological, gastrointestinal, oncological)
+ * - Acute & chronic Welbeing effects (cardiovascular, neurological, gastrointestinal, oncological)
  * - Withdrawal syndromes (symptoms, onset, peak, duration, management)
  * - Ethiopian cultural context (Bercha, Tella, Tej, Areke, Tumbakho, Gaya)
  * - Harm reduction strategies (tapering, nutritional protection, hydration)
  * - Pharmacotherapy (NRT, MAT, benzodiazepines, thiamine, disulfiram, naltrexone)
  * - Psychosocial interventions (CBT, MI, community support, faith‑based groups)
  * - Prevention programmes (school‑based, community‑based, religious‑based)
- * - Dual diagnosis (co‑occurring mental health disorders)
+ * - Dual diagnosis (co‑occurring mental Welbeing disorders)
  * - Cross‑strand linking (Medication, Psychological, Cultural, Socioeconomic)
- * - Domain A (clinical) with severity and risk assessment
+ * - Domain A (Debral) with severity and risk assessment
  * - Domain B (cultural/reflective) for traditional context
  * - Evidence‑weighted confidence, severity, and safety alerts
- * - User‑specific profiling (substance use, mental health, age, region)
+ * - User‑specific profiling (substance use, mental Welbeing, age, region)
  */
 export class AddictionKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "addiction";
-  readonly domain: DomainType = "health";
+  readonly domain: DomainType = "Welbeing";
 
   // --- Alias registry for query expansion ---
   private queryAliases: Record<string, string[]> = {
@@ -67,7 +67,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Increased sociability and talkativeness (social lubricant)",
         "Euphoria and feeling of well‑being (dopamine-mediated)",
       ],
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Severe periodontal recession, keratosis of buccal mucosa, and oral leukoplakia (pre‑malignant)",
         "Chronic gastritis, delayed gastric emptying, and gastroesophageal reflux (GERD)",
         "Secondary reactive anxiety, chronic sleep fragmentation, and manic‑depressive mood swings",
@@ -133,7 +133,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Family therapy: involve family in recovery",
       ],
       prevention: [
-        "School‑based education on health risks of khat use",
+        "School‑based education on Welbeing risks of khat use",
         "Community awareness campaigns (radio, TV, local events)",
         "Promote alternative social activities (sports, arts, youth clubs)",
         "Economic alternatives to khat cultivation",
@@ -143,12 +143,12 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Khat use often co‑occurs with depression, anxiety, and psychotic disorders",
         "Anxiety may be exacerbated by cathinone withdrawal",
         "Psychotic symptoms: paranoia, auditory hallucinations (usually resolve with cessation)",
-        "Treatment: address both addiction and underlying mental health condition",
+        "Treatment: address both addiction and underlying mental Welbeing condition",
       ],
       sources: [
         "ETM‑DB (Ethiopian Traditional Medicine Database)",
         "Amanuel Mental Specialized Hospital Addiction Protocols",
-        "Addis Ababa University School of Public health - Khat Epidemiology",
+        "Addis Ababa University School of Public Welbeing - Khat Epidemiology",
       ],
     },
 
@@ -174,7 +174,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Blackouts (anterograde amnesia)",
         "Flushing (in individuals with ALDH2 deficiency – rare in Ethiopians)",
       ],
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Alcoholic steatohepatitis progressing to micronodular cirrhosis and portal hypertension",
         "Dilated cardiomyopathy and secondary hypertension",
         "Wernicke‑Korsakoff syndrome from concurrent nutritional Thiamine (B1) deficiency (confusion, ataxia, ophthalmoplegia, memory impairment)",
@@ -200,7 +200,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         peak: "24 to 72 hours (seizures at 24-48h, DTs at 48-96h)",
         duration: "5 to 10 days (residual sleep disturbance, anxiety may persist longer)",
         management: [
-          "Medical detoxification under clinical supervision",
+          "Medical detoxification under Debral supervision",
           "Benzodiazepines (e.g., chlordiazepoxide, diazepam) for withdrawal symptom control (CIWA‑Ar protocol)",
           "High‑dose IV Thiamine (B1) to prevent Wernicke‑Korsakoff syndrome",
           "Folic acid and multivitamin supplementation",
@@ -254,9 +254,9 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Address trauma (PTSD) that may underlie drinking",
       ],
       sources: [
-        "WHO Global Status Report on Alcohol and health",
+        "WHO Global Status Report on Alcohol and Welbeing",
         "Amanuel Mental Specialized Hospital Addiction Protocols",
-        "Ethiopian Public health Institute (EPHI) Alcohol Use Survey",
+        "Ethiopian Public Welbeing Institute (EPHI) Alcohol Use Survey",
       ],
     },
 
@@ -281,7 +281,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Dizziness and light‑headedness (first‑time users)",
         "Gastric irritation (nausea, vomiting)",
       ],
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Chronic obstructive pulmonary disease (COPD) and chronic bronchitis (emphysema)",
         "Atherosclerotic cardiovascular disease and stroke (increased risk 2-4 fold)",
         "Carcinoma of the larynx, lung, and oral cavity (mouth, throat, oesophagus)",
@@ -289,7 +289,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Gastric and pancreatic cancer",
         "Periodontal disease (gum recession, tooth loss)",
         "Cataracts and macular degeneration",
-        "Reproductive health: reduced fertility, erectile dysfunction, low birth weight, preterm birth",
+        "Reproductive Welbeing: reduced fertility, erectile dysfunction, low birth weight, preterm birth",
         "Accelerated ageing (skin wrinkling, reduced bone density)",
         "Second‑hand smoke effects on children and non‑smokers",
       ],
@@ -347,20 +347,20 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Family support: involve family in the quit process",
       ],
       prevention: [
-        "School‑based tobacco education (awareness of health risks)",
+        "School‑based tobacco education (awareness of Welbeing risks)",
         "Ban on tobacco advertising and sponsorship",
-        "Plain packaging and health warnings on cigarette packs",
+        "Plain packaging and Welbeing warnings on cigarette packs",
         "Price increases (taxation) to discourage use",
         "Smoke‑free public places (enforcement)",
       ],
       dual_diagnosis: [
-        "Tobacco use is highly comorbid with mental health conditions (depression, schizophrenia, substance use disorders)",
+        "Tobacco use is highly comorbid with mental Welbeing conditions (depression, schizophrenia, substance use disorders)",
         "Smoking cessation may lead to transient worsening of depression; monitor closely",
         "Bupropion can treat both nicotine dependence and depression",
       ],
       sources: [
         "WHO Global Tobacco Report",
-        "Ethiopian Public health Institute (EPHI) Tobacco Survey",
+        "Ethiopian Public Welbeing Institute (EPHI) Tobacco Survey",
         "Tobacco Control Research Group - Ethiopia",
       ],
     },
@@ -387,7 +387,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Pruritus (itching, histamine release)",
         "Sedation and drowsiness",
       ],
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Opioid dependence and addiction (psychological and physical)",
         "Tolerance (increasing doses needed for the same effect)",
         "Overdose: respiratory depression, coma, death (risk increases with polysubstance use)",
@@ -456,13 +456,13 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       prevention: [
         "Prescription monitoring to prevent diversion",
         "Public education on risks of opioid use",
-        "Training healthcare workers on safe prescribing",
+        "Training Welbeingcare workers on safe prescribing",
         "Availability of naloxone for emergency use",
         "Stigma reduction to encourage help‑seeking",
       ],
       dual_diagnosis: [
         "Opioid use disorder frequently co‑occurs with depression, anxiety, and PTSD",
-        "Address underlying trauma and mental health conditions",
+        "Address underlying trauma and mental Welbeing conditions",
         "MAT (buprenorphine/methadone) plus psychotherapy is the most effective approach",
       ],
       sources: [
@@ -495,7 +495,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Dry mouth (cottonmouth)",
         "Sedation and drowsiness (especially with high CBD strains)",
       ],
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Respiratory issues: chronic bronchitis, cough, and sputum (from smoking)",
         "Cognitive impairment: potential for long‑term memory and attention deficits (with early and heavy use)",
         "Psychosis: increased risk of psychotic episodes in predisposed individuals (schizophrenia, bipolar)",
@@ -590,7 +590,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         stimulants: ["Euphoria", "Increased alertness", "Tachycardia", "Anxiety", "Insomnia"],
         opioids: ["Euphoria", "Pain relief", "Respiratory depression", "Constipation"],
       },
-      chronic_health_risks: [
+      chronic_Welbeing_risks: [
         "Dependence and addiction (psychological and physical)",
         "Tolerance (increasing doses needed)",
         "Overdose (respiratory depression for opioids, cardiac arrhythmias for stimulants)",
@@ -638,12 +638,12 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       ],
       prevention: [
         "Prescription monitoring programs",
-        "healthcare provider education on safe prescribing",
+        "Welbeingcare provider education on safe prescribing",
         "Public education on risks of prescription drug misuse",
         "Stigma reduction to encourage help‑seeking",
       ],
       dual_diagnosis: [
-        "Prescription drug abuse often co‑occurs with mental health conditions (anxiety, insomnia, chronic pain)",
+        "Prescription drug abuse often co‑occurs with mental Welbeing conditions (anxiety, insomnia, chronic pain)",
         "Address the underlying condition to reduce misuse",
         "Non‑pharmacological alternatives for anxiety and insomnia (CBT, mindfulness)",
       ],
@@ -663,7 +663,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       name: "School‑Based Addiction Prevention",
       description: "Education and life skills training in schools to prevent substance initiation",
       components: [
-        "health education on substance risks (khat, alcohol, tobacco, drugs)",
+        "Welbeing education on substance risks (khat, alcohol, tobacco, drugs)",
         "Refusal skills training (how to say no to peer pressure)",
         "Social‑emotional learning (coping with stress, emotions)",
         "Peer education programmes (students teaching students)",
@@ -671,7 +671,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
       ],
       target: "Children and adolescents (10-18 years)",
       ethiopian_context: [
-        "Schools are the primary setting for youth health education",
+        "Schools are the primary setting for youth Welbeing education",
         "Integration into existing life skills curriculum",
         "Use of Amharic, Oromo, and English materials",
       ],
@@ -691,7 +691,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Alternative activities for youth (sports, arts, clubs)",
         "Community policing and regulation of substance availability",
         "Involvement of community leaders and elders",
-        "Promotion of healthy lifestyles",
+        "Promotion of Welbeingy lifestyles",
       ],
       target: "Community‑wide (all ages)",
       ethiopian_context: [
@@ -714,18 +714,18 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         "Religious messages against substance use (khat, alcohol, tobacco)",
         "Spiritual counselling and support",
         "Faith‑based support groups",
-        "Integration of health education in religious teaching",
+        "Integration of Welbeing education in religious teaching",
       ],
       target: "Religious communities (Orthodox, Muslim, Protestant)",
       ethiopian_context: [
         "Religious institutions are trusted and influential",
-        "Orthodox fasting (Tsome) can be leveraged for health messaging",
+        "Orthodox fasting (Tsome) can be leveraged for Welbeing messaging",
         "Imams and priests can address substance use from a moral and spiritual perspective",
       ],
       effectiveness: "Effective for community engagement and support",
       recommendations: [
         "Partner with religious leaders for prevention messages",
-        "Use religious platforms for health education",
+        "Use religious platforms for Welbeing education",
         "Support faith‑based recovery groups",
       ],
       sources: ["Ethiopian Orthodox Church HIV/AIDS Prevention Programs"],
@@ -753,11 +753,11 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
   }
 
   private getAge(userProfile: UserProfile): number | undefined {
-    return userProfile.age || userProfile.demographics?.age || userProfile.health?.age;
+    return userProfile.age || userProfile.demographics?.age || userProfile.Welbeing?.age;
   }
 
-  private hasMentalhealthCondition(userProfile: UserProfile): boolean {
-    return !!(userProfile.mentalhealth?.conditions?.length || userProfile.health?.mentalhealthConditions?.length);
+  private hasMentalWelbeingCondition(userProfile: UserProfile): boolean {
+    return !!(userProfile.mentalWelbeing?.conditions?.length || userProfile.Welbeing?.mentalWelbeingConditions?.length);
   }
 
   // -------------------------------------------------------------------------
@@ -769,7 +769,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
     const terms = normalized.split(/\s+/).filter((t) => t.length > 2);
     const region = this.getRegion(userProfile);
     const age = this.getAge(userProfile);
-    const hasMentalhealth = this.hasMentalhealthCondition(userProfile);
+    const hasMentalWelbeing = this.hasMentalWelbeingCondition(userProfile);
 
     // ---- 1. Substance Profiles ----
     for (const [key, substance] of Object.entries(this.substanceProfiles)) {
@@ -810,7 +810,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
 
       // Keyword scoring
       for (const term of terms) {
-        if (substance.chronic_health_risks?.some((r) => r.toLowerCase().includes(term))) {
+        if (substance.chronic_Welbeing_risks?.some((r) => r.toLowerCase().includes(term))) {
           score += 15;
           matches.push(`risk_${term}`);
         }
@@ -854,22 +854,22 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         matches.push("user_youth");
       }
 
-      // Mental health comorbidity
-      if (hasMentalhealth && (key === "alcohol" || key === "khat" || key === "cannabis")) {
+      // Mental Welbeing comorbidity
+      if (hasMentalWelbeing && (key === "alcohol" || key === "khat" || key === "cannabis")) {
         score += 15;
-        matches.push("user_mental_health");
+        matches.push("user_mental_Welbeing");
       }
 
       if (score > 15) {
         const isCritical = (key === "alcohol" && normalized.includes("tremor")) ||
-                          (key === "opioids" && normalized.includes("overdose"));
+          (key === "opioids" && normalized.includes("overdose"));
 
         results.push({
-          type: "substance_health_impact",
+          type: "substance_Welbeing_impact",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: substance.name.toUpperCase(),
-          description: `Active constituents: ${substance.active_compounds?.join("; ") || "N/A"}. Principal systemic risks: ${substance.chronic_health_risks?.slice(0, 3).join("; ") || "N/A"}.`,
+          description: `Active constituents: ${substance.active_compounds?.join("; ") || "N/A"}. Principal systemic risks: ${substance.chronic_Welbeing_risks?.slice(0, 3).join("; ") || "N/A"}.`,
           evidence: `Pharmacology: ${substance.pharmacology ? `${substance.pharmacology.mechanism}` : "N/A"}. Withdrawal: ${substance.withdrawal_profile?.syndrome || "N/A"} (Onset: ${substance.withdrawal_profile?.onset || "N/A"}, Peak: ${substance.withdrawal_profile?.peak || "N/A"}, Duration: ${substance.withdrawal_profile?.duration || "N/A"}).`,
           ethiopian_context: substance.ethiopian_context?.join("; ") || "Ethiopian substance use context",
           relevanceScore: Math.min(score / 60, 0.98),
@@ -886,7 +886,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
           severity: isCritical ? "critical" : (key === "opioids" ? "high" : "moderate"),
           risk_assessment: {
             level: isCritical ? "critical" : "high",
-            risk_factors: substance.chronic_health_risks?.slice(0, 3) || [],
+            risk_factors: substance.chronic_Welbeing_risks?.slice(0, 3) || [],
             recommendations: substance.harm_reduction?.slice(0, 3) || [],
           },
           safetyAlerts: isCritical ? ["Seek immediate medical attention if overdose is suspected"] : [],
@@ -945,27 +945,27 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
     // ---- 3. General addiction support (always include if substance use is reported) ----
     if (userProfile.substanceUse && userProfile.substanceUse.length > 0) {
       const supportResources = [
-        "Seek professional help from Amanuel Mental Specialized Hospital or local health centres",
+        "Seek professional help from Amanuel Mental Specialized Hospital or local Welbeing centres",
         "Access community‑based support groups (Iddir, faith‑based groups)",
         "Consider harm reduction strategies",
         "Involve family and community support",
-        "Seek treatment for any co‑occurring mental health conditions",
+        "Seek treatment for any co‑occurring mental Welbeing conditions",
         "Explore pharmacotherapy options (e.g., NRT for tobacco, MAT for opioids)",
       ];
       results.push({
         type: "addiction_support_resources",
         strand: this.strandName,
-        domain: "health",
+        domain: "Welbeing",
         name: "ADDICTION SUPPORT RESOURCES",
         description: "Resources and strategies for individuals with substance use concerns",
         evidence: `User reported substances: ${userProfile.substanceUse.join(", ")}.`,
-        ethiopian_context: "Support is available through health centres, community organisations, and faith‑based groups.",
+        ethiopian_context: "Support is available through Welbeing centres, community organisations, and faith‑based groups.",
         relevanceScore: 0.95,
         confidence: 0.95,
         matches: ["user_reported_substance_use"],
         recommendations: supportResources,
         management: supportResources,
-        sources: ["Amanuel Mental Specialized Hospital", "Community health Workers"],
+        sources: ["Amanuel Mental Specialized Hospital", "Community Welbeing Workers"],
         category: "Domain A",
         severity: "moderate",
       });
@@ -1048,7 +1048,7 @@ export class AddictionKnowledgeStrand implements KnowledgeStrand {
         return data.dual_diagnosis || [];
       }
     }
-    return ["Substance use often co‑occurs with mental health conditions; address both."];
+    return ["Substance use often co‑occurs with mental Welbeing conditions; address both."];
   }
 
   /**

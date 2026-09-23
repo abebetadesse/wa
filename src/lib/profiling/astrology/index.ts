@@ -1,3 +1,3 @@
 export * from "./chartCalculator";
-export * from "./healthMapper";
+export * from "./WelbeingMapper";
 export * from "./ethiopianTraditions";

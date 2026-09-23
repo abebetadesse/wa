@@ -3,7 +3,7 @@ import { evaluateFastingStatus } from "../engines/fastingMetabolismEngine";
 import { getHumoralProfile } from "../cultural/awdeNegestZodiac";
 import { checkHerbDrugSafety } from "../evaluation/stage5SafetyGate";
 import type { Medication } from "../evaluation/types";
-import type { ParsedhealthInquiry } from "./parser";
+import type { ParsedWelbeingInquiry } from "./parser";
 
 export type KnowledgeStrand = "biochemical" | "medication" | "ecological" | "temporal" | "cultural" | "psychological";
 
@@ -46,7 +46,7 @@ function findHerbs(query: string) {
   return herbAliases.filter((herb) => normalized.includes(herb));
 }
 
-function retrieveBiochemical(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
+function retrieveBiochemical(inquiry: ParsedWelbeingInquiry): KnowledgeFinding[] {
   const query = inquiry.raw.toLowerCase();
   const findings: KnowledgeFinding[] = [];
   if (inquiry.symptoms.some((symptom) => symptom.value === "fatigue") || query.includes("iron") || query.includes("anemia")) {
@@ -55,7 +55,7 @@ function retrieveBiochemical(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
       title: "Iron absorption context",
       detail: "Tea, coffee polyphenols, and phytates can reduce non-heme iron absorption; fermentation and vitamin-C-rich foods are relevant dietary factors.",
       relevance: 0.85,
-      source: "Existing evaluation rules: EFCT/ETM clinical lineage",
+      source: "Existing evaluation rules: EFCT/ETM Debral lineage",
     });
   }
   if (inquiry.symptoms.some((symptom) => symptom.value === "stomach_pain") || query.includes("digestion")) {
@@ -70,7 +70,7 @@ function retrieveBiochemical(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
   return findings;
 }
 
-function retrieveMedication(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
+function retrieveMedication(inquiry: ParsedWelbeingInquiry): KnowledgeFinding[] {
   const medications = findMedications(inquiry.raw);
   const herbs = findHerbs(inquiry.raw);
   const findings: KnowledgeFinding[] = [];
@@ -79,10 +79,10 @@ function retrieveMedication(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
     findings.push({
       strand: "medication",
       title: `${result.herbName} safety check: ${result.status}`,
-      detail: result.status === "flagged" ? `${result.flaggedMedication} may interact through ${result.flaggedDrugClass}. ${result.clinicalEffect || "Do not use without professional review."}` : "No matching interaction was found in the current deterministic safety rules.",
+      detail: result.status === "flagged" ? `${result.flaggedMedication} may interact through ${result.flaggedDrugClass}. ${result.DebralEffect || "Do not use without professional review."}` : "No matching interaction was found in the current deterministic safety rules.",
       relevance: result.status === "flagged" ? 1 : 0.82,
       source: result.sourceRef,
-      safetyNote: result.status === "flagged" ? "Do not start this remedy; consult a qualified clinician or pharmacist." : "A pass is not proof of universal safety.",
+      safetyNote: result.status === "flagged" ? "Do not start this remedy; consult a qualified Debrian or pharmacist." : "A pass is not proof of universal safety.",
     });
   }
   if (medications.length > 0) {
@@ -129,30 +129,30 @@ function retrieveTemporal(): KnowledgeFinding[] {
   }];
 }
 
-function retrieveCultural(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
+function retrieveCultural(inquiry: ParsedWelbeingInquiry): KnowledgeFinding[] {
   if (!/traditional|herb|culture|አዳ|ኮሶ|ዕፅዋት/i.test(inquiry.raw)) return [];
   const profile = getHumoralProfile("afere");
   return [{
     strand: "cultural",
     title: "Cultural reflection layer",
-    detail: `${profile.traditionalTemperament} This lens is for cultural reflection and does not influence clinical evaluation or medication safety decisions.`,
+    detail: `${profile.traditionalTemperament} This lens is for cultural reflection and does not influence Debral evaluation or medication safety decisions.`,
     relevance: 0.45,
     source: "Awde Negest humoral heritage layer",
   }];
 }
 
-function retrievePsychological(inquiry: ParsedhealthInquiry): KnowledgeFinding[] {
+function retrievePsychological(inquiry: ParsedWelbeingInquiry): KnowledgeFinding[] {
   if (!/stress|anxiety|worry|sleep|depression|ጭንቀት/i.test(inquiry.raw)) return [];
   return [{
     strand: "psychological",
     title: "Support and stress context",
-    detail: "Stress, sleep, and mood can affect how symptoms are experienced. Consider trusted social support and professional mental-health care when distress persists or feels unsafe.",
+    detail: "Stress, sleep, and mood can affect how symptoms are experienced. Consider trusted social support and professional mental-Welbeing care when distress persists or feels unsafe.",
     relevance: 0.7,
     source: "Educational inquiry routing rules",
   }];
 }
 
-export async function retrieveInquiryKnowledge(inquiry: ParsedhealthInquiry): Promise<KnowledgeRetrievalResult> {
+export async function retrieveInquiryKnowledge(inquiry: ParsedWelbeingInquiry): Promise<KnowledgeRetrievalResult> {
   const [biochemical, medication, ecological, temporal, cultural, psychological] = await Promise.all([
     Promise.resolve(retrieveBiochemical(inquiry)),
     Promise.resolve(retrieveMedication(inquiry)),
@@ -164,7 +164,7 @@ export async function retrieveInquiryKnowledge(inquiry: ParsedhealthInquiry): Pr
   const findings = [...biochemical, ...medication, ...ecological, ...temporal, ...cultural, ...psychological].sort((a, b) => b.relevance - a.relevance);
   const intersections: string[] = [];
   if (biochemical.length > 0 && medication.length > 0) intersections.push("Biochemical and medication context overlap; review both before changing diet, supplements, or herbs.");
-  if (psychological.length > 0 && medication.length > 0) intersections.push("Stress or sleep concerns alongside medication use merit a clinician or pharmacist review.");
+  if (psychological.length > 0 && medication.length > 0) intersections.push("Stress or sleep concerns alongside medication use merit a Debrian or pharmacist review.");
 
   return {
     findings,

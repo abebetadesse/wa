@@ -1,3 +1,3 @@
 export * from "./numberCalculator";
 export * from "./meaningMapper";
-export * from "./healthAdapter";
+export * from "./WelbeingAdapter";

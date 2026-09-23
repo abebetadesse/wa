@@ -187,44 +187,40 @@ export default function AdminSettingsPage() {
       <div className="flex items-center gap-2 border-b border-white/5 pb-2">
         <button
           onClick={() => setActiveSection("general")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            activeSection === "general"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-          }`}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "general"
+            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            }`}
         >
           <Building size={14} />
           <span>General & Branding</span>
         </button>
         <button
           onClick={() => setActiveSection("safety")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            activeSection === "safety"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-          }`}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "safety"
+            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            }`}
         >
           <ShieldCheck size={14} />
-          <span>Clinical & Safety Gates</span>
+          <span>Debral & Safety Gates</span>
         </button>
         <button
           onClick={() => setActiveSection("auth")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            activeSection === "auth"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-          }`}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "auth"
+            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            }`}
         >
           <Lock size={14} />
           <span>Access & Security</span>
         </button>
         <button
           onClick={() => setActiveSection("literature")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            activeSection === "literature"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-          }`}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "literature"
+            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            }`}
         >
           <BookOpen size={14} />
           <span>Literature Sync Automation</span>
@@ -345,13 +341,13 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      {/* SECTION 2: CLINICAL & SAFETY GATES */}
+      {/* SECTION 2: DebrAL & SAFETY GATES */}
       {activeSection === "safety" && (
         <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
           <div>
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <ShieldCheck size={16} className="text-emerald-400" />
-              <span>Clinical Herb-Drug Safety & Architectural Firewall</span>
+              <span>Debral Herb-Drug Safety & Architectural Firewall</span>
             </h2>
             <p className="text-[11px] text-slate-400">
               Stage 5 Safety Gate release-blocking canaries and Domain A/B isolation rules
@@ -394,11 +390,10 @@ export default function AdminSettingsPage() {
                         flags: { ...config.flags, safetyGateStrictness: tier.id as any },
                       })
                     }
-                    className={`p-3 rounded-xl text-left border transition-all ${
-                      config.flags.safetyGateStrictness === tier.id
-                        ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-200 shadow-md"
-                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
-                    }`}
+                    className={`p-3 rounded-xl text-left border transition-all ${config.flags.safetyGateStrictness === tier.id
+                      ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-200 shadow-md"
+                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                      }`}
                   >
                     <p className="font-bold text-xs">{tier.title}</p>
                     <p className="text-[10px] mt-1 text-slate-400 leading-normal">{tier.desc}</p>
@@ -413,7 +408,7 @@ export default function AdminSettingsPage() {
                 <p className="text-xs font-semibold text-white">Domain A/B Architectural Firewall</p>
                 <p className="text-[11px] text-slate-400 max-w-xl">
                   Enforces strict isolation between Domain A (biochemical EFCT evaluation engine) and Domain B
-                  (cultural, lunar, astrological layers). Prevents cultural attributions from masquerading as clinical diagnoses.
+                  (cultural, lunar, astrological layers). Prevents cultural attributions from masquerading as Debral diagnoses.
                 </p>
               </div>
               <button
@@ -424,11 +419,10 @@ export default function AdminSettingsPage() {
                     flags: { ...config.flags, domainBEnforced: !config.flags.domainBEnforced },
                   })
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all ${
-                  config.flags.domainBEnforced
-                    ? "bg-emerald-600 text-white"
-                    : "bg-rose-950 text-rose-300 border border-rose-500/40"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all ${config.flags.domainBEnforced
+                  ? "bg-emerald-600 text-white"
+                  : "bg-rose-950 text-rose-300 border border-rose-500/40"
+                  }`}
               >
                 {config.flags.domainBEnforced ? "Firewall Enforced" : "Permissive (Testing)"}
               </button>
@@ -467,7 +461,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="text-xs font-semibold text-white">Allow Public Self-Registration</p>
                 <p className="text-[11px] text-slate-400">
-                  When disabled, new accounts can only be created by administrators or health institution leads.
+                  When disabled, new accounts can only be created by administrators or Welbeing institution leads.
                 </p>
               </div>
               <button
@@ -478,11 +472,10 @@ export default function AdminSettingsPage() {
                     flags: { ...config.flags, allowSelfRegistration: !config.flags.allowSelfRegistration },
                   })
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  config.flags.allowSelfRegistration
-                    ? "bg-emerald-600 text-white"
-                    : "bg-white/10 text-slate-400"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.allowSelfRegistration
+                  ? "bg-emerald-600 text-white"
+                  : "bg-white/10 text-slate-400"
+                  }`}
               >
                 {config.flags.allowSelfRegistration ? "Enabled (Public)" : "Disabled (Invite Only)"}
               </button>
@@ -507,11 +500,10 @@ export default function AdminSettingsPage() {
                     },
                   })
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  config.flags.requireEmailVerification
-                    ? "bg-emerald-600 text-white"
-                    : "bg-white/10 text-slate-400"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.requireEmailVerification
+                  ? "bg-emerald-600 text-white"
+                  : "bg-white/10 text-slate-400"
+                  }`}
               >
                 {config.flags.requireEmailVerification ? "Mandatory" : "Optional"}
               </button>
@@ -572,7 +564,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="text-xs font-semibold text-white">Automated Background Literature Sync</p>
                 <p className="text-[11px] text-slate-400">
-                  Periodically queries PubMed API for new clinical findings across Ethiopian indigenous botanicals.
+                  Periodically queries PubMed API for new Debral findings across Ethiopian indigenous botanicals.
                 </p>
               </div>
               <button
@@ -586,11 +578,10 @@ export default function AdminSettingsPage() {
                     },
                   })
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  config.flags.literatureAutoSync
-                    ? "bg-purple-600 text-white"
-                    : "bg-white/10 text-slate-400"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.literatureAutoSync
+                  ? "bg-purple-600 text-white"
+                  : "bg-white/10 text-slate-400"
+                  }`}
               >
                 {config.flags.literatureAutoSync ? "Auto-Sync Active" : "Disabled"}
               </button>
@@ -601,7 +592,7 @@ export default function AdminSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
                   <p className="font-bold text-slate-200">PubMed / NCBI</p>
-                  <p className="text-[11px] text-slate-400">Clinical trials & mesh pharmacology</p>
+                  <p className="text-[11px] text-slate-400">Debral trials & mesh pharmacology</p>
                   <span className="text-[10px] text-emerald-400 font-mono mt-1 block">Status: Connected</span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">

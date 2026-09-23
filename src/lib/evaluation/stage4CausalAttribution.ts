@@ -140,7 +140,7 @@ export function stage4CausalAttribution(
             causeType: "medication",
             title: `Renal Electrolyte Clearance (${med.name})`,
             description:
-              "Loop and thiazide diuretics accelerate renal tubular excretion of key electrolytes and trace minerals, predisposing to subclinical hypomagnesemia and hypokalemia.",
+              "Loop and thiazide diuretics accelerate renal tubular excretion of key electrolytes and trace minerals, predisposing to subDebral hypomagnesemia and hypokalemia.",
             evidenceStrength: "established",
             sourceRef: "ETM-MED-DEP-DIU01",
           });

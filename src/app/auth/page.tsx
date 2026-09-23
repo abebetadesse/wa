@@ -273,12 +273,12 @@ function AuthPageInner() {
           </Link>
           <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {tab === "login" && "Sign In to Your Workspace"}
-            {tab === "register" && "Create Your Holistic health Account"}
+            {tab === "register" && "Create Your Holistic Welbeing Account"}
             {tab === "forgot" && "Recover Your Account Password"}
           </h1>
           <p className="mt-1.5 text-xs sm:text-sm text-slate-400">
-            {tab === "login" && "Access clinical evaluations, Awde Negest divination sessions, and traditional health records."}
-            {tab === "register" && "Join certified debteras, clinical nutritionists, and patients across all Ethiopian regions."}
+            {tab === "login" && "Access Debral evaluations, Awde Negest divination sessions, and traditional Welbeing records."}
+            {tab === "register" && "Join certified debteras, Debral nutritionists, and patients across all Ethiopian regions."}
             {tab === "forgot" && "Enter your registered email to receive a password recovery verification token."}
           </p>
         </div>
@@ -289,31 +289,28 @@ function AuthPageInner() {
           <div className="flex border-b border-white/10 mb-6 gap-2">
             <button
               onClick={() => switchTab("login")}
-              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${
-                tab === "login"
-                  ? "border-emerald-500 text-emerald-400"
-                  : "border-transparent text-slate-400 hover:text-slate-200"
-              }`}
+              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${tab === "login"
+                ? "border-emerald-500 text-emerald-400"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+                }`}
             >
               Sign In (ግባ)
             </button>
             <button
               onClick={() => switchTab("register")}
-              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${
-                tab === "register"
-                  ? "border-emerald-500 text-emerald-400"
-                  : "border-transparent text-slate-400 hover:text-slate-200"
-              }`}
+              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${tab === "register"
+                ? "border-emerald-500 text-emerald-400"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+                }`}
             >
               Register (ተመዝገብ)
             </button>
             <button
               onClick={() => switchTab("forgot")}
-              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${
-                tab === "forgot"
-                  ? "border-emerald-500 text-emerald-400"
-                  : "border-transparent text-slate-400 hover:text-slate-200"
-              }`}
+              className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all ${tab === "forgot"
+                ? "border-emerald-500 text-emerald-400"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+                }`}
             >
               Forgot Password
             </button>
@@ -426,29 +423,26 @@ function AuthPageInner() {
               {/* Stepper Header */}
               <div className="grid grid-cols-3 gap-2 mb-6 text-center">
                 <div
-                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    registerStep >= 1
-                      ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
-                      : "bg-white/5 border-white/10 text-slate-400"
-                  }`}
+                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${registerStep >= 1
+                    ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
+                    : "bg-white/5 border-white/10 text-slate-400"
+                    }`}
                 >
                   <span>1. Credentials</span>
                 </div>
                 <div
-                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    registerStep >= 2
-                      ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
-                      : "bg-white/5 border-white/10 text-slate-400"
-                  }`}
+                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${registerStep >= 2
+                    ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
+                    : "bg-white/5 border-white/10 text-slate-400"
+                    }`}
                 >
                   <span>2. Profile</span>
                 </div>
                 <div
-                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    registerStep >= 3
-                      ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
-                      : "bg-white/5 border-white/10 text-slate-400"
-                  }`}
+                  className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${registerStep >= 3
+                    ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-400 shadow-md shadow-emerald-950/40"
+                    : "bg-white/5 border-white/10 text-slate-400"
+                    }`}
                 >
                   <span>3. Verify OTP</span>
                 </div>
@@ -504,15 +498,14 @@ function AuthPageInner() {
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div
                               key={lvl}
-                              className={`flex-1 rounded-full transition-colors ${
-                                strengthScore >= lvl
-                                  ? strengthScore <= 2
-                                    ? "bg-rose-500"
-                                    : strengthScore <= 3
+                              className={`flex-1 rounded-full transition-colors ${strengthScore >= lvl
+                                ? strengthScore <= 2
+                                  ? "bg-rose-500"
+                                  : strengthScore <= 3
                                     ? "bg-amber-400"
                                     : "bg-emerald-500"
-                                  : "bg-white/10"
-                              }`}
+                                : "bg-white/10"
+                                }`}
                             />
                           ))}
                         </div>
@@ -566,7 +559,7 @@ function AuthPageInner() {
                         className="mt-0.5 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300 leading-relaxed">
-                        I accept the <span className="text-emerald-400 underline">Terms of Service</span> and acknowledge the Ethiopian Ministry of health and EFMHACA ethical compliance guidelines.
+                        I accept the <span className="text-emerald-400 underline">Terms of Service</span> and acknowledge the Ethiopian Ministry of Welbeing and EFMHACA ethical compliance guidelines.
                       </span>
                     </label>
                   </div>

@@ -12,8 +12,8 @@ export async function GET() {
     const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, user.id));
     const fields = await ensureProfileFieldCatalog();
     const data = profile?.data || {};
-    const height = typeof data.height === "number" ? data.height : Number(data["health.height"]);
-    const weight = typeof data.weight === "number" ? data.weight : Number(data["health.weight"]);
+    const height = typeof data.height === "number" ? data.height : Number(data["Welbeing.height"]);
+    const weight = typeof data.weight === "number" ? data.weight : Number(data["Welbeing.weight"]);
     const bmi = height > 0 && weight > 0 ? Number((weight / ((height / 100) ** 2)).toFixed(1)) : null;
     return NextResponse.json({ success: true, data, fields, computed: { bmi } });
   } catch {

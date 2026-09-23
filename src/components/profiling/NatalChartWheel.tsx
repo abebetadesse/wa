@@ -87,11 +87,10 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAspectGrid(!showAspectGrid)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-              showAspectGrid
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${showAspectGrid
                 ? "bg-emerald-600 text-white border-emerald-500"
                 : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700"
-            }`}
+              }`}
           >
             {showAspectGrid ? "Show Chart Wheel" : "View Aspect Grid"}
           </button>
@@ -256,7 +255,7 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                     <th className="p-2">Aspect</th>
                     <th className="p-2">Orb</th>
                     <th className="p-2">Nature</th>
-                    <th className="p-2">health / Somatic Influence</th>
+                    <th className="p-2">Welbeing / Somatic Influence</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -268,13 +267,12 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                       <td className="p-2 capitalize text-sky-400 font-semibold">{asp.aspectType}</td>
                       <td className="p-2 text-slate-400">{asp.orb.toFixed(1)}°</td>
                       <td className="p-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          asp.nature === "harmonious" ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800"
-                        }`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${asp.nature === "harmonious" ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800"
+                          }`}>
                           {asp.nature}
                         </span>
                       </td>
-                      <td className="p-2 text-slate-300">{asp.healthImpact}</td>
+                      <td className="p-2 text-slate-300">{asp.WelbeingImpact}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -314,11 +312,11 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
                     <span className="text-slate-400 block text-[10px]">Governed Organs:</span>
-                    <span className="text-slate-200 font-medium">{selectedPlanet.healthAssociations.organs.join(", ")}</span>
+                    <span className="text-slate-200 font-medium">{selectedPlanet.WelbeingAssociations.organs.join(", ")}</span>
                   </div>
                   <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
                     <span className="text-slate-400 block text-[10px]">Vitality Strength:</span>
-                    <span className="text-emerald-400 font-medium">{selectedPlanet.healthAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
+                    <span className="text-emerald-400 font-medium">{selectedPlanet.WelbeingAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
                   </div>
                 </div>
               </div>
@@ -340,11 +338,10 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
               <button
                 key={p.planet}
                 onClick={() => setSelectedPlanet(p)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                  selectedPlanet?.planet === p.planet
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${selectedPlanet?.planet === p.planet
                     ? "bg-emerald-600 text-white border-emerald-400"
                     : "bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
+                  }`}
               >
                 {PLANET_GLYPHS[p.planet]} {p.planet}
               </button>

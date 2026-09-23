@@ -61,7 +61,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
     ethiopian_cyp_pharmacogenomics: {
       description: "Unique distribution of Cytochrome P450 polymorphic alleles in Ethiopian populations affecting drug clearance rates",
       key_variants: ["CYP2D6 *1xN (Ultra-rapid metabolizer gene duplications present in up to 29% of Ethiopians)", "CYP2C19 *2 / *3 (Poor metabolizers)", "CYP3A5 *1 (Expressers)"],
-      health_implications: [
+      Welbeing_implications: [
         "Ultra-rapid CYP2D6 metabolizers convert codeine to morphine dangerously fast, creating elevated toxicity risks",
         "Altered clearance of beta-blockers, tricyclic antidepressants, and neuroleptics",
       ],
@@ -69,14 +69,14 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         "Ethiopian populations harbor among the highest global frequencies of CYP2D6 gene duplication, necessitating cautious pharmacotherapy dosing",
       ],
       recommendations: [
-        "Exercise extreme clinical caution with prodrug analgesics like codeine or tramadol",
+        "Exercise extreme Debral caution with prodrug analgesics like codeine or tramadol",
         "Consider pharmacogenomic testing or therapeutic drug monitoring for psychiatric and cardiac medications",
       ],
     },
     lactose_persistence: {
       description: "Allelic divergence in the MCM6 regulatory region governing adult lactase gene expression",
       key_variants: ["-13910 C/T (European marker)", "-14010 C/G", "-13915 T/G (East African pastoralist marker)"],
-      health_implications: ["Lactase persistence in pastoralists vs non-persistence in agrarian adults"],
+      Welbeing_implications: ["Lactase persistence in pastoralists vs non-persistence in agrarian adults"],
       ethiopian_context: [
         "Pastoralist traditions have consumed unpasteurized camel and cow milk for millennia, whereas highland agrarian diets historically rely on fermented dairy (Ergo, Ayib) which degrades lactose into lactic acid",
       ],
@@ -87,7 +87,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
     hemoglobin_variants_and_altitude: {
       description: "Genetic adaptations to lowland malaria pressure and high-altitude chronic hypoxia",
       key_variants: ["HbS (Sickle cell trait)", "Alpha-thalassemia deletions", "EGLN1 and PPARA hypoxia pathway alleles"],
-      health_implications: [
+      Welbeing_implications: [
         "Heterozygous hemoglobinopathies confer potent natural protection against severe falciparum malaria in lowland basins",
         "Highland Ethiopians possess unique hypoxia adaptations without excessive pathological erythrocytosis compared to Andean populations",
       ],
@@ -141,7 +141,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_components: ["Antibodies", "Memory B cells", "T cells"],
       conditions: ["Vaccine-preventable infections", "Malnutrition", "Immunosuppression"],
       ethiopian_context: ["Access and timing of routine vaccination vary by region"],
-      recommendations: ["Use local immunization services and seek clinical advice for immunocompromising conditions"],
+      recommendations: ["Use local immunization services and seek Debral advice for immunocompromising conditions"],
     },
   };
 
@@ -151,7 +151,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_components: ["DHA/EPA", "Iron", "B12", "Iodine", "Zinc"],
       conditions: ["Cognitive decline", "Brain fog", "Learning difficulty"],
       ethiopian_context: ["Lake fish, niger seed, iodized salt, and iron-rich foods are relevant local contexts"],
-      recommendations: ["Protect sleep, maintain social and physical activity, and review persistent cognitive change clinically"],
+      recommendations: ["Protect sleep, maintain social and physical activity, and review persistent cognitive change Debrally"],
     },
     sleep_neuroscience: {
       description: "Circadian rhythms and sleep regulation integrate melatonin, adenosine, GABA, and light exposure",
@@ -168,7 +168,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       key_processes: ["Electron transport", "ATP synthesis", "Mitochondrial biogenesis", "Fission and fusion"],
       conditions: ["Chronic fatigue", "Diabetes", "Heart failure", "Aging"],
       ethiopian_context: ["High-altitude adaptation may involve altered oxygen delivery and mitochondrial demand"],
-      recommendations: ["Use gradual activity, adequate food, and clinical assessment for persistent or severe fatigue"],
+      recommendations: ["Use gradual activity, adequate food, and Debral assessment for persistent or severe fatigue"],
     },
     oxidative_stress: {
       description: "Reactive oxygen species are balanced by cellular antioxidant and repair systems",
@@ -184,7 +184,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Heart and vascular function influenced by blood pressure, salt, activity, lipids, and body composition",
       conditions: ["Hypertension", "Stroke", "Atherosclerosis", "Heart failure"],
       ethiopian_context: ["Urbanization is associated with changing activity and dietary patterns"],
-      recommendations: ["Reduce excess salt, stay active, and obtain clinical review for chest pain or persistent high blood pressure"],
+      recommendations: ["Reduce excess salt, stay active, and obtain Debral review for chest pain or persistent high blood pressure"],
     },
     respiratory_physiology: {
       description: "Lung function and gas exchange are affected by air quality, infection, smoking, and altitude",
@@ -199,10 +199,10 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       recommendations: ["Hydrate appropriately and avoid nephrotoxic herbs or medicines without professional guidance"],
     },
     reproductive_physiology: {
-      description: "Reproductive health includes menstrual, pregnancy, fertility, menopausal, and androgen physiology",
+      description: "Reproductive Welbeing includes menstrual, pregnancy, fertility, menopausal, and androgen physiology",
       conditions: ["Menstrual disorders", "PCOS", "Infertility", "Pregnancy", "Menopause"],
       ethiopian_context: ["Early antenatal care and culturally respectful family-planning support are important"],
-      recommendations: ["Discuss preconception folate, iron, B12, and persistent reproductive symptoms with a qualified clinician"],
+      recommendations: ["Discuss preconception folate, iron, B12, and persistent reproductive symptoms with a qualified Debrian"],
     },
   };
 
@@ -226,7 +226,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Airborne Mycobacterium tuberculosis transmission is affected by ventilation, crowding, nutrition, and treatment continuity",
       diseases: ["Tuberculosis"],
       practices: ["Ventilation", "Prompt testing", "Treatment completion"],
-      recommendations: ["Persistent cough, night sweats, or unexplained weight loss needs clinical evaluation"],
+      recommendations: ["Persistent cough, night sweats, or unexplained weight loss needs Debral evaluation"],
     },
   };
 
@@ -239,7 +239,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   private profileConditions(userProfile: UserProfile) {
-    return [...(userProfile.conditions || []), ...(userProfile.health?.conditions || [])];
+    return [...(userProfile.conditions || []), ...(userProfile.Welbeing?.conditions || [])];
   }
 
   private isHighland(userProfile: UserProfile) {
@@ -285,8 +285,8 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         }
       }
 
-      if (userProfile.guthealth?.problems) {
-        for (const prob of userProfile.guthealth.problems) {
+      if (userProfile.gutWelbeing?.problems) {
+        for (const prob of userProfile.gutWelbeing.problems) {
           if (item.conditions.some((c) => c.toLowerCase().includes(prob.toLowerCase()))) {
             score += 25;
             matches.push(`user_gut_problem_${prob}`);
@@ -298,7 +298,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "microbiome",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: key.replace(/_/g, " ").toUpperCase(),
           description: item.description,
           evidence: `Symbiotic bacterial taxa: ${item.key_species.join(", ")}. Prebiotic substrates: ${item.prebiotics?.join(", ") || "Fermentable carbohydrates"}.`,
@@ -338,7 +338,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "genetic_adaptation",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: key.replace(/_/g, " ").toUpperCase(),
           description: item.description,
           evidence: `Key loci / variants: ${item.key_variants?.join("; ") || "Polygenic adaptation"}.`,
@@ -404,11 +404,11 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       diseases?: string[];
       practices?: string[];
     }]> = [
-      ...Object.entries(this.immunologyData),
-      ...Object.entries(this.neuroscienceData),
-      ...Object.entries(this.cellBiologyData),
-      ...Object.entries(this.physiologyData),
-    ];
+        ...Object.entries(this.immunologyData),
+        ...Object.entries(this.neuroscienceData),
+        ...Object.entries(this.cellBiologyData),
+        ...Object.entries(this.physiologyData),
+      ];
 
     for (const [key, item] of datasets) {
       let score = 0;
@@ -435,7 +435,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: key.includes("micro") ? "microbiome" : key.includes("physio") ? "physiology" : key.includes("neuro") ? "neuroscience" : "cell_immunology",
         strand: this.strandName,
-        domain: key.includes("ethiopian") ? "cultural" : "health",
+        domain: key.includes("ethiopian") ? "cultural" : "Welbeing",
         name: key.replace(/_/g, " ").toUpperCase(),
         description: item.description,
         evidence: `Relevant biological factors: ${(item.key_components || item.key_processes || item.adaptations || item.diseases || []).join(", ") || "multisystem context"}.`,
@@ -445,7 +445,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
         matches,
         recommendations: item.recommendations || [],
         management: item.recommendations || [],
-        sources: ["Molecular Biology of the Cell", "Guyton and Hall Textbook of Medical Physiology", "EPHI health guidance"],
+        sources: ["Molecular Biology of the Cell", "Guyton and Hall Textbook of Medical Physiology", "EPHI Welbeing guidance"],
         category: "Domain A",
         severity: "moderate",
       });
@@ -456,7 +456,7 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "high_altitude_adaptation",
         strand: this.strandName,
-        domain: "health",
+        domain: "Welbeing",
         name: "HYPOXIA RESPONSE",
         description: item.description,
         evidence: `Adaptations: ${item.adaptations.join(", ")}.`,
@@ -497,21 +497,21 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
 
   async assessGeneticRisk(userProfile: UserProfile): Promise<StrandFinding[]> {
     const findings: StrandFinding[] = [];
-    const medications = userProfile.medications || userProfile.health?.medications || [];
+    const medications = userProfile.medications || userProfile.Welbeing?.medications || [];
     if (medications.some((medication) => /codeine|tramadol/i.test(String(medication)))) {
       findings.push({
         type: "pharmacogenomic_safety",
         strand: this.strandName,
-        domain: "health",
+        domain: "Welbeing",
         name: "CYP2D6 MEDICATION REVIEW",
         description: "Variation in drug-metabolizing enzymes can change opioid exposure; ancestry alone cannot determine an individual genotype.",
         evidence: "Medication list contains a CYP2D6-relevant prodrug.",
         relevanceScore: 0.95,
         confidence: 0.86,
         severity: "high",
-        safetyAlerts: ["Discuss codeine or tramadol dosing with a clinician; do not change it independently."],
-        recommendations: ["Consider pharmacogenomic testing or therapeutic monitoring when clinically appropriate"],
-        sources: ["Clinical Pharmacogenetics Implementation Consortium"],
+        safetyAlerts: ["Discuss codeine or tramadol dosing with a Debrian; do not change it independently."],
+        recommendations: ["Consider pharmacogenomic testing or therapeutic monitoring when Debrally appropriate"],
+        sources: ["Debral Pharmacogenetics Implementation Consortium"],
       });
     }
     return findings;
@@ -520,12 +520,12 @@ export class BiologicalKnowledgeStrand implements KnowledgeStrand {
   getMicrobiomeAdvice(symptoms: string[], diet: string[]): string[] {
     const text = `${symptoms.join(" ")} ${diet.join(" ")}`.toLowerCase();
     const advice = ["Increase dietary fiber gradually", "Choose safe fermented foods such as injera, kocho, yogurt, or Ergo", "Limit highly processed sugars"];
-    if (/diarrhea|vomit|blood|fever/.test(text)) advice.push("Seek clinical advice rather than self-treating persistent or severe gastrointestinal symptoms");
+    if (/diarrhea|vomit|blood|fever/.test(text)) advice.push("Seek Debral advice rather than self-treating persistent or severe gastrointestinal symptoms");
     return advice;
   }
 
   getAltitudeAcclimatisationAdvice(destinationAltitude: number): string[] {
-    if (destinationAltitude <= 2500) return ["No special altitude precautions are usually needed at this elevation; consider individual health factors."];
+    if (destinationAltitude <= 2500) return ["No special altitude precautions are usually needed at this elevation; consider individual Welbeing factors."];
     return ["Ascend gradually above 2,500m", "Hydrate and avoid alcohol or sedatives", "Watch for headache, nausea, dizziness, or confusion", "Descend and seek care if symptoms worsen"];
   }
 

@@ -2,7 +2,7 @@
  * Enhancement 16: Ge'ez Fidel Gematria Calculator (የፊደል ሂሳብ / ቍጥር)
  * Enhancement 17: Sacred Baptismal Name (የክርስትና ስም) Lineage Vault
  *
- * DOMAIN B HERITAGE LAYER: Strictly isolated from clinical decision-making.
+ * DOMAIN B HERITAGE LAYER: Strictly isolated from Debral decision-making.
  * Implements classical Abushakir Ge'ez numerical letter values and baptismal patron calendar mapping.
  */
 
@@ -120,13 +120,13 @@ export const COMMON_BAPTISMAL_PATRONS: {
   dayOfMonth: number;
   significance: string;
 }[] = [
-  { prefix: "Maryam", patron: "ቅድስት ድንግል ማርያም (Saint Mary)", dayOfMonth: 21, significance: "Intercessor of mercy, maternal protection, and refuge." },
-  { prefix: "Mikael", patron: "ቅዱስ ሚካኤል ሊቀ መላእክት (Archangel Michael)", dayOfMonth: 12, significance: "Defender against adversity, strength, and righteous justice." },
-  { prefix: "Gabriel", patron: "ቅዱስ ገብርኤል (Archangel Gabriel)", dayOfMonth: 19, significance: "Bringer of joyful tidings and salvation from trials." },
-  { prefix: "Giyorgis", patron: "ቅዱስ ጊዮርጊስ ሰማዕት (Saint George)", dayOfMonth: 23, significance: "Unyielding courage in adversity and triumph over tyranny." },
-  { prefix: "Tekle Haymanot", patron: "አቡነ ተክለ ሃይማኖት (Abune Tekle Haymanot)", dayOfMonth: 24, significance: "Ascetic devotion, monastic discipline, and mountain holiness." },
-  { prefix: "Gebre Meskel", patron: "ክቡር መስቀል (Holy Cross)", dayOfMonth: 17, significance: "Endurance, victorious sacrifice, and beacon of light." },
-];
+    { prefix: "Maryam", patron: "ቅድስት ድንግል ማርያም (Saint Mary)", dayOfMonth: 21, significance: "Intercessor of mercy, maternal protection, and refuge." },
+    { prefix: "Mikael", patron: "ቅዱስ ሚካኤል ሊቀ መላእክት (Archangel Michael)", dayOfMonth: 12, significance: "Defender against adversity, strength, and righteous justice." },
+    { prefix: "Gabriel", patron: "ቅዱስ ገብርኤል (Archangel Gabriel)", dayOfMonth: 19, significance: "Bringer of joyful tidings and salvation from trials." },
+    { prefix: "Giyorgis", patron: "ቅዱስ ጊዮርጊስ ሰማዕት (Saint George)", dayOfMonth: 23, significance: "Unyielding courage in adversity and triumph over tyranny." },
+    { prefix: "Tekle Haymanot", patron: "አቡነ ተክለ ሃይማኖት (Abune Tekle Haymanot)", dayOfMonth: 24, significance: "Ascetic devotion, monastic discipline, and mountain holiness." },
+    { prefix: "Gebre Meskel", patron: "ክቡር መስቀል (Holy Cross)", dayOfMonth: 17, significance: "Endurance, victorious sacrifice, and beacon of light." },
+  ];
 
 /**
  * Enhancement 17: Maps a baptismal name to patron saint feast day and ancestral blessings

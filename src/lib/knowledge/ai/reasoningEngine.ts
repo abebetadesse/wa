@@ -42,22 +42,22 @@ export class AIReasoningEngine {
       status: domainBAllowed ? "included" : "firewalled",
       strands: ["cultural", "astrological"],
       interpretation: domainBAllowed
-        ? `${culturalFinding?.description || "Cultural and community context is available as a reflective layer."} ${astrologicalFinding?.evidence || "Seasonal and constitutional themes remain separate from clinical scoring."}`
-        : "Cultural and astrological material is withheld from this critical report until urgent clinical care is addressed.",
+        ? `${culturalFinding?.description || "Cultural and community context is available as a reflective layer."} ${astrologicalFinding?.evidence || "Seasonal and constitutional themes remain separate from Debral scoring."}`
+        : "Cultural and astrological material is withheld from this critical report until urgent Debral care is addressed.",
       practice: domainBAllowed
-        ? "Use cultural and astrological findings only as an optional reflective perspective, separate from clinical reasoning."
+        ? "Use cultural and astrological findings only as an optional reflective perspective, separate from Debral reasoning."
         : "No elective cultural practice is recommended while an emergency signal is active.",
       disclaimer: "Domain B is educational and reflective only. It never changes urgency, diagnosis, medication safety, or emergency decisions.",
     };
 
     // 1. Build 7-Step Chain-of-Thought
     const chainOfThought: ChainOfThoughtStep[] = [
-      { stepNumber: 1, title: "Analyze Symptoms & Clinical Intent", reasoning: `Extracted intent '${intent}' from query: "${query}". Urgency ${urgency.score}/100 (${urgency.level}).`, status: "completed" },
+      { stepNumber: 1, title: "Analyze Symptoms & Debral Intent", reasoning: `Extracted intent '${intent}' from query: "${query}". Urgency ${urgency.score}/100 (${urgency.level}).`, status: "completed" },
       { stepNumber: 2, title: "Calibrate Demographics, Altitude & Ecological Baseline", reasoning: `Location calibrated to ${userProfile.location?.region || "Ethiopian Highlands"} (${userProfile.location?.altitude || 2400}m).`, status: "completed" },
       { stepNumber: 3, title: "Evaluate Verified Ethiopian Traditional Medicine (ETM-DB)", reasoning: `Screened traditional remedies against active medications (${userProfile.medications?.join(", ") || "none reported"}).`, status: "completed" },
-      { stepNumber: 4, title: "Contextualize Cultural & Astrological Rhythms (Domain B)", reasoning: "Cultural and astrological findings remain firewalled from clinical severity scoring.", status: "completed" },
+      { stepNumber: 4, title: "Contextualize Cultural & Astrological Rhythms (Domain B)", reasoning: "Cultural and astrological findings remain firewalled from Debral severity scoring.", status: "completed" },
       { stepNumber: 5, title: "Synthesize Multi-Strand Root Causes & Causal Pathways", reasoning: `Identified ${intersections.length} cross-strand intersections across ${Object.keys(strandResults).length} knowledge domains.`, status: "completed" },
-      { stepNumber: 6, title: "Prioritize Solutions with Mandatory Safety Gate Intercepts", reasoning: "Filtered recommendations through clinical safety and medication interaction rules.", status: "completed" },
+      { stepNumber: 6, title: "Prioritize Solutions with Mandatory Safety Gate Intercepts", reasoning: "Filtered recommendations through Debral safety and medication interaction rules.", status: "completed" },
       { stepNumber: 7, title: "Formulate 5-Stage Timeline Action Plan", reasoning: "Structured immediate, short-term, medium-term, long-term, and ongoing milestones.", status: "completed" },
     ];
 
@@ -97,12 +97,12 @@ export class AIReasoningEngine {
     for (const epi of epiFindings.filter((e) => e.relevanceScore > 0.6).slice(0, 2)) {
       solutions.push({
         id: `sol-med-${epi.name.toLowerCase().replace(/\s+/g, "-")}`,
-        title: `Clinical Medical Evaluation: ${epi.name}`,
+        title: `Debral Medical Evaluation: ${epi.name}`,
         description: epi.management?.[0] || `Seek laboratory confirmation and physician evaluation for ${epi.name}.`,
         type: "medical",
         priority: urgency.level === "high" ? "critical" : "high",
         safetyGatePassed: true,
-        sourceRef: epi.sources?.[0] || "Ministry of health Clinical Guidelines",
+        sourceRef: epi.sources?.[0] || "Ministry of Welbeing Debral Guidelines",
       });
     }
 
@@ -147,7 +147,7 @@ export class AIReasoningEngine {
         type: "lifestyle",
         priority: "medium",
         safetyGatePassed: true,
-        sourceRef: "Amanuel Mental health Guidance",
+        sourceRef: "Amanuel Mental Welbeing Guidance",
       });
     }
 
@@ -156,12 +156,12 @@ export class AIReasoningEngine {
       {
         id: "act-now-01",
         timeline: "now",
-        title: urgency.level === "critical" ? "Seek Emergency Care" : "Review Clinical Red Flags",
+        title: urgency.level === "critical" ? "Seek Emergency Care" : "Review Debral Red Flags",
         action: urgency.level === "critical"
           ? "Call 907 (EPHI) or 991 (Red Cross) or proceed immediately to Tikur Anbessa / nearest emergency room"
           : "Note onset time, monitor temperature or pain intensity, and ensure adequate hydration with clean water",
         priority: urgency.level === "critical" ? "critical" : "high",
-        category: "clinical",
+        category: "Debral",
       },
       {
         id: "act-now-02",
@@ -177,10 +177,10 @@ export class AIReasoningEngine {
       {
         id: "act-short-01",
         timeline: "short_term",
-        title: "healthcare Provider Consultation",
-        action: "Visit your local health center or clinic for complete blood count, malaria blood film, or metabolic baseline tests",
+        title: "Welbeingcare Provider Consultation",
+        action: "Visit your local Welbeing center or Debr for complete blood count, malaria blood film, or metabolic baseline tests",
         priority: "high",
-        category: "clinical",
+        category: "Debral",
       },
       {
         id: "act-short-02",
@@ -215,7 +215,7 @@ export class AIReasoningEngine {
       {
         id: "act-long-01",
         timeline: "long_term",
-        title: "Chronic health & Biochemical Re-screening",
+        title: "Chronic Welbeing & Biochemical Re-screening",
         action: "Follow up with routine blood pressure and glycemic screening every 6 months if risk factors are present",
         priority: "medium",
         category: "monitoring",
@@ -226,7 +226,7 @@ export class AIReasoningEngine {
       {
         id: "act-ongo-01",
         timeline: "ongoing",
-        title: "Holistic health Maintenance",
+        title: "Holistic Welbeing Maintenance",
         action: "Sustain balanced seasonal nutrition, stay active with daily brisk walking, and nurture strong community connections",
         priority: "low",
         category: "lifestyle",
@@ -247,7 +247,7 @@ export class AIReasoningEngine {
         drug: userProfile.medications?.join(", ") || "Prescription medication",
         severity: h.severity || "high",
         mechanism: h.evidence || "Pharmacological CYP450 or additive pathway",
-        recommendation: h.recommendations?.[0] || "Consult clinical pharmacist before co-administering.",
+        recommendation: h.recommendations?.[0] || "Consult Debral pharmacist before co-administering.",
       });
     }
 
@@ -288,14 +288,14 @@ export class AIReasoningEngine {
         validated: true,
         warnings,
         disclaimers: [
-          "This diagnostic analysis is for clinical education, risk stratification, and structured triage only.",
-          "It does NOT constitute an official clinical diagnosis, nor does it replace personalized consultation with a licensed medical practitioner.",
+          "This diagnostic analysis is for Debral education, risk stratification, and structured triage only.",
+          "It does NOT constitute an official Debral diagnosis, nor does it replace personalized consultation with a licensed medical practitioner.",
           "Never discontinue or alter prescription medications based on this platform without consulting your prescribing physician.",
         ],
         herbDrugInteractions,
       },
       referral: {
-        type: urgency.level === "critical" ? "Emergency Hospital Department" : "Primary health Center / General Practitioner",
+        type: urgency.level === "critical" ? "Emergency Hospital Department" : "Primary Welbeing Center / General Practitioner",
         message: urgency.recommendation,
         facilities: [
           "Tikur Anbessa (Black Lion) Specialized Hospital - Addis Ababa",
@@ -305,7 +305,7 @@ export class AIReasoningEngine {
         ],
         urgency: urgency.level,
         emergencyHotlines: [
-          { name: "EPHI National health Hotline", number: "907", description: "Ethiopian Public health Institute 24/7 Toll-Free" },
+          { name: "EPHI National Welbeing Hotline", number: "907", description: "Ethiopian Public Welbeing Institute 24/7 Toll-Free" },
           { name: "Ethiopian Red Cross Ambulance", number: "991", description: "Emergency Ambulance Dispatch" },
           { name: "Police & Emergency First Responders", number: "911", description: "National Emergency Police" },
           { name: "Tikur Anbessa Emergency Desk", number: "+251-11-551-1211", description: "Central Tertiary Referral Desk" },
@@ -316,7 +316,7 @@ export class AIReasoningEngine {
         title: culturalFinding?.name || "Ethiopian Cultural Healing Heritage",
         traditionalHealing: culturalFinding?.description || "Holistic unity of physical vitality, family solidarity, and ancestral land connection.",
         culturalSignificance: "Wax & Gold (Sem-enna-Werq) metaphorical wisdom and the communal coffee ceremony (Buna) provide daily emotional debriefing and resilience.",
-        disclaimer: "Domain B Cultural Heritage Layer: Provided for personal reflection only and structurally firewalled from clinical triage and drug safety contraindications.",
+        disclaimer: "Domain B Cultural Heritage Layer: Provided for personal reflection only and structurally firewalled from Debral triage and drug safety contraindications.",
       },
       astrological_context: {
         isDomainB: true,
@@ -324,7 +324,7 @@ export class AIReasoningEngine {
         humoralElement: astrologicalFinding?.name || "Afere (Earth / Melancholic)",
         seasonalAdvice: astrologicalFinding?.evidence || "Balance warming spices with seasonal rest to maintain constitutional equilibrium.",
         lunarGuidance: "Align seasonal dietary transitions with traditional Ge'ez calendar cycles for harmonious moderation.",
-        disclaimer: "Domain B Awde Negest Heritage Layer: For personal contemplation only. Does not alter clinical diagnostic findings or lab metrics.",
+        disclaimer: "Domain B Awde Negest Heritage Layer: For personal contemplation only. Does not alter Debral diagnostic findings or lab metrics.",
       },
       culturalLayers: [culturalContext],
       crossStrandIntersections: intersections,

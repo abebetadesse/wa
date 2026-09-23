@@ -2,7 +2,7 @@
  * Enhancement 13: Awde Negest (አውደ ነገሥት) Ge'ez Zodiac Constellations
  * Enhancement 14: Four Classical Zemen Humoral Elements (አራቱ ባሕርያት)
  *
- * DOMAIN B HERITAGE LAYER: Strictly isolated from clinical and diagnostic computations.
+ * DOMAIN B HERITAGE LAYER: Strictly isolated from Debral and diagnostic computations.
  * Provides cultural self-reflection rooted in classical Ethiopian parchment manuscripts.
  */
 
@@ -210,7 +210,7 @@ export const HUMORAL_ELEMENTS: Record<HumoralElement, HumoralBalanceProfile> = {
     qualities: "ሙቅና ርጥብ (Hot & Moist)",
     associatedBodilyHumor: "ደም (Blood / Sanguine)",
     traditionalTemperament: "Sociable, enthusiastic, spontaneous; prone to restless agitation or mental dispersiveness.",
-    dietaryHarmonizationAdvice: "Anchor airy tendencies with grounding roasted grains (barley kolo, whole lentils), healthy spiced ghee, and calm rhythm in eating.",
+    dietaryHarmonizationAdvice: "Anchor airy tendencies with grounding roasted grains (barley kolo, whole lentils), Welbeingy spiced ghee, and calm rhythm in eating.",
     traditionalHerbalTeas: ["Koseret (Lippia abyssinica)", "Besobila infusion", "Chamomile with honey"],
   },
   may: {

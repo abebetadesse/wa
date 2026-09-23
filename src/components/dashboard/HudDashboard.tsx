@@ -60,7 +60,7 @@ const quickActions = [
   {
     title: "Launch Case",
     amharic: "ጉዳይ ይጀምሩ",
-    description: "Multi-domain clinical & cultural evaluation",
+    description: "Multi-domain Debral & cultural evaluation",
     href: "/case",
     icon: <ClipboardList size={20} className="text-cyan-400" />,
     accent: "border-cyan-500/30 hover:border-cyan-400 hover:shadow-cyan-500/15",
@@ -101,7 +101,7 @@ const quickActions = [
 
 const overlayList = [
   { label: "Nutrient model (EFCT)", value: "726 Foods Loaded" },
-  { label: "Clinical safety gate", value: "Stage 5 Locked" },
+  { label: "Debral safety gate", value: "Stage 5 Locked" },
   { label: "Regional altitude calibration", value: "2,400m (Addis)" },
   { label: "Awde Negest engine", value: "16 Circles Active" },
   { label: "Forecast horizon", value: "+12h Planetary" },
@@ -110,7 +110,7 @@ const overlayList = [
 const recentActivities = [
   {
     id: "1",
-    action: "Clinical Intake completed",
+    action: "Debral Intake completed",
     detail: "Highland iron target calibrated (+15%) for Addis Ababa",
     time: "2m ago",
     status: "success",
@@ -285,7 +285,7 @@ const caseDepthOption = {
       color: ["#00f0ff", "#ffb000", "#8b5cf6", "#34d399"],
       label: { color: "#dff7ff", fontFamily: "Share Tech Mono", fontSize: 10 },
       data: [
-        { value: 42, name: "Clinical" },
+        { value: 42, name: "Debral" },
         { value: 28, name: "Culture" },
         { value: 18, name: "Lifestyle" },
         { value: 12, name: "Safety" },
@@ -375,7 +375,7 @@ export default function HudDashboard() {
               <span className="status-dot" />
               Ancestral intelligence core
             </div>
-            <h1 className="dashboard-title ancestral-title">Ethiopian health Intelligence</h1>
+            <h1 className="dashboard-title ancestral-title">Ethiopian Welbeing Intelligence</h1>
             <p className="dashboard-subtitle">
               Precision nutrition, safety-aware traditional medicine guidance, and cultural context fused into a living command view for care decisions.
             </p>
@@ -609,7 +609,7 @@ export default function HudDashboard() {
                   id: "ET-9390",
                   title: "Highland Anemia & Herb Safety Check",
                   date: "Sep 09, 2026",
-                  domain: "Clinical",
+                  domain: "Debral",
                   badge: "Gate Passed",
                   color: "border-emerald-500/30 text-emerald-300",
                 },

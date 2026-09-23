@@ -16,13 +16,13 @@ import type { EFCTFoodItem } from "@/lib/nutrition/types";
  * - Breastfeeding & complementary feeding
  * - Ethiopian nutrition policy & programs
  * - Cross‑strand linking (Biochemical, Biological, Cultural)
- * - Domain A (clinical) and Domain B (cultural) tagging
+ * - Domain A (Debral) and Domain B (cultural) tagging
  * - Evidence‑weighted confidence scoring
  * - User‑specific recommendations based on age, region, pregnancy, fasting
  */
 export class DietaryKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "dietary";
-  readonly domain: DomainType = "health";
+  readonly domain: DomainType = "Welbeing";
 
   // --- Alias registry for query expansion ---
   private queryAliases: Record<string, string[]> = {
@@ -46,7 +46,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
     // Fermentation
     fermentation: ["ferment", "fermentation", "ersho", "absit", "dough", "እርሾ", "አብሲት"],
     gaba: ["gaba", "gamma aminobutyric acid", "anxiety", "relaxation"],
-    probiotic: ["probiotic", "lactic acid", "LAB", "gut health"],
+    probiotic: ["probiotic", "lactic acid", "LAB", "gut Welbeing"],
     // Fasting
     fasting: ["fasting", "tsom", "tsome", "abiy tsom", "lent", "የጾም", "ጾም"],
     // Regions
@@ -83,7 +83,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         b12: 0.8, // µg
         calories: 320,
       },
-      health_benefits: ["High protein for muscle repair", "Iron for energy", "Spices with anti-inflammatory effects"],
+      Welbeing_benefits: ["High protein for muscle repair", "Iron for energy", "Spices with anti-inflammatory effects"],
       considerations: ["High fat content (Niter Kibbeh)", "High sodium (Berbere)"],
       ethiopian_context: "Served during celebrations, holidays, and special occasions",
       season: "All year",
@@ -100,7 +100,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         folate: 125, // µg
         calories: 210,
       },
-      health_benefits: ["High fibre for gut health", "Iron from legumes", "Low glycemic index"],
+      Welbeing_benefits: ["High fibre for gut Welbeing", "Iron from legumes", "Low glycemic index"],
       considerations: ["High sodium (Berbere)", "Phytates may reduce mineral absorption"],
       ethiopian_context: "Fasting-friendly; a common vegetarian meal",
       season: "All year",
@@ -117,7 +117,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         folate: 150, // µg
         calories: 190,
       },
-      health_benefits: ["High protein and fibre", "Iron-rich", "Low glycemic index"],
+      Welbeing_benefits: ["High protein and fibre", "Iron-rich", "Low glycemic index"],
       considerations: ["Contains phytates", "May cause bloating in sensitive individuals"],
       ethiopian_context: "Common during fasting periods",
       season: "All year",
@@ -134,7 +134,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         folate: 110, // µg
         calories: 180,
       },
-      health_benefits: ["High protein", "Iron-rich", "Low glycemic index"],
+      Welbeing_benefits: ["High protein", "Iron-rich", "Low glycemic index"],
       considerations: ["Contains phytates", "May cause bloating"],
       ethiopian_context: "Common during fasting periods",
       season: "All year",
@@ -152,7 +152,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         vitaminA: 1500, // IU
         calories: 60,
       },
-      health_benefits: ["High calcium for bone health", "Vitamin C for immunity", "Iron-rich"],
+      Welbeing_benefits: ["High calcium for bone Welbeing", "Vitamin C for immunity", "Iron-rich"],
       considerations: ["May contain oxalates (moderate)"],
       ethiopian_context: "Served as a side dish with injera",
       season: "All year",
@@ -232,14 +232,14 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         acetic_acid: "Adds flavour, antimicrobial",
         gaba: "Gamma-aminobutyric acid (36mg/100g dry weight)",
         vitamins: "B-complex vitamins (B1, B2, B3, B6)",
-        probiotics: "Live beneficial bacteria for gut health",
+        probiotics: "Live beneficial bacteria for gut Welbeing",
       },
       mineral_bioavailability: {
         iron: "15-40% increase",
         zinc: "26-50% increase",
         calcium: "60-88% increase",
       },
-      health_effects: {
+      Welbeing_effects: {
         positive: ["Improved digestion", "Gut microbiome support", "Relaxation (GABA)", "Better iron status"],
         caution: ["High sodium (from salt)", "Risk of overeating (high glycemic load)"],
       },
@@ -256,18 +256,18 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
       microorganisms: ["Lactic acid bacteria", "Yeasts"],
       products: {
         gaba: "36mg/100g dry weight",
-        probiotics: "Lactic acid bacteria for gut health",
+        probiotics: "Lactic acid bacteria for gut Welbeing",
         resistant_starch: "Prebiotic for gut microbiome",
       },
-      health_effects: {
-        positive: ["Gut health", "Relaxation (GABA)", "Sustained energy"],
+      Welbeing_effects: {
+        positive: ["Gut Welbeing", "Relaxation (GABA)", "Sustained energy"],
         caution: ["Low protein (needs complementation)"],
       },
       ethiopian_context: "Staple in southern Ethiopia (Sidama, Gurage, Wolaita)",
       recommendations: [
         "Include kocho as part of a diverse diet",
         "Complement with protein-rich foods (legumes, meat)",
-        "Fermented kocho supports digestive health",
+        "Fermented kocho supports digestive Welbeing",
       ],
     },
     tella_fermentation: {
@@ -279,7 +279,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         vitamins: "B-complex vitamins (from grains)",
         antioxidants: "Phenolic compounds from grains and hops",
       },
-      health_effects: {
+      Welbeing_effects: {
         positive: ["Probiotic support", "Social bonding"],
         negative: ["Alcohol content", "High calorie"],
       },
@@ -340,17 +340,17 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         "Non-heme iron bioavailability needs ascorbic acid enhancement",
         "B12 status must be monitored during extended fasts",
         "Intermittent fasting may affect glucose metabolism in diabetics",
-        "Inadequate zinc and calcium can compromise bone health",
+        "Inadequate zinc and calcium can compromise bone Welbeing",
       ],
       recommendations: [
         "Consume a variety of pulses to achieve complete protein (lysine balance)",
         "Pair iron-rich plant foods with vitamin C (lemon, tomatoes, citrus)",
         "Consider B12 supplementation or fortified nutritional yeast",
-        "Include flaxseed and Niger seed daily for omega-3 and healthy fats",
+        "Include flaxseed and Niger seed daily for omega-3 and Welbeingy fats",
         "Ensure adequate calcium from fortified foods or supplements if needed",
         "Hydrate well during fasting periods (water, herbal teas)",
         "Monitor blood sugar if diabetic (adjust medication with doctor guidance)",
-        "Break fast gradually with light foods (porridge, soup) for digestive health",
+        "Break fast gradually with light foods (porridge, soup) for digestive Welbeing",
       ],
       ethiopian_context: "Fasting is a religious duty and a time of spiritual reflection; nutrition must be planned to avoid deficiencies",
     },
@@ -374,7 +374,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         "Good fat intake from niger seed oil and Niter Kibbeh",
         "High phytate load from grains and legumes (partially reduced by fermentation)",
       ],
-      health_implications: {
+      Welbeing_implications: {
         positive: ["High fibre supports digestion", "Rich in polyphenols and antioxidants", "Traditional foods are minimally processed"],
         negative: ["Iron deficiency due to phytates", "Low B12 if fasting frequently", "High glycemic load from injera"],
       },
@@ -398,7 +398,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         "Limited vegetable intake due to aridity",
         "Calcium and vitamin D from dairy (high bioavailability)",
       ],
-      health_implications: {
+      Welbeing_implications: {
         positive: ["High calcium and vitamin D", "Good iron and zinc from red meat", "Probiotics from fermented milk"],
         negative: ["Limited fibre and vegetable intake", "High saturated fat", "Risk of dehydration", "Vitamin C deficiency (scurvy risk)"],
       },
@@ -422,8 +422,8 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         "Good vegetable diversity from irrigated agriculture",
         "Moderate protein from both animal and plant sources",
       ],
-      health_implications: {
-        positive: ["Omega-3 from fish supports heart and brain health", "Good micronutrient status from vegetables"],
+      Welbeing_implications: {
+        positive: ["Omega-3 from fish supports heart and brain Welbeing", "Good micronutrient status from vegetables"],
         negative: ["Risk of schistosomiasis from contaminated water/fish", "High phytate from grains"],
       },
       recommendations: [
@@ -441,7 +441,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
     aflatoxin_contamination: {
       description: "Aflatoxins are toxic metabolites from Aspergillus fungi, common in grains and nuts",
       affected_foods: ["Maize", "Sorghum", "Teff", "Niger seed", "Groundnuts", "Cereals"],
-      health_effects: {
+      Welbeing_effects: {
         acute: ["Hepatotoxicity", "Vomiting", "Abdominal pain", "Jaundice", "Ascites"],
         chronic: ["Hepatocellular carcinoma (liver cancer)", "Immunosuppression", "Child stunting", "Oxidative stress"],
       },
@@ -485,14 +485,14 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
   // -------------------------------------------------------------------------
   private breastfeeding = {
     maternal_nutrition: {
-      description: "Nutritional requirements during breastfeeding for maternal and infant health",
+      description: "Nutritional requirements during breastfeeding for maternal and infant Welbeing",
       key_nutrients: {
         protein: "Additional 20g/day for milk production",
         iron: "10-15mg/day (higher need due to maternal depletion)",
-        calcium: "1200mg/day (high requirement for bone health)",
+        calcium: "1200mg/day (high requirement for bone Welbeing)",
         zinc: "12-15mg/day (immune function)",
         b12: "2.8µg/day (critical for infant neurodevelopment)",
-        vitaminD: "15µg/day (essential for infant bone health)",
+        vitaminD: "15µg/day (essential for infant bone Welbeing)",
         omega3: "250-300mg/day DHA (brain development)",
         iodine: "250µg/day (thyroid function)",
       },
@@ -595,19 +595,19 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
   }
 
   private isFasting(userProfile: UserProfile): boolean {
-    return userProfile.cultural?.fasting || userProfile.health?.fasting || false;
+    return userProfile.cultural?.fasting || userProfile.Welbeing?.fasting || false;
   }
 
   private isPregnant(userProfile: UserProfile): boolean {
-    return userProfile.pregnant || userProfile.health?.pregnant || false;
+    return userProfile.pregnant || userProfile.Welbeing?.pregnant || false;
   }
 
   private isLactating(userProfile: UserProfile): boolean {
-    return userProfile.lactating || userProfile.health?.lactating || false;
+    return userProfile.lactating || userProfile.Welbeing?.lactating || false;
   }
 
   private getAge(userProfile: UserProfile): number | undefined {
-    return userProfile.age || userProfile.health?.age;
+    return userProfile.age || userProfile.Welbeing?.age;
   }
 
   // -------------------------------------------------------------------------
@@ -654,7 +654,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           matches.push(`nutrient_${nutMatch.name}`);
         }
 
-        if (food.clinicalhealthNotes.primaryIndications.some((ind) => ind.toLowerCase().includes(term))) {
+        if (food.DebralWelbeingNotes.primaryIndications.some((ind) => ind.toLowerCase().includes(term))) {
           score += 18;
           matches.push(`indication_${term}`);
         }
@@ -701,7 +701,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "ethiopian_dietary_composition",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: `${food.name.toUpperCase()} (${food.nameAmharic})`,
           description: `Category: ${food.category} [${food.fastingSuitability.replace("_", " ")}]. GI: ${food.glycemicIndex.value} (${food.glycemicIndex.rating}). Nutrients/100g: ${nutSummary}.`,
           evidence: `Antinutrient Dynamics: ${antinutrientSummary} ${food.antinutrients.bioavailabilityUpliftDescription}`,
@@ -711,7 +711,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           matches,
           recommendations: [
             `Traditional preparation: ${food.traditionalPreparation}`,
-            `Digestive optimisation: ${food.clinicalhealthNotes.digestiveTolerance}`,
+            `Digestive optimisation: ${food.DebralWelbeingNotes.digestiveTolerance}`,
           ],
           management: [
             `Bioavailability note: ${food.antinutrients.bioavailabilityUpliftDescription}`,
@@ -756,7 +756,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
             score += 10;
             matches.push(`ingredient_${term}`);
           }
-          if (recipe.health_benefits.some((b) => b.toLowerCase().includes(term))) {
+          if (recipe.Welbeing_benefits.some((b) => b.toLowerCase().includes(term))) {
             score += 15;
             matches.push(`benefit_${term}`);
           }
@@ -826,7 +826,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "antinutritional_factor",
             strand: this.strandName,
-            domain: "health",
+            domain: "Welbeing",
             name: key.replace(/_/g, " ").toUpperCase(),
             description: data.description,
             evidence: `Reduction methods: ${Object.entries(data.reduction_methods || {}).map(([k, v]) => `${k}: ${v}`).join("; ")}.`,
@@ -876,7 +876,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "fermentation_biochemistry",
             strand: this.strandName,
-            domain: "health",
+            domain: "Welbeing",
             name: key.replace(/_/g, " ").toUpperCase(),
             description: data.description,
             evidence: `Products: ${Object.entries(data.products || {}).map(([k, v]) => `${k}: ${v}`).join("; ")}.`,
@@ -912,7 +912,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         matches: ["fasting_dietary_match"],
         recommendations: fast.recommendations,
         management: fast.recommendations,
-        sources: ["Ethiopian Public health Institute - Nutrition During Religious Fasting", "EFCT 2025 Fasting Nutrient Matrix"],
+        sources: ["Ethiopian Public Welbeing Institute - Nutrition During Religious Fasting", "EFCT 2025 Fasting Nutrient Matrix"],
         category: "Domain B",
         severity: "low",
       });
@@ -958,7 +958,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
             domain: "cultural",
             name: data.name.toUpperCase(),
             description: `Regions: ${data.regions.join(", ")}. Staples: ${data.staples.join(", ")}. Protein: ${data.protein_sources.join(", ")}.`,
-            evidence: `health implications: Positive - ${(data.health_implications.positive || []).join("; ")}. Negative - ${(data.health_implications.negative || []).join("; ")}.`,
+            evidence: `Welbeing implications: Positive - ${(data.Welbeing_implications.positive || []).join("; ")}. Negative - ${(data.Welbeing_implications.negative || []).join("; ")}.`,
             ethiopian_context: `Dietary patterns are shaped by geography, culture, and livelihood.`,
             relevanceScore: Math.min(score / 50, 0.90),
             confidence: 0.85,
@@ -1006,11 +1006,11 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "food_safety",
             strand: this.strandName,
-            domain: "health",
+            domain: "Welbeing",
             name: key.replace(/_/g, " ").toUpperCase(),
             description: data.description,
-            evidence: (data as any).health_effects
-              ? `health effects: ${Object.entries((data as any).health_effects || {}).map(([k, v]: [string, any]) => `${k}: ${v.join(", ")}`).join("; ")}.`
+            evidence: (data as any).Welbeing_effects
+              ? `Welbeing effects: ${Object.entries((data as any).Welbeing_effects || {}).map(([k, v]: [string, any]) => `${k}: ${v.join(", ")}`).join("; ")}.`
               : `Sources: ${((data as any).sources || []).join(", ")}. Pathogens: ${((data as any).common_pathogens || []).join(", ")}.`,
             ethiopian_context: (data as any).ethiopian_context || "Food safety is crucial in Ethiopia",
             relevanceScore: Math.min(score / 50, 0.85),
@@ -1037,9 +1037,9 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "breastfeeding_nutrition",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: "MATERNAL NUTRITION DURING BREASTFEEDING",
-          description: "Nutritional requirements during breastfeeding for maternal and infant health",
+          description: "Nutritional requirements during breastfeeding for maternal and infant Welbeing",
           evidence: `Key nutrients: ${Object.entries(mat.key_nutrients).map(([k, v]) => `${k}: ${v}`).join("; ")}.`,
           ethiopian_context: mat.ethiopian_context || "Traditional breastfeeding practices support extended breastfeeding",
           relevanceScore: lactating ? 0.95 : 0.70,
@@ -1047,7 +1047,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           matches: ["breastfeeding"],
           recommendations: mat.recommendations,
           management: mat.recommendations,
-          sources: ["WHO Breastfeeding Guidelines", "Ethiopian Maternal health"],
+          sources: ["WHO Breastfeeding Guidelines", "Ethiopian Maternal Welbeing"],
           category: "Domain A",
           severity: "low",
         });
@@ -1058,7 +1058,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "complementary_feeding",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: "COMPLEMENTARY FEEDING (6-24 MONTHS)",
           description: "Introduction of complementary foods while continuing breastfeeding",
           evidence: `Recommended foods: ${comp.recommended_foods.join("; ")}. Foods to avoid: ${comp.foods_to_avoid.join("; ")}.`,
@@ -1068,7 +1068,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
           matches: ["complementary_feeding"],
           recommendations: comp.recommendations,
           management: comp.recommendations,
-          sources: ["WHO Complementary Feeding Guidelines", "Ethiopian Child health"],
+          sources: ["WHO Complementary Feeding Guidelines", "Ethiopian Child Welbeing"],
           category: "Domain A",
           severity: "low",
         });
@@ -1083,7 +1083,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "nutrition_policy",
           strand: this.strandName,
-          domain: "health",
+          domain: "Welbeing",
           name: program.name.toUpperCase(),
           description: program.description,
           evidence: `Goals: ${(program.goals || []).join("; ")}. Strategies: ${(program.strategies || []).join("; ")}.`,
@@ -1103,7 +1103,7 @@ export class DietaryKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "food_fortification",
         strand: this.strandName,
-        domain: "health",
+        domain: "Welbeing",
         name: "FOOD FORTIFICATION IN ETHIOPIA",
         description: fort.description,
         evidence: `Fortified foods: ${fort.fortified_foods.join(", ")}. Challenges: ${fort.challenges.join("; ")}.`,

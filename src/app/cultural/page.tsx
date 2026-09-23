@@ -12,7 +12,7 @@ export default function CulturalPage() {
           Sacred heritage, ritual memory, and contextual wisdom.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-stone-200 md:text-base">
-          This domain honors the living heritage of Ethiopian wisdom—Awde Negest signs, Ge&apos;ez numerology, fasting cadence, and seasonal practice—while keeping ritual meaning clearly separated from clinical diagnosis and medication safety. Heritage is respected without abandoning evidence.
+          This domain honors the living heritage of Ethiopian wisdom—Awde Negest signs, Ge&apos;ez numerology, fasting cadence, and seasonal practice—while keeping ritual meaning clearly separated from Debral diagnosis and medication safety. Heritage is respected without abandoning evidence.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/discover" className="btn-pill-primary">Explore knowledge map</Link>

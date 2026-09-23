@@ -2,18 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  healthGapReports,
+  WelbeingGapReports,
   identifiedGaps,
   gapCauses,
   gapSolutions,
   nutrients,
   users,
-  healthProfiles,
+  WelbeingProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import NutrientRadarChart from "@/components/health/NutrientRadarChart";
-import ClinicalEncounterModal from "@/components/health/ClinicalEncounterModal";
-import ExportPanel from "@/components/health/ExportPanel";
+import NutrientRadarChart from "@/components/Welbeing/NutrientRadarChart";
+import DebralEncounterModal from "@/components/Welbeing/DebralEncounterModal";
+import ExportPanel from "@/components/Welbeing/ExportPanel";
 import AwudeHeritageContext from "@/components/cultural/AwudeHeritageContext";
 import { explainGap } from "@/lib/evaluation/explainability";
 import { GapType, Severity } from "@/lib/evaluation/types";
@@ -28,8 +28,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
   // 1. Fetch Report
   const reports = await db
     .select()
-    .from(healthGapReports)
-    .where(eq(healthGapReports.id, id))
+    .from(WelbeingGapReports)
+    .where(eq(WelbeingGapReports.id, id))
     .limit(1);
 
   if (reports.length === 0) {
@@ -38,12 +38,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const report = reports[0];
 
-  // 2. Fetch User & health Profile
+  // 2. Fetch User & Welbeing Profile
   const [user] = await db.select().from(users).where(eq(users.id, report.userId)).limit(1);
   const [profile] = await db
     .select()
-    .from(healthProfiles)
-    .where(eq(healthProfiles.userId, report.userId))
+    .from(WelbeingProfiles)
+    .where(eq(WelbeingProfiles.userId, report.userId))
     .limit(1);
 
   // 3. Fetch Gaps & Nutrients
@@ -121,11 +121,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="badge badge-safe">Domain A Clinical Evaluation</span>
+                <span className="badge badge-safe">Domain A Debral Evaluation</span>
                 <span className="text-xs text-slate-400 font-mono">EFCT 2025 Standard</span>
               </div>
               <h1 className="text-3xl font-extrabold text-white">
-                Biochemical health Gap &amp; Safety Report
+                Biochemical Welbeing Gap &amp; Safety Report
               </h1>
               <p className="text-sm text-slate-300 mt-1">
                 Evaluated for <strong className="text-white">{user?.name || "Client"}</strong> ({profile?.age} yo {profile?.gender}, {profile?.region} &bull; {profile?.altitudeMeters}m altitude calibration)
@@ -141,8 +141,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <div className="text-xs font-black text-white">Safety Gate Active</div>
               </div>
 
-              {/* Clinical Export Encounter Modal */}
-              <ClinicalEncounterModal
+              {/* Debral Export Encounter Modal */}
+              <DebralEncounterModal
                 reportId={report.id}
                 userName={user?.name || "Client User"}
                 userAge={profile?.age || 30}
@@ -156,7 +156,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
             </div>
           </div>
 
-          {/* Clinical Explanatory Narrative Box */}
+          {/* Debral Explanatory Narrative Box */}
           {report.summaryNarrative && (
             <div className="p-5 rounded-xl bg-black/40 border border-white/10 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
               {report.summaryNarrative}
@@ -175,7 +175,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </div>
         )}
 
-        {/* Section 1: Identified health Gaps */}
+        {/* Section 1: Identified Welbeing Gaps */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -304,13 +304,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
                       {gap.solutions.map((sol) => (
                         <div
                           key={sol.id}
-                          className={`p-3 rounded-lg text-xs border ${
-                            sol.solutionType === "traditional_remedy"
-                              ? "bg-emerald-950/20 border-emerald-500/30"
-                              : sol.solutionType === "referral"
+                          className={`p-3 rounded-lg text-xs border ${sol.solutionType === "traditional_remedy"
+                            ? "bg-emerald-950/20 border-emerald-500/30"
+                            : sol.solutionType === "referral"
                               ? "bg-rose-950/20 border-rose-500/30"
                               : "bg-white/[0.03] border-white/5"
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-semibold text-white">{sol.title}</span>
@@ -364,7 +363,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/governance" className="btn-secondary text-sm">
-              Clinical Governance
+              Debral Governance
             </Link>
             <Link href="/audit" className="btn-primary text-sm">
               View Immutable Audit Log &rarr;

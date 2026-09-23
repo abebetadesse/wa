@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sql, count, desc, eq } from "drizzle-orm";
-import { users, authSessions, auditLog, healthGapReports, literatureFindings, literatureSyncLog } from "@/lib/db/schema";
+import { users, authSessions, auditLog, WelbeingGapReports, literatureFindings, literatureSyncLog } from "@/lib/db/schema";
 import { requireAnyRole } from "@/lib/auth";
 import { getSystemConfig, updateSystemConfig } from "@/lib/config/systemConfig";
 import { getLiteratureFetcher } from "@/lib/literature/literatureFetcher";
@@ -11,8 +11,8 @@ export async function GET() {
   try {
     const user = await requireAnyRole(["admin", "super_admin", "analyst"]);
 
-    // 1. Measure DB ping & health
-    let dbStatus: "healthy" | "degraded" | "down" = "healthy";
+    // 1. Measure DB ping & Welbeing
+    let dbStatus: "Welbeingy" | "degraded" | "down" = "Welbeingy";
     let dbLatencyMs = 0;
     try {
       const start = performance.now();
@@ -48,34 +48,34 @@ export async function GET() {
     try {
       const [s] = await db.select({ total: count() }).from(authSessions).where(eq(authSessions.isActive, true));
       activeSessionsCount = s?.total || 0;
-    } catch {}
+    } catch { }
 
     try {
       const [a] = await db.select({ total: count() }).from(auditLog);
       totalAuditEvents = a?.total || 0;
-    } catch {}
+    } catch { }
 
     try {
       const [u] = await db.select({ total: count() }).from(users);
       totalUsersCount = u?.total || 0;
-    } catch {}
+    } catch { }
 
     try {
-      const [c] = await db.select({ total: count() }).from(healthGapReports);
+      const [c] = await db.select({ total: count() }).from(WelbeingGapReports);
       totalCasesCount = c?.total || 0;
-    } catch {}
+    } catch { }
 
     try {
       const [l] = await db.select({ total: count() }).from(literatureFindings).where(eq(literatureFindings.isActive, 1));
       totalLiteratureCount = l?.total || 0;
-    } catch {}
+    } catch { }
 
     // 4. Latest literature sync
     let lastLiteratureSync = null;
     try {
       const [sync] = await db.select().from(literatureSyncLog).orderBy(desc(literatureSyncLog.startedAt)).limit(1);
       lastLiteratureSync = sync || null;
-    } catch {}
+    } catch { }
 
     // 5. System Configuration
     const config = getSystemConfig();
@@ -100,10 +100,10 @@ export async function GET() {
         },
         services: [
           { name: "PostgreSQL Database Engine", status: dbStatus, latency: `${dbLatencyMs}ms`, type: "core" },
-          { name: "Auth & Session Gateway", status: "healthy", latency: "<5ms", type: "security" },
-          { name: "Literature Synthesis Engine", status: lastLiteratureSync?.errors && lastLiteratureSync.errors.length > 0 ? "warning" : "healthy", latency: "async", type: "intelligence" },
-          { name: "Herb-Drug Safety Gate v3.0", status: config.flags.safetyGateStrictness === "strict_lock" ? "locked" : "healthy", latency: "<2ms", type: "clinical" },
-          { name: "EFCT 2025 Nutritional Engine", status: "healthy", latency: "<10ms", type: "nutrition" },
+          { name: "Auth & Session Gateway", status: "Welbeingy", latency: "<5ms", type: "security" },
+          { name: "Literature Synthesis Engine", status: lastLiteratureSync?.errors && lastLiteratureSync.errors.length > 0 ? "warning" : "Welbeingy", latency: "async", type: "intelligence" },
+          { name: "Herb-Drug Safety Gate v3.0", status: config.flags.safetyGateStrictness === "strict_lock" ? "locked" : "Welbeingy", latency: "<2ms", type: "Debral" },
+          { name: "EFCT 2025 Nutritional Engine", status: "Welbeingy", latency: "<10ms", type: "nutrition" },
           { name: "Domain A/B Security Firewall", status: config.flags.domainBEnforced ? "active" : "disabled", latency: "isolated", type: "compliance" },
         ],
         config,

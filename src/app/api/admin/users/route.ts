@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const name = typeof body.name === "string" ? body.name.trim() : typeof body.fullName === "string" ? body.fullName.trim() : "";
-    const password = typeof body.password === "string" ? body.password : "Ethiohealth@2026!";
+    const password = typeof body.password === "string" ? body.password : "EthioWelbeing@2026!";
     const roleName = typeof body.role === "string" ? body.role.trim() : "user";
     const phoneInput = typeof body.phone === "string" ? body.phone.trim() : "";
     const preferredLanguage = ["am", "om", "en", "ti", "so"].includes(body.preferredLanguage)

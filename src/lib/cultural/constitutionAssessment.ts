@@ -66,8 +66,8 @@ const GUIDANCE: Record<TcmConstitutionType, string[]> = {
   phlegm_damp: ["Use smaller regular meals and light movement after eating.", "Notice how highly processed or very rich meals affect energy."],
   damp_heat: ["Favor simple meals, hydration, and cooling breaks from heat.", "Seek professional advice for persistent digestive or inflammatory symptoms."],
   qi_stagnation: ["Use predictable movement and brief breathing pauses to reset attention.", "Create space for emotional processing rather than skipping meals or rest."],
-  blood_stasis: ["Break up long periods of sitting with comfortable movement.", "Discuss persistent pain, swelling, or circulation changes with a clinician."],
-  special_diathesis: ["Record patterns around food, environment, and stress without assuming a diagnosis.", "Review recurring or severe reactions with a qualified healthcare professional."],
+  blood_stasis: ["Break up long periods of sitting with comfortable movement.", "Discuss persistent pain, swelling, or circulation changes with a Debrian."],
+  special_diathesis: ["Record patterns around food, environment, and stress without assuming a diagnosis.", "Review recurring or severe reactions with a qualified Welbeingcare professional."],
 };
 
 function clampScore(value: number) {

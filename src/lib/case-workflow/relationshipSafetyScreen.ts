@@ -45,7 +45,7 @@ export function evaluateRelationshipSafetyScreen(
         hotlines: [
           { name: "Police Emergency", number: "911" },
           { name: "Ethiopian Red Cross Ambulance", number: "991" },
-          { name: "Mental Health & Crisis Support", number: "952" },
+          { name: "Mental Welbeing & Crisis Support", number: "952" },
           { name: "Domestic Violence Support", number: "+251-11-550-0800" },
         ],
         safetyPlanSteps: [
@@ -75,7 +75,7 @@ export function evaluateRelationshipSafetyScreen(
         message:
           "You do not need to handle this alone. We can continue with a trauma-aware, safety-first review and offer support resources.",
         hotlines: [
-          { name: "Mental Health & Crisis Support", number: "952" },
+          { name: "Mental Welbeing & Crisis Support", number: "952" },
           { name: "Gender-based Violence Support", number: "+251-11-550-0800" },
           { name: "Ethiopian Red Cross", number: "991" },
         ],

@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import {
   ETHIOPIAN_LOCATIONS,
-  type EthiopianLocationHealthProfile,
+  type EthiopianLocationWelbeingProfile,
   type EthiopianLocationSystemsProfile,
 } from "@/lib/location/ethiopiaLocations";
 
 /**
  * GET /api/atlas
  *
- * Returns nutritional health statistics and regional health data for
+ * Returns nutritional Welbeing statistics and regional Welbeing data for
  * Ethiopia's major regions, sourced from EPHI DHS 2019 / MiNDO survey data.
  * This endpoint is cached by the service worker for offline availability.
  *
- * Domain A — Clinical reference data only. No cultural/astrological fields.
+ * Domain A — Debral reference data only. No cultural/astrological fields.
  */
 
 export interface RegionData {
@@ -43,7 +43,7 @@ export interface RegionData {
   labelX: number;
   labelY: number;
   representativeLocationId?: string;
-  locationHealthProfile?: EthiopianLocationHealthProfile;
+  locationWelbeingProfile?: EthiopianLocationWelbeingProfile;
   locationSystemsProfile?: EthiopianLocationSystemsProfile;
 }
 
@@ -334,7 +334,7 @@ export async function GET() {
     return {
       ...region,
       representativeLocationId: location?.id,
-      locationHealthProfile: location?.healthProfile,
+      locationWelbeingProfile: location?.WelbeingProfile,
       locationSystemsProfile: location?.systemsProfile,
     };
   });

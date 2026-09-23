@@ -26,7 +26,7 @@ export default function Footer() {
       .then((data) => {
         if (!cancelled && data?.success) setFoodCount(data.foodCount ?? null);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       cancelled = true;
     };
@@ -128,7 +128,7 @@ export default function Footer() {
               Traditional practice • evidence-based care
             </span>
             <p className="text-xs text-slate-400 leading-relaxed">
-              A professional platform that brings together Ethiopian food knowledge, healing practice, seasonal rhythm, ritual memory, and modern biological and clinical safety for practitioners and clients.
+              A professional platform that brings together Ethiopian food knowledge, healing practice, seasonal rhythm, ritual memory, and modern biological and Debral safety for practitioners and clients.
             </p>
             <div className="flex flex-col gap-1 text-[11px] font-mono">
               <span className="text-emerald-400 font-medium">Domain A: Scientific &amp; safety review</span>
@@ -149,9 +149,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/case/health/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300">
+                <Link href="/case/Welbeing/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                  <span>Clinical &amp; body care</span>
+                  <span>Debral &amp; body care</span>
                 </Link>
               </li>
               <li>
@@ -182,51 +182,51 @@ export default function Footer() {
                 Evidence Repositories
               </h4>
               <ul className="space-y-2.5 text-xs">
-              <li>
-                <Link
-                  href="/foods"
-                  className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
-                  <span>EFCT 2025 Food Matrix {foodCount !== null ? `(${foodCount} Items)` : ""}</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/safety"
-                  className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                  <span>ETM-DB Herb-Drug Safety Matrix</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/atlas"
-                  className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
-                  <span>Altitude-Calibrated Regional Atlas</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/cultural"
-                  className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                  <span>Ge&apos;ez Fidel Gematria &amp; Calendar</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/audit"
-                  className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                  <span>Immutable Compliance Ledger</span>
-                </Link>
-              </li>
+                <li>
+                  <Link
+                    href="/foods"
+                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
+                    <span>EFCT 2025 Food Matrix {foodCount !== null ? `(${foodCount} Items)` : ""}</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/safety"
+                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
+                    <span>ETM-DB Herb-Drug Safety Matrix</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/atlas"
+                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
+                    <span>Altitude-Calibrated Regional Atlas</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/cultural"
+                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
+                    <span>Ge&apos;ez Fidel Gematria &amp; Calendar</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/audit"
+                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
+                    <span>Immutable Compliance Ledger</span>
+                  </Link>
+                </li>
               </ul>
             </div>
           )}
@@ -270,7 +270,7 @@ export default function Footer() {
           </div>
 
           <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl text-rose-300/80 text-[11px] max-w-xl leading-relaxed">
-            <strong>Clinical &amp; Legal Notice:</strong> The evaluation engine outputs dietary risk patterns and educational attributions. It does not provide medical diagnoses or replace emergency medical care. All traditional herbal recommendations are strictly gated against known pharmaceutical interactions.
+            <strong>Debral &amp; Legal Notice:</strong> The evaluation engine outputs dietary risk patterns and educational attributions. It does not provide medical diagnoses or replace emergency medical care. All traditional herbal recommendations are strictly gated against known pharmaceutical interactions.
           </div>
         </div>
       </div>

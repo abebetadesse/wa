@@ -1,5 +1,5 @@
 /**
- * health Module Types
+ * Welbeing Module Types
  * Integrating best practices from Huazhen TCM, FoodTrack, AyurAI, AyurGenie, NaraCare.AI, Thryval
  */
 
@@ -28,7 +28,7 @@ export interface TongueDiagnosisResult {
   tcmPattern: string;
   ethiopianHumoralCorrelation: string;
   organSystems: string[];
-  clinicalSignificance: string;
+  DebralSignificance: string;
   dietaryRecommendations: string[];
   herbalRecommendations: {
     herb: string;
@@ -73,8 +73,8 @@ export interface ScannedFoodItem {
   name: string;
   nameAmharic?: string;
   category:
-    | "cereal" | "legume" | "vegetable" | "fruit" | "dairy" | "meat"
-    | "fermented" | "spice" | "beverage" | "oil" | "other";
+  | "cereal" | "legume" | "vegetable" | "fruit" | "dairy" | "meat"
+  | "fermented" | "spice" | "beverage" | "oil" | "other";
   servingSize: number; // grams
   servingLabel: string; // e.g., "1 injera", "1 cup"
   macros: {
@@ -103,7 +103,7 @@ export interface ScannedFoodItem {
   };
   traditionalPreparation?: string;
   sourceRef: "EFCT-2025" | "USDA" | "user-entered" | "ai-estimated";
-  healthFlags: string[];
+  WelbeingFlags: string[];
 }
 
 export interface MealLog {
@@ -136,7 +136,7 @@ export interface DailyNutritionSummary {
   mealCount: number;
   fastingHours: number;
   waterIntakeMl?: number;
-  ethioAlignmentScore: number; // 0-100, how well diet matches Ethiopian health wisdom
+  ethioAlignmentScore: number; // 0-100, how well diet matches Ethiopian Welbeing wisdom
 }
 
 export interface FoodScanSession {
@@ -247,8 +247,8 @@ export interface CarePlanGoal {
   targetDate: string;
   priority: "critical" | "high" | "medium" | "low";
   category:
-    | "nutrition" | "movement" | "sleep" | "stress" | "digestion"
-    | "immunity" | "mental_clarity" | "longevity";
+  | "nutrition" | "movement" | "sleep" | "stress" | "digestion"
+  | "immunity" | "mental_clarity" | "longevity";
   metrics: {
     name: string;
     baseline: number;
@@ -262,8 +262,8 @@ export interface CarePlanGoal {
 export interface CarePlanIntervention {
   id: string;
   type:
-    | "dietary" | "herbal" | "lifestyle" | "movement" | "breathwork"
-    | "fasting" | "spiritual" | "clinical_referral";
+  | "dietary" | "herbal" | "lifestyle" | "movement" | "breathwork"
+  | "fasting" | "spiritual" | "Debral_referral";
   title: string;
   description: string;
   frequency: string;
@@ -297,7 +297,7 @@ export interface PersonalizedCarePlan {
   duration: "4-weeks" | "8-weeks" | "12-weeks" | "6-months";
   currentPhase: CarePlanPhase;
   currentWeek: number;
-  primaryhealthGoals: string[];
+  primaryWelbeingGoals: string[];
   constitution: HolisticConstitutionProfile;
   weeklyPlans: CarePlanWeek[];
   overallProgress: number;

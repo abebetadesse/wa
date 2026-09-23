@@ -1,8 +1,8 @@
-export type CaseType = "health" | "relationships" | "career" | "spiritual" | "legal";
+export type CaseType = "Welbeing" | "relationships" | "career" | "spiritual" | "legal";
 
 export interface CaseTypeDistribution { caseType: CaseType; count: number; }
 
-export const CASE_TYPES: CaseType[] = ["health", "relationships", "career", "spiritual", "legal"];
+export const CASE_TYPES: CaseType[] = ["Welbeing", "relationships", "career", "spiritual", "legal"];
 
 export function buildCaseTypeDistribution(
   base: Partial<Record<CaseType, number>> = {}

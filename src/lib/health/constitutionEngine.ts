@@ -10,7 +10,7 @@ import {
   HolisticConstitutionProfile,
   DoshaType,
   EthiopianHumor,
-} from "./healthTypes";
+} from "./WelbeingTypes";
 
 export interface ConstitutionQuestion {
   id: string;
@@ -208,39 +208,39 @@ export function buildConstitutionProfile(
     humor,
     tcmConstitution: humor.dominantHumor === "esat" ? "Fire-Heat" :
       humor.dominantHumor === "afere" ? "Earth-Phlegm" :
-      humor.dominantHumor === "nifas" ? "Wind-Deficiency" : "Water-Damp",
+        humor.dominantHumor === "nifas" ? "Wind-Deficiency" : "Water-Damp",
     overallConstitutionNarrative: DOSHA_NARRATIVES[dosha.primaryDosha] || "A unique blend of constitutional energies.",
     strengthsAndVulnerabilities: {
       physicalStrengths: dosha.primaryDosha.includes("Pitta")
         ? ["Strong metabolism", "Good muscle tone", "High drive"]
         : dosha.primaryDosha.includes("Kapha")
-        ? ["Strong endurance", "Stable immunity", "Good joint lubrication"]
-        : ["Quick reflexes", "Creative adaptability", "Light and agile"],
+          ? ["Strong endurance", "Stable immunity", "Good joint lubrication"]
+          : ["Quick reflexes", "Creative adaptability", "Light and agile"],
       physicalVulnerabilities: dosha.primaryDosha.includes("Vata")
         ? ["Irregular digestion", "Joint dryness", "Poor circulation in cold"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Inflammation", "Acid reflux", "Heat rashes"]
-        : ["Congestion", "Weight gain", "Slow lymphatic flow"],
+          ? ["Inflammation", "Acid reflux", "Heat rashes"]
+          : ["Congestion", "Weight gain", "Slow lymphatic flow"],
       mentalStrengths: dosha.primaryDosha.includes("Vata")
         ? ["Creativity", "Intuition", "Rapid thinking"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Focus", "Analytical precision", "Leadership"]
-        : ["Patience", "Loyalty", "Long-term memory"],
+          ? ["Focus", "Analytical precision", "Leadership"]
+          : ["Patience", "Loyalty", "Long-term memory"],
       mentalVulnerabilities: dosha.primaryDosha.includes("Vata")
         ? ["Anxiety", "Overwhelm", "Scattered focus"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Irritability", "Perfectionism", "Judgment"]
-        : ["Attachment", "Resistance to change", "Depression"],
+          ? ["Irritability", "Perfectionism", "Judgment"]
+          : ["Attachment", "Resistance to change", "Depression"],
       digestiveNotes: dosha.primaryDosha.includes("Vata")
         ? "Variable agni — irregular hunger, gas, bloating. Regular warm meals essential."
         : dosha.primaryDosha.includes("Pitta")
-        ? "Sharp agni — strong hunger, acid tendency. Avoid skipping meals."
-        : "Slow agni — low hunger, mucus tendency. Lighter warm meals best.",
+          ? "Sharp agni — strong hunger, acid tendency. Avoid skipping meals."
+          : "Slow agni — low hunger, mucus tendency. Lighter warm meals best.",
       immuneNotes: dosha.primaryDosha.includes("Kapha")
         ? "Strong but slow immune response; prone to mucus congestion and lingering illness."
         : dosha.primaryDosha.includes("Pitta")
-        ? "Strong immune response; tends toward inflammatory conditions."
-        : "Variable immunity; susceptible to nervous system depletion.",
+          ? "Strong immune response; tends toward inflammatory conditions."
+          : "Variable immunity; susceptible to nervous system depletion.",
     },
     seasonalGuidance: {
       spring: "Detox season — emphasize bitter greens, light soups, reduce Kapha-aggravating heavy foods",
@@ -254,24 +254,24 @@ export function buildConstitutionProfile(
       favored: dosha.primaryDosha.includes("Vata")
         ? ["Warm soups", "Fermented teff injera", "Cooked lentils", "Root vegetables", "Warm sesame tea"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Cooling salads (when not fasting)", "Cucumber", "Coconut", "Ayib", "Lightly spiced dishes"]
-        : ["Light soups", "Spiced lentils", "Ginger-heavy dishes", "Millet", "Raw honey"],
+          ? ["Cooling salads (when not fasting)", "Cucumber", "Coconut", "Ayib", "Lightly spiced dishes"]
+          : ["Light soups", "Spiced lentils", "Ginger-heavy dishes", "Millet", "Raw honey"],
       reduce: dosha.primaryDosha.includes("Vata")
         ? ["Raw vegetables", "Dry crackers", "Cold drinks", "Excessive travel", "Late meals"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Berbere overload", "Hot chili", "Alcohol", "Fried foods", "Midday sun exposure"]
-        : ["Heavy dairy", "Excess injera portions", "Cold beverages", "Naps after meals", "Processed sugar"],
+          ? ["Berbere overload", "Hot chili", "Alcohol", "Fried foods", "Midday sun exposure"]
+          : ["Heavy dairy", "Excess injera portions", "Cold beverages", "Naps after meals", "Processed sugar"],
       avoid: dosha.primaryDosha.includes("Vata")
         ? ["Very dry foods", "Ice water", "Skipping meals"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Excess mitmita", "Fried kitfo", "Caffeinated excess"]
-        : ["Ice cream", "Excess enset-based meals", "Sedentary post-meal periods"],
+          ? ["Excess mitmita", "Fried kitfo", "Caffeinated excess"]
+          : ["Ice cream", "Excess enset-based meals", "Sedentary post-meal periods"],
       cookingMethods: ["Steam", "Pressure cook", "Slow cook", "Ferment"],
       spicesToEmphasize: dosha.primaryDosha.includes("Vata")
         ? ["Ginger", "Cumin", "Fenugreek", "Cinnamon"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Coriander", "Fennel", "Cardamom", "Mint"]
-        : ["Black pepper", "Ginger", "Turmeric", "Mustard seed"],
+          ? ["Coriander", "Fennel", "Cardamom", "Mint"]
+          : ["Black pepper", "Ginger", "Turmeric", "Mustard seed"],
       spicesToMinimize: dosha.primaryDosha.includes("Pitta")
         ? ["Excess berbere", "Mitmita", "Cayenne"]
         : ["Excess salt", "Very sour ferments"],
@@ -281,33 +281,33 @@ export function buildConstitutionProfile(
       exerciseType: dosha.primaryDosha.includes("Vata")
         ? "Gentle yoga, walking, swimming"
         : dosha.primaryDosha.includes("Pitta")
-        ? "Moderate hiking, swimming, team sports"
-        : "Vigorous cardio, running, cycling",
+          ? "Moderate hiking, swimming, team sports"
+          : "Vigorous cardio, running, cycling",
       exerciseIntensity: dosha.primaryDosha.includes("Vata") ? "Low to moderate" : dosha.primaryDosha.includes("Pitta") ? "Moderate" : "High",
       meditationStyle: dosha.primaryDosha.includes("Vata")
         ? "Grounding meditation, body scan, breath focus"
         : dosha.primaryDosha.includes("Pitta")
-        ? "Loving-kindness, cooling visualization"
-        : "Invigorating breath work, dynamic movement meditation",
+          ? "Loving-kindness, cooling visualization"
+          : "Invigorating breath work, dynamic movement meditation",
       sleepSchedule: "10 PM – 6 AM (align with solar cycles)",
       oilMassageFrequency: dosha.primaryDosha.includes("Vata") ? "Daily sesame oil massage" : "2–3x weekly",
       herbalTeas: dosha.primaryDosha.includes("Vata")
         ? ["Ginger-licorice", "Ashwagandha milk", "Fenugreek tea"]
         : dosha.primaryDosha.includes("Pitta")
-        ? ["Hibiscus", "Peppermint", "Coriander seed tea"]
-        : ["Ginger-cinnamon", "Green tea", "Tulsi"],
+          ? ["Hibiscus", "Peppermint", "Coriander seed tea"]
+          : ["Ginger-cinnamon", "Green tea", "Tulsi"],
     },
     ayurvedicHerbsForBalance: dosha.primaryDosha.includes("Vata")
       ? [
-          { herb: "Ashwagandha", sanskritName: "Withania somnifera", ethiopianEquivalent: "Endod (related)", purpose: "Nervous system tonic, adaptogen", dosage: "300mg extract 2x daily", caution: "Avoid in hyperthyroidism" },
-          { herb: "Shatavari", sanskritName: "Asparagus racemosus", ethiopianEquivalent: undefined, purpose: "Hormonal balance, Yin tonic", dosage: "1–2g powder daily", caution: "Avoid in estrogen-sensitive conditions" },
-        ]
+        { herb: "Ashwagandha", sanskritName: "Withania somnifera", ethiopianEquivalent: "Endod (related)", purpose: "Nervous system tonic, adaptogen", dosage: "300mg extract 2x daily", caution: "Avoid in hyperthyroidism" },
+        { herb: "Shatavari", sanskritName: "Asparagus racemosus", ethiopianEquivalent: undefined, purpose: "Hormonal balance, Yin tonic", dosage: "1–2g powder daily", caution: "Avoid in estrogen-sensitive conditions" },
+      ]
       : dosha.primaryDosha.includes("Pitta")
-      ? [
+        ? [
           { herb: "Amla", sanskritName: "Phyllanthus emblica", ethiopianEquivalent: "Nug (partial)", purpose: "Pitta cooling, vitamin C, liver support", dosage: "1–2g powder daily", caution: "May thin blood at high doses" },
           { herb: "Brahmi", sanskritName: "Bacopa monnieri", ethiopianEquivalent: undefined, purpose: "Mental cooling, clarity, memory", dosage: "300mg extract daily", caution: "May cause GI upset" },
         ]
-      : [
+        : [
           { herb: "Triphala", sanskritName: "Three fruits blend", ethiopianEquivalent: undefined, purpose: "Digestive cleansing, bowel regularity", dosage: "1g powder at night", caution: "Avoid in severe diarrhea" },
           { herb: "Guggul", sanskritName: "Commiphora mukul", ethiopianEquivalent: "Mayabeles (related resin)", purpose: "Metabolism support, cholesterol balance", dosage: "As directed by practitioner", caution: "Avoid in pregnancy" },
         ],

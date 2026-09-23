@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-interface ClinicalEncounterProps {
+interface DebralEncounterProps {
   reportId: string;
   userName: string;
   userAge: number;
@@ -14,7 +14,7 @@ interface ClinicalEncounterProps {
   generatedAt: string;
 }
 
-export default function ClinicalEncounterModal({
+export default function DebralEncounterModal({
   reportId,
   userName,
   userAge,
@@ -24,7 +24,7 @@ export default function ClinicalEncounterModal({
   gaps,
   modelVersion,
   generatedAt,
-}: ClinicalEncounterProps) {
+}: DebralEncounterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePrint = () => {
@@ -34,7 +34,7 @@ export default function ClinicalEncounterModal({
   return (
     <>
       <button onClick={() => setIsOpen(true)} className="btn-secondary text-sm py-2 px-4 flex items-center gap-2">
-        <span>📄</span> Export Clinical Encounter Summary (EHR / MD)
+        <span>📄</span> Export Debral Encounter Summary (EHR / MD)
       </button>
 
       {isOpen && (
@@ -42,7 +42,7 @@ export default function ClinicalEncounterModal({
           <div className="relative w-full max-w-3xl glass-panel p-8 border border-[var(--border-strong)] my-8">
             {/* Action Bar */}
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10 print:hidden">
-              <span className="badge badge-safe">Clinical Decision Support Encounter</span>
+              <span className="badge badge-safe">Debral Decision Support Encounter</span>
               <div className="flex items-center gap-3">
                 <button onClick={handlePrint} className="btn-primary text-xs py-1.5 px-4">
                   🖨️ Print / Save as PDF
@@ -63,7 +63,7 @@ export default function ClinicalEncounterModal({
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-lg font-black text-white uppercase tracking-tight">
-                      Ethiopian Wisdom Platform — Clinical Referral Summary
+                      Ethiopian Wisdom Platform — Debral Referral Summary
                     </h2>
                     <p className="text-[11px] text-slate-400">
                       Standardized Encounter Documentation &bull; Version {modelVersion}
@@ -102,7 +102,7 @@ export default function ClinicalEncounterModal({
                 </div>
               </div>
 
-              {/* Evaluated Gaps & Clinical Diagnostic Codes */}
+              {/* Evaluated Gaps & Debral Diagnostic Codes */}
               <div>
                 <h3 className="font-bold text-white text-xs uppercase tracking-wider mb-2">
                   1. Biochemical Nutrient Deficit Screening (EFCT 2025)
@@ -125,10 +125,10 @@ export default function ClinicalEncounterModal({
                           {g.nutrientName === "Iron"
                             ? "E61.1 (Iron deficiency intake risk)"
                             : g.nutrientName === "Vitamin B12"
-                            ? "E53.8 (Cobalamin deficiency risk)"
-                            : g.nutrientName === "Calcium"
-                            ? "E58 (Dietary calcium deficiency)"
-                            : "E61.8 (Other mineral deficiency)"}
+                              ? "E53.8 (Cobalamin deficiency risk)"
+                              : g.nutrientName === "Calcium"
+                                ? "E58 (Dietary calcium deficiency)"
+                                : "E61.8 (Other mineral deficiency)"}
                         </td>
                         <td className="p-2 font-mono">
                           {g.calculatedDailyIntake} {g.nutrientUnit} ({g.estimatedIntakePct}%)
@@ -138,9 +138,8 @@ export default function ClinicalEncounterModal({
                         </td>
                         <td className="p-2">
                           <span
-                            className={`badge ${
-                              g.severity === "high" ? "badge-high" : "badge-moderate"
-                            } text-[9px]`}
+                            className={`badge ${g.severity === "high" ? "badge-high" : "badge-moderate"
+                              } text-[9px]`}
                           >
                             {g.severity}
                           </span>
@@ -182,7 +181,7 @@ export default function ClinicalEncounterModal({
                 </div>
                 <div className="text-right">
                   <div className="w-48 border-b border-slate-600 mb-1"></div>
-                  <div>Reviewing Clinician / Registered Dietitian Signature</div>
+                  <div>Reviewing Debrian / Registered Dietitian Signature</div>
                 </div>
               </div>
             </div>

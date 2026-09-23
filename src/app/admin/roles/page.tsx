@@ -175,7 +175,7 @@ export default function RoleManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Role & Permissions Management</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Configure access control rules, capabilities, and clinical authority levels.
+            Configure access control rules, capabilities, and Debral authority levels.
           </p>
         </div>
 
@@ -199,11 +199,10 @@ export default function RoleManagementPage() {
       {/* Notification */}
       {notification && (
         <div
-          className={`p-3.5 rounded-xl flex items-center justify-between text-xs font-medium border ${
-            notification.type === "success"
+          className={`p-3.5 rounded-xl flex items-center justify-between text-xs font-medium border ${notification.type === "success"
               ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
               : "bg-rose-950/60 border-rose-500/40 text-rose-300"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             {notification.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
@@ -342,11 +341,10 @@ export default function RoleManagementPage() {
                         return (
                           <label
                             key={perm.key}
-                            className={`flex items-start gap-2.5 p-2 rounded-lg cursor-pointer transition-colors ${
-                              isChecked
+                            className={`flex items-start gap-2.5 p-2 rounded-lg cursor-pointer transition-colors ${isChecked
                                 ? "bg-emerald-950/40 border border-emerald-500/30 text-slate-200"
                                 : "hover:bg-white/5 text-slate-400"
-                            }`}
+                              }`}
                           >
                             <input
                               type="checkbox"
@@ -411,7 +409,7 @@ export default function RoleManagementPage() {
                   required
                   value={newRoleName}
                   onChange={(e) => setNewRoleName(e.target.value)}
-                  placeholder="e.g. clinical_evaluator"
+                  placeholder="e.g. Debral_evaluator"
                   className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>

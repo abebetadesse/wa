@@ -359,7 +359,7 @@ export const ETHIOPIAN_ZODIAC_SIGNS: ZodiacSign[] = [
 export const AWDE_NEGEST_CIRCLES: AwdeCircle[] = [
   { number: 1, name: "Michael", nameAmharic: "ሚካኤል", lakeName: "Lake of Victory", element: "Fire", symbolism: "Courage, righteousness, and cutting through entanglements" },
   { number: 2, name: "Gabriel", nameAmharic: "ገብርኤል", lakeName: "Lake of Good Tidings", element: "Water", symbolism: "Joyful announcements, relief, and peace" },
-  { number: 3, name: "Raphael", nameAmharic: "ሩፋኤል", lakeName: "Lake of Healing", element: "Air", symbolism: "Restoration of health, travelers' safety, and harmony" },
+  { number: 3, name: "Raphael", nameAmharic: "ሩፋኤል", lakeName: "Lake of Healing", element: "Air", symbolism: "Restoration of Welbeing, travelers' safety, and harmony" },
   { number: 4, name: "Uriel", nameAmharic: "ዑራኤል", lakeName: "Lake of Illumination", element: "Fire", symbolism: "Awakening of conscience and divine light" },
   { number: 5, name: "Phanuel", nameAmharic: "ፋኑኤል", lakeName: "Lake of Serenity", element: "Earth", symbolism: "Repentance, reconciliation, and peace" },
   { number: 6, name: "Raguel", nameAmharic: "ራጉኤል", lakeName: "Lake of Justice", element: "Air", symbolism: "Righteous equilibrium and integrity" },

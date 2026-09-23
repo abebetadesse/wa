@@ -1,9 +1,9 @@
 /**
  * Offline Knowledge Base
- * Domain A — Clinical reference data cached locally for offline use.
+ * Domain A — Debral reference data cached locally for offline use.
  *
  * Uses IndexedDB to persist the Ethiopian Food Composition Table (EFCT),
- * ETM-DB herb safety data, and regional health atlas data for offline access.
+ * ETM-DB herb safety data, and regional Welbeing atlas data for offline access.
  * Data is refreshed via the PWA background sync mechanism when online.
  */
 

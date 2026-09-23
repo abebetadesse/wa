@@ -73,7 +73,7 @@ export function generateDynamicQuestions(
       { value: "life_direction", label: "Life direction & purpose", labelAmharic: "የህይወት አቅጣጫ" },
       { value: "career", label: "Career & vocation", labelAmharic: "ሥራ እና ሙያ" },
       { value: "relationships", label: "Relationships & marriage", labelAmharic: "ግንኙነቶች እና ጋብቻ" },
-      { value: "health", label: "health & vitality", labelAmharic: "ጤና እና ጥንካሬ" },
+      { value: "Welbeing", label: "Welbeing & vitality", labelAmharic: "ጤና እና ጥንካሬ" },
       { value: "family", label: "Family matters", labelAmharic: "የቤተሰብ ጉዳዮች" },
       { value: "spiritual_growth", label: "Spiritual growth", labelAmharic: "መንፈሳዊ እድገት" },
       { value: "other", label: "Something else", labelAmharic: "ሌላ" },
@@ -209,7 +209,7 @@ export function generateDynamicQuestions(
     }
   }
 
-  if (currentCategory === "health" || currentCategory === "family" || currentCategory === "spiritual_growth" || currentCategory === "other") {
+  if (currentCategory === "Welbeing" || currentCategory === "family" || currentCategory === "spiritual_growth" || currentCategory === "other") {
     questions.push({
       id: "detail_narrative",
       text: "Please share what is on your heart regarding this area of your life.",
@@ -279,7 +279,7 @@ export function evaluateSpiritualCrisis(
           { name: "Ethiopian Gender-Based Violence & Crisis Hotline", number: "952" },
           { name: "National Emergency Police", number: "911" },
           { name: "Red Cross Ambulance & Emergency Medical Services", number: "991" },
-          { name: "Mental health Support Ethiopia (Amanuel Hospital)", number: "+251 11 275 7680" },
+          { name: "Mental Welbeing Support Ethiopia (Amanuel Hospital)", number: "+251 11 275 7680" },
         ],
         safetyPlanSteps: [
           "Reach out to a trusted elder, spiritual father (የንስሐ አባት), family member, or friend.",

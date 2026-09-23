@@ -29,6 +29,19 @@ export const users = pgTable("users", {
   gender: varchar("gender", { length: 20 }),
   region: varchar("region", { length: 100 }), // e.g. Addis Ababa, Oromia, Amhara, Tigray, Somali, Sidama
   city: varchar("city", { length: 100 }),
+  practitionerCredentials: jsonb("practitioner_credentials").$type<{
+    degree?: string;
+    institution?: string;
+    yearsExperience?: number;
+    verifiedAt?: string;
+    verificationMethod?: string;
+  }>(),
+  preferences: jsonb("preferences").$type<{
+    attunementReminders?: boolean;
+    reminderFrequencyDays?: number;
+    language?: "am" | "en" | "om" | "ti" | "so";
+    shareWithPractitioner?: boolean;
+  }>().default({}),
   preferredLanguage: varchar("preferred_language", { length: 10 }).default("en").notNull(), // 'am' | 'om' | 'en' | 'ti' | 'so'
   profileImageUrl: varchar("profile_image_url", { length: 500 }),
   isVerified: boolean("is_verified").default(false).notNull(),
@@ -72,6 +85,11 @@ export const profileFieldDefinitions = pgTable("profile_field_definitions", {
 
 export const userProfiles = pgTable("user_profiles", {
   userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+  primaryName: varchar("primary_name", { length: 255 }),
+  birthDate: date("birth_date"),
+  birthLocation: varchar("birth_location", { length: 255 }),
+  currentLocation: varchar("current_location", { length: 255 }),
+  motherName: varchar("mother_name", { length: 255 }),
   data: jsonb("data").$type<Record<string, unknown>>().default({}).notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -145,7 +163,7 @@ export const loginHistory = pgTable("login_history", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const healthProfiles = pgTable("health_profiles", {
+export const WelbeingProfiles = pgTable("Welbeing_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   age: integer("age"),
@@ -161,8 +179,8 @@ export const healthProfiles = pgTable("health_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Domain B — Firewalled table. Structurally separated from clinical health fields.
-// No foreign keys into clinical intake, gap causes, or solutions.
+// Domain B — Firewalled table. Structurally separated from Debral Welbeing fields.
+// No foreign keys into Debral intake, gap causes, or solutions.
 // CI linting and architectural boundaries prevent this from entering evaluation queries.
 export const culturalProfiles = pgTable("cultural_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),

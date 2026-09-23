@@ -8,7 +8,7 @@ import {
   TransitForecastItem,
   ZodiacSignName,
 } from "../types";
-import { getPlanetaryhealthAssociations, getHousehealthMapping, getAspecthealthImpact } from "./healthMapper";
+import { getPlanetaryWelbeingAssociations, getHouseWelbeingMapping, getAspectWelbeingImpact } from "./WelbeingMapper";
 import { getDabtaraScrollPrescriptions, getTsebelTimingForSunAndMoon, getAwdeNegestZodiacMatch } from "./ethiopianTraditions";
 
 export const ETHIOPIAN_CITIES: Record<string, EthiopianCoordinatePreset> = {
@@ -144,14 +144,14 @@ export function calculateCelestialPositions(
   for (let h = 1; h <= 12; h++) {
     const cuspLon = normalizeDegree(ascTotalLon + (h - 1) * 30);
     const signInfo = getSignFromLongitude(cuspLon);
-    const mapping = getHousehealthMapping(h);
+    const mapping = getHouseWelbeingMapping(h);
 
     houses.push({
       houseNumber: h,
       signOnCusp: signInfo.sign,
       cuspDegree: signInfo.degreeInSign,
       traditionalBodyParts: mapping.bodyParts,
-      healthMeaning: mapping.healthMeaning,
+      WelbeingMeaning: mapping.WelbeingMeaning,
       dailyRoutineImpact: mapping.dailyRoutineImpact,
       activePlanets: [],
     });
@@ -173,7 +173,7 @@ export function calculateCelestialPositions(
     { planet: "Midheaven", lon: mcTotalLon },
   ];
 
-  // Map each planet into house and enrich with health associations
+  // Map each planet into house and enrich with Welbeing associations
   const planets: PlanetaryPosition[] = rawPlanets.map((p) => {
     const signInfo = getSignFromLongitude(p.lon);
     // House calculation
@@ -186,7 +186,7 @@ export function calculateCelestialPositions(
       houseObj.activePlanets.push(p.planet);
     }
 
-    const health = getPlanetaryhealthAssociations(p.planet);
+    const Welbeing = getPlanetaryWelbeingAssociations(p.planet);
 
     return {
       planet: p.planet,
@@ -196,13 +196,13 @@ export function calculateCelestialPositions(
       house: houseNum,
       isRetrograde: p.planet === "Mercury" ? Math.sin(d * 0.1) < -0.6 : false,
       element: signInfo.element,
-      ethiopianName: health.ethiopianName,
-      ethiopianInterpretation: health.ethiopianInterpretation,
-      healthAssociations: {
-        organs: health.organs,
-        physiologicalSystems: health.physiologicalSystems,
-        potentialVulnerabilities: health.potentialVulnerabilities,
-        vitalityStrengths: health.vitalityStrengths,
+      ethiopianName: Welbeing.ethiopianName,
+      ethiopianInterpretation: Welbeing.ethiopianInterpretation,
+      WelbeingAssociations: {
+        organs: Welbeing.organs,
+        physiologicalSystems: Welbeing.physiologicalSystems,
+        potentialVulnerabilities: Welbeing.potentialVulnerabilities,
+        vitalityStrengths: Welbeing.vitalityStrengths,
       },
     };
   });
@@ -245,7 +245,7 @@ export function calculateCelestialPositions(
       }
 
       if (aspectType) {
-        const aspectImpact = getAspecthealthImpact(p1.planet, p2.planet, aspectType);
+        const aspectImpact = getAspectWelbeingImpact(p1.planet, p2.planet, aspectType);
         aspects.push({
           planet1: p1.planet,
           planet2: p2.planet,
@@ -253,7 +253,7 @@ export function calculateCelestialPositions(
           exactAngle,
           orb: Number(orb.toFixed(2)),
           nature: aspectType === "trine" || aspectType === "sextile" ? "harmonious" : aspectType === "conjunction" ? "dynamic" : "challenging",
-          healthImpact: aspectImpact.healthImpact,
+          WelbeingImpact: aspectImpact.WelbeingImpact,
           psychosomaticIndicator: aspectImpact.psychosomaticIndicator,
         });
       }
@@ -274,7 +274,7 @@ export function calculateCelestialPositions(
       aspect: "trine",
       currentSign: getSignFromLongitude(currentJupiterLon).sign,
       durationWindow: "Current 3-month window",
-      healthForecast: "Cellular renewal phase: enhanced liver metabolic clearing and elevated immune vitality.",
+      WelbeingForecast: "Cellular renewal phase: enhanced liver metabolic clearing and elevated immune vitality.",
       balancingAdvice: "Incorporate light bitter greens (Habesha Gomen) and morning sun exposure to maximize energy assimilation.",
     },
     {
@@ -283,7 +283,7 @@ export function calculateCelestialPositions(
       aspect: "square",
       currentSign: getSignFromLongitude(currentSaturnLon).sign,
       durationWindow: "Next 6-8 weeks",
-      healthForecast: "Elevated psychosomatic sensitivity: slight vulnerability to musculoskeletal stiffness, fatigue, and melancholic mood dips.",
+      WelbeingForecast: "Elevated psychosomatic sensitivity: slight vulnerability to musculoskeletal stiffness, fatigue, and melancholic mood dips.",
       balancingAdvice: "Prioritize warm sesame oil rubs, warm spiced teas (Ginger/Korerima), and consistent sleep pacing.",
     },
     {
@@ -292,7 +292,7 @@ export function calculateCelestialPositions(
       aspect: "conjunction",
       currentSign: getSignFromLongitude(currentMarsLon).sign,
       durationWindow: "Upcoming 3 weeks",
-      healthForecast: "Heightened inflammatory and metabolic heat: increased digestive acid and tendency toward impulsivity.",
+      WelbeingForecast: "Heightened inflammatory and metabolic heat: increased digestive acid and tendency toward impulsivity.",
       balancingAdvice: "Avoid excessively greasy or ultra-spicy hot Berbere stews; balance meals with cooling Ayib and pure spring water.",
     },
   ];

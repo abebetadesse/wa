@@ -8,7 +8,7 @@ const STEPS = [
     title: "Select Guidance Pathway",
     amharic: "የመምረጫ መንገድ",
     description:
-      "Choose from Spiritual Life Direction, Relationship Harmony, Career Timing, Elder Dispute Mediation, or Precision health.",
+      "Choose from Spiritual Life Direction, Relationship Harmony, Career Timing, Elder Dispute Mediation, or Precision Welbeing.",
     icon: <Compass size={22} className="text-amber-400" />,
     badge: "5 Pathways",
   },
@@ -26,7 +26,7 @@ const STEPS = [
     title: "Dual-Domain Synthesis",
     amharic: "ባለ ሁለት ዘርፍ ትንተና",
     description:
-      "Domain A processes clinical nutritional baselines (EFCT) & herb safety gates, while Domain B computes the 16 Awde Negest circles.",
+      "Domain A processes Debral nutritional baselines (EFCT) & herb safety gates, while Domain B computes the 16 Awde Negest circles.",
     icon: <ShieldCheck size={22} className="text-emerald-400" />,
     badge: "Strictly Firewalled",
   },

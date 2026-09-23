@@ -38,7 +38,7 @@ import {
 
 interface SystemTelemetry {
   database: {
-    status: "healthy" | "degraded" | "down";
+    status: "Welbeingy" | "degraded" | "down";
     latencyMs: number;
     connected: boolean;
   };
@@ -285,7 +285,7 @@ export default function AdminDashboardPage() {
       color: "from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400",
     },
     {
-      title: "Clinical Evaluations",
+      title: "Debral Evaluations",
       value: analytics?.operations?.totalCases ?? "—",
       change: `${systemData?.telemetry?.activeSessions ?? 0} Concurrent Sessions`,
       icon: FileCheck2,
@@ -310,7 +310,7 @@ export default function AdminDashboardPage() {
   ];
 
   const caseTypeBreakdown = analytics?.caseTypeBreakdown || [
-    { caseType: "health", count: 18 },
+    { caseType: "Welbeing", count: 18 },
     { caseType: "relationships", count: 9 },
     { caseType: "career", count: 7 },
     { caseType: "spiritual", count: 5 },
@@ -345,13 +345,12 @@ export default function AdminDashboardPage() {
       {/* Global Broadcast Banner (if enabled) */}
       {systemData?.config.announcement.enabled && (
         <div
-          className={`px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-semibold backdrop-blur-md shadow-sm ${
-            systemData.config.announcement.severity === "critical"
-              ? "bg-rose-950/80 border-rose-500/50 text-rose-200"
-              : systemData.config.announcement.severity === "warning"
+          className={`px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-semibold backdrop-blur-md shadow-sm ${systemData.config.announcement.severity === "critical"
+            ? "bg-rose-950/80 border-rose-500/50 text-rose-200"
+            : systemData.config.announcement.severity === "warning"
               ? "bg-amber-950/80 border-amber-500/50 text-amber-200"
               : "bg-sky-950/80 border-sky-500/50 text-sky-200"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2.5">
             <Megaphone size={16} className="animate-pulse shrink-0" />
@@ -405,7 +404,7 @@ export default function AdminDashboardPage() {
                 <Database size={11} className="text-sky-400" />
                 <span>
                   Postgres:{" "}
-                  {systemData?.database.status === "healthy"
+                  {systemData?.database.status === "Welbeingy"
                     ? `${systemData.database.latencyMs}ms (Online)`
                     : "Connecting..."}
                 </span>
@@ -419,11 +418,10 @@ export default function AdminDashboardPage() {
 
               {/* Safety Gate Strictness Indicator */}
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border flex items-center gap-1.5 ${
-                  systemData?.config.flags.safetyGateStrictness === "strict_lock"
-                    ? "border-rose-500/40 bg-rose-950/40 text-rose-300"
-                    : "border-emerald-500/30 bg-emerald-950/30 text-emerald-300"
-                }`}
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border flex items-center gap-1.5 ${systemData?.config.flags.safetyGateStrictness === "strict_lock"
+                  ? "border-rose-500/40 bg-rose-950/40 text-rose-300"
+                  : "border-emerald-500/30 bg-emerald-950/30 text-emerald-300"
+                  }`}
               >
                 <ShieldCheck size={11} />
                 <span>
@@ -437,7 +435,7 @@ export default function AdminDashboardPage() {
               Platform Administration & Operational Control
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Live telemetry, Ethiopian health governance, literature synchronizer, and application management.
+              Live telemetry, Ethiopian Welbeing governance, literature synchronizer, and application management.
             </p>
           </div>
 
@@ -517,44 +515,40 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-2 pt-2 border-t border-white/5">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-              activeTab === "overview"
-                ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-            }`}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "overview"
+              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
           >
             <Activity size={14} />
             <span>Overview & KPIs</span>
           </button>
           <button
             onClick={() => setActiveTab("services")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-              activeTab === "services"
-                ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-            }`}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "services"
+              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
           >
             <Server size={14} />
             <span>Infrastructure & Telemetry</span>
           </button>
           <button
             onClick={() => setActiveTab("controls")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-              activeTab === "controls"
-                ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-            }`}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "controls"
+              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
           >
             <Sliders size={14} />
             <span>App Management & Controls</span>
           </button>
           <button
             onClick={() => setActiveTab("audit")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-              activeTab === "audit"
-                ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-            }`}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "audit"
+              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
+              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
           >
             <ShieldCheck size={14} />
             <span>Security & Audit Stream</span>
@@ -600,7 +594,7 @@ export default function AdminDashboardPage() {
                 <div>
                   <h2 className="text-sm font-bold text-white flex items-center gap-2">
                     <Activity size={16} className="text-emerald-400" />
-                    <span>Clinical Intake Velocity & Ingestion Trajectory</span>
+                    <span>Debral Intake Velocity & Ingestion Trajectory</span>
                   </h2>
                   <p className="text-[11px] text-slate-400">
                     Calculated against Ethiopian high-altitude nutritional norms
@@ -656,7 +650,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between gap-4 mt-4 pt-3 border-t border-white/5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  <span>Clinical Gap Evaluations (+28.4% WoW)</span>
+                  <span>Debral Gap Evaluations (+28.4% WoW)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
@@ -781,7 +775,7 @@ export default function AdminDashboardPage() {
                   {Math.floor((systemData?.runtime.uptimeSeconds || 0) / 3600)}h{" "}
                   {Math.floor(((systemData?.runtime.uptimeSeconds || 0) % 3600) / 60)}m
                 </div>
-                <span className="text-[10px] text-emerald-400 font-mono">healthy continuous run</span>
+                <span className="text-[10px] text-emerald-400 font-mono">Welbeingy continuous run</span>
               </div>
 
               <div className="p-4 rounded-xl bg-black/40 border border-white/5">
@@ -814,21 +808,21 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Subsystem & Micro-Service health Matrix */}
+          {/* Subsystem & Micro-Service Welbeing Matrix */}
           <div className="glass-panel p-6 rounded-2xl border border-white/10">
             <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
               <Activity size={16} className="text-emerald-400" />
-              <span>Platform Subsystems health Matrix</span>
+              <span>Platform Subsystems Welbeing Matrix</span>
             </h2>
-            <p className="text-[11px] text-slate-400 mb-4">Real-time status of clinical, security, and knowledge engines</p>
+            <p className="text-[11px] text-slate-400 mb-4">Real-time status of Debral, security, and knowledge engines</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {(systemData?.services || [
-                { name: "PostgreSQL Database Engine", status: "healthy", latency: "12ms", type: "core" },
-                { name: "Auth & Session Gateway", status: "healthy", latency: "<5ms", type: "security" },
-                { name: "Literature Synthesis Engine", status: "healthy", latency: "async", type: "intelligence" },
-                { name: "Herb-Drug Safety Gate v3.0", status: "healthy", latency: "<2ms", type: "clinical" },
-                { name: "EFCT 2025 Nutritional Engine", status: "healthy", latency: "<10ms", type: "nutrition" },
+                { name: "PostgreSQL Database Engine", status: "Welbeingy", latency: "12ms", type: "core" },
+                { name: "Auth & Session Gateway", status: "Welbeingy", latency: "<5ms", type: "security" },
+                { name: "Literature Synthesis Engine", status: "Welbeingy", latency: "async", type: "intelligence" },
+                { name: "Herb-Drug Safety Gate v3.0", status: "Welbeingy", latency: "<2ms", type: "Debral" },
+                { name: "EFCT 2025 Nutritional Engine", status: "Welbeingy", latency: "<10ms", type: "nutrition" },
                 { name: "Domain A/B Security Firewall", status: "active", latency: "isolated", type: "compliance" },
               ]).map((svc, idx) => (
                 <div
@@ -867,11 +861,10 @@ export default function AdminDashboardPage() {
                     <span>Maintenance Mode</span>
                   </h2>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${
-                      systemData?.config.maintenance.enabled
-                        ? "bg-rose-950/80 border border-rose-500/40 text-rose-300"
-                        : "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
-                    }`}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${systemData?.config.maintenance.enabled
+                      ? "bg-rose-950/80 border border-rose-500/40 text-rose-300"
+                      : "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
+                      }`}
                   >
                     {systemData?.config.maintenance.enabled ? "Active" : "Normal Operation"}
                   </span>
@@ -889,11 +882,10 @@ export default function AdminDashboardPage() {
               <div className="mt-6 flex gap-3">
                 <button
                   onClick={() => setShowMaintenanceModal(true)}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all shadow ${
-                    systemData?.config.maintenance.enabled
-                      ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                      : "bg-rose-600 hover:bg-rose-500 text-white"
-                  }`}
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all shadow ${systemData?.config.maintenance.enabled
+                    ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                    : "bg-rose-600 hover:bg-rose-500 text-white"
+                    }`}
                 >
                   {systemData?.config.maintenance.enabled ? "Deactivate Maintenance" : "Configure & Activate"}
                 </button>
@@ -909,11 +901,10 @@ export default function AdminDashboardPage() {
                     <span>Global Platform Announcement</span>
                   </h2>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${
-                      systemData?.config.announcement.enabled
-                        ? "bg-amber-950/80 border border-amber-500/40 text-amber-300"
-                        : "bg-white/5 border border-white/10 text-slate-400"
-                    }`}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${systemData?.config.announcement.enabled
+                      ? "bg-amber-950/80 border border-amber-500/40 text-amber-300"
+                      : "bg-white/5 border border-white/10 text-slate-400"
+                      }`}
                   >
                     {systemData?.config.announcement.enabled ? "Broadcasting" : "Disabled"}
                   </span>
@@ -960,11 +951,10 @@ export default function AdminDashboardPage() {
                 </div>
                 <button
                   onClick={handleEmergencyLock}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all flex items-center gap-1.5 ${
-                    systemData?.config.flags.safetyGateStrictness === "strict_lock"
-                      ? "bg-rose-600 text-white"
-                      : "bg-white/10 text-slate-300 hover:bg-white/20"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all flex items-center gap-1.5 ${systemData?.config.flags.safetyGateStrictness === "strict_lock"
+                    ? "bg-rose-600 text-white"
+                    : "bg-white/10 text-slate-300 hover:bg-white/20"
+                    }`}
                 >
                   {systemData?.config.flags.safetyGateStrictness === "strict_lock" ? (
                     <>
@@ -1101,11 +1091,10 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setAnnouncementEnabled(!announcementEnabled)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${
-                    announcementEnabled
-                      ? "bg-emerald-600 text-white border-emerald-500"
-                      : "bg-white/10 text-slate-400 border-white/10"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${announcementEnabled
+                    ? "bg-emerald-600 text-white border-emerald-500"
+                    : "bg-white/10 text-slate-400 border-white/10"
+                    }`}
                 >
                   {announcementEnabled ? "Broadcasting (Active)" : "Hidden (Disabled)"}
                 </button>
@@ -1119,15 +1108,14 @@ export default function AdminDashboardPage() {
                       key={sev}
                       type="button"
                       onClick={() => setAnnouncementSeverity(sev)}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize border ${
-                        announcementSeverity === sev
-                          ? sev === "critical"
-                            ? "bg-rose-600 text-white border-rose-500"
-                            : sev === "warning"
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize border ${announcementSeverity === sev
+                        ? sev === "critical"
+                          ? "bg-rose-600 text-white border-rose-500"
+                          : sev === "warning"
                             ? "bg-amber-600 text-white border-amber-500"
                             : "bg-sky-600 text-white border-sky-500"
-                          : "bg-white/5 text-slate-400 border-white/10"
-                      }`}
+                        : "bg-white/5 text-slate-400 border-white/10"
+                        }`}
                     >
                       {sev}
                     </button>
@@ -1186,7 +1174,7 @@ export default function AdminDashboardPage() {
                 rows={3}
                 value={maintenanceMessage}
                 onChange={(e) => setMaintenanceMessage(e.target.value)}
-                placeholder="The Ethiopian health Platform is undergoing scheduled regulatory updates..."
+                placeholder="The Ethiopian Welbeing Platform is undergoing scheduled regulatory updates..."
                 className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-rose-500/50"
               />
             </div>

@@ -24,4 +24,4 @@ export const jsonb = json;
 export const numeric = decimal;
 export const integer = int;
 export const real = float;
-export { boolean, date, primaryKey, text, timestamp, varchar };
+export { boolean, date, decimal, primaryKey, text, timestamp, varchar };

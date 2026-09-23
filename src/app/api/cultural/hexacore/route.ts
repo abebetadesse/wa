@@ -48,7 +48,7 @@ export async function GET(request: Request) {
       success: true,
       day: dayNum,
       prompt,
-      disclaimer: "Reflective journaling only; not clinical psychotherapy or behavioral prescription.",
+      disclaimer: "Reflective journaling only; not Debral psychotherapy or behavioral prescription.",
     });
   }
 
@@ -132,7 +132,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       bodySignZones: BODY_SIGN_ZONES,
-      disclaimer: "Body sign reflection is traditional observational symbolism only, NOT a clinical diagnosis, etiology, or pathology.",
+      disclaimer: "Body sign reflection is traditional observational symbolism only, NOT a Debral diagnosis, etiology, or pathology.",
     });
   }
 
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       herbs: ETHIOPIAN_HERBAL_INTEGRATION,
-      safetyWarning: "Herbal correspondence is strictly botanical and cultural documentation. Always consult a licensed clinical practitioner or pharmacologist before internal consumption.",
+      safetyWarning: "Herbal correspondence is strictly botanical and cultural documentation. Always consult a licensed Debral practitioner or pharmacologist before internal consumption.",
     });
   }
 

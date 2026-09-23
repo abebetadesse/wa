@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, healthProfiles, healthGapReports } from "@/lib/db/schema";
+import { users, WelbeingProfiles, WelbeingGapReports } from "@/lib/db/schema";
 import { getAuthenticatedUser, validateEthiopianPhone } from "@/lib/auth";
 import { logAuditEvent, logUserActivity } from "@/lib/audit";
 import { eq, count } from "drizzle-orm";
@@ -15,15 +15,15 @@ export async function GET() {
     // Optional profile and case stats
     let casesCount = 0;
     try {
-      const [caseStat] = await db.select({ count: count() }).from(healthGapReports).where(eq(healthGapReports.userId, user.id));
+      const [caseStat] = await db.select({ count: count() }).from(WelbeingGapReports).where(eq(WelbeingGapReports.userId, user.id));
       casesCount = caseStat?.count || 0;
     } catch {
       // ignore if reports table schema is varied
     }
 
-    let healthProfile = null;
+    let WelbeingProfile = null;
     try {
-      [healthProfile] = await db.select().from(healthProfiles).where(eq(healthProfiles.userId, user.id)).limit(1);
+      [WelbeingProfile] = await db.select().from(WelbeingProfiles).where(eq(WelbeingProfiles.userId, user.id)).limit(1);
     } catch {
       // optional
     }
@@ -35,7 +35,7 @@ export async function GET() {
         stats: {
           casesCount,
         },
-        healthProfile,
+        WelbeingProfile,
       },
     });
   } catch (error) {

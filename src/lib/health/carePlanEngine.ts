@@ -1,6 +1,6 @@
 /**
  * Care Plan Generator
- * Inspired by NaraCare.AI - Personalized AI-Driven health Journeys
+ * Inspired by NaraCare.AI - Personalized AI-Driven Welbeing Journeys
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   CarePlanWeek,
   CarePlanGoal,
   CarePlanIntervention,
-} from "./healthTypes";
+} from "./WelbeingTypes";
 
 function generateWeeklyPlan(
   week: number,
@@ -104,10 +104,10 @@ function generateWeeklyPlan(
         phase === "foundation"
           ? "Establish a regular 3-meal rhythm aligned with Ethiopian solar time. Emphasize fermented teff injera and cooked legumes."
           : phase === "restore"
-          ? "Introduce targeted micronutrient-rich foods based on constitution. Emphasize iron, calcium, and anti-inflammatory spices."
-          : phase === "optimize"
-          ? "Fine-tune meal timing. Implement intermittent fasting aligned with cultural fasting schedule if constitution permits."
-          : "Seasonal dietary adaptation — adjust based on kiremt/bega transition.",
+            ? "Introduce targeted micronutrient-rich foods based on constitution. Emphasize iron, calcium, and anti-inflammatory spices."
+            : phase === "optimize"
+              ? "Fine-tune meal timing. Implement intermittent fasting aligned with cultural fasting schedule if constitution permits."
+              : "Seasonal dietary adaptation — adjust based on kiremt/bega transition.",
       frequency: "daily",
       duration: `${phase === "foundation" ? "2 weeks" : "ongoing"}`,
       timing: "All three meals",
@@ -123,8 +123,8 @@ function generateWeeklyPlan(
         doshaType.includes("Vata")
           ? "Begin ashwagandha (Withania) tonic protocol for nervous system grounding. Pair with warm sesame milk."
           : doshaType.includes("Pitta")
-          ? "Begin amla (Indian gooseberry) and coriander cooling protocol. Add hibiscus infusion daily."
-          : "Begin triphala digestive cleanse: 1g powder in warm water at bedtime.",
+            ? "Begin amla (Indian gooseberry) and coriander cooling protocol. Add hibiscus infusion daily."
+            : "Begin triphala digestive cleanse: 1g powder in warm water at bedtime.",
       frequency: "daily",
       duration: "4 weeks minimum",
       timing: "As specified per herb",
@@ -140,8 +140,8 @@ function generateWeeklyPlan(
         doshaType.includes("Kapha")
           ? "Vigorous daily movement: 30–45 min brisk walking or jogging, 5 days/week."
           : doshaType.includes("Pitta")
-          ? "Moderate swimming or cycling, 30 min, 4 days/week. Avoid competitive intensity."
-          : "Gentle yoga, Qi Gong, or daily walking 20–30 min. Prioritize breath-body connection.",
+            ? "Moderate swimming or cycling, 30 min, 4 days/week. Avoid competitive intensity."
+            : "Gentle yoga, Qi Gong, or daily walking 20–30 min. Prioritize breath-body connection.",
       frequency: "5x per week",
       duration: "30–45 minutes",
       timing: "Morning preferred",
@@ -180,10 +180,10 @@ function generateWeeklyPlan(
       phase === "foundation"
         ? "Build daily rhythm & baseline nutrition"
         : phase === "restore"
-        ? "Target constitutional imbalances & micronutrient gaps"
-        : phase === "optimize"
-        ? "Refine timing, fasting integration & advanced protocols"
-        : "Long-term maintenance & seasonal adaptation",
+          ? "Target constitutional imbalances & micronutrient gaps"
+          : phase === "optimize"
+            ? "Refine timing, fasting integration & advanced protocols"
+            : "Long-term maintenance & seasonal adaptation",
     goals: primaryGoals.slice(0, 3),
     dailySchedule: {
       morning,
@@ -212,8 +212,8 @@ export function generateCarePlan(
 ): PersonalizedCarePlan {
   const totalWeeks =
     duration === "4-weeks" ? 4 :
-    duration === "8-weeks" ? 8 :
-    duration === "12-weeks" ? 12 : 24;
+      duration === "8-weeks" ? 8 :
+        duration === "12-weeks" ? 12 : 24;
 
   const weeklyPlans: CarePlanWeek[] = [];
   for (let w = 1; w <= totalWeeks; w++) {
@@ -241,13 +241,13 @@ export function generateCarePlan(
     duration,
     currentPhase: "foundation",
     currentWeek: 1,
-    primaryhealthGoals: primaryGoals,
+    primaryWelbeingGoals: primaryGoals,
     constitution: profile,
     weeklyPlans,
     overallProgress: 0,
     aiInsight: `Your ${profile.dosha.primaryDosha} Prakriti combined with ${profile.humor.dominantHumor === "esat" ? "Esat (Fire)" : profile.humor.dominantHumor === "afere" ? "Afere (Earth)" : profile.humor.dominantHumor === "nifas" ? "Nifas (Air)" : "May (Water)"} humoral dominance points to specific protocols in your first weeks. Focus on establishing rhythm before refinement — the Ethiopian wisdom of "meser qen" (foundation days) applies directly.`,
     nextMilestone: "Complete Week 1 baseline: establish 3-meal rhythm, begin morning oil massage, add fermented foods daily.",
     disclaimer:
-      "This care plan is a wellness and lifestyle guidance tool. It does not replace medical care. Always consult your healthcare provider before making significant dietary or lifestyle changes, especially regarding herbal supplements and fasting protocols.",
+      "This care plan is a wellness and lifestyle guidance tool. It does not replace medical care. Always consult your Welbeingcare provider before making significant dietary or lifestyle changes, especially regarding herbal supplements and fasting protocols.",
   };
 }

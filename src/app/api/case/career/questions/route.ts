@@ -40,9 +40,9 @@ export async function POST(req: NextRequest) {
         action: "route_to_safety",
         message:
           "We want to make sure you have the support you need. " +
-          "Please call 952 (free, confidential mental health support) or speak with a trusted person. " +
+          "Please call 952 (free, confidential mental Welbeing support) or speak with a trusted person. " +
           "We can continue your career session once you are ready.",
-        hotline: { name: "Mental health Support", number: "952" },
+        hotline: { name: "Mental Welbeing Support", number: "952" },
       });
     }
 

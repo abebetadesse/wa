@@ -24,7 +24,7 @@ export const AWUDE_NEGEST_60_CATEGORIES = [
   { id: "business", en: "Commerce & Trading Profits", am: "ንግድና ትርፍ" },
   { id: "love", en: "Love & Affectionate Bond", am: "ፍቅርና መዋደድ" },
   { id: "career", en: "Rank & Public Honor", am: "ሹመት፣ ማዕረግና ሥራ" },
-  { id: "health", en: "Vitality & Bodily Temperament", am: "ጤናና የሰውነት ባሕርይ" },
+  { id: "Welbeing", en: "Vitality & Bodily Temperament", am: "ጤናና የሰውነት ባሕርይ" },
   { id: "rain", en: "Seasonal Rains & Blessing", am: "ዝናብና በረከት" },
   { id: "harvest", en: "Crops & Agricultural Yield", am: "እህልና መከር" },
   { id: "lost_property", en: "Recovery of Lost Goods", am: "የጠፋ ዕቃ መመለስ" },
@@ -40,7 +40,7 @@ export const AWUDE_NEGEST_60_CATEGORIES = [
   { id: "debts", en: "Release from Debt", am: "ዕዳና ማገገም" },
   { id: "craftsmanship", en: "Artisanship & Building", am: "ዕደ ጥበብና ሥራ" },
   { id: "secrets", en: "Discovery of Hidden Truths", am: "የተሰወረ ምሥጢር መገለጥ" },
-  { id: "livestock", en: "Cattle & Herd health", am: "ከብቶችና እንስሳት ደኅንነት" },
+  { id: "livestock", en: "Cattle & Herd Welbeing", am: "ከብቶችና እንስሳት ደኅንነት" },
   { id: "drought_defense", en: "Protection from Scarcity", am: "ድርቅን መከላከል" },
   { id: "reconciliation", en: "Reconciliation of Kinsmen", am: "የዘመድ ዕርቅ" },
   { id: "peace_of_mind", en: "Inner Tranquility", am: "የልብ ዕረፍትና ሰላም" },
@@ -57,7 +57,7 @@ export const AWUDE_NEGEST_60_CATEGORIES = [
   { id: "generosity", en: "Almsgiving & Multiplication", am: "ምጽዋትና በረከት" },
   { id: "leadership", en: "Community Guidance", am: "ሽምግልናና መሪነት" },
   { id: "barrenness_reversal", en: "Fruitfulness of the Womb", am: "መካንነትን መሻር" },
-  { id: "eye_health", en: "Clarity of Vision & Eye Care", am: "የዐይን ብርሃን" },
+  { id: "eye_Welbeing", en: "Clarity of Vision & Eye Care", am: "የዐይን ብርሃን" },
   { id: "joint_aches", en: "Easing Bone & Joint Imbalance", am: "የአጥንትና የቁርጥማት ቅለት" },
   { id: "respiratory_breath", en: "Free Breath & Mountain Air", am: "የትንፋሽ ሰላም" },
   { id: "fever_reduction", en: "Balancing Internal Fire", am: "የእሳት ሙቀት ማቀዝቀዝ" },
@@ -270,7 +270,7 @@ export function calculateFidelWeight(text: string): number {
 /**
  * Däbtära Manuscript Healing Wisdom Prescriptions
  */
-export function getDabtaraWisdom(category: string = "health"): DabtaraManuscriptWisdom {
+export function getDabtaraWisdom(category: string = "Welbeing"): DabtaraManuscriptWisdom {
   return {
     title: "Sacred Healing Scroll of Archangel Michael & Raphael (መጽሐፈ ፈውስ)",
     geezTitle: "ክታበ ፈውስ ወመድኃኒት",
@@ -286,7 +286,7 @@ export function getDabtaraWisdom(category: string = "health"): DabtaraManuscript
     },
     seasonalPacing: {
       seasonName: "Bega (Highland Dry & Sunny Season)",
-      healthGuidance: "The dry solar wind increases internal warmth; balance with golden flax infusions and cooling evening footbaths.",
+      WelbeingGuidance: "The dry solar wind increases internal warmth; balance with golden flax infusions and cooling evening footbaths.",
       botanicalInfusion: "Freshly crushed Damakesse leaves infused in lukewarm spring water.",
     },
   };

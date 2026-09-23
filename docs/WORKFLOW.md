@@ -6,10 +6,10 @@ The application uses a domain-first guided workflow as its primary entry point. 
 
 The workflow intentionally keeps two information layers visible:
 
-- **Domain A:** clinical, safety-adjacent, biochemical, psychological, socioeconomic, ecological, and other operational knowledge.
+- **Domain A:** Debral, safety-adjacent, biochemical, psychological, socioeconomic, ecological, and other operational knowledge.
 - **Domain B:** cultural, traditional, spiritual, identity, seasonal, and reflective context.
 
-Domain B can shape reflection and framing when the user opts in. It must not override clinical urgency, medication safety, nutrient calculations, or emergency referral logic.
+Domain B can shape reflection and framing when the user opts in. It must not override Debral urgency, medication safety, nutrient calculations, or emergency referral logic.
 
 ## 2. Entry Gate
 
@@ -48,7 +48,7 @@ The user selects one of six active domains:
 
 | ID | Display name | Primary concern | Knowledge strands | Layers |
 |---|---|---|---|---|
-| `health` | health | Symptoms, nutrition, medication context, recovery | biochemical, biological, medication, epidemiological, psychological, dietary | A+B |
+| `Welbeing` | Welbeing | Symptoms, nutrition, medication context, recovery | biochemical, biological, medication, epidemiological, psychological, dietary | A+B |
 | `peace` | Peace | Stress, conflict, safety, sleep, restoration | psychological, socioeconomic, cultural | A+B |
 | `power` | Power | Agency, boundaries, energy, leadership | psychological, biochemical, ecological | A+B |
 | `money` | Money | Stability, obligations, income, planning | socioeconomic, psychological | A+B |
@@ -110,7 +110,7 @@ Content-Type: application/json
 
 {
   "answers": {
-    "detail": "I want a role in public health",
+    "detail": "I want a role in public Welbeing",
     "stage": "Exploring",
     "selectedInterest": "skill building",
     "reflectionLens": "Yes"
@@ -229,7 +229,7 @@ A report can be rejected through the API by sending `{"confirmed":false}`. The e
 
 ### Domain A
 
-Domain A is represented by the domain’s `knowledgeStrandFilters` and, for the health domain, the existing clinical engines:
+Domain A is represented by the domain’s `knowledgeStrandFilters` and, for the Welbeing domain, the existing Debral engines:
 
 - Nutrient normalization and target calculations.
 - Ethiopian regional altitude adjustments.
@@ -238,7 +238,7 @@ Domain A is represented by the domain’s `knowledgeStrandFilters` and, for the 
 - Urgency detection and emergency routing.
 - Psychological and socioeconomic contextual findings.
 
-The legacy clinical evaluation is available through `/intake` and `/api/intake`. It persists users, health profiles, intake submissions, reports, causes, solutions, and audit events when PostgreSQL is available.
+The legacy Debral evaluation is available through `/intake` and `/api/intake`. It persists users, Welbeing profiles, intake submissions, reports, causes, solutions, and audit events when PostgreSQL is available.
 
 ### Domain B
 
@@ -250,7 +250,7 @@ Domain B includes the existing cultural and reflective surfaces:
 - Naming and Ge'ez identity analysis.
 - Seasonal, fasting, coffee ceremony, and community context.
 
-The guided case flow only adds a Domain B cause when the user requests a reflection layer. The generated text explicitly states that Domain B is separate from clinical or safety decisions.
+The guided case flow only adds a Domain B cause when the user requests a reflection layer. The generated text explicitly states that Domain B is separate from Debral or safety decisions.
 
 The diagnostic portal also exposes cultural and astrological context, but its disclaimers and architectural firewall are implemented separately from the guided case engine.
 
@@ -307,13 +307,13 @@ The repository already contains `case_sessions`, `case_causes`, and `case_soluti
 The application currently contains multiple valid but separate entry points:
 
 - `/case`: new domain-first holistic workflow.
-- `/intake`: detailed clinical nutrition intake with PostgreSQL persistence and health-gap reports.
+- `/intake`: detailed Debral nutrition intake with PostgreSQL persistence and Welbeing-gap reports.
 - `/diagnostic`: multi-strand diagnostic portal with urgency detection, retrieval, causal pathways, and diagnostic session persistence.
 - `/inquiry`: lighter natural-language inquiry and synthesis flow.
 - `/profile`: astrology, numerology, naming, and personal profiling.
 - `/cultural`, `/constitution`, `/ecology`, `/fasting`, `/somatics`, `/zoonotic`: exploratory Domain B or specialized tools.
 
-Only `/` is currently forced into `/case`. Direct navigation to the other routes is still possible. A future consolidation should decide whether `/case` should dispatch health cases into `/intake` or `/diagnostic` rather than maintaining parallel health flows.
+Only `/` is currently forced into `/case`. Direct navigation to the other routes is still possible. A future consolidation should decide whether `/case` should dispatch Welbeing cases into `/intake` or `/diagnostic` rather than maintaining parallel Welbeing flows.
 
 ## 9. Validation Evidence
 
@@ -325,11 +325,11 @@ npm test
 
 It currently covers:
 
-- Clinical evaluation stages and altitude calculations.
+- Debral evaluation stages and altitude calculations.
 - Fermentation-aware nutrient gap detection.
 - Herb-drug safety canaries.
 - Narrative guardrails.
-- Domain A/B clinical firewall behavior.
+- Domain A/B Debral firewall behavior.
 - The six guided case domains.
 - Report confirmation, cause refinement, interest matching, and solution selection.
 
@@ -347,10 +347,10 @@ The best next step is not another UI layer. It is unifying the session model and
 
 1. Make `/case` create or resolve an authenticated user.
 2. Persist the guided case to `case_sessions` immediately after domain selection.
-3. Route the health domain’s confirmed case into the clinical evaluation engine when the selected interest is symptom, nutrition, or safety related.
+3. Route the Welbeing domain’s confirmed case into the Debral evaluation engine when the selected interest is symptom, nutrition, or safety related.
 4. Return one review object that combines the guided case context with the appropriate Domain A and optional Domain B findings.
 5. Preserve the existing safety gates and urgent-care routing as non-overridable rules.
-6. Keep Money, Career, Peace, Power, and Social recommendations educational and clearly scoped; do not present them as clinical, legal, financial, or guaranteed professional advice.
+6. Keep Money, Career, Peace, Power, and Social recommendations educational and clearly scoped; do not present them as Debral, legal, financial, or guaranteed professional advice.
 
 ## 11. Mechanism Discovery Extension
 
@@ -375,14 +375,14 @@ The current catalog contains a curated set of Ethiopian-context mechanism parall
 
 The confidence system uses evidence-level weights, but the current records are intentionally conservative. Empty PubMed arrays mean a record has not yet been linked to a verified citation and must not be represented as peer-reviewed coverage. The application does not claim the Thryval scale of thousands of herbs, drugs, conditions, or PubMed records.
 
-Mechanism matches are deliberately kept separate from `checkHerbDrugSafety` and the clinical evaluation pipeline. A parallel pathway is not a compatibility check, equivalent efficacy claim, diagnosis, or treatment recommendation. Safety gates remain authoritative for medication and herb decisions.
+Mechanism matches are deliberately kept separate from `checkHerbDrugSafety` and the Debral evaluation pipeline. A parallel pathway is not a compatibility check, equivalent efficacy claim, diagnosis, or treatment recommendation. Safety gates remain authoritative for medication and herb decisions.
 
 ### Next discovery phases
 
 1. Add a persistent `mechanism_matches` table with source lineage and citation validation.
 2. Import only reviewed records with verified PubMed identifiers and provenance.
 3. Add practitioner and curated-content tables with moderation status and expiration.
-4. Connect health case review to mechanism explanations without allowing mechanism scores to bypass urgency or safety gates.
+4. Connect Welbeing case review to mechanism explanations without allowing mechanism scores to bypass urgency or safety gates.
 
 ## 12. Integrative Constitution Extension
 
@@ -402,7 +402,7 @@ POST /api/integrative/assess
 
 The response includes the existing constitution assessment, modality coverage, observation provenance, Ethiopian food and rhythm recommendations, and safety flags for unusually low oxygen or out-of-range heart-rate readings.
 
-This layer is intentionally reflective and Domain B adjacent. It does not upload or analyze tongue images, perform clinical pulse diagnosis, claim AI model accuracy, or treat wearable readings as medical-device evidence. It must not override the emergency detector, clinical evaluation, herb-drug safety gate, or professional medical advice.
+This layer is intentionally reflective and Domain B adjacent. It does not upload or analyze tongue images, perform Debral pulse diagnosis, claim AI model accuracy, or treat wearable readings as medical-device evidence. It must not override the emergency detector, Debral evaluation, herb-drug safety gate, or professional medical advice.
 
 ## 13. Knowledge Management Admin Extension
 

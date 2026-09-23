@@ -6,6 +6,6 @@ export function GET() {
     success: true,
     sources: ETHIOPIAN_MANUSCRIPT_SOURCES,
     disclaimer:
-      "These user-supplied manuscripts are cultural and historical references. They are not clinical evidence, medical instructions, or a substitute for qualified care. Full text remains source-controlled and requires cultural and rights review before publication.",
+      "These user-supplied manuscripts are cultural and historical references. They are not Debral evidence, medical instructions, or a substitute for qualified care. Full text remains source-controlled and requires cultural and rights review before publication.",
   });
 }

@@ -1,7 +1,7 @@
 import {
   HumoralElement,
   IntegratedPersonalProfile,
-  SeasonalhealthPattern,
+  SeasonalWelbeingPattern,
 } from "../types";
 import { buildAstrologicalProfile } from "../astrology/chartCalculator";
 import { buildNumerologyProfile } from "../numerology/numberCalculator";
@@ -48,26 +48,26 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   // Composite constitutional type title
   const constitutionalType = `${astro.sunSign} Sun • ${astro.ethiopianZodiacSign.geezName} • Life Path ${num.lifePath.number} (${num.lifePath.name})`;
 
-  // Primary health Risks synthesis
-  const primaryhealthRisks = Array.from(
+  // Primary Welbeing Risks synthesis
+  const primaryWelbeingRisks = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.healthAssociations.potentialVulnerabilities || [],
-      ...num.lifePath.healthPatterns.vulnerabilities,
-      naming.givenNameProfile.healthIdentityCorrelation.psychosomaticTendency,
+      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.WelbeingAssociations.potentialVulnerabilities || [],
+      ...num.lifePath.WelbeingPatterns.vulnerabilities,
+      naming.givenNameProfile.WelbeingIdentityCorrelation.psychosomaticTendency,
     ])
   ).slice(0, 5);
 
   // Enduring Strengths synthesis
   const enduringStrengths = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.healthAssociations.vitalityStrengths || [],
-      ...num.lifePath.healthPatterns.strengths,
-      naming.givenNameProfile.healthIdentityCorrelation.balancingVirtue,
+      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.WelbeingAssociations.vitalityStrengths || [],
+      ...num.lifePath.WelbeingPatterns.strengths,
+      naming.givenNameProfile.WelbeingIdentityCorrelation.balancingVirtue,
     ])
   ).slice(0, 5);
 
-  // Seasonal health Patterns (Ethiopian 4 Seasons)
-  const seasonalPatterns: SeasonalhealthPattern[] = [
+  // Seasonal Welbeing Patterns (Ethiopian 4 Seasons)
+  const seasonalPatterns: SeasonalWelbeingPattern[] = [
     {
       season: "Kiremt (Rainy)",
       ethiopianMonths: "Hamle & Nehase (July – August)",
@@ -141,15 +141,15 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   const dietary = {
     therapeuticPrinciples: isFireOrAir
       ? [
-          "Cultivate internal cooling and hydration to temper metabolic heat and nervous restlessness.",
-          "Balance piquant Berbere stews with soothing probiotic accompaniments (Ayib cottage cheese).",
-          "Ensure consistent meal timing to prevent hypoglycemia-triggered irritability.",
-        ]
+        "Cultivate internal cooling and hydration to temper metabolic heat and nervous restlessness.",
+        "Balance piquant Berbere stews with soothing probiotic accompaniments (Ayib cottage cheese).",
+        "Ensure consistent meal timing to prevent hypoglycemia-triggered irritability.",
+      ]
       : [
-          "Cultivate metabolic warmth and digestive stimulation to overcome cold sluggish motility.",
-          "Favor warm pungent spices (Zingibil, Korerima, Black Pepper) to ignite metabolic fire.",
-          "Prioritize hot, freshly prepared meals over cold or dry snacks.",
-        ],
+        "Cultivate metabolic warmth and digestive stimulation to overcome cold sluggish motility.",
+        "Favor warm pungent spices (Zingibil, Korerima, Black Pepper) to ignite metabolic fire.",
+        "Prioritize hot, freshly prepared meals over cold or dry snacks.",
+      ],
     favoredEthiopianFoods: [
       "Authentic Fermented Injera (Eragrostis tef - high prebiotic iron and zinc)",
       "Habesha Gomen (Highland collard greens rich in calcium, folate, and carotenoids)",
@@ -192,7 +192,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   const mindBodyLifestyle = [
     `Circadian Rhythm: Establish a fixed morning wake time aligned with highland dawn (${astro.sunSign} solar vitality).`,
     `Physical Pacing: Balance intense executive exertion (Number ${num.lifePath.number}) with daily restorative 20-minute silent walks.`,
-    `Emotional Balance: Actively express emotional boundaries to counteract '${naming.givenNameProfile.healthIdentityCorrelation.psychosomaticTendency}'.`,
+    `Emotional Balance: Actively express emotional boundaries to counteract '${naming.givenNameProfile.WelbeingIdentityCorrelation.psychosomaticTendency}'.`,
     `Somatic Therapy: Incorporate warm oil rubs (Sesame or castor oil) into the lower back and knees during cold Bega evenings.`,
   ];
 
@@ -228,7 +228,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
       constitutionalType,
       humoralDominance: finalHumor,
       vitalityScore,
-      primaryhealthRisks,
+      primaryWelbeingRisks,
       enduringStrengths,
       seasonalPatterns,
       recommendations: {

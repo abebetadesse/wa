@@ -9,8 +9,8 @@ import {
   TongueDiagnosisResult,
   PulseQuality,
   PulseDiagnosisResult,
-} from "@/lib/health/healthTypes";
-import { analyzeTongue, analyzePulse } from "@/lib/health/tcmDiagnosisEngine";
+} from "@/lib/Welbeing/WelbeingTypes";
+import { analyzeTongue, analyzePulse } from "@/lib/Welbeing/tcmDiagnosisEngine";
 
 type DiagMode = "tongue" | "pulse";
 
@@ -54,7 +54,7 @@ export default function TCMDiagnosticView() {
           <div className="badge badge-safe mb-2">Huazhen TCM · Visual Diagnosis</div>
           <h2 className="text-xl font-bold text-white">AI-Guided TCM & Ethiopian Humoral Assessment</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Self-reported tongue and pulse analysis cross-mapped with Ethiopian humoral medicine. Not a clinical diagnosis.
+            Self-reported tongue and pulse analysis cross-mapped with Ethiopian humoral medicine. Not a Debral diagnosis.
           </p>
         </div>
         <div className="flex gap-2">
@@ -89,11 +89,11 @@ export default function TCMDiagnosticView() {
                   style={{
                     backgroundColor:
                       tongueColor === "pale" ? "#f8b4b4" :
-                      tongueColor === "pink" ? "#f472b6" :
-                      tongueColor === "red" ? "#ef4444" :
-                      tongueColor === "deep_red" ? "#991b1b" :
-                      tongueColor === "purple" ? "#7c3aed" :
-                      "#6b21a8",
+                        tongueColor === "pink" ? "#f472b6" :
+                          tongueColor === "red" ? "#ef4444" :
+                            tongueColor === "deep_red" ? "#991b1b" :
+                              tongueColor === "purple" ? "#7c3aed" :
+                                "#6b21a8",
                     filter: tongueMoisture === "dry" ? "brightness(0.85)" : "brightness(1)",
                     transform: tongueShape === "swollen" ? "scaleX(1.2) scaleY(1.1)" : tongueShape === "thin_narrow" ? "scaleX(0.8)" : "scale(1)",
                   }}
@@ -104,8 +104,8 @@ export default function TCMDiagnosticView() {
                       style={{
                         backgroundColor:
                           tongueCoating.includes("white") ? "rgba(255,255,255,0.6)" :
-                          tongueCoating.includes("yellow") ? "rgba(255,255,100,0.5)" :
-                          "rgba(80,80,80,0.5)",
+                            tongueCoating.includes("yellow") ? "rgba(255,255,100,0.5)" :
+                              "rgba(80,80,80,0.5)",
                       }}
                     />
                   )}
@@ -263,7 +263,7 @@ export default function TCMDiagnosticView() {
                   ))}
                 </div>
 
-                <p className="text-sm text-slate-300 leading-relaxed">{tongueResult.clinicalSignificance}</p>
+                <p className="text-sm text-slate-300 leading-relaxed">{tongueResult.DebralSignificance}</p>
               </div>
 
               <div className="glass-panel p-5">

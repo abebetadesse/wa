@@ -214,7 +214,7 @@ export const COFFEE_CEREMONY_ROUNDS: CoffeeCeremonyStage[] = [
     roundNameEnglish: "The Third Round (The Sacred Blessing)",
     extractionOrder: 3,
     roastSensoryPrompt: "The final, gentle extraction—light, sweet, and comforting. Enjoy with freshly popped white popcorn (ፈንዲሻ).",
-    mindfulnessIntention: "Blessing and peace: receive the benediction of elders for prosperity, health, and a calm spirit.",
+    mindfulnessIntention: "Blessing and peace: receive the benediction of elders for prosperity, Welbeing, and a calm spirit.",
     suggestedDurationMinutes: 10,
   },
 ];

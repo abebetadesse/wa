@@ -231,5 +231,5 @@ test("Compliance Disclaimers", () => {
   assert.ok(PLATFORM_DISCLAIMERS.awudeNegest.length > 20);
   assert.ok(PLATFORM_DISCLAIMERS.aiChat.length > 20);
   assert.ok(PLATFORM_DISCLAIMERS.compatibility.length > 20);
-  assert.ok(PLATFORM_DISCLAIMERS.health.length > 20);
+  assert.ok(PLATFORM_DISCLAIMERS.Welbeing.length > 20);
 });

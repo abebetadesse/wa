@@ -16,12 +16,12 @@ import { extractStructuredData } from "./processors/abstractExtractor";
 import { llmAugmentExtraction } from "./processors/llmSummarizer";
 import { mapArticleToStrands } from "./processors/strandMapper";
 
-const GREEN  = "\x1b[32m";
+const GREEN = "\x1b[32m";
 const YELLOW = "\x1b[33m";
-const CYAN   = "\x1b[36m";
-const RED    = "\x1b[31m";
-const RESET  = "\x1b[0m";
-const BOLD   = "\x1b[1m";
+const CYAN = "\x1b[36m";
+const RED = "\x1b[31m";
+const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
 
 function box(label: string, color = CYAN) {
   const line = "═".repeat(60);
@@ -40,9 +40,9 @@ async function runDryTest() {
   console.log(`  ${CYAN}BionicGPT${RESET} (primary) → ${CYAN}Gemini${RESET} (fallback) → Regex (baseline)`);
   console.log(`  Time: ${new Date().toLocaleString("en-ET", { timeZone: "Africa/Addis_Ababa" })}\n`);
 
-  const pubmed    = new PubMedSource();
+  const pubmed = new PubMedSource();
   const europePmc = new EuropePmcSource();
-  const whoGho    = new WhoGhoSource();
+  const whoGho = new WhoGhoSource();
 
   // ── TEST 1: Epidemiological — PubMed ──────────────────────────────────────
   box("TEST 1 · Epidemiological · PubMed: 'malaria Ethiopia'", GREEN);
@@ -61,26 +61,26 @@ async function runDryTest() {
       // Stage 1 — Regex
       const regexData = extractStructuredData(a, "epidemiological");
       console.log(`\n     ${YELLOW}── Stage 1: Regex extraction ──${RESET}`);
-      fieldRow("prevalence",  regexData.prevalence);
-      fieldRow("incidence",   regexData.incidence);
-      fieldRow("mortality",   regexData.mortality);
+      fieldRow("prevalence", regexData.prevalence);
+      fieldRow("incidence", regexData.incidence);
+      fieldRow("mortality", regexData.mortality);
       fieldRow("endemic_areas", regexData.endemic_areas?.join(", "));
-      fieldRow("risk_factors",  regexData.risk_factors?.join("; "));
+      fieldRow("risk_factors", regexData.risk_factors?.join("; "));
       console.log(`     confidence: ${((regexData.confidence ?? 0) * 100).toFixed(0)}%`);
 
       // Stage 2 — LLM augmentation
       console.log(`\n     ${CYAN}── Stage 2: BionicGPT / Gemini augmentation ──${RESET}`);
       try {
         const augmented = await llmAugmentExtraction(a.abstract, "epidemiological", regexData);
-        fieldRow("prevalence",        augmented.prevalence);
-        fieldRow("incidence",         augmented.incidence);
-        fieldRow("mortality",         augmented.mortality);
-        fieldRow("r0",                augmented.r0);
-        fieldRow("mmr",               augmented.mmr);
-        fieldRow("seroprevalence",    augmented.seroprevalence);
-        fieldRow("high_risk_groups",  augmented.high_risk_groups?.join("; "));
+        fieldRow("prevalence", augmented.prevalence);
+        fieldRow("incidence", augmented.incidence);
+        fieldRow("mortality", augmented.mortality);
+        fieldRow("r0", augmented.r0);
+        fieldRow("mmr", augmented.mmr);
+        fieldRow("seroprevalence", augmented.seroprevalence);
+        fieldRow("high_risk_groups", augmented.high_risk_groups?.join("; "));
         fieldRow("seasonal_patterns", augmented.seasonal_patterns?.join(", "));
-        fieldRow("key_finding",       augmented.key_finding_summary);
+        fieldRow("key_finding", augmented.key_finding_summary);
         console.log(`     confidence: ${GREEN}${((augmented.confidence ?? 0) * 100).toFixed(0)}%${RESET} (after LLM boost)`);
       } catch (e) {
         console.log(`     ${RED}LLM unavailable: ${(e as Error).message}${RESET}`);
@@ -114,19 +114,19 @@ async function runDryTest() {
       console.log(`\n     ${YELLOW}── Stage 1: Regex ──${RESET}`);
       fieldRow("bioavailability", regexData.bioavailability);
       fieldRow("phytate_reduction", regexData.phytate_reduction);
-      fieldRow("nutrients",       regexData.nutrients?.join(", "));
-      fieldRow("ic50",            regexData.ic50);
+      fieldRow("nutrients", regexData.nutrients?.join(", "));
+      fieldRow("ic50", regexData.ic50);
 
       console.log(`\n     ${CYAN}── Stage 2: LLM ──${RESET}`);
       try {
         const augmented = await llmAugmentExtraction(a.abstract, "biochemical", regexData);
         fieldRow("bioavailability", augmented.bioavailability);
-        fieldRow("ic50",            augmented.ic50);
-        fieldRow("tpc",             augmented.tpc);
-        fieldRow("molar_ratios",    augmented.molar_ratios);
-        fieldRow("cyp450",          augmented.cyp450_inhibition);
-        fieldRow("nutrients",       augmented.nutrients?.join(", "));
-        fieldRow("key_finding",     augmented.key_finding_summary);
+        fieldRow("ic50", augmented.ic50);
+        fieldRow("tpc", augmented.tpc);
+        fieldRow("molar_ratios", augmented.molar_ratios);
+        fieldRow("cyp450", augmented.cyp450_inhibition);
+        fieldRow("nutrients", augmented.nutrients?.join(", "));
+        fieldRow("key_finding", augmented.key_finding_summary);
         console.log(`     confidence: ${GREEN}${((augmented.confidence ?? 0) * 100).toFixed(0)}%${RESET}`);
       } catch (e) {
         console.log(`     ${RED}LLM unavailable: ${(e as Error).message}${RESET}`);
@@ -141,7 +141,7 @@ async function runDryTest() {
   box("TEST 3 · Cultural · Direct LLM extraction (synthetic abstract)", GREEN);
   const syntheticAbstract = `
     A cross-sectional study in Amhara region found that 67.3% of study participants 
-    consulted traditional healers (wogesh, debtera) before attending formal health facilities. 
+    consulted traditional healers (wogesh, debtera) before attending formal Welbeing facilities. 
     The median delay to facility-based care was 8.5 days. Illness attribution included 
     evil eye (buda) in 41.2% and Zar spirit possession in 28.7% of cases. 
     Traditional birth attendant (TBA) delivery was 34.1% in rural kebeles. 
@@ -157,22 +157,22 @@ async function runDryTest() {
 
   console.log(`  ${YELLOW}── Stage 1: Regex baseline ──${RESET}`);
   fieldRow("traditional_medicine_utilization", baseData.traditional_medicine_utilization);
-  fieldRow("delay_to_care_days",               baseData.delay_to_care_days);
-  fieldRow("fgmc_prevalence",                  baseData.fgmc_prevalence);
-  fieldRow("illness_explanatory_models",       baseData.illness_explanatory_models?.join("; "));
-  fieldRow("holy_water_art_substitution",      baseData.holy_water_art_substitution);
+  fieldRow("delay_to_care_days", baseData.delay_to_care_days);
+  fieldRow("fgmc_prevalence", baseData.fgmc_prevalence);
+  fieldRow("illness_explanatory_models", baseData.illness_explanatory_models?.join("; "));
+  fieldRow("holy_water_art_substitution", baseData.holy_water_art_substitution);
 
   console.log(`\n  ${CYAN}── Stage 2: BionicGPT/Gemini augmentation ──${RESET}`);
   try {
     const augmented = await llmAugmentExtraction(syntheticAbstract, "cultural", baseData);
     fieldRow("traditional_medicine_utilization", augmented.traditional_medicine_utilization);
-    fieldRow("delay_to_care_days",               augmented.delay_to_care_days);
-    fieldRow("fgmc_prevalence",                  augmented.fgmc_prevalence);
-    fieldRow("holy_water_art_substitution",      augmented.holy_water_art_substitution);
-    fieldRow("tba_delivery_rate",                augmented.tba_delivery_rate);
-    fieldRow("postpartum_confinement_days",      augmented.postpartum_confinement_days);
-    fieldRow("illness_explanatory_models",       augmented.illness_explanatory_models?.join("; "));
-    fieldRow("key_finding",                      augmented.key_finding_summary);
+    fieldRow("delay_to_care_days", augmented.delay_to_care_days);
+    fieldRow("fgmc_prevalence", augmented.fgmc_prevalence);
+    fieldRow("holy_water_art_substitution", augmented.holy_water_art_substitution);
+    fieldRow("tba_delivery_rate", augmented.tba_delivery_rate);
+    fieldRow("postpartum_confinement_days", augmented.postpartum_confinement_days);
+    fieldRow("illness_explanatory_models", augmented.illness_explanatory_models?.join("; "));
+    fieldRow("key_finding", augmented.key_finding_summary);
     console.log(`  confidence: ${GREEN}${((augmented.confidence ?? 0) * 100).toFixed(0)}%${RESET}`);
   } catch (e) {
     console.log(`  ${RED}LLM unavailable: ${(e as Error).message}${RESET}`);

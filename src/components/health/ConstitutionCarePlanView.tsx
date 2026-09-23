@@ -4,13 +4,13 @@ import { useState } from "react";
 import {
   HolisticConstitutionProfile,
   PersonalizedCarePlan,
-} from "@/lib/health/healthTypes";
+} from "@/lib/Welbeing/WelbeingTypes";
 import {
   CONSTITUTION_QUESTIONS,
   ConstitutionQuestion,
   buildConstitutionProfile,
-} from "@/lib/health/constitutionEngine";
-import { generateCarePlan } from "@/lib/health/carePlanEngine";
+} from "@/lib/Welbeing/constitutionEngine";
+import { generateCarePlan } from "@/lib/Welbeing/carePlanEngine";
 
 type ViewMode = "quiz" | "constitution" | "careplan";
 
@@ -144,8 +144,8 @@ export default function ConstitutionCarePlanView() {
                 onClick={() => setCurrentQuestion(i)}
                 className={`w-7 h-7 rounded text-[10px] font-bold transition-all
                   ${i === currentQuestion ? "bg-emerald-600 text-white" :
-                  answers[question.id] !== undefined ? "bg-emerald-950/60 text-emerald-400 border border-emerald-500/30" :
-                  "bg-white/5 text-slate-500"}`}
+                    answers[question.id] !== undefined ? "bg-emerald-950/60 text-emerald-400 border border-emerald-500/30" :
+                      "bg-white/5 text-slate-500"}`}
               >
                 {i + 1}
               </button>
@@ -331,7 +331,7 @@ export default function ConstitutionCarePlanView() {
             </div>
 
             <div className="mb-4">
-              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">health Goals (select up to 3)</label>
+              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Welbeing Goals (select up to 3)</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   "Improve energy and vitality", "Optimize digestion", "Reduce stress and anxiety",
@@ -342,7 +342,7 @@ export default function ConstitutionCarePlanView() {
                     key={goal}
                     onClick={() => setSelectedGoals((prev) =>
                       prev.includes(goal) ? prev.filter((g) => g !== goal) :
-                      prev.length < 3 ? [...prev, goal] : prev
+                        prev.length < 3 ? [...prev, goal] : prev
                     )}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${selectedGoals.includes(goal) ? "bg-emerald-600/30 border-emerald-500 text-white" : "border-white/10 text-slate-400 hover:border-emerald-500/30"}`}
                   >

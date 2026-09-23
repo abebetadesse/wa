@@ -77,9 +77,9 @@ export default function NumerologyView({ profile, birthDate }: NumerologyViewPro
             <span className="text-xs font-bold text-sky-400 flex items-center gap-1.5 uppercase tracking-wider">
               ⚕ Somatic Vitality
             </span>
-            <p className="text-[11px] text-slate-400">{danMillman.physicalhealthTendencies.vulnerabilities[0]}</p>
+            <p className="text-[11px] text-slate-400">{danMillman.physicalWelbeingTendencies.vulnerabilities[0]}</p>
             <div className="pt-1 text-xs text-sky-300 font-medium">
-              Daily practice: {danMillman.physicalhealthTendencies.vitalityPractices[0]}
+              Daily practice: {danMillman.physicalWelbeingTendencies.vitalityPractices[0]}
             </div>
           </div>
         </div>

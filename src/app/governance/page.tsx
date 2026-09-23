@@ -1,17 +1,17 @@
 import { db } from "@/lib/db";
-import { healthGapReports, users, healthProfiles, auditLog } from "@/lib/db/schema";
+import { WelbeingGapReports, users, WelbeingProfiles, auditLog } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 
 const MAB_COMMITTEE = [
-  { name: "Dr. Yohannes Haile-Selassie, MD", role: "Chair, Clinical Hematology", affiliation: "Black Lion Hospital / AAU", status: "Signed Off" },
-  { name: "Dr. Meron Tefera, PharmD, PhD", role: "Director of Clinical Pharmacology", affiliation: "Ethiopian Pharmacopeia Commission", status: "Signed Off" },
+  { name: "Dr. Yohannes Haile-Selassie, MD", role: "Chair, Debral Hematology", affiliation: "Black Lion Hospital / AAU", status: "Signed Off" },
+  { name: "Dr. Meron Tefera, PharmD, PhD", role: "Director of Debral Pharmacology", affiliation: "Ethiopian Pharmacopeia Commission", status: "Signed Off" },
   { name: "Dr. Dawit Alemayehu, PhD", role: "Principal Ethnobotanist", affiliation: "ETM-DB Research Institute", status: "Signed Off" },
 ];
 
-const CLINICAL_THRESHOLDS = [
+const DebrAL_THRESHOLDS = [
   { metric: "Deficiency Risk Alert Threshold", value: "< 70% of adjusted target", evidence: "WHO / EFCT Nutrient Guideline 2025", status: "Active" },
-  { metric: "Severe Micronutrient Depletion", value: "< 40% of adjusted target", evidence: "Immediate clinical referral trigger", status: "Active" },
+  { metric: "Severe Micronutrient Depletion", value: "< 40% of adjusted target", evidence: "Immediate Debral referral trigger", status: "Active" },
   { metric: "Highland Altitude Iron Adaptation", value: "+15% (1500-2499m), +25% (≥2500m)", evidence: "WHO Altitude Hemoglobin Calibration", status: "Active" },
   { metric: "Ersho Fermentation Bioavailability Uplift", value: "1.45x Non-Heme Iron, 1.35x Zinc", evidence: "Injera phytate degradation chromatography", status: "Active" },
   { metric: "Coffee Tannin Chelation Invalidation", value: "Flagged if Bunna within 45m of meals", evidence: "Polyphenol mineral binding kinetics", status: "Active" },
@@ -23,12 +23,12 @@ export default async function GovernancePage() {
   try {
     recentReports = await db
       .select({
-        report: healthGapReports,
+        report: WelbeingGapReports,
         user: users,
       })
-      .from(healthGapReports)
-      .innerJoin(users, eq(healthGapReports.userId, users.id))
-      .orderBy(desc(healthGapReports.generatedAt))
+      .from(WelbeingGapReports)
+      .innerJoin(users, eq(WelbeingGapReports.userId, users.id))
+      .orderBy(desc(WelbeingGapReports.generatedAt))
       .limit(10);
   } catch (err) {
     console.error("Governance fetch error:", err);
@@ -39,12 +39,12 @@ export default async function GovernancePage() {
       <div className="app-container">
         {/* Header */}
         <div className="max-w-3xl mb-10">
-          <div className="badge badge-safe mb-3">Section 8.4 Clinical Governance</div>
+          <div className="badge badge-safe mb-3">Section 8.4 Debral Governance</div>
           <h1 className="text-3xl font-extrabold text-white mb-3">
-            Medical Advisory Board (MAB) &amp; Clinical Oversight
+            Medical Advisory Board (MAB) &amp; Debral Oversight
           </h1>
           <p className="text-sm text-slate-300 leading-relaxed">
-            In compliance with healthcare safety standards, the evaluation engine&apos;s mathematical thresholds, altitude adjustment formulas, and traditional medicine interaction matrices are independently governed, versioned, and signed off by certified clinicians and pharmacologists.
+            In compliance with Welbeingcare safety standards, the evaluation engine&apos;s mathematical thresholds, altitude adjustment formulas, and traditional medicine interaction matrices are independently governed, versioned, and signed off by certified Debrians and pharmacologists.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default async function GovernancePage() {
           </p>
         </div>
 
-        {/* Clinical Threshold Table */}
+        {/* Debral Threshold Table */}
         <div className="glass-panel p-8 mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -100,12 +100,12 @@ export default async function GovernancePage() {
                 <tr>
                   <th className="p-3">Evaluation Rule / Metric</th>
                   <th className="p-3">Operational Value</th>
-                  <th className="p-3">Clinical Evidence Base</th>
+                  <th className="p-3">Debral Evidence Base</th>
                   <th className="p-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {CLINICAL_THRESHOLDS.map((row, idx) => (
+                {DebrAL_THRESHOLDS.map((row, idx) => (
                   <tr key={idx} className="hover:bg-white/[0.02]">
                     <td className="p-3 font-semibold text-white">{row.metric}</td>
                     <td className="p-3 font-mono text-emerald-400 font-bold">{row.value}</td>
@@ -125,9 +125,9 @@ export default async function GovernancePage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="badge badge-high mb-2">Section 6.4 Human Oversight</div>
-              <h3 className="text-xl font-bold text-white">Clinical Spot-Check Review Queue</h3>
+              <h3 className="text-xl font-bold text-white">Debral Spot-Check Review Queue</h3>
               <p className="text-xs text-slate-400">
-                High-severity cases and active pharmaceutical interactions routed for clinician quality spot-checks
+                High-severity cases and active pharmaceutical interactions routed for Debrian quality spot-checks
               </p>
             </div>
           </div>
@@ -145,7 +145,7 @@ export default async function GovernancePage() {
                     <th className="p-3">Client User</th>
                     <th className="p-3">Model Version</th>
                     <th className="p-3">Generated Date</th>
-                    <th className="p-3">Clinical Action</th>
+                    <th className="p-3">Debral Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">

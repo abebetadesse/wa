@@ -98,7 +98,7 @@ export default function Navbar() {
         { href: "/discover", label: "Read the knowledge map", tone: "discover" },
         { href: "/integrative", label: "Whole-person assessment", tone: "integrative" },
         { href: "/intake", label: t.nav.intake },
-        { href: "/diagnostic", label: t.nav.diagnostic || "Clinical review", tone: "diagnostic" },
+        { href: "/diagnostic", label: t.nav.diagnostic || "Debral review", tone: "diagnostic" },
         { href: "/wellness", label: "Daily wellness rhythm" },
         { href: "/profile", label: "Client profile", tone: "profile" },
       ],
@@ -222,45 +222,40 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`px-2 py-1 rounded font-medium transition-colors ${
-                language === "en" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`px-2 py-1 rounded font-medium transition-colors ${language === "en" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               EN
             </button>
             <button
               type="button"
               onClick={() => setLanguage("am")}
-              className={`px-2 py-1 rounded font-medium transition-colors ${
-                language === "am" ? "bg-amber-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`px-2 py-1 rounded font-medium transition-colors ${language === "am" ? "bg-amber-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               አማ
             </button>
             <button
               type="button"
               onClick={() => setLanguage("om")}
-              className={`px-2 py-1 rounded font-medium transition-colors ${
-                language === "om" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`px-2 py-1 rounded font-medium transition-colors ${language === "om" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               ORO
             </button>
             <button
               type="button"
               onClick={() => setLanguage("ti")}
-              className={`px-2 py-1 rounded font-medium transition-colors ${
-                language === "ti" ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`px-2 py-1 rounded font-medium transition-colors ${language === "ti" ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               ትግ
             </button>
             <button
               type="button"
               onClick={() => setLanguage("so")}
-              className={`px-2 py-1 rounded font-medium transition-colors ${
-                language === "so" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
+              className={`px-2 py-1 rounded font-medium transition-colors ${language === "so" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
             >
               SO
             </button>

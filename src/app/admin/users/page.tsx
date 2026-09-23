@@ -274,7 +274,7 @@ export default function UserManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">User Administration</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Manage registered Ethiopian health platform accounts, roles, access statuses, and sessions.
+            Manage registered Ethiopian Welbeing platform accounts, roles, access statuses, and sessions.
           </p>
         </div>
 
@@ -299,11 +299,10 @@ export default function UserManagementPage() {
       {/* Notification */}
       {notification && (
         <div
-          className={`p-3.5 rounded-xl flex items-center justify-between text-xs font-medium border ${
-            notification.type === "success"
+          className={`p-3.5 rounded-xl flex items-center justify-between text-xs font-medium border ${notification.type === "success"
               ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
               : "bg-rose-950/60 border-rose-500/40 text-rose-300"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             {notification.type === "success" ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}
@@ -424,27 +423,24 @@ export default function UserManagementPage() {
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                            rolePillColors[user.role] || "bg-white/5 border-white/10 text-slate-300"
-                          }`}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${rolePillColors[user.role] || "bg-white/5 border-white/10 text-slate-300"
+                            }`}
                         >
                           {user.role}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                            status === "Active"
+                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${status === "Active"
                               ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
                               : status === "Suspended"
-                              ? "bg-rose-950/60 border-rose-500/40 text-rose-300"
-                              : "bg-slate-800 border-slate-600 text-slate-400"
-                          }`}
+                                ? "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                                : "bg-slate-800 border-slate-600 text-slate-400"
+                            }`}
                         >
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              status === "Active" ? "bg-emerald-400" : status === "Suspended" ? "bg-rose-400" : "bg-slate-400"
-                            }`}
+                            className={`w-1.5 h-1.5 rounded-full ${status === "Active" ? "bg-emerald-400" : status === "Suspended" ? "bg-rose-400" : "bg-slate-400"
+                              }`}
                           />
                           {status}
                         </span>
@@ -581,7 +577,7 @@ export default function UserManagementPage() {
                   >
                     <option value="user">Standard User</option>
                     <option value="premium">Premium User</option>
-                    <option value="practitioner">health Practitioner</option>
+                    <option value="practitioner">Welbeing Practitioner</option>
                     <option value="editor">Content Editor</option>
                     <option value="reviewer">Reviewer</option>
                     <option value="analyst">Analyst</option>
@@ -703,9 +699,8 @@ export default function UserManagementPage() {
                   <div>
                     <span className="text-[11px] text-slate-500 block">Role</span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                        rolePillColors[selectedUser.role] || "bg-white/5 text-slate-300"
-                      }`}
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${rolePillColors[selectedUser.role] || "bg-white/5 text-slate-300"
+                        }`}
                     >
                       {selectedUser.role}
                     </span>

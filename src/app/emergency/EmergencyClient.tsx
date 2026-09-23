@@ -92,7 +92,7 @@ export default function EmergencyClient() {
             OFFLINE-READY · EPHI EMERGENCY PROTOCOLS
           </div>
           <h1 className="text-3xl font-extrabold text-white mb-2">
-            Emergency <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">health Profile</span>
+            Emergency <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">Welbeing Profile</span>
           </h1>
           <p className="text-slate-400 text-sm max-w-2xl">
             Your emergency contacts, active conditions, medications, and blood type — stored locally on your device for immediate offline access by first responders.
@@ -124,11 +124,10 @@ export default function EmergencyClient() {
                   <button
                     key={key}
                     onClick={(e) => { e.stopPropagation(); setActiveProtocol(activeProtocol === key ? null : key); }}
-                    className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all text-left ${
-                      activeProtocol === key
+                    className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all text-left ${activeProtocol === key
                         ? "bg-rose-600/30 border-rose-500/60 text-rose-200"
                         : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20"
-                    }`}
+                      }`}
                   >
                     {EMERGENCY_PROTOCOLS[key].title}
                   </button>
@@ -225,11 +224,10 @@ export default function EmergencyClient() {
                   <button
                     key={bt}
                     onClick={() => setBloodType(bt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                      bloodType === bt
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${bloodType === bt
                         ? "bg-rose-600/40 border-rose-500/60 text-rose-200"
                         : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
-                    }`}
+                      }`}
                   >
                     {bt}
                   </button>
@@ -305,17 +303,16 @@ export default function EmergencyClient() {
 
         {/* Preferred Hospital */}
         <div className="glass-panel p-5 mt-6">
-          <h2 className="text-sm font-bold text-white mb-3">Preferred Hospital / health Facility</h2>
+          <h2 className="text-sm font-bold text-white mb-3">Preferred Hospital / Welbeing Facility</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {ETHIOPIAN_HOSPITALS.map((h) => (
               <button
                 key={h}
                 onClick={() => setPreferredHospital(h === preferredHospital ? "" : h)}
-                className={`px-3 py-2 rounded-lg text-xs text-left border transition-all ${
-                  preferredHospital === h
+                className={`px-3 py-2 rounded-lg text-xs text-left border transition-all ${preferredHospital === h
                     ? "bg-teal-700/30 border-teal-500/50 text-teal-200"
                     : "bg-white/[0.03] border-white/5 text-slate-400 hover:text-white hover:border-white/15"
-                }`}
+                  }`}
               >
                 {h}
               </button>
@@ -331,11 +328,10 @@ export default function EmergencyClient() {
           <button
             id="save-emergency-profile-btn"
             onClick={handleSave}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold border transition-all ${
-              saved
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold border transition-all ${saved
                 ? "bg-emerald-700/30 border-emerald-500/50 text-emerald-300"
                 : "bg-rose-700/30 border-rose-500/40 text-rose-200 hover:bg-rose-700/50"
-            }`}
+              }`}
           >
             {saved ? "✓ Saved Offline" : "Save Emergency Profile"}
           </button>

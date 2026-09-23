@@ -116,7 +116,7 @@ export const FOUNDATION_QUESTIONS: CareerQuestion[] = [
     textAmharic: "ሥራዎ ወይም ሊገቡ ያስቡት ዘርፍ ወይም ሙያ ምን ነው?",
     type: "text",
     required: true,
-    placeholder: "e.g. Agriculture, Tech, Education, Retail, healthcare, Construction",
+    placeholder: "e.g. Agriculture, Tech, Education, Retail, Welbeingcare, Construction",
   },
   {
     id: "career_business_type",

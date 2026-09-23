@@ -37,7 +37,7 @@ export default function AwudeHeritageContext({ compact = false }: AwudeHeritageC
           <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">Cultural reflection layer</span>
           <h2 id="awude-heritage-context" className="mt-1 text-lg font-bold text-slate-100">AwudeNegest heritage context</h2>
           <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-400">
-            Visual references to the Gondar and Ethiopian highland setting associated with the AwudeNegest tradition. This layer enriches reflection and does not change clinical findings, urgency, or treatment guidance.
+            Visual references to the Gondar and Ethiopian highland setting associated with the AwudeNegest tradition. This layer enriches reflection and does not change Debral findings, urgency, or treatment guidance.
           </p>
         </div>
         <a

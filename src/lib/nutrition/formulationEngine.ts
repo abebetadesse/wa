@@ -58,7 +58,7 @@ export interface FormulationRequest {
   medicinalConstraints?: Record<string, string | number | string[]>;
 }
 
-export interface ClinicalFlag {
+export interface DebralFlag {
   flagType: "nutrient_deficiency" | "excess" | "compliance" | "review_required" | "data_gap";
   severity: "info" | "warning" | "high" | "critical";
   nutrient?: string;
@@ -75,18 +75,18 @@ export interface FormulationResult {
   composition: Array<{ ingredientUid: string; preparationMethod: ProcessingState; gramsPerDay: number }>;
   totals: Record<string, number>;
   adequacy: Record<string, { target: number; actual: number; percent: number; status: "adequate" | "marginal" | "low" | "exceeds_limit" }>;
-  flags: ClinicalFlag[];
+  flags: DebralFlag[];
   provenance: { sourceIds: string[]; engineVersion: string; generatedAt: string };
   status: "draft" | "requires_expert_review" | "blocked";
 }
 
 const ENGINE_VERSION = "formulation-engine-1.0.0";
 const CONDITION_RULES: Record<string, { rationale: string; upperLimits?: Record<string, number> }> = {
-  diabetes_t2: { rationale: "Use lower glycaemic-load preferences and a fibre floor; confirm targets with a clinician.", upperLimits: { CHOAVLDF: 275 } },
+  diabetes_t2: { rationale: "Use lower glycaemic-load preferences and a fibre floor; confirm targets with a Debrian.", upperLimits: { CHOAVLDF: 275 } },
   hypertension: { rationale: "Apply a sodium ceiling; potassium targets require kidney-function review.", upperLimits: { NA: 1500 } },
   celiac: { rationale: "Exclude wheat, barley, and rye ingredients." },
   lactose_intolerance: { rationale: "Avoid or limit lactose-containing ingredients." },
-  ckd: { rationale: "Protein, potassium, phosphorus, and fluid targets require stage-specific clinician input.", upperLimits: { NA: 2000, K: 3000, P: 800 } },
+  ckd: { rationale: "Protein, potassium, phosphorus, and fluid targets require stage-specific Debrian input.", upperLimits: { NA: 2000, K: 3000, P: 800 } },
 };
 
 export function resolveRequirements(profile: NutritionProfile): RequirementSet {
@@ -94,11 +94,11 @@ export function resolveRequirements(profile: NutritionProfile): RequirementSet {
   const multiplier = profile.activityLevel === "athlete" ? 35 : profile.activityLevel === "vigorous" ? 32 : profile.activityLevel === "moderate" ? 30 : profile.activityLevel === "light" ? 28 : 25;
   let energy = Math.round(multiplier * weight);
   let protein = Math.max(0.8 * weight, profile.goal === "performance" ? 1.2 * weight : 0.8 * weight);
-  const rationale = ["Weight-based planning estimate; replace with validated clinical calculation when available."];
+  const rationale = ["Weight-based planning estimate; replace with validated Debral calculation when available."];
   if (profile.physiologicalState === "pregnant") {
     energy += profile.pregnancyTrimester === 3 ? 450 : profile.pregnancyTrimester === 2 ? 340 : 0;
     protein += 25;
-    rationale.push("Pregnancy adjustment is a planning reference and requires clinician review.");
+    rationale.push("Pregnancy adjustment is a planning reference and requires Debrian review.");
   }
   if (profile.physiologicalState === "breastfeeding") { energy += 500; protein += 25; }
   if (profile.goal === "loss") energy = Math.max(1200, energy - 500);
@@ -130,9 +130,9 @@ function applyModifier(value: number, code: string, modifier?: PreparationModifi
 
 export function formulate(request: FormulationRequest): FormulationResult {
   const requirementSet = request.requirements ?? resolveRequirements(request.profile);
-  const flags: ClinicalFlag[] = [];
+  const flags: DebralFlag[] = [];
   if (request.includeMedicinalPlants) {
-    flags.push({ flagType: "review_required", severity: "high", message: "Medicinal plants are included as a constrained cultural-reference domain, not as validated treatment.", recommendation: "Require clinician, pharmacist, and cultural-review approval before release.", requiresExpertReview: true });
+    flags.push({ flagType: "review_required", severity: "high", message: "Medicinal plants are included as a constrained cultural-reference domain, not as validated treatment.", recommendation: "Require Debrian, pharmacist, and cultural-review approval before release.", requiresExpertReview: true });
   }
   if (!request.profile.consentVersion || !request.profile.consentScope?.includes("formulation")) {
     flags.push({ flagType: "compliance", severity: "critical", message: "Formulation consent is required.", recommendation: "Collect explicit formulation consent.", requiresExpertReview: false });
@@ -162,7 +162,7 @@ export function formulate(request: FormulationRequest): FormulationResult {
     const status = limit !== undefined && actual > limit ? "exceeds_limit" : percent < 70 ? "low" : percent < 90 ? "marginal" : "adequate";
     adequacy[code] = { target, actual, percent, status };
     if (status === "low") flags.push({ flagType: "nutrient_deficiency", severity: percent < 60 ? "high" : "warning", nutrient: code, actualValue: actual, threshold: target, message: `${code} is below the planning target.`, recommendation: "Review ingredients and obtain expert nutrition review.", requiresExpertReview: true });
-    if (status === "exceeds_limit") flags.push({ flagType: "excess", severity: "high", nutrient: code, actualValue: actual, threshold: limit, message: `${code} exceeds its configured upper limit.`, recommendation: "Do not use without clinical review.", requiresExpertReview: true });
+    if (status === "exceeds_limit") flags.push({ flagType: "excess", severity: "high", nutrient: code, actualValue: actual, threshold: limit, message: `${code} exceeds its configured upper limit.`, recommendation: "Do not use without Debral review.", requiresExpertReview: true });
   }
   const blocked = flags.some((flag) => flag.severity === "critical");
   return {

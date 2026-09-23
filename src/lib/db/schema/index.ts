@@ -8,3 +8,5 @@ export * from "./caseWorkflow";
 export * from "./knowledgeManagement";
 export * from "./rbac";
 export * from "./literatureFindings";
+export * from "./ethnomedicine";
+export * from "./hexacore";

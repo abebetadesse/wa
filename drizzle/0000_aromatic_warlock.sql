@@ -23,7 +23,7 @@ CREATE TABLE "cultural_profiles" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "health_profiles" (
+CREATE TABLE "Welbeing_profiles" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"age" integer,
@@ -102,7 +102,7 @@ CREATE TABLE "herb_drug_interactions" (
 	"drug_name_example" varchar(255),
 	"interaction_severity" varchar(20) NOT NULL,
 	"mechanism" text NOT NULL,
-	"clinical_effect" text NOT NULL,
+	"Debral_effect" text NOT NULL,
 	"contraindicated" boolean DEFAULT true NOT NULL,
 	"evidence_level" varchar(50) NOT NULL,
 	"source_ref" varchar(100) NOT NULL
@@ -149,7 +149,7 @@ CREATE TABLE "gap_solutions" (
 	"source_ref" varchar(100) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "health_gap_reports" (
+CREATE TABLE "Welbeing_gap_reports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"submission_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -289,7 +289,7 @@ CREATE TABLE "case_solutions" (
 --> statement-breakpoint
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cultural_profiles" ADD CONSTRAINT "cultural_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "health_profiles" ADD CONSTRAINT "health_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "Welbeing_profiles" ADD CONSTRAINT "Welbeing_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "food_nutrients" ADD CONSTRAINT "food_nutrients_food_id_foods_id_fk" FOREIGN KEY ("food_id") REFERENCES "public"."foods"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "food_nutrients" ADD CONSTRAINT "food_nutrients_nutrient_id_nutrients_id_fk" FOREIGN KEY ("nutrient_id") REFERENCES "public"."nutrients"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "compounds" ADD CONSTRAINT "compounds_herb_id_herbs_id_fk" FOREIGN KEY ("herb_id") REFERENCES "public"."herbs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -298,9 +298,9 @@ ALTER TABLE "audit_log" ADD CONSTRAINT "audit_log_user_id_users_id_fk" FOREIGN K
 ALTER TABLE "gap_causes" ADD CONSTRAINT "gap_causes_gap_id_identified_gaps_id_fk" FOREIGN KEY ("gap_id") REFERENCES "public"."identified_gaps"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "gap_solutions" ADD CONSTRAINT "gap_solutions_gap_id_identified_gaps_id_fk" FOREIGN KEY ("gap_id") REFERENCES "public"."identified_gaps"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "gap_solutions" ADD CONSTRAINT "gap_solutions_herb_id_herbs_id_fk" FOREIGN KEY ("herb_id") REFERENCES "public"."herbs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "health_gap_reports" ADD CONSTRAINT "health_gap_reports_submission_id_intake_submissions_id_fk" FOREIGN KEY ("submission_id") REFERENCES "public"."intake_submissions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "health_gap_reports" ADD CONSTRAINT "health_gap_reports_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "identified_gaps" ADD CONSTRAINT "identified_gaps_report_id_health_gap_reports_id_fk" FOREIGN KEY ("report_id") REFERENCES "public"."health_gap_reports"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "Welbeing_gap_reports" ADD CONSTRAINT "Welbeing_gap_reports_submission_id_intake_submissions_id_fk" FOREIGN KEY ("submission_id") REFERENCES "public"."intake_submissions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "Welbeing_gap_reports" ADD CONSTRAINT "Welbeing_gap_reports_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "identified_gaps" ADD CONSTRAINT "identified_gaps_report_id_Welbeing_gap_reports_id_fk" FOREIGN KEY ("report_id") REFERENCES "public"."Welbeing_gap_reports"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "identified_gaps" ADD CONSTRAINT "identified_gaps_nutrient_id_nutrients_id_fk" FOREIGN KEY ("nutrient_id") REFERENCES "public"."nutrients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "intake_submissions" ADD CONSTRAINT "intake_submissions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "emergency_alerts" ADD CONSTRAINT "emergency_alerts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

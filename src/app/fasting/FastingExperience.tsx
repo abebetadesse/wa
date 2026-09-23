@@ -21,10 +21,10 @@ export default function FastingExperience() {
     selectedSeason === "filseta"
       ? new Date(2026, 7, 15)
       : selectedSeason === "abiy_tsom"
-      ? new Date(2026, 2, 10)
-      : selectedSeason === "tsome_nebiyat"
-      ? new Date(2026, 11, 1)
-      : new Date(2026, 4, 10)
+        ? new Date(2026, 2, 10)
+        : selectedSeason === "tsome_nebiyat"
+          ? new Date(2026, 11, 1)
+          : new Date(2026, 4, 10)
   );
 
   const [selectedArchetype, setSelectedArchetype] = useState<EaterArchetype>("highland_agrarian");
@@ -120,13 +120,12 @@ export default function FastingExperience() {
                 </h3>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  habeshaTime.macronutrientPartitioningPriority.carbohydrateTolerance === "very_high"
+                className={`px-3 py-1 rounded-full text-xs font-bold ${habeshaTime.macronutrientPartitioningPriority.carbohydrateTolerance === "very_high"
                     ? "bg-emerald-950/60 border border-emerald-500/40 text-emerald-400"
                     : habeshaTime.macronutrientPartitioningPriority.carbohydrateTolerance === "high"
-                    ? "bg-amber-950/60 border border-amber-500/40 text-amber-400"
-                    : "bg-slate-800 border border-white/10 text-slate-300"
-                }`}
+                      ? "bg-amber-950/60 border border-amber-500/40 text-amber-400"
+                      : "bg-slate-800 border border-white/10 text-slate-300"
+                  }`}
               >
                 Carb Tolerance: {habeshaTime.macronutrientPartitioningPriority.carbohydrateTolerance.toUpperCase()}
               </span>
@@ -184,11 +183,10 @@ export default function FastingExperience() {
                 <div className="flex justify-between items-center">
                   <strong className="text-white text-sm">{vuln.nutrient}</strong>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      vuln.depletionRisk === "high"
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${vuln.depletionRisk === "high"
                         ? "bg-rose-950/60 border border-rose-500/30 text-rose-400"
                         : "bg-amber-950/60 border border-amber-500/30 text-amber-400"
-                    }`}
+                      }`}
                   >
                     {vuln.depletionRisk.toUpperCase()} RISK
                   </span>
@@ -248,11 +246,10 @@ export default function FastingExperience() {
               <button
                 key={key}
                 onClick={() => setSelectedArchetype(key)}
-                className={`p-3 rounded-xl text-left border transition-all ${
-                  isSelected
+                className={`p-3 rounded-xl text-left border transition-all ${isSelected
                     ? "bg-emerald-950/60 border-emerald-500 text-white shadow-lg shadow-emerald-950/50"
                     : "bg-black/30 border-white/10 text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
               >
                 <span className="text-xs block font-bold truncate">{arch.nameAmharic}</span>
                 <span className="text-[10px] text-slate-400 block">{arch.nameEnglish}</span>
@@ -316,7 +313,7 @@ export default function FastingExperience() {
           </div>
 
           <div className="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-500/20 text-xs">
-            <strong className="text-emerald-400">Tailored Clinical & Cultural Advice:</strong>{" "}
+            <strong className="text-emerald-400">Tailored Debral & Cultural Advice:</strong>{" "}
             <span className="text-slate-200">{archetypeProfile.tailoredHabeshaAdvice}</span>
           </div>
         </div>

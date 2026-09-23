@@ -39,18 +39,18 @@ type DomainConfig = Omit<CaseDefinition, "commonQuestionSetId" | "specializedQue
 
 const domainConfigs: DomainConfig[] = [
   {
-    id: "health", name: "health", icon: "✚", order: 1, isActive: true,
+    id: "Welbeing", name: "Welbeing", icon: "✚", order: 1, isActive: true,
     description: "Organize symptoms, nutrition, medication context, and safe next steps.",
-    knowledgeStrandFilters: CASE_STRAND_FILTERS.health, domainLayers: ["A", "B"],
+    knowledgeStrandFilters: CASE_STRAND_FILTERS.Welbeing, domainLayers: ["A", "B"],
     interests: ["symptom understanding", "nutrition and recovery", "traditional safety", "mind-body rhythm"],
     challengeOptions: ["Symptoms or a new concern", "Energy, nutrition, or recovery", "Medication or herb safety", "Stress, sleep, or body rhythm"],
     specificQuestions: [
-      { id: "health-age", fieldId: "age", questionSetId: "health-specific", text: "How old are you?", type: "number", required: true, order: 1, section: "specialized" },
-      { id: "health-region", fieldId: "region", questionSetId: "health-specific", text: "Where are you currently living?", type: "select", options: ["Addis Ababa", "Amhara Highlands", "Oromia", "Tigray", "Sidama", "Afar Lowlands", "Other"], required: true, order: 2, section: "specialized" },
-      { id: "health-detail", fieldId: "detail", questionSetId: "health-specific", text: "Describe the concern, including timing and what makes it better or worse.", type: "textarea", required: true, order: 3, section: "specialized" },
-      { id: "health-medicines", fieldId: "medications", questionSetId: "health-specific", text: "List medicines, supplements, or herbs currently in use.", type: "text", required: false, order: 4, section: "specialized" },
-      { id: "health-interest", fieldId: "selectedInterest", questionSetId: "health-specific", text: "Which area should shape the recommendations?", type: "select", options: ["symptom understanding", "nutrition and recovery", "traditional safety", "mind-body rhythm"], required: true, order: 5, section: "specialized" },
-      { id: "health-reflection", fieldId: "reflectionLens", questionSetId: "health-specific", text: "Would you like a cultural reflection layer included?", type: "select", options: ["No, keep it clinical", "Yes, include Domain B reflection"], required: true, order: 6, section: "specialized" },
+      { id: "Welbeing-age", fieldId: "age", questionSetId: "Welbeing-specific", text: "How old are you?", type: "number", required: true, order: 1, section: "specialized" },
+      { id: "Welbeing-region", fieldId: "region", questionSetId: "Welbeing-specific", text: "Where are you currently living?", type: "select", options: ["Addis Ababa", "Amhara Highlands", "Oromia", "Tigray", "Sidama", "Afar Lowlands", "Other"], required: true, order: 2, section: "specialized" },
+      { id: "Welbeing-detail", fieldId: "detail", questionSetId: "Welbeing-specific", text: "Describe the concern, including timing and what makes it better or worse.", type: "textarea", required: true, order: 3, section: "specialized" },
+      { id: "Welbeing-medicines", fieldId: "medications", questionSetId: "Welbeing-specific", text: "List medicines, supplements, or herbs currently in use.", type: "text", required: false, order: 4, section: "specialized" },
+      { id: "Welbeing-interest", fieldId: "selectedInterest", questionSetId: "Welbeing-specific", text: "Which area should shape the recommendations?", type: "select", options: ["symptom understanding", "nutrition and recovery", "traditional safety", "mind-body rhythm"], required: true, order: 5, section: "specialized" },
+      { id: "Welbeing-reflection", fieldId: "reflectionLens", questionSetId: "Welbeing-specific", text: "Would you like a cultural reflection layer included?", type: "select", options: ["No, keep it Debral", "Yes, include Domain B reflection"], required: true, order: 6, section: "specialized" },
     ],
   },
   {
@@ -110,7 +110,7 @@ const domainConfigs: DomainConfig[] = [
   },
   {
     id: "spiritual", name: "Spiritual & Life Direction", icon: "✦", order: 7, isActive: true,
-    description: "Explore purpose, ritual, numerology, and life direction while keeping mental-health safety clear and separate.", knowledgeStrandFilters: CASE_STRAND_FILTERS.spiritual, domainLayers: ["A", "B"], interests: ["purpose", "faith and rituals", "life path", "inner clarity"],
+    description: "Explore purpose, ritual, numerology, and life direction while keeping mental-Welbeing safety clear and separate.", knowledgeStrandFilters: CASE_STRAND_FILTERS.spiritual, domainLayers: ["A", "B"], interests: ["purpose", "faith and rituals", "life path", "inner clarity"],
     challengeOptions: ["Life direction uncertainty", "Faith and meaning", "Decision-making or transitions", "Spiritual practice and routine"],
     specificQuestions: [
       { id: "spiritual-detail", fieldId: "detail", questionSetId: "spiritual-specific", text: "What life question or spiritual uncertainty do you want to understand more clearly?", type: "textarea", required: true, order: 1, section: "specialized" },
@@ -189,8 +189,8 @@ function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDef
     layer: "Domain B",
     status: reflection ? "included" : "firewalled",
     strands: ["cultural", "astrological", "socioeconomic"],
-    interpretation: "Cultural and community context is available as a reflective layer. Strengths: Reliability, Patience, Discipline, Persistence. Weaknesses: Rigidity, Pessimism, Isolation, Stubbornness. Health focus: Bone health, Joint mobility, Digestive regularity, Skin moisture.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from clinical reasoning.",
+    interpretation: "Cultural and community context is available as a reflective layer. Strengths: Reliability, Patience, Discipline, Persistence. Weaknesses: Rigidity, Pessimism, Isolation, Stubbornness. Welbeing focus: Bone Welbeing, Joint mobility, Digestive regularity, Skin moisture.",
+    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from Debral reasoning.",
     disclaimer: "Domain B remains educational and reflective only. It never changes urgency, diagnosis, medication safety, or emergency decisions.",
   };
 
@@ -198,8 +198,8 @@ function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDef
     layer: "Domain B",
     status: reflection ? "included" : "firewalled",
     strands: ["cultural", "astrological"],
-    interpretation: "Däbtära healing scrolls and celestial botanical inscriptions are best read as a reflective tradition for emotional steadiness, ritual timing, and psychosomatic support, not as a substitute for evidence-based clinical care.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from clinical reasoning.",
+    interpretation: "Däbtära healing scrolls and celestial botanical inscriptions are best read as a reflective tradition for emotional steadiness, ritual timing, and psychosomatic support, not as a substitute for evidence-based Debral care.",
+    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from Debral reasoning.",
     disclaimer: "This layer supports meaning-making and self-regulation; it does not replace medical evaluation or safe treatment decisions.",
   };
 
@@ -207,7 +207,7 @@ function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDef
     layer: "Domain B",
     status: reflection ? "included" : "firewalled",
     strands: ["socioeconomic", "community"],
-    interpretation: "Income inequality and wealth distribution materially affect food security, healthcare access, social stress, and long-term recovery. Uneven resource distribution often magnifies fatigue, delayed care, and household instability.",
+    interpretation: "Income inequality and wealth distribution materially affect food security, Welbeingcare access, social stress, and long-term recovery. Uneven resource distribution often magnifies fatigue, delayed care, and household instability.",
     practice: "Use community, household, and economic context as a practical support lens rather than a financial plan. Consider resource mapping, support networks, and affordable care pathways.",
     disclaimer: "This is contextual guidance for planning and support, not legal, financial, or investment advice.",
   };
@@ -219,7 +219,7 @@ function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDef
       confidence: 0.88,
       evidence: [
         "Grounded, stable, and slow-moving temperamental profile with a strong tendency toward structure, endurance, and practical persistence.",
-        "The pattern suggests careful pacing, disciplined routines, and attention to bone health, joint mobility, digestive regularity, and skin moisture.",
+        "The pattern suggests careful pacing, disciplined routines, and attention to bone Welbeing, joint mobility, digestive regularity, and skin moisture.",
         "It may reflect emotional heaviness, rigidity, and isolation when stress is prolonged or unresolved.",
       ],
       category: "cultural",
@@ -246,7 +246,7 @@ function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDef
       description: "INCOME INEQUALITY & WEALTH DISTRIBUTION",
       confidence: 0.8,
       evidence: [
-        "This pattern points to a meaningful pressure from uneven access to money, food, transportation, and healthcare services.",
+        "This pattern points to a meaningful pressure from uneven access to money, food, transportation, and Welbeingcare services.",
         "When resources are limited, stress rises, routines break down, and people may delay care or struggle to maintain prevention-focused habits.",
         "It is important to treat this as a contextual risk factor rather than a personal failure or diagnosis.",
       ],
@@ -282,7 +282,7 @@ function buildDetailedFallbackSolutions(session: CaseSession, selectedCase: Case
     status: "included",
     strands: ["cultural", "astrological"],
     interpretation: "The grounded pattern suggests a stronger need for steadiness, lower chaos, and practical rhythm than for rapid change.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from clinical reasoning.",
+    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from Debral reasoning.",
     disclaimer: "Reflective guidance should not override tested medical advice or urgent safety needs.",
   };
 
@@ -291,8 +291,8 @@ function buildDetailedFallbackSolutions(session: CaseSession, selectedCase: Case
     status: "included",
     strands: ["cultural", "astrological"],
     interpretation: "This tradition offers emotional grounding and meaning, especially when stress feels heavy or isolating.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from clinical reasoning.",
-    disclaimer: "The ritual layer is not a clinical treatment plan and must remain separate from urgent care decisions.",
+    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from Debral reasoning.",
+    disclaimer: "The ritual layer is not a Debral treatment plan and must remain separate from urgent care decisions.",
   };
 
   const resourceContext: ReportCulturalContext = {
@@ -317,7 +317,7 @@ function buildDetailedFallbackSolutions(session: CaseSession, selectedCase: Case
       ],
       confidence: 0.86,
       basedOnCauses: [`${selectedCase.id}-afere-finding`],
-      knowledgeReferences: ["earth-constitution", "cultural-health-context"],
+      knowledgeReferences: ["earth-constitution", "cultural-Welbeing-context"],
       interestMatch: interest,
       culturalContext: groundingContext,
     },
@@ -325,7 +325,7 @@ function buildDetailedFallbackSolutions(session: CaseSession, selectedCase: Case
       id: `${selectedCase.id}-cultural-reflection-plan`,
       title: "Reflective cultural support",
       section: "shortTerm",
-      description: "Use ritual, community support, and self-reflection as a separate layer to reduce emotional strain without substituting clinical care.",
+      description: "Use ritual, community support, and self-reflection as a separate layer to reduce emotional strain without substituting Debral care.",
       steps: [
         "Create a quiet morning or evening routine with prayer, breathing, or a short reflective practice.",
         "Limit reliance on symbolic practices as a substitute for medical evaluation if symptoms worsen or remain unexplained.",

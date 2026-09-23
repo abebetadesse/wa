@@ -14,7 +14,7 @@ import {
 } from "../lib/db/schema/rbac.ts";
 
 test("Password Hashing & Verification Engine", () => {
-  const password = "Ethiohealth@2026!";
+  const password = "EthioWelbeing@2026!";
   const hash = hashPassword(password);
 
   assert.match(hash, /^scrypt:[a-f0-9]+:[a-f0-9]+$/);
@@ -25,12 +25,12 @@ test("Password Hashing & Verification Engine", () => {
 
 test("Password Strength Validator", () => {
   // Compliant password
-  const valid = validatePasswordStrength("Ethiohealth@2026!");
+  const valid = validatePasswordStrength("EthioWelbeing@2026!");
   assert.equal(valid.isValid, true);
   assert.equal(valid.errors.length, 0);
 
   // Missing special char
-  const noSpecial = validatePasswordStrength("Ethiohealth2026");
+  const noSpecial = validatePasswordStrength("EthioWelbeing2026");
   assert.equal(noSpecial.isValid, false);
   assert.ok(noSpecial.errors.some((e) => e.includes("special character")));
 
@@ -40,12 +40,12 @@ test("Password Strength Validator", () => {
   assert.ok(tooShort.errors.some((e) => e.includes("8 characters")));
 
   // Missing uppercase
-  const noUpper = validatePasswordStrength("ethiohealth@2026!");
+  const noUpper = validatePasswordStrength("ethioWelbeing@2026!");
   assert.equal(noUpper.isValid, false);
   assert.ok(noUpper.errors.some((e) => e.includes("uppercase")));
 
   // Missing number
-  const noNumber = validatePasswordStrength("Ethiohealth@Password!");
+  const noNumber = validatePasswordStrength("EthioWelbeing@Password!");
   assert.equal(noNumber.isValid, false);
   assert.ok(noNumber.errors.some((e) => e.includes("digit")));
 });

@@ -18,7 +18,7 @@ export const ENGINE_VERSION = "2.1.0";
 
 export const FIREWALL_DISCLAIMER =
   "Domain B (cultural, astrological, and traditional reflection) is offered for reflective and identity context only. " +
-  "It is not empirical evidence, not a diagnosis, and it never overrides Domain A clinical, safety, or emergency guidance.";
+  "It is not empirical evidence, not a diagnosis, and it never overrides Domain A Debral, safety, or emergency guidance.";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PRIMITIVE / UNION TYPES
@@ -79,7 +79,7 @@ export interface MultiStrandUserProfile {
     grainPreparation?: string;
     [key: string]: unknown;
   };
-  health_and_medications?: {
+  Welbeing_and_medications?: {
     currentMedications?: Array<{ name?: string; dose?: string; indication?: string }>;
     activeHerbs?: string[];
     medicalHistory?: string[];
@@ -171,7 +171,7 @@ export interface ExpertCaseSummary {
   substance_and_lifestyle_interactions: string[];
   pharmacological_and_herb_reconciliation: string[];
   nutritional_antinutrient_adjustments: string[];
-  clinical_inquiry_checklist: string[];
+  Debral_inquiry_checklist: string[];
   red_flag_review: string[];
   recommended_diagnostics: string[];
   patient_education_points: string[];
@@ -303,7 +303,7 @@ export function createDefaultExpertCaseSummary(): ExpertCaseSummary {
     substance_and_lifestyle_interactions: [],
     pharmacological_and_herb_reconciliation: [],
     nutritional_antinutrient_adjustments: [],
-    clinical_inquiry_checklist: [],
+    Debral_inquiry_checklist: [],
     red_flag_review: [],
     recommended_diagnostics: [],
     patient_education_points: [],
@@ -313,7 +313,7 @@ export function createDefaultExpertCaseSummary(): ExpertCaseSummary {
 export function createDefaultAdminSystemSummary(): AdminSystemSummary {
   return {
     recommended_expert_specialty: "General Practitioner",
-    expert_credential_prerequisites: ["Verified clinical licensure in relevant jurisdiction"],
+    expert_credential_prerequisites: ["Verified Debral licensure in relevant jurisdiction"],
     profile_completeness_pct: 0,
     unverified_high_risk_inputs: [],
     data_quality_notes: [],
@@ -358,12 +358,12 @@ strands and return ONLY a single JSON object matching the MultiStrandCaseEvaluat
 schema (schema_version "${SCHEMA_VERSION}"). Never include prose outside the JSON object.
 
 ## MANDATORY FIREWALL RULE
-Domain A (clinical, biochemical, pharmacological, epidemiological, and safety findings)
+Domain A (Debral, biochemical, pharmacological, epidemiological, and safety findings)
 and Domain B (cultural, astrological, AwudeNegest, and numerological reflection) are
 strictly separated. If safety_gate.critical_flag is true, domain_b_cultural_reflection.status
 MUST be "firewalled_due_to_critical_safety" and cultural_interpretation MUST be omitted.
 Domain B reflection never overrides, delays, or substitutes for emergency care, medication
-safety, or clinical urgency.
+safety, or Debral urgency.
 
 ## Analytical strands to evaluate
 1. Environmental & Ecological Triage — classify altitude zone: Lowland (Kolla), Mid-Highland

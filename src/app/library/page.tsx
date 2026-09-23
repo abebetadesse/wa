@@ -123,7 +123,7 @@ export default function LibraryPage() {
         <h2 className="mt-3 text-2xl font-bold text-white">Healing, liturgical, and esoteric heritage references</h2>
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-stone-300">
           These sources are incorporated as provenance-tracked Domain B cultural references. They are kept separate from
-          clinical evidence and are not used to generate diagnoses, medication advice, or unsafe ritual instructions.
+          Debral evidence and are not used to generate diagnoses, medication advice, or unsafe ritual instructions.
         </p>
         <div className="mt-6 grid gap-3 md:grid-cols-3">
           {ETHIOPIAN_MANUSCRIPT_SOURCES.map((source) => (
@@ -155,7 +155,7 @@ export default function LibraryPage() {
         <h2 className="mt-3 text-2xl font-bold text-white">Reviewed themes and page references</h2>
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-stone-300">
           OCR-derived summaries help reviewers locate themes without reproducing the books&apos; full text. Every entry remains
-          marked for cultural review and is separated from clinical recommendations.
+          marked for cultural review and is separated from Debral recommendations.
         </p>
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           {ETHIOPIAN_MANUSCRIPT_INDEX.map((entry) => {

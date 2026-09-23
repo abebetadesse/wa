@@ -3,7 +3,7 @@
  * Inspired by FoodTrack - Ethiopian Food Composition & Meal Logging
  */
 
-import { ScannedFoodItem, MealLog, DailyNutritionSummary } from "./healthTypes";
+import { ScannedFoodItem, MealLog, DailyNutritionSummary } from "./WelbeingTypes";
 
 // Ethiopian Food Composition Database (subset from EFCT 2025)
 export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
@@ -25,7 +25,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "3-day lactic acid fermentation of teff flour. Fermentation degrades phytate by ~60%, dramatically increasing iron and zinc bioavailability.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["high-fiber", "fermented-probiotic", "gluten-free-teff"],
+    WelbeingFlags: ["high-fiber", "fermented-probiotic", "gluten-free-teff"],
   },
   {
     id: "efct-002",
@@ -43,7 +43,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Cooked red lentils spiced with berbere, nitter kibbeh (if not fasting), onions, and garlic.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["high-protein", "high-fiber", "high-folate", "vegan-friendly"],
+    WelbeingFlags: ["high-protein", "high-fiber", "high-folate", "vegan-friendly"],
   },
   {
     id: "efct-003",
@@ -61,7 +61,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Chopped collard greens cooked with beef, onions, garlic, and Ethiopian spiced butter.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["high-calcium", "high-vitamin-a", "high-vitamin-c", "bone-health"],
+    WelbeingFlags: ["high-calcium", "high-vitamin-a", "high-vitamin-c", "bone-Welbeing"],
   },
   {
     id: "efct-004",
@@ -79,7 +79,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Ground roasted chickpea flour cooked with berbere, onion, and oil. Common fasting food.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["fasting-approved", "high-fiber", "legume-protein"],
+    WelbeingFlags: ["fasting-approved", "high-fiber", "legume-protein"],
   },
   {
     id: "efct-005",
@@ -98,7 +98,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Fermented honey wine with gesho leaves. Consumed during celebrations and ceremonies.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["fermented", "high-sugar", "ceremonial-beverage"],
+    WelbeingFlags: ["fermented", "high-sugar", "ceremonial-beverage"],
   },
   {
     id: "efct-006",
@@ -116,7 +116,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Minced raw beef seasoned with mitmita and spiced butter. Can be leb leb (lightly warmed) or fully cooked (fully cooked version recommended for safety).",
     sourceRef: "EFCT-2025",
-    healthFlags: ["high-protein", "high-b12", "high-zinc", "heme-iron", "food-safety-risk-raw"],
+    WelbeingFlags: ["high-protein", "high-b12", "high-zinc", "heme-iron", "food-safety-risk-raw"],
   },
   {
     id: "efct-007",
@@ -136,7 +136,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Fermented enset (false banana) corm and pseudostem. Fermented underground for 1-6 months. Cultural staple of Gurage and Sidama peoples.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["famine-resistant-crop", "long-fermented", "cultural-significance"],
+    WelbeingFlags: ["famine-resistant-crop", "long-fermented", "cultural-significance"],
   },
   {
     id: "efct-008",
@@ -154,7 +154,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Fresh or dried moringa leaves added to stews, or consumed as herbal tea. Increasingly recognized as a superfood.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["superfood", "high-vitamin-a", "high-calcium", "anti-inflammatory"],
+    WelbeingFlags: ["superfood", "high-vitamin-a", "high-calcium", "anti-inflammatory"],
   },
   {
     id: "efct-009",
@@ -172,7 +172,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Soured milk curd, strained and served fresh. Used with gomen or as a side dish. Not consumed during most fasting periods.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["high-calcium", "fermented", "probiotic", "animal-protein"],
+    WelbeingFlags: ["high-calcium", "fermented", "probiotic", "animal-protein"],
   },
   {
     id: "efct-010",
@@ -190,7 +190,7 @@ export const ETHIOPIAN_FOOD_DATABASE: ScannedFoodItem[] = [
     },
     traditionalPreparation: "Roasted and ground flaxseeds used in traditional porridge (genfo) or added to stews. Also used as herbal medicine.",
     sourceRef: "EFCT-2025",
-    healthFlags: ["omega-3", "high-fiber", "heart-health", "anti-inflammatory"],
+    WelbeingFlags: ["omega-3", "high-fiber", "heart-Welbeing", "anti-inflammatory"],
   },
 ];
 
@@ -201,7 +201,7 @@ export function searchFoodDatabase(query: string): ScannedFoodItem[] {
       food.name.toLowerCase().includes(q) ||
       (food.nameAmharic && food.nameAmharic.includes(q)) ||
       food.category.includes(q) ||
-      food.healthFlags.some((flag) => flag.includes(q))
+      food.WelbeingFlags.some((flag) => flag.includes(q))
   );
 }
 

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       feeETB: feeETB ?? 1000,
       status: "pending_payment",
       createdAt: new Date().toISOString(),
-      meetingLink: format === "in_person" ? undefined : `https://meet.ninimed.com/c/${crypto.randomUUID().slice(0, 8)}`,
+      meetingLink: format === "in_person" ? undefined : `https://meet.Debtera.com/c/${crypto.randomUUID().slice(0, 8)}`,
       preparationNotes: [
         "Review your timing window analysis before the session.",
         "Write down your top 3 questions for the advisor.",

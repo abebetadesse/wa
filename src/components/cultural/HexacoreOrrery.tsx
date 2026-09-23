@@ -214,11 +214,10 @@ export default function HexacoreOrrery() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${
-                isActive
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${isActive
                   ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-200 border border-indigo-500/40 shadow-lg shadow-indigo-950/40"
                   : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white border border-white/5"
-              }`}
+                }`}
             >
               <Icon className="h-4 w-4" />
               <span>{tab.label}</span>
@@ -524,11 +523,10 @@ export default function HexacoreOrrery() {
               <button
                 key={layer.num}
                 onClick={() => setActiveLayer(layer.num)}
-                className={`rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
-                  activeLayer === layer.num
+                className={`rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${activeLayer === layer.num
                     ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/50"
                     : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white border border-white/5"
-                }`}
+                  }`}
               >
                 L{layer.num}: {layer.name}
               </button>
@@ -817,7 +815,7 @@ export default function HexacoreOrrery() {
               <div className="rounded-3xl border border-amber-400/20 bg-amber-500/[0.04] p-6 space-y-4">
                 <div className="flex items-center gap-2 text-amber-300">
                   <AlertTriangle className="h-5 w-5" />
-                  <h4 className="font-bold text-base">Ethiopian Herbal Integration & Clinical Safety Profile</h4>
+                  <h4 className="font-bold text-base">Ethiopian Herbal Integration & Debral Safety Profile</h4>
                 </div>
                 <p className="text-xs text-amber-200/80">
                   Traditional botanical correspondences are documented for cultural inquiry only. Certain herbs (such as Kosso / <em>Hagenia abyssinica</em>) pose known toxicological risks (e.g. optic nerve toxicity at high doses).
@@ -827,11 +825,10 @@ export default function HexacoreOrrery() {
                     <div key={herb.scientificName} className="rounded-2xl border border-white/10 bg-[#0c0c1a] p-4 text-xs space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white text-sm">{herb.herb}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
-                          herb.safetyRating === "Caution"
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${herb.safetyRating === "Caution"
                             ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
                             : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                        }`}>
+                          }`}>
                           {herb.safetyRating || "Reflective"}
                         </span>
                       </div>
@@ -894,11 +891,10 @@ export default function HexacoreOrrery() {
                       setActiveDay(d);
                       setJournalText(savedEntries[d] || "");
                     }}
-                    className={`h-11 rounded-xl font-mono text-xs font-bold transition-all relative flex flex-col items-center justify-center ${
-                      isCurrent
+                    className={`h-11 rounded-xl font-mono text-xs font-bold transition-all relative flex flex-col items-center justify-center ${isCurrent
                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/50"
                         : "bg-white/[0.03] text-slate-300 hover:bg-white/[0.08]"
-                    }`}
+                      }`}
                   >
                     <span>D{d}</span>
                     {hasEntry && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-emerald-400" />}
@@ -1009,9 +1005,8 @@ export default function HexacoreOrrery() {
                   <button
                     key={t}
                     onClick={() => setBodySignTab(t)}
-                    className={`rounded-lg px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${
-                      bodySignTab === t ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
-                    }`}
+                    className={`rounded-lg px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${bodySignTab === t ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                      }`}
                   >
                     {t}
                   </button>

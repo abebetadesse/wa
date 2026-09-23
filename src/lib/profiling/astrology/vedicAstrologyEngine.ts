@@ -30,34 +30,34 @@ export const NAKSHATRAS: {
   element: HumoralElement;
   temperament: string;
 }[] = [
-  { name: "Ashwini", geezName: "አስዊኒ (ቀዳሚ)", rulingPlanet: "Ketu", deity: "Ashwini Kumaras", symbol: "Horse's Head", element: "esat", temperament: "Swift, healing, pioneering vitality" },
-  { name: "Bharani", geezName: "ባራኒ (ተሸካሚ)", rulingPlanet: "Venus", deity: "Yama", symbol: "Yoni / Vessel", element: "esat", temperament: "Restraint, transformative discipline" },
-  { name: "Krittika", geezName: "ክሪቲካ (ነበልባል)", rulingPlanet: "Sun", deity: "Agni", symbol: "Flame / Razor", element: "esat", temperament: "Purifying discernment, radiant clarity" },
-  { name: "Rohini", geezName: "ሮሂኒ (ቀይ ኮከብ)", rulingPlanet: "Moon", deity: "Brahma", symbol: "Chariot / Temple", element: "afere", temperament: "Sensory charm, fertility, artistic growth" },
-  { name: "Mrigashira", geezName: "ምሪጋሺራ (አጋዘን)", rulingPlanet: "Mars", deity: "Soma", symbol: "Deer's Head", element: "afere", temperament: "Inquisitive searching, gentle agility" },
-  { name: "Ardra", geezName: "አርዲራ (የእንባ ጠብታ)", rulingPlanet: "Rahu", deity: "Rudra", symbol: "Teardrop / Diamond", element: "nifas", temperament: "Cathartic storm, emotional breakthrough" },
-  { name: "Punarvasu", geezName: "ፑናርቫሱ (ተመላሽ ብርሃን)", rulingPlanet: "Jupiter", deity: "Aditi", symbol: "Bow & Quiver", element: "nifas", temperament: "Restoration of virtue, resilient return" },
-  { name: "Pushya", geezName: "ፑሽያ (በረከት)", rulingPlanet: "Saturn", deity: "Brihaspati", symbol: "Flower / Udder", element: "may", temperament: "Deep spiritual nourishment, ethical shelter" },
-  { name: "Ashlesha", geezName: "አሽሌሻ (እባብ)", rulingPlanet: "Mercury", deity: "Nagas", symbol: "Coiled Serpent", element: "may", temperament: "Intuitive psychology, mystical insight" },
-  { name: "Magha", geezName: "ማጋ (ታላቁ)", rulingPlanet: "Ketu", deity: "Pitris (Ancestors)", symbol: "Royal Throne", element: "esat", temperament: "Ancestral authority, noble heritage" },
-  { name: "Purva Phalguni", geezName: "ፑርቫ ፈልጉኒ", rulingPlanet: "Venus", deity: "Bhaga", symbol: "Hammock / Fig Tree", element: "esat", temperament: "Rejuvenation, delight, harmonious leisure" },
-  { name: "Uttara Phalguni", geezName: "ኡታራ ፈልጉኒ", rulingPlanet: "Sun", deity: "Aryaman", symbol: "Bed / Pillar", element: "afere", temperament: "Honor, steadfast alliances, civic duty" },
-  { name: "Hasta", geezName: "ሀስታ (የፈዋሽ እጅ)", rulingPlanet: "Moon", deity: "Savitur", symbol: "Open Hand", element: "afere", temperament: "Artisanal skill, therapeutic dexterity" },
-  { name: "Chitra", geezName: "ቺትራ (የከበረ ዕንቁ)", rulingPlanet: "Mars", deity: "Vishwakarma", symbol: "Bright Jewel", element: "nifas", temperament: "Architectural vision, aesthetic precision" },
-  { name: "Swati", geezName: "ስዋቲ (ነፃ ነፋስ)", rulingPlanet: "Rahu", deity: "Vayu", symbol: "Young Shoot / Coral", element: "nifas", temperament: "Independent adaptation, diplomatic grace" },
-  { name: "Vishakha", geezName: "ቪሻካ (ድል አድራጊ)", rulingPlanet: "Jupiter", deity: "Indra & Agni", symbol: "Triumphal Arch", element: "esat", temperament: "Focused triumph, unwavering goal pursuit" },
-  { name: "Anuradha", geezName: "አኑራዳ (የፍቅር ኮከብ)", rulingPlanet: "Saturn", deity: "Mitra", symbol: "Lotus Blossom", element: "may", temperament: "Loyal brotherhood, quiet devotion, resilience" },
-  { name: "Jyeshtha", geezName: "ጄሽታ (ታላቁ ሽማግሌ)", rulingPlanet: "Mercury", deity: "Indra", symbol: "Circular Amulet", element: "may", temperament: "Strategic leadership, veteran fortitude" },
-  { name: "Mula", geezName: "ሙላ (ሥር)", rulingPlanet: "Ketu", deity: "Nirriti", symbol: "Tied Roots", element: "esat", temperament: "Deep investigation, dismantling illusion" },
-  { name: "Purva Ashadha", geezName: "ፑርቫ አሻዳ (የማይሸነፍ)", rulingPlanet: "Venus", deity: "Apas (Waters)", symbol: "Winnowing Basket", element: "esat", temperament: "Unshakeable confidence, cleansing flow" },
-  { name: "Uttara Ashadha", geezName: "ኡታራ አሻዳ (ዘላቂ ድል)", rulingPlanet: "Sun", deity: "Vishwadevas", symbol: "Elephant Tusk", element: "afere", temperament: "Universal solidarity, steadfast integrity" },
-  { name: "Shravana", geezName: "ሽራቫና (የአዳማጭ ጆሮ)", rulingPlanet: "Moon", deity: "Vishnu", symbol: "Three Footprints / Ear", element: "afere", temperament: "Scholarly listening, traditional knowledge" },
-  { name: "Dhanishta", geezName: "ዳኒሽታ (የከበሮ ዜማ)", rulingPlanet: "Mars", deity: "Eight Vasus", symbol: "Dolphin / Drum", element: "nifas", temperament: "Rhythmic leadership, martial philanthropy" },
-  { name: "Shatabhisha", geezName: "ሻታቢሻ (መቶ ፈዋሾች)", rulingPlanet: "Rahu", deity: "Varuna", symbol: "Empty Circle / 100 Herbs", element: "nifas", temperament: "Esoteric medicine, solitary contemplation" },
-  { name: "Purva Bhadrapada", geezName: "ፑርቫ ባድራፓዳ", rulingPlanet: "Jupiter", deity: "Aja Ekapada", symbol: "Funeral Cot / Sword", element: "may", temperament: "Spiritual asceticism, profound earnestness" },
-  { name: "Uttara Bhadrapada", geezName: "ኡታራ ባድራፓዳ", rulingPlanet: "Saturn", deity: "Ahirbudhnya", symbol: "Twin in the Deep", element: "may", temperament: "Contemplative serenity, enlightened endurance" },
-  { name: "Revati", geezName: "ሬቫቲ (መጋቢ ኮከብ)", rulingPlanet: "Mercury", deity: "Pushan", symbol: "Fish / Drum", element: "may", temperament: "Compassionate guidance, safe voyage completion" },
-];
+    { name: "Ashwini", geezName: "አስዊኒ (ቀዳሚ)", rulingPlanet: "Ketu", deity: "Ashwini Kumaras", symbol: "Horse's Head", element: "esat", temperament: "Swift, healing, pioneering vitality" },
+    { name: "Bharani", geezName: "ባራኒ (ተሸካሚ)", rulingPlanet: "Venus", deity: "Yama", symbol: "Yoni / Vessel", element: "esat", temperament: "Restraint, transformative discipline" },
+    { name: "Krittika", geezName: "ክሪቲካ (ነበልባል)", rulingPlanet: "Sun", deity: "Agni", symbol: "Flame / Razor", element: "esat", temperament: "Purifying discernment, radiant clarity" },
+    { name: "Rohini", geezName: "ሮሂኒ (ቀይ ኮከብ)", rulingPlanet: "Moon", deity: "Brahma", symbol: "Chariot / Temple", element: "afere", temperament: "Sensory charm, fertility, artistic growth" },
+    { name: "Mrigashira", geezName: "ምሪጋሺራ (አጋዘን)", rulingPlanet: "Mars", deity: "Soma", symbol: "Deer's Head", element: "afere", temperament: "Inquisitive searching, gentle agility" },
+    { name: "Ardra", geezName: "አርዲራ (የእንባ ጠብታ)", rulingPlanet: "Rahu", deity: "Rudra", symbol: "Teardrop / Diamond", element: "nifas", temperament: "Cathartic storm, emotional breakthrough" },
+    { name: "Punarvasu", geezName: "ፑናርቫሱ (ተመላሽ ብርሃን)", rulingPlanet: "Jupiter", deity: "Aditi", symbol: "Bow & Quiver", element: "nifas", temperament: "Restoration of virtue, resilient return" },
+    { name: "Pushya", geezName: "ፑሽያ (በረከት)", rulingPlanet: "Saturn", deity: "Brihaspati", symbol: "Flower / Udder", element: "may", temperament: "Deep spiritual nourishment, ethical shelter" },
+    { name: "Ashlesha", geezName: "አሽሌሻ (እባብ)", rulingPlanet: "Mercury", deity: "Nagas", symbol: "Coiled Serpent", element: "may", temperament: "Intuitive psychology, mystical insight" },
+    { name: "Magha", geezName: "ማጋ (ታላቁ)", rulingPlanet: "Ketu", deity: "Pitris (Ancestors)", symbol: "Royal Throne", element: "esat", temperament: "Ancestral authority, noble heritage" },
+    { name: "Purva Phalguni", geezName: "ፑርቫ ፈልጉኒ", rulingPlanet: "Venus", deity: "Bhaga", symbol: "Hammock / Fig Tree", element: "esat", temperament: "Rejuvenation, delight, harmonious leisure" },
+    { name: "Uttara Phalguni", geezName: "ኡታራ ፈልጉኒ", rulingPlanet: "Sun", deity: "Aryaman", symbol: "Bed / Pillar", element: "afere", temperament: "Honor, steadfast alliances, civic duty" },
+    { name: "Hasta", geezName: "ሀስታ (የፈዋሽ እጅ)", rulingPlanet: "Moon", deity: "Savitur", symbol: "Open Hand", element: "afere", temperament: "Artisanal skill, therapeutic dexterity" },
+    { name: "Chitra", geezName: "ቺትራ (የከበረ ዕንቁ)", rulingPlanet: "Mars", deity: "Vishwakarma", symbol: "Bright Jewel", element: "nifas", temperament: "Architectural vision, aesthetic precision" },
+    { name: "Swati", geezName: "ስዋቲ (ነፃ ነፋስ)", rulingPlanet: "Rahu", deity: "Vayu", symbol: "Young Shoot / Coral", element: "nifas", temperament: "Independent adaptation, diplomatic grace" },
+    { name: "Vishakha", geezName: "ቪሻካ (ድል አድራጊ)", rulingPlanet: "Jupiter", deity: "Indra & Agni", symbol: "Triumphal Arch", element: "esat", temperament: "Focused triumph, unwavering goal pursuit" },
+    { name: "Anuradha", geezName: "አኑራዳ (የፍቅር ኮከብ)", rulingPlanet: "Saturn", deity: "Mitra", symbol: "Lotus Blossom", element: "may", temperament: "Loyal brotherhood, quiet devotion, resilience" },
+    { name: "Jyeshtha", geezName: "ጄሽታ (ታላቁ ሽማግሌ)", rulingPlanet: "Mercury", deity: "Indra", symbol: "Circular Amulet", element: "may", temperament: "Strategic leadership, veteran fortitude" },
+    { name: "Mula", geezName: "ሙላ (ሥር)", rulingPlanet: "Ketu", deity: "Nirriti", symbol: "Tied Roots", element: "esat", temperament: "Deep investigation, dismantling illusion" },
+    { name: "Purva Ashadha", geezName: "ፑርቫ አሻዳ (የማይሸነፍ)", rulingPlanet: "Venus", deity: "Apas (Waters)", symbol: "Winnowing Basket", element: "esat", temperament: "Unshakeable confidence, cleansing flow" },
+    { name: "Uttara Ashadha", geezName: "ኡታራ አሻዳ (ዘላቂ ድል)", rulingPlanet: "Sun", deity: "Vishwadevas", symbol: "Elephant Tusk", element: "afere", temperament: "Universal solidarity, steadfast integrity" },
+    { name: "Shravana", geezName: "ሽራቫና (የአዳማጭ ጆሮ)", rulingPlanet: "Moon", deity: "Vishnu", symbol: "Three Footprints / Ear", element: "afere", temperament: "Scholarly listening, traditional knowledge" },
+    { name: "Dhanishta", geezName: "ዳኒሽታ (የከበሮ ዜማ)", rulingPlanet: "Mars", deity: "Eight Vasus", symbol: "Dolphin / Drum", element: "nifas", temperament: "Rhythmic leadership, martial philanthropy" },
+    { name: "Shatabhisha", geezName: "ሻታቢሻ (መቶ ፈዋሾች)", rulingPlanet: "Rahu", deity: "Varuna", symbol: "Empty Circle / 100 Herbs", element: "nifas", temperament: "Esoteric medicine, solitary contemplation" },
+    { name: "Purva Bhadrapada", geezName: "ፑርቫ ባድራፓዳ", rulingPlanet: "Jupiter", deity: "Aja Ekapada", symbol: "Funeral Cot / Sword", element: "may", temperament: "Spiritual asceticism, profound earnestness" },
+    { name: "Uttara Bhadrapada", geezName: "ኡታራ ባድራፓዳ", rulingPlanet: "Saturn", deity: "Ahirbudhnya", symbol: "Twin in the Deep", element: "may", temperament: "Contemplative serenity, enlightened endurance" },
+    { name: "Revati", geezName: "ሬቫቲ (መጋቢ ኮከብ)", rulingPlanet: "Mercury", deity: "Pushan", symbol: "Fish / Drum", element: "may", temperament: "Compassionate guidance, safe voyage completion" },
+  ];
 
 const ZODIAC_LIST: ZodiacSignName[] = [
   "Aries", "Taurus", "Gemini", "Cancer",
@@ -223,7 +223,7 @@ export function calculateVedicChart(
     { code: "D20", name: "Vimshamsha", purpose: "Spiritual practice, meditation, devotion (bhakti), sacred study." },
     { code: "D24", name: "Chaturvimshamsha", purpose: "Higher education, academic brilliance, knowledge retention." },
     { code: "D27", name: "Saptavimshamsha", purpose: "Innate subconscious strengths, vulnerabilities, resilience." },
-    { code: "D30", name: "Trimshamsha", purpose: "Misfortunes, health hazards, karmic debt remediation." },
+    { code: "D30", name: "Trimshamsha", purpose: "Misfortunes, Welbeing hazards, karmic debt remediation." },
     { code: "D60", name: "Shashtiamsha", purpose: "Past life karma, root cause of deep recurring life events." },
   ];
 
@@ -285,9 +285,9 @@ export function calculateVimshottariDasha(birthDateStr: string, moonSiderealLong
       isCurrent,
       subPeriods: isCurrent
         ? [
-            { planet: nextLord.planet, startDate: `${Math.floor(currentYear)}-01-01`, endDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, isCurrent: true },
-            { planet: "Jupiter", startDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, endDate: `${Math.floor(endYear)}-01-01`, isCurrent: false },
-          ]
+          { planet: nextLord.planet, startDate: `${Math.floor(currentYear)}-01-01`, endDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, isCurrent: true },
+          { planet: "Jupiter", startDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, endDate: `${Math.floor(endYear)}-01-01`, isCurrent: false },
+        ]
         : undefined,
     });
 
@@ -405,9 +405,9 @@ export function generatePrashnaKundli(
   let karyaBhava = 1;
   let topic = "General Endeavor & Vitality";
 
-  if (qLower.includes("health") || qLower.includes("sick") || qLower.includes("cure") || qLower.includes("doctor")) {
+  if (qLower.includes("Welbeing") || qLower.includes("sick") || qLower.includes("cure") || qLower.includes("doctor")) {
     karyaBhava = 6;
-    topic = "health & Recovery";
+    topic = "Welbeing & Recovery";
   } else if (qLower.includes("love") || qLower.includes("marry") || qLower.includes("partner") || qLower.includes("relationship")) {
     karyaBhava = 7;
     topic = "Partnership & Affection";
@@ -475,8 +475,8 @@ export function calculatePersonalizedHoroscope(
     period === "daily"
       ? `Today, the transiting Moon illuminates your ${moonSign} sphere, providing enhanced emotional attunement and clarity in your interactions.`
       : period === "weekly"
-      ? `This week centers on grounding your energetic reserves. The solar currents through your chart highlight collaborative initiatives and personal wellness.`
-      : `This month marks a progressive cycle for long-range planning, somatic rejuvenation, and aligning your personal endeavors with ancestral cycles.`;
+        ? `This week centers on grounding your energetic reserves. The solar currents through your chart highlight collaborative initiatives and personal wellness.`
+        : `This month marks a progressive cycle for long-range planning, somatic rejuvenation, and aligning your personal endeavors with ancestral cycles.`;
 
   return {
     period,

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, roles, authSessions, healthGapReports, knowledgeItems, auditLog, loginHistory } from "@/lib/db/schema";
+import { users, roles, authSessions, WelbeingGapReports, knowledgeItems, auditLog, loginHistory } from "@/lib/db/schema";
 import { requireAnyRole } from "@/lib/auth";
 import { count, eq, sql } from "drizzle-orm";
 
@@ -20,27 +20,27 @@ export async function GET() {
     // 2. Platform operational metrics
     let totalCases = 0;
     try {
-      const [c] = await db.select({ total: count() }).from(healthGapReports);
+      const [c] = await db.select({ total: count() }).from(WelbeingGapReports);
       totalCases = c?.total || 0;
-    } catch {}
+    } catch { }
 
     let totalKnowledge = 0;
     try {
       const [k] = await db.select({ total: count() }).from(knowledgeItems);
       totalKnowledge = k?.total || 0;
-    } catch {}
+    } catch { }
 
     let activeSessionsCount = 0;
     try {
       const [s] = await db.select({ total: count() }).from(authSessions).where(eq(authSessions.isActive, true));
       activeSessionsCount = s?.total || 0;
-    } catch {}
+    } catch { }
 
     let totalAuditLogs = 0;
     try {
       const [a] = await db.select({ total: count() }).from(auditLog);
       totalAuditLogs = a?.total || 0;
-    } catch {}
+    } catch { }
 
     // 3. Role breakdown
     const allRoles = await db.select({ name: roles.name }).from(roles);
@@ -94,10 +94,10 @@ export async function GET() {
       const [fail] = await db.select({ total: count() }).from(loginHistory).where(sql`${loginHistory.status} != 'success'`);
       recentLoginsSuccess = succ?.total || 0;
       recentLoginsFailed = fail?.total || 0;
-    } catch {}
+    } catch { }
 
     const caseTypeBreakdown = [
-      { caseType: "health", count: Math.max(0, Math.round(totalCases * 0.42)) },
+      { caseType: "Welbeing", count: Math.max(0, Math.round(totalCases * 0.42)) },
       { caseType: "relationships", count: Math.max(0, Math.round(totalCases * 0.2)) },
       { caseType: "career", count: Math.max(0, Math.round(totalCases * 0.18)) },
       { caseType: "spiritual", count: Math.max(0, Math.round(totalCases * 0.12)) },

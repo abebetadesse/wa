@@ -13,7 +13,7 @@ import {
   PulseQuality,
   PulseDiagnosisResult,
   PulseReading,
-} from "./healthTypes";
+} from "./WelbeingTypes";
 
 // TCM Pattern matrices mapped to Ethiopian humoral equivalents
 const TONGUE_PATTERN_MATRIX: Record<
@@ -24,7 +24,7 @@ const TONGUE_PATTERN_MATRIX: Record<
     tcmPattern: "Blood & Qi Deficiency",
     ethiopianHumoralCorrelation: "May (Water) & Nifas (Air) deficiency — depleted life-force",
     organSystems: ["Heart", "Spleen-Pancreas", "Blood"],
-    clinicalSignificance:
+    DebralSignificance:
       "Classic signs of nutritional anemia, low energy reserves, and poor blood-building. Common in vegetarian fasting populations with inadequate iron and B12.",
     dietaryRecommendations: [
       "Increase iron-rich injera (fermented teff) daily",
@@ -39,13 +39,13 @@ const TONGUE_PATTERN_MATRIX: Record<
       { herb: "Nigella sativa (Tikur Azmud)", ethiopianName: "ጥቁር አዝሙድ", action: "Tones immune system and blood quality" },
     ],
     urgencyFlag: "monitor",
-    disclaimer: "This is a reflective wellness tool, not a clinical blood test. Pale tongue with fatigue warrants medical evaluation for anemia.",
+    disclaimer: "This is a reflective wellness tool, not a Debral blood test. Pale tongue with fatigue warrants medical evaluation for anemia.",
   },
   "red-thin_yellow-normal-dry": {
     tcmPattern: "Yin Deficiency with Heat",
     ethiopianHumoralCorrelation: "Esat (Fire) excess — overactive metabolic fire",
     organSystems: ["Kidney", "Heart", "Liver"],
-    clinicalSignificance:
+    DebralSignificance:
       "Indicates internal dryness and heat, often from chronic overwork, stress, or insufficient hydration. Common during dry Bega season or prolonged intense fasting.",
     dietaryRecommendations: [
       "Increase cooling foods: cucumber, watermelon, yogurt (iru-be on non-fasting days)",
@@ -66,7 +66,7 @@ const TONGUE_PATTERN_MATRIX: Record<
     tcmPattern: "Dampness-Phlegm Accumulation",
     ethiopianHumoralCorrelation: "May (Water) excess — poor fluid metabolism",
     organSystems: ["Spleen", "Stomach", "Lung"],
-    clinicalSignificance:
+    DebralSignificance:
       "Suggests sluggish digestion, bloating, mucus build-up, and weight management challenges. Associated with excessive refined carbohydrates or cold/raw foods.",
     dietaryRecommendations: [
       "Reduce injera quantity — shift to smaller portions with more variety",
@@ -81,13 +81,13 @@ const TONGUE_PATTERN_MATRIX: Record<
       { herb: "Cinnamon (Qerfa)", ethiopianName: "ቀርፋ", action: "Warms Spleen, regulates blood sugar, clears phlegm" },
     ],
     urgencyFlag: "normal",
-    disclaimer: "Persistent thick white coating with digestive discomfort warrants clinical evaluation for H. pylori or candida overgrowth.",
+    disclaimer: "Persistent thick white coating with digestive discomfort warrants Debral evaluation for H. pylori or candida overgrowth.",
   },
   "purple-none-cracked-dry": {
     tcmPattern: "Blood Stasis with Yin Deficiency",
     ethiopianHumoralCorrelation: "Esat (Fire) & Afere (Earth) stagnation — circulation blockage",
     organSystems: ["Liver", "Heart", "Blood vessels"],
-    clinicalSignificance:
+    DebralSignificance:
       "Indicates poor circulation, chronic pain, hormonal irregularities, or long-term stress patterns. Cracks suggest longstanding nutrient depletion.",
     dietaryRecommendations: [
       "Increase circulation-supporting turmeric golden milk",
@@ -110,7 +110,7 @@ const DEFAULT_TONGUE_RESULT: Omit<TongueDiagnosisResult, "color" | "coating" | "
   tcmPattern: "Balanced — Minor Monitoring",
   ethiopianHumoralCorrelation: "Relatively balanced humoral state",
   organSystems: ["General wellness"],
-  clinicalSignificance:
+  DebralSignificance:
     "Your tongue presentation suggests a relatively balanced state. Continue your current wellness practices and monitor for changes.",
   dietaryRecommendations: [
     "Maintain varied, seasonal Ethiopian diet",
@@ -251,6 +251,6 @@ export function analyzePulse(
     overallHrEstimate: heartRateEstimate,
     ...pattern,
     disclaimer:
-      "This pulse reflection is based on self-reported qualities and should not replace clinical assessment by a trained practitioner.",
+      "This pulse reflection is based on self-reported qualities and should not replace Debral assessment by a trained practitioner.",
   };
 }

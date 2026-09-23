@@ -55,7 +55,7 @@ export default function TrustExperience() {
           <ul className="space-y-3 text-sm text-slate-300">
             <li><CheckCircle2 className="mr-2 inline text-emerald-300" size={16} />Mode: {snapshot.ai.mode === "bionic_gpt" ? "Bionic GPT with fallback" : "Deterministic safety-aware fallback"}</li>
             <li><CheckCircle2 className="mr-2 inline text-emerald-300" size={16} />Recent context retained: {snapshot.ai.contextWindowMessages} messages</li>
-            <li><CheckCircle2 className="mr-2 inline text-emerald-300" size={16} />Clinical and cultural reasoning are firewalled</li>
+            <li><CheckCircle2 className="mr-2 inline text-emerald-300" size={16} />Debral and cultural reasoning are firewalled</li>
           </ul>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     success: true,
     reconstruction,
     safety: {
-      feedipediaHumanUseBoundary: "Feedipedia records marked animal_feed must not be used as human clinical composition without validated human-food evidence.",
+      feedipediaHumanUseBoundary: "Feedipedia records marked animal_feed must not be used as human Debral composition without validated human-food evidence.",
       basisAndProcessingRequired: true,
       noFabricatedValues: true,
     },

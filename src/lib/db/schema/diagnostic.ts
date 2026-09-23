@@ -1,6 +1,6 @@
 /**
  * Diagnostic Portal Schema — Multi-Strand Knowledge Sessions
- * Stores health inquiries, structured AI reasoning, urgency scores,
+ * Stores Welbeing inquiries, structured AI reasoning, urgency scores,
  * prioritized solutions, and 5-stage action plans.
  */
 import { pgTable, uuid, varchar, timestamp, jsonb, text, integer } from "../mysqlSchema";

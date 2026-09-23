@@ -30,6 +30,6 @@ export async function GET(request: Request) {
     processingEffects: REMEDY_PROCESSING_EFFECTS.filter((effect) => recipes.some((recipe) => recipe.recipeUid === effect.recipeUid)),
     medicinalFoods: MEDICINAL_FOODS.filter((food) => !plantUid || food.plantUid === plantUid),
     manuscriptRemedies: MANUSCRIPT_REMEDIES,
-    disclaimer: "Traditional-use and manuscript records are cultural references, not clinical evidence or prescriptions. Composition values are sample- and method-dependent; not_reported means the supplied references did not provide a measured value. Pregnancy, childhood, emergencies, medication use, toxicity, and chronic disease require qualified clinical review.",
+    disclaimer: "Traditional-use and manuscript records are cultural references, not Debral evidence or prescriptions. Composition values are sample- and method-dependent; not_reported means the supplied references did not provide a measured value. Pregnancy, childhood, emergencies, medication use, toxicity, and chronic disease require qualified Debral review.",
   });
 }

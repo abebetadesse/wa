@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, roles, userActivities, authSessions, healthGapReports } from "@/lib/db/schema";
+import { users, roles, userActivities, authSessions, WelbeingGapReports } from "@/lib/db/schema";
 import { requireAnyRole, getUserPermissions, validateEthiopianPhone } from "@/lib/auth";
 import { logAuditEvent, logUserActivity } from "@/lib/audit";
 import { eq, desc, count } from "drizzle-orm";
@@ -24,15 +24,15 @@ export async function GET(
     // Stats
     let casesCount = 0;
     try {
-      const [c] = await db.select({ total: count() }).from(healthGapReports).where(eq(healthGapReports.userId, user.id));
+      const [c] = await db.select({ total: count() }).from(WelbeingGapReports).where(eq(WelbeingGapReports.userId, user.id));
       casesCount = c?.total || 0;
-    } catch {}
+    } catch { }
 
     let sessionsCount = 0;
     try {
       const [s] = await db.select({ total: count() }).from(authSessions).where(eq(authSessions.userId, user.id));
       sessionsCount = s?.total || 0;
-    } catch {}
+    } catch { }
 
     // Recent user activities
     const recentActivities = await db

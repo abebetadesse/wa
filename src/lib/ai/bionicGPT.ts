@@ -37,20 +37,20 @@ export interface BionicChatOptions {
   maxTokens?: number;
   frequencyPenalty?: number;
   presencePenalty?: number;
-  
+
   /** Force model to output valid JSON. If true, response.parsedJson will be available. */
   jsonMode?: boolean;
-  
+
   /** Array of tools/functions the model can call */
   tools?: BionicTool[];
   /** "auto", "none", or a specific tool object to force */
   toolChoice?: "auto" | "none" | { type: "function"; function: { name: string } };
-  
+
   /** Number of times to retry on 429/5xx errors (default: 0) */
   retries?: number;
   /** Signal to abort the request dynamically */
   signal?: AbortSignal;
-  
+
   /** Dynamic overrides */
   modelOverride?: string;
   baseUrlOverride?: string;
@@ -84,7 +84,7 @@ export interface BionicConfig {
   fallbackEnabled: boolean;
 }
 
-const BIONIC_REQUEST_TIMEOUT_MS = 60_000; 
+const BIONIC_REQUEST_TIMEOUT_MS = 60_000;
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
@@ -253,7 +253,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
 
   const endpoint = `${config.baseUrl}/v1/chat/completions`;
   const maxRetries = Math.max(0, options.retries ?? 0);
-  
+
   // Construct OpenAI-compatible body
   const body: Record<string, any> = {
     model: config.model,
@@ -274,7 +274,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
   if (options.onStart) options.onStart({ model: config.model, messages: options.messages });
 
   let attempt = 0;
-  
+
   while (attempt <= maxRetries) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), BIONIC_REQUEST_TIMEOUT_MS);
@@ -295,7 +295,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
 
       if (!response.ok) {
         if ((response.status === 429 || response.status >= 500) && attempt < maxRetries) {
-          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500; 
+          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
           await sleep(delay);
           attempt++;
           continue;
@@ -316,7 +316,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
       } : undefined;
 
       const content = extractMessageContent(choice.message?.content);
-      
+
       // Auto-parse JSON if requested
       let parsedJson: T | undefined = undefined;
       if (options.jsonMode && content) {
@@ -347,13 +347,13 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
       if (error.name === "AbortError" && options.signal?.aborted) {
         throw new BionicGPTError("Request aborted by user.", "USER_ABORTED");
       }
-      
+
       if (attempt < maxRetries && error.name !== "AbortError") {
         await sleep(Math.pow(2, attempt) * 1000);
         attempt++;
         continue;
       }
-      
+
       throw new BionicGPTError(
         `Network error: ${error.name === "AbortError" ? 'Timeout' : error.message}`,
         error.name === "AbortError" ? "TIMEOUT" : "NETWORK_ERROR"
@@ -363,7 +363,7 @@ export async function bionicChat<T = any>(options: BionicChatOptions): Promise<B
       if (options.signal) options.signal.removeEventListener("abort", abortHandler);
     }
   }
-  
+
   throw new BionicGPTError("Max retries exceeded", "NETWORK_ERROR");
 }
 
@@ -496,9 +496,9 @@ export async function* bionicChatStreamParsed(options: BionicChatOptions): Async
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed || !trimmed.startsWith("data: ")) continue;
-        
+
         const dataStr = trimmed.slice(6);
-        if (dataStr === "[DONE]") return; 
+        if (dataStr === "[DONE]") return;
 
         try {
           const parsed = JSON.parse(dataStr);
@@ -580,7 +580,7 @@ export async function synthesizeCaseReportAnalysis(
   if (!isBionicConfigured()) return fallback;
 
   try {
-    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and clinical-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Keep every recommendation ethical, non-diagnostic, culturally grounded, and concise.`;
+    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and Debral-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Keep every recommendation ethical, non-diagnostic, culturally grounded, and concise.`;
     const messages = buildBionicMessages(systemPrompt, [
       {
         role: "user",
@@ -603,11 +603,11 @@ export async function synthesizeCaseReportAnalysis(
         challenges: Array.isArray(parsed.challenges) ? parsed.challenges.filter((x: unknown) => typeof x === "string") : fallback.challenges,
         strategicRecommendations: Array.isArray(parsed.strategicRecommendations)
           ? parsed.strategicRecommendations.map((item: any) => ({
-              title: typeof item?.title === "string" ? item.title : "Recommended next action",
-              description: typeof item?.description === "string" ? item.description : "Proceed with care and context-aware review.",
-              priority: item?.priority === "short_term" ? "short_term" : item?.priority === "long_term" ? "long_term" : "immediate",
-              timingNote: typeof item?.timingNote === "string" ? item.timingNote : undefined,
-            }))
+            title: typeof item?.title === "string" ? item.title : "Recommended next action",
+            description: typeof item?.description === "string" ? item.description : "Proceed with care and context-aware review.",
+            priority: item?.priority === "short_term" ? "short_term" : item?.priority === "long_term" ? "long_term" : "immediate",
+            timingNote: typeof item?.timingNote === "string" ? item.timingNote : undefined,
+          }))
           : fallback.strategicRecommendations,
         networkingSuggestions: Array.isArray(parsed.networkingSuggestions)
           ? parsed.networkingSuggestions.filter((x: unknown) => typeof x === "string")
