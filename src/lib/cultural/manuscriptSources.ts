@@ -32,7 +32,7 @@ export const ETHIOPIAN_MANUSCRIPT_SOURCES: ManuscriptSource[] = [
     filenameContentNote: "The supplied filename appears to contain a Gitsaw title page; verify the file-to-title mapping with the rights holder.",
     sourceType: "user_supplied_local_pdf",
     themes: ["Ethiopian healing manuscript tradition", "spiritual and cultural care", "manuscript-based remedies and practices"],
-    safeIntegration: ["Cultural reference and historical context", "Searchable source metadata after authorized OCR and review", "Domain B context kept separate from Debral recommendations"],
+    safeIntegration: ["Cultural reference and historical context", "Searchable source metadata after authorized OCR and review", "Domain B context kept separate from scientific recommendations"],
     restrictedUses: ["No diagnosis", "No medication or herbal dosing", "No replacement for emergency or professional care"],
     reviewStatus: "needs_cultural_review",
   },
@@ -50,7 +50,7 @@ export const ETHIOPIAN_MANUSCRIPT_SOURCES: ManuscriptSource[] = [
     sourceType: "user_supplied_local_pdf",
     themes: ["Ethiopian Orthodox liturgical manuscript tradition", "calendar and feast context", "prayer and devotional heritage"],
     safeIntegration: ["Cultural calendar context", "Faith-sensitive language and library metadata", "Optional Domain B educational summaries after review"],
-    restrictedUses: ["No Debral treatment claims", "No coercive or prescriptive religious guidance", "No reproduction of the full manuscript in public responses"],
+    restrictedUses: ["No scientific treatment claims", "No coercive or prescriptive religious guidance", "No reproduction of the full manuscript in public responses"],
     reviewStatus: "needs_cultural_review",
   },
   {
@@ -65,7 +65,7 @@ export const ETHIOPIAN_MANUSCRIPT_SOURCES: ManuscriptSource[] = [
     sourceType: "user_supplied_local_pdf",
     themes: ["Protective and remedial ritual traditions", "prayer formulas and manuscript practice", "Ethiopian esoteric heritage"],
     safeIntegration: ["Historical and anthropological description", "Non-operational topic summaries", "Domain B cultural literacy with safety notices"],
-    restrictedUses: ["Do not provide ritual instructions as medical treatment", "Do not encourage ingestion, smoke exposure, burning, or unsafe substances", "Escalate crisis, poisoning, injury, or mental-Welbeing concerns to qualified services"],
+    restrictedUses: ["Do not provide ritual instructions as medical treatment", "Do not encourage ingestion, smoke exposure, burning, or unsafe substances", "Escalate crisis, poisoning, injury, or mental-wellbeing concerns to qualified services"],
     reviewStatus: "needs_cultural_review",
   },
 ];

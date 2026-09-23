@@ -76,7 +76,7 @@ export class UrgencyDetector {
     );
     if (highEntity) {
       hasHigh = true;
-      matchedSignals.push("high-urgency Debral indicator");
+      matchedSignals.push("high-urgency scientific indicator");
     }
 
     if (hasHigh) {
@@ -84,7 +84,7 @@ export class UrgencyDetector {
         level: "high",
         score: 80,
         action: "SEEK IN-PERSON MEDICAL EVALUATION WITHIN 24 HOURS",
-        recommendation: "Your symptoms warrant prompt professional Welbeingcare review today to prevent acute complications.",
+        recommendation: "Your symptoms warrant prompt professional healthcare review today to prevent acute complications.",
         matchedSignals,
       };
     }
@@ -108,8 +108,8 @@ export class UrgencyDetector {
       return {
         level: "medium",
         score: 50,
-        action: "SCHEDULE WelbeingCARE CONSULTATION WITHIN 1 WEEK",
-        recommendation: "Schedule an appointment with a general physician or community Welbeing center for diagnostic baseline testing.",
+        action: "SCHEDULE wellbeingCARE CONSULTATION WITHIN 1 WEEK",
+        recommendation: "Schedule an appointment with a general physician or community health center for diagnostic baseline testing.",
         matchedSignals,
       };
     }

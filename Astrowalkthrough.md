@@ -29,7 +29,7 @@ Successfully transformed the Ethiopian Wisdom Platform into a **world-class pers
 
 ### [danMillmanNumerology.ts](file:///c:/Users/abebe/Desktop/wa/src/lib/profiling/numerology/danMillmanNumerology.ts)
 - `calculateDanMillmanLifePath(birthDate)`: Sums every single digit in birth date without intermediate reduction (e.g. `1985-06-15` = 1+9+8+5+0+6+1+5 = 35 -> 3+5 = 8 => `35/8`).
-- Database of 45 Dan Millman Life Paths with core purpose, innate gifts, recurring challenges, somatic Welbeing vulnerabilities, and vitality practices.
+- Database of 45 Dan Millman Life Paths with core purpose, innate gifts, recurring challenges, somatic wellbeing vulnerabilities, and vitality practices.
 
 ### [multiSystemNumerology.ts](file:///c:/Users/abebe/Desktop/wa/src/lib/profiling/numerology/multiSystemNumerology.ts)
 - `calculateChaldeanNumerology(name, birthDate)`: Ancient Babylonian 1-8 letter vibrations (omitting 9 as sacred), compound number interpretations, lucky days, and gem alignments.
@@ -38,7 +38,7 @@ Successfully transformed the Ethiopian Wisdom Platform into a **world-class pers
 
 ### [awudeNegestEngine.ts](file:///c:/Users/abebe/Desktop/wa/src/lib/cultural/awudeNegestEngine.ts)
 - `AWUDE_CIRCLES`: All 16 magic circles with Ge'ez titles, symbols, guardian angels, elemental affinities (Esat, Afere, Nifas, May), and 16 day/night sections.
-- `AWUDE_NEGEST_60_CATEGORIES`: All 60 classical divination categories (marriage, travel, enmity, pregnancy, trial, illness, business, love, Welbeing, etc.).
+- `AWUDE_NEGEST_60_CATEGORIES`: All 60 classical divination categories (marriage, travel, enmity, pregnancy, trial, illness, business, love, wellbeing, etc.).
 - `calculateAwudeNegestReading(input)`: Ge'ez letter summation, modulo 16 circle assignment, category prophecy, traditional Ethiopian proverbs, and botanical remedies.
 - `getDabtaraWisdom(category)`: Historical 17th-century Gondarine parchment manuscript prescriptions with protective Ge'ez prayers, English translations, and herbal adaptogen synergies.
 
@@ -113,7 +113,7 @@ All 25 API routes are built as Next.js route handlers with complete error handli
   ✔ Context-Aware AI Chat Engine (2 tests passed)
   ✔ Multi-Dimensional Compatibility Engine (2 tests passed)
   ✔ Compliance Disclaimers (1 test passed)
-  ✔ Debral Evaluation Engine Stages 1-6 & Domain A/B Firewall (16 tests passed)
+  ✔ Scientific Evaluation Engine Stages 1-6 & Domain A/B Firewall (16 tests passed)
   ✔ Mechanism Discovery & Multimodal Constitution (5 tests passed)
   Total: 40 passed, 0 failed
   ```

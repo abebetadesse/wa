@@ -12,7 +12,7 @@ export type RoleName =
 export const PERMISSION_CATEGORIES = {
   PUBLIC: "Public & General",
   PROFILE: "User Profile",
-  CASES: "Debral Cases",
+  CASES: "Scientific Cases",
   PREMIUM_FEATURES: "Premium Features & AI",
   CONTENT: "Knowledge & Content Management",
   USER_MANAGEMENT: "User Management",
@@ -32,15 +32,15 @@ export const ALL_PERMISSIONS = [
   { key: "profile:edit", label: "Edit Own Profile", category: PERMISSION_CATEGORIES.PROFILE },
 
   // Cases
-  { key: "cases:create", label: "Create Welbeing Cases", category: PERMISSION_CATEGORIES.CASES },
-  { key: "cases:view", label: "View Own Welbeing Cases", category: PERMISSION_CATEGORIES.CASES },
-  { key: "cases:edit", label: "Edit Own Welbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:create", label: "Create wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:view", label: "View Own wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:edit", label: "Edit Own wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
 
   // Premium Features
   { key: "ai:chat", label: "Advanced AI Chat Engine", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
   { key: "reports:full", label: "Full Multi-Disciplinary Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
-  { key: "reports:basic", label: "Basic Welbeing Gap Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
-  { key: "data:export", label: "Export Welbeing Data (JSON/CSV)", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
+  { key: "reports:basic", label: "Basic wellbeing Gap Reports", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
+  { key: "data:export", label: "Export wellbeing Data (JSON/CSV)", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
 
   // Content
   { key: "content:view", label: "View Knowledge Base Items", category: PERMISSION_CATEGORIES.CONTENT },
@@ -73,7 +73,7 @@ export const ALL_PERMISSIONS = [
 
   // Practitioner
   { key: "practitioner:profile:manage", label: "Manage Verified Practitioner Profile", category: PERMISSION_CATEGORIES.PRACTITIONER },
-  { key: "practitioner:consult", label: "Consult Users & Debral Sessions", category: PERMISSION_CATEGORIES.PRACTITIONER },
+  { key: "practitioner:consult", label: "Consult Users & Scientific Sessions", category: PERMISSION_CATEGORIES.PRACTITIONER },
 ] as const;
 
 export type PermissionKey = (typeof ALL_PERMISSIONS)[number]["key"] | "*";

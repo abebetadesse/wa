@@ -1,4 +1,4 @@
-import type { CulturalFinding, CulturalReportPayload, HiddenDebralFindings } from "./contracts";
+import type { CulturalFinding, CulturalReportPayload, HiddenScientificFindings } from "./contracts";
 
 type TranslationRule = {
   key: string;
@@ -28,7 +28,7 @@ const RULES: TranslationRule[] = [
     title: "Boundary and breath",
     traditionalLanguage: "The breath and boundary fields suggest making room for quiet restoration.",
     practice: "Try a short breathing practice, supportive conversation, and a predictable sleep routine.",
-    safetyNotice: "Reflective language is not a mental-Welbeing assessment.",
+    safetyNotice: "Reflective language is not a mental-wellbeing assessment.",
   },
   {
     key: "climate",
@@ -42,7 +42,7 @@ const RULES: TranslationRule[] = [
 const SAFE_DEFAULT: CulturalFinding = {
   title: "A moment for observation",
   traditionalLanguage: "The image offers a prompt for gentle self-observation rather than certainty.",
-  practice: "Pause, note how you feel, and speak with a qualified professional if you have a Welbeing concern.",
+  practice: "Pause, note how you feel, and speak with a qualified professional if you have a wellbeing concern.",
   safetyNotice: "Image-based readings are reflective only and cannot diagnose or treat illness.",
   source: "reflective_dictionary",
 };
@@ -51,7 +51,7 @@ function matches(value: unknown): boolean {
   return value === true || value === "high" || value === "low" || value === "present";
 }
 
-function pickRule(findings: HiddenDebralFindings, candidates: string[]): TranslationRule | undefined {
+function pickRule(findings: HiddenScientificFindings, candidates: string[]): TranslationRule | undefined {
   return candidates.find((key) => matches(findings[key])) ? RULES.find((rule) => rule.key === candidates.find((key) => matches(findings[key]))) : undefined;
 }
 
@@ -62,7 +62,7 @@ function pickRule(findings: HiddenDebralFindings, candidates: string[]): Transla
  */
 export class CulturalTranslator {
   translate(input: {
-    DebralFindings: HiddenDebralFindings;
+    scientificFindings: HiddenScientificFindings;
     scanType?: "palm" | "tongue";
     hexacoreCore?: string;
     hexacoreState?: string;
@@ -70,10 +70,10 @@ export class CulturalTranslator {
     redFlags?: Array<{ severity?: "low" | "medium" | "high"; referralRecommended?: boolean }>;
   }): CulturalReportPayload {
     const findings: CulturalFinding[] = [
-      pickRule(input.DebralFindings, ["hydration", "water"]) ??
-      pickRule(input.DebralFindings, ["circulation", "warmth"]) ??
-      pickRule(input.DebralFindings, ["stress", "sleep"]) ??
-      pickRule(input.DebralFindings, ["climate", "altitude"]) ??
+      pickRule(input.scientificFindings, ["hydration", "water"]) ??
+      pickRule(input.scientificFindings, ["circulation", "warmth"]) ??
+      pickRule(input.scientificFindings, ["stress", "sleep"]) ??
+      pickRule(input.scientificFindings, ["climate", "altitude"]) ??
       SAFE_DEFAULT,
     ].map((rule) => ({
       title: rule.title,
@@ -125,7 +125,7 @@ export class CulturalTranslator {
             recommendedAction: "Continue observation and seek qualified advice if concerns persist.",
           },
         }),
-      safetyNotice: "This cultural translation is preliminary, reflective, and non-diagnostic. It must not replace medical, mental-Welbeing, or emergency care.",
+      safetyNotice: "This cultural translation is preliminary, reflective, and non-diagnostic. It must not replace medical, mental-wellbeing, or emergency care.",
     };
   }
 }

@@ -5,12 +5,12 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  *
  * Integrates:
  * - Ethiopian AwudeNegest (ዓውደ ነገሥት) – 16 circular tables, Ge'ez letter numerology
- * - Western zodiac with Welbeing associations (12 signs, planets, houses)
+ * - Western zodiac with wellbeing associations (12 signs, planets, houses)
  * - Humoral/elemental constitution (Earth, Water, Air, Fire)
- * - Planetary Welbeing associations (organs, conditions, recommendations)
- * - House system Welbeing mapping (12 houses → body parts, life areas)
+ * - Planetary wellbeing associations (organs, conditions, recommendations)
+ * - House system wellbeing mapping (12 houses → body parts, life areas)
  * - Seasonal guidance (Ethiopian seasons Kiremt, Bega, Belg)
- * - Lunar guidance (phases, Welbeing cycles, Ethiopian lunar calendar)
+ * - Lunar guidance (phases, wellbeing cycles, Ethiopian lunar calendar)
  * - Däbtära healing scroll wisdom (celestial botanical prescriptions)
  * - Naming & Ge'ez identity analysis (name meanings, numerological values)
  * - Ethiopian zodiac (13-month calendar based)
@@ -76,11 +76,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ሀ",
       description: "Light, life, vitality, and divine blessing",
       element: "Fire",
-      Welbeing_associations: ["Heart", "Spine", "Vitality", "Immune system"],
+      wellbeing_associations: ["Heart", "Spine", "Vitality", "Immune system"],
       emotional_traits: ["Optimistic", "Generous", "Creative", "Leadership"],
-      life_areas: ["Welbeing", "Career", "Leadership", "Life purpose"],
+      life_areas: ["wellbeing", "Career", "Leadership", "Life purpose"],
       recommendations: [
-        "Focus on cardiovascular Welbeing",
+        "Focus on cardiovascular wellbeing",
         "Engage in creative and leadership activities",
         "Balance solar energy with rest",
       ],
@@ -91,12 +91,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ለ",
       description: "Emotions, intuition, cycles, and nurturing",
       element: "Water",
-      Welbeing_associations: ["Stomach", "Breasts", "Lymphatic system", "Reproductive Welbeing"],
+      wellbeing_associations: ["Stomach", "Breasts", "Lymphatic system", "Reproductive wellbeing"],
       emotional_traits: ["Intuitive", "Nurturing", "Empathetic", "Mood-driven"],
       life_areas: ["Family", "Home", "Emotional well-being", "Relationships"],
       recommendations: [
         "Practice emotional regulation and mindfulness",
-        "Support reproductive Welbeing with balanced nutrition",
+        "Support reproductive wellbeing with balanced nutrition",
         "Create a nurturing home environment",
       ],
     },
@@ -106,12 +106,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ሐ",
       description: "Expression, intellect, and social connection",
       element: "Air",
-      Welbeing_associations: ["Lungs", "Nervous system", "Thyroid", "Vocal cords"],
+      wellbeing_associations: ["Lungs", "Nervous system", "Thyroid", "Vocal cords"],
       emotional_traits: ["Communicative", "Intellectual", "Adaptable", "Curious"],
       life_areas: ["Education", "Relationships", "Career", "Communication"],
       recommendations: [
         "Practice deep breathing exercises",
-        "Support thyroid Welbeing with iodine-rich foods",
+        "Support thyroid wellbeing with iodine-rich foods",
         "Engage in stimulating conversation and learning",
       ],
     },
@@ -121,11 +121,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "መ",
       description: "Heritage, roots, and ancestral wisdom",
       element: "Earth",
-      Welbeing_associations: ["Bones", "Joints", "Skin", "Hair", "Teeth"],
+      wellbeing_associations: ["Bones", "Joints", "Skin", "Hair", "Teeth"],
       emotional_traits: ["Grounded", "Traditional", "Loyal", "Patient"],
       life_areas: ["Family", "Heritage", "Property", "Foundations"],
       recommendations: [
-        "Support bone Welbeing with calcium and vitamin D",
+        "Support bone wellbeing with calcium and vitamin D",
         "Connect with family history and heritage",
         "Build strong foundations in life",
       ],
@@ -136,12 +136,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ሠ",
       description: "Creative expression, children, and joy",
       element: "Fire",
-      Welbeing_associations: ["Heart", "Circulation", "Reproductive system"],
+      wellbeing_associations: ["Heart", "Circulation", "Reproductive system"],
       emotional_traits: ["Creative", "Playful", "Spontaneous", "Generous"],
       life_areas: ["Children", "Creative arts", "Joy", "Romance"],
       recommendations: [
         "Engage in creative activities",
-        "Support cardiovascular Welbeing with exercise",
+        "Support cardiovascular wellbeing with exercise",
         "Maintain a joyful, playful outlook",
       ],
     },
@@ -149,14 +149,14 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       number: 6,
       name: "Circle of Service (ሰብአ)",
       geEz_symbol: "ረ",
-      description: "Welbeing, daily routine, and service to others",
+      description: "wellbeing, daily routine, and service to others",
       element: "Earth",
-      Welbeing_associations: ["Digestive system", "Intestines", "Daily routine", "Work"],
+      wellbeing_associations: ["Digestive system", "Intestines", "Daily routine", "Work"],
       emotional_traits: ["Dutiful", "Orderly", "Responsible", "Caring"],
-      life_areas: ["Welbeing", "Work", "Daily habits", "Service"],
+      life_areas: ["wellbeing", "Work", "Daily habits", "Service"],
       recommendations: [
-        "Maintain a Welbeingy daily routine",
-        "Support digestive Welbeing with fermented foods",
+        "Maintain a healthy daily routine",
+        "Support digestive wellbeing with fermented foods",
         "Engage in meaningful work and service",
       ],
     },
@@ -166,12 +166,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ሰ",
       description: "Relationships, marriage, and partnerships",
       element: "Air",
-      Welbeing_associations: ["Kidneys", "Adrenals", "Hormonal balance"],
+      wellbeing_associations: ["Kidneys", "Adrenals", "Hormonal balance"],
       emotional_traits: ["Collaborative", "Diplomatic", "Fair", "Aesthetic"],
       life_areas: ["Relationships", "Marriage", "Business partnerships"],
       recommendations: [
-        "Support adrenal Welbeing with stress management",
-        "Cultivate Welbeingy partnerships",
+        "Support adrenal wellbeing with stress management",
+        "Cultivate healthy partnerships",
         "Maintain hormonal balance with balanced diet",
       ],
     },
@@ -181,12 +181,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ቀ",
       description: "Transformation, death, rebirth, and healing",
       element: "Water",
-      Welbeing_associations: ["Reproductive organs", "Bladder", "Elimination"],
+      wellbeing_associations: ["Reproductive organs", "Bladder", "Elimination"],
       emotional_traits: ["Intense", "Transformative", "Healing", "Resilient"],
       life_areas: ["Healing", "Transformation", "Legacy", "Crisis"],
       recommendations: [
         "Embrace life transitions",
-        "Support reproductive Welbeing",
+        "Support reproductive wellbeing",
         "Practice healing and forgiveness",
       ],
     },
@@ -196,11 +196,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "በ",
       description: "Wisdom, philosophy, and higher learning",
       element: "Fire",
-      Welbeing_associations: ["Hips", "Liver", "Vision", "Spiritual Welbeing"],
+      wellbeing_associations: ["Hips", "Liver", "Vision", "Spiritual wellbeing"],
       emotional_traits: ["Wisdom", "Adventurous", "Philosophical", "Optimistic"],
       life_areas: ["Higher education", "Travel", "Philosophy", "Spirituality"],
       recommendations: [
-        "Support liver Welbeing with antioxidant-rich foods",
+        "Support liver wellbeing with antioxidant-rich foods",
         "Engage in lifelong learning and travel",
         "Cultivate wisdom and gratitude",
       ],
@@ -211,11 +211,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ተ",
       description: "Career, achievement, and public image",
       element: "Earth",
-      Welbeing_associations: ["Knees", "Joints", "Skeletal system"],
+      wellbeing_associations: ["Knees", "Joints", "Skeletal system"],
       emotional_traits: ["Ambitious", "Disciplined", "Respected", "Achievement-oriented"],
       life_areas: ["Career", "Reputation", "Life purpose"],
       recommendations: [
-        "Support joint Welbeing with collagen and nutrition",
+        "Support joint wellbeing with collagen and nutrition",
         "Pursue meaningful career goals",
         "Build a positive public image",
       ],
@@ -226,7 +226,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ኀ",
       description: "Community, friendship, and social networks",
       element: "Air",
-      Welbeing_associations: ["Circulation", "Calves", "Ankles", "Nervous system"],
+      wellbeing_associations: ["Circulation", "Calves", "Ankles", "Nervous system"],
       emotional_traits: ["Friendly", "Visionary", "Community-minded", "Social"],
       life_areas: ["Community", "Friendships", "Social change"],
       recommendations: [
@@ -241,12 +241,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ነ",
       description: "Spirituality, healing, and inner peace",
       element: "Water",
-      Welbeing_associations: ["Feet", "Lymphatic system", "Mental Welbeing", "Sleep"],
+      wellbeing_associations: ["Feet", "Lymphatic system", "Mental wellbeing", "Sleep"],
       emotional_traits: ["Spiritual", "Intuitive", "Healing", "Introspective"],
       life_areas: ["Spirituality", "Healing", "Solitude", "Inner peace"],
       recommendations: [
         "Practice mindfulness and meditation",
-        "Support lymphatic Welbeing with hydration and movement",
+        "Support lymphatic wellbeing with hydration and movement",
         "Cultivate inner peace and spirituality",
       ],
     },
@@ -256,7 +256,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "አ",
       description: "Renewal, rebirth, and new cycles",
       element: "Fire",
-      Welbeing_associations: ["Pituitary gland", "Metabolism", "Renewal systems"],
+      wellbeing_associations: ["Pituitary gland", "Metabolism", "Renewal systems"],
       emotional_traits: ["Renewed", "Enthusiastic", "Hopeful", "Transformed"],
       life_areas: ["New beginnings", "Transformation", "Healing"],
       recommendations: [
@@ -271,11 +271,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ከ",
       description: "Balance, harmony, and justice",
       element: "Air",
-      Welbeing_associations: ["Adrenals", "Balance organs (inner ear)", "Homeostasis"],
+      wellbeing_associations: ["Adrenals", "Balance organs (inner ear)", "Homeostasis"],
       emotional_traits: ["Balanced", "Harmonious", "Diplomatic", "Fair"],
       life_areas: ["Balance", "Harmony", "Justice", "Relationships"],
       recommendations: [
-        "Support adrenal Welbeing with stress management",
+        "Support adrenal wellbeing with stress management",
         "Maintain balance in work and life",
         "Practice justice and fairness",
       ],
@@ -286,11 +286,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ወ",
       description: "Healing, medicine, and restoration",
       element: "Water",
-      Welbeing_associations: ["Immune system", "Lymphatic system", "Healing processes"],
+      wellbeing_associations: ["Immune system", "Lymphatic system", "Healing processes"],
       emotional_traits: ["Healing", "Nurturing", "Compassionate", "Restorative"],
-      life_areas: ["Welbeing", "Healing", "Restoration", "Compassion"],
+      life_areas: ["wellbeing", "Healing", "Restoration", "Compassion"],
       recommendations: [
-        "Support immune Welbeing with nutrition and lifestyle",
+        "Support immune wellbeing with nutrition and lifestyle",
         "Practice compassion and self-care",
         "Engage in healing practices (prayer, meditation)",
       ],
@@ -301,11 +301,11 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       geEz_symbol: "ዐ",
       description: "Completion, closure, and transcendence",
       element: "Fire",
-      Welbeing_associations: ["Brain", "Nervous system", "Spiritual Welbeing"],
+      wellbeing_associations: ["Brain", "Nervous system", "Spiritual wellbeing"],
       emotional_traits: ["Transcendent", "Aware", "Complete", "Peaceful"],
       life_areas: ["Completion", "Closure", "Transcendence", "Legacy"],
       recommendations: [
-        "Support brain Welbeing with omega-3 and antioxidants",
+        "Support brain wellbeing with omega-3 and antioxidants",
         "Embrace closure and completion",
         "Cultivate peace and transcendence",
       ],
@@ -313,7 +313,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // WESTERN ZODIAC WITH Welbeing ASSOCIATIONS
+  // WESTERN ZODIAC WITH wellbeing ASSOCIATIONS
   // -------------------------------------------------------------------------
   private westernZodiac = {
     aries: {
@@ -322,7 +322,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Fire",
       modality: "Cardinal",
       ruling_planet: "Mars",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Head", "Brain", "Eyes", "Adrenals"],
         conditions: ["Headaches", "Eye strain", "Inflammation", "Adrenal fatigue"],
         strengths: ["Vitality", "Courage", "Energy", "Fast recovery"],
@@ -347,7 +347,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Earth",
       modality: "Fixed",
       ruling_planet: "Venus",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Throat", "Thyroid", "Vocal cords", "Ears"],
         conditions: ["Thyroid disorders", "Sore throat", "Ear infections"],
         strengths: ["Endurance", "Steadiness", "Sensory strength"],
@@ -355,7 +355,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Patient", "Reliable", "Sensual", "Stubborn"],
       nutritional_advice: [
-        "Iodine-rich foods for thyroid Welbeing",
+        "Iodine-rich foods for thyroid wellbeing",
         "Fiber-rich foods for digestion",
         "Moderate fat intake for balance",
       ],
@@ -372,7 +372,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Air",
       modality: "Mutable",
       ruling_planet: "Mercury",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Lungs", "Nervous system", "Arms", "Hands", "Shoulders"],
         conditions: ["Respiratory issues", "Anxiety", "Carpal tunnel", "Thyroid"],
         strengths: ["Mental agility", "Communication", "Adaptability"],
@@ -381,7 +381,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       emotional_traits: ["Communicative", "Curious", "Adaptable", "Anxious"],
       nutritional_advice: [
         "B-complex vitamins for nervous system support",
-        "Omega-3 for brain Welbeing",
+        "Omega-3 for brain wellbeing",
         "Magnesium for relaxation",
       ],
       lifestyle_advice: [
@@ -397,7 +397,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Water",
       modality: "Cardinal",
       ruling_planet: "Moon",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Stomach", "Breasts", "Reproductive organs", "Digestive system"],
         conditions: ["Digestive issues", "Fluid retention", "Hormonal imbalances"],
         strengths: ["Emotional depth", "Nurturing", "Intuition"],
@@ -406,7 +406,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       emotional_traits: ["Nurturing", "Intuitive", "Emotional", "Protective"],
       nutritional_advice: [
         "Probiotic-rich foods for digestion",
-        "Iodine for reproductive Welbeing",
+        "Iodine for reproductive wellbeing",
         "Comfort foods in moderation",
       ],
       lifestyle_advice: [
@@ -422,7 +422,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Fire",
       modality: "Fixed",
       ruling_planet: "Sun",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Heart", "Spine", "Circulatory system"],
         conditions: ["Cardiovascular issues", "Back pain", "Heart disease"],
         strengths: ["Vitality", "Courage", "Generosity"],
@@ -430,7 +430,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Confident", "Generous", "Dramatic", "Loyal"],
       nutritional_advice: [
-        "CoQ10 for heart Welbeing",
+        "CoQ10 for heart wellbeing",
         "Magnesium and potassium for heart function",
         "Anti-inflammatory foods",
       ],
@@ -447,20 +447,20 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Earth",
       modality: "Mutable",
       ruling_planet: "Mercury",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Intestines", "Digestive system", "Nervous system", "Skin"],
         conditions: ["Digestive disorders", "Anxiety", "Skin conditions", "Insomnia"],
-        strengths: ["Analytical", "Organised", "Welbeing-conscious"],
+        strengths: ["Analytical", "Organised", "wellbeing-conscious"],
         vulnerabilities: ["Perfectionism", "Overthinking", "Worry"],
       },
       emotional_traits: ["Analytical", "Modest", "Organised", "Worrisome"],
       nutritional_advice: [
         "Fiber-rich foods for digestion",
-        "Probiotics for gut Welbeing",
+        "Probiotics for gut wellbeing",
         "B-vitamins for nervous system",
       ],
       lifestyle_advice: [
-        "Maintain Welbeingy routines",
+        "Maintain healthy routines",
         "Practice self-compassion",
         "Manage stress through mindfulness",
       ],
@@ -472,7 +472,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Air",
       modality: "Cardinal",
       ruling_planet: "Venus",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Kidneys", "Lower back", "Skin", "Adrenals"],
         conditions: ["Kidney issues", "Back pain", "Hormonal imbalances"],
         strengths: ["Balance", "Social grace", "Diplomacy"],
@@ -480,9 +480,9 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Diplomatic", "Charming", "Balanced", "Indecisive"],
       nutritional_advice: [
-        "Calcium and magnesium for adrenal Welbeing",
+        "Calcium and magnesium for adrenal wellbeing",
         "Omega-3 for inflammation",
-        "Hydration for kidney Welbeing",
+        "Hydration for kidney wellbeing",
       ],
       lifestyle_advice: [
         "Maintain balance in relationships",
@@ -497,7 +497,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Water",
       modality: "Fixed",
       ruling_planet: "Pluto (formerly Mars)",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Reproductive organs", "Bladder", "Colon", "Elimination systems"],
         conditions: ["Reproductive issues", "Bladder infections", "Colon issues"],
         strengths: ["Resilience", "Intensity", "Healing ability"],
@@ -505,9 +505,9 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Intense", "Passionate", "Mysterious", "Transformative"],
       nutritional_advice: [
-        "Antioxidant-rich foods for cellular Welbeing",
-        "Fiber for colon Welbeing",
-        "Iodine for reproductive Welbeing",
+        "Antioxidant-rich foods for cellular wellbeing",
+        "Fiber for colon wellbeing",
+        "Iodine for reproductive wellbeing",
       ],
       lifestyle_advice: [
         "Embrace transformation and healing",
@@ -522,7 +522,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Fire",
       modality: "Mutable",
       ruling_planet: "Jupiter",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Hips", "Thighs", "Liver", "Vision"],
         conditions: ["Hip issues", "Liver problems", "Vision changes"],
         strengths: ["Optimism", "Adventurousness", "Vitality"],
@@ -547,7 +547,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Earth",
       modality: "Cardinal",
       ruling_planet: "Saturn",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Bones", "Joints", "Skin", "Teeth", "Knees"],
         conditions: ["Bone issues", "Arthritis", "Skin conditions", "Dental problems"],
         strengths: ["Discipline", "Endurance", "Structure"],
@@ -555,9 +555,9 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Disciplined", "Ambitious", "Practical", "Reserved"],
       nutritional_advice: [
-        "Calcium and vitamin D for bone Welbeing",
+        "Calcium and vitamin D for bone wellbeing",
         "Collagen-rich foods for joints",
-        "Vitamin C for skin Welbeing",
+        "Vitamin C for skin wellbeing",
       ],
       lifestyle_advice: [
         "Maintain a structured routine",
@@ -572,7 +572,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Air",
       modality: "Fixed",
       ruling_planet: "Uranus (traditionally Saturn)",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Circulation", "Ankles", "Nervous system", "Electrical system of body"],
         conditions: ["Circulatory issues", "Ankle sprains", "Nervous tension"],
         strengths: ["Innovation", "Humanitarianism", "Intellectual strength"],
@@ -582,7 +582,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       nutritional_advice: [
         "Omega-3 for circulation",
         "Magnesium for nervous system",
-        "Antioxidants for overall Welbeing",
+        "Antioxidants for overall wellbeing",
       ],
       lifestyle_advice: [
         "Engage in social causes",
@@ -597,7 +597,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Water",
       modality: "Mutable",
       ruling_planet: "Neptune (traditionally Jupiter)",
-      Welbeing_associations: {
+      wellbeing_associations: {
         organs: ["Feet", "Lymphatic system", "Immune system", "Sleep"],
         conditions: ["Foot issues", "Lymphatic congestion", "Sleep disorders", "Immune suppression"],
         strengths: ["Compassion", "Creativity", "Empathy"],
@@ -605,29 +605,29 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       },
       emotional_traits: ["Compassionate", "Intuitive", "Creative", "Escapist"],
       nutritional_advice: [
-        "Omega-3 for immune and lymphatic Welbeing",
+        "Omega-3 for immune and lymphatic wellbeing",
         "Zinc and vitamin C for immune support",
         "Comfort foods in moderation",
       ],
       lifestyle_advice: [
-        "Establish Welbeingy sleep hygiene",
+        "Establish healthy sleep hygiene",
         "Engage in creative expression",
-        "Set Welbeingy emotional boundaries",
+        "Set healthy emotional boundaries",
       ],
       ethiopian_calendar_month: "Nehase (ነሐሴ) – August",
     },
   };
 
   // -------------------------------------------------------------------------
-  // PLANETARY Welbeing ASSOCIATIONS
+  // PLANETARY wellbeing ASSOCIATIONS
   // -------------------------------------------------------------------------
-  private planetaryWelbeing = {
+  private planetarywellbeing = {
     sun: {
       name: "Sun (Tsehay / ጸሀይ)",
       element: "Fire",
       organs: ["Heart", "Spine", "Circulatory system", "Eyes"],
       conditions: ["Cardiovascular issues", "Back pain", "Eye strain", "Low vitality"],
-      strengthening: ["Cardiovascular exercise", "Sunlight exposure (moderate)", "Heart-Welbeingy foods"],
+      strengthening: ["Cardiovascular exercise", "Sunlight exposure (moderate)", "Heart-healthy foods"],
       weakening: ["Sedentary lifestyle", "Lack of sunlight", "Poor circulation"],
       ethiopian_context: "Represents life force, leadership, and vitality; linked to Ethiopian kingship",
     },
@@ -654,16 +654,16 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Air",
       organs: ["Kidneys", "Skin", "Hormonal system", "Reproductive system"],
       conditions: ["Kidney issues", "Skin conditions", "Hormonal imbalances"],
-      strengthening: ["Welbeingy relationships", "Artistic expression", "Self-care"],
+      strengthening: ["healthy relationships", "Artistic expression", "Self-care"],
       weakening: ["Conflict", "Loneliness", "Poor self-image"],
-      ethiopian_context: "Rulership of love, beauty, and relationships; linked to reproductive Welbeing",
+      ethiopian_context: "Rulership of love, beauty, and relationships; linked to reproductive wellbeing",
     },
     mars: {
       name: "Mars (ማርስ)",
       element: "Fire",
       organs: ["Muscles", "Adrenals", "Blood", "Gallbladder"],
       conditions: ["Inflammation", "Muscle tension", "Fever", "Accidents", "Bleeding"],
-      strengthening: ["Physical activity", "Welbeingy assertiveness", "Anti-inflammatory diet"],
+      strengthening: ["Physical activity", "healthy assertiveness", "Anti-inflammatory diet"],
       weakening: ["Aggression", "Stress", "Overexertion"],
       ethiopian_context: "Represents energy, courage, and warrior spirit; linked to Wane class",
     },
@@ -672,7 +672,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       element: "Fire",
       organs: ["Liver", "Hips", "Thighs", "Fat metabolism"],
       conditions: ["Liver issues", "Weight gain", "Obesity", "Hip problems"],
-      strengthening: ["Moderation", "Welbeingy diet", "Lifestyle balance"],
+      strengthening: ["Moderation", "healthy diet", "Lifestyle balance"],
       weakening: ["Overindulgence", "Excess", "Sedentary lifestyle"],
       ethiopian_context: "Represents expansion, wisdom, and abundance",
     },
@@ -688,91 +688,91 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // HOUSE SYSTEM Welbeing MAPPING
+  // HOUSE SYSTEM wellbeing MAPPING
   // -------------------------------------------------------------------------
-  private houseWelbeing = {
+  private housewellbeing = {
     house_1: {
       number: 1,
       name: "1st House (Self)",
       body_parts: ["Head", "Face", "Brain", "Vitality"],
-      Welbeing_meaning: "General constitution, vitality, self-image",
+      wellbeing_meaning: "General constitution, vitality, self-image",
       life_area: "Self, identity, personality",
     },
     house_2: {
       number: 2,
       name: "2nd House (Resources)",
       body_parts: ["Throat", "Neck", "Vocal cords", "Thyroid"],
-      Welbeing_meaning: "Nutritional resources, metabolic intake",
+      wellbeing_meaning: "Nutritional resources, metabolic intake",
       life_area: "Finance, values, self-worth",
     },
     house_3: {
       number: 3,
       name: "3rd House (Communication)",
       body_parts: ["Lungs", "Nervous system", "Arms", "Hands"],
-      Welbeing_meaning: "Respiratory Welbeing, mental agility",
+      wellbeing_meaning: "Respiratory wellbeing, mental agility",
       life_area: "Communication, siblings, short journeys",
     },
     house_4: {
       number: 4,
       name: "4th House (Home)",
       body_parts: ["Chest", "Stomach", "Breasts", "Digestive system"],
-      Welbeing_meaning: "Emotional foundation, digestive Welbeing",
+      wellbeing_meaning: "Emotional foundation, digestive wellbeing",
       life_area: "Home, family, roots",
     },
     house_5: {
       number: 5,
       name: "5th House (Creativity)",
       body_parts: ["Heart", "Spine", "Reproductive organs"],
-      Welbeing_meaning: "Cardiovascular Welbeing, creative expression",
+      wellbeing_meaning: "Cardiovascular wellbeing, creative expression",
       life_area: "Creativity, children, romance",
     },
     house_6: {
       number: 6,
-      name: "6th House (Welbeing & Routine)",
+      name: "6th House (wellbeing & Routine)",
       body_parts: ["Intestines", "Digestive system", "Daily routine"],
-      Welbeing_meaning: "Welbeing habits, daily hygiene, digestion",
-      life_area: "Work, Welbeing, service",
+      wellbeing_meaning: "wellbeing habits, daily hygiene, digestion",
+      life_area: "Work, wellbeing, service",
     },
     house_7: {
       number: 7,
       name: "7th House (Partnership)",
       body_parts: ["Kidneys", "Adrenals", "Hormonal system"],
-      Welbeing_meaning: "Adrenal Welbeing, hormonal balance",
+      wellbeing_meaning: "Adrenal wellbeing, hormonal balance",
       life_area: "Partnerships, marriage, relationships",
     },
     house_8: {
       number: 8,
       name: "8th House (Transformation)",
       body_parts: ["Reproductive organs", "Bladder", "Elimination"],
-      Welbeing_meaning: "Reproductive Welbeing, detoxification",
+      wellbeing_meaning: "Reproductive wellbeing, detoxification",
       life_area: "Transformation, healing, shared resources",
     },
     house_9: {
       number: 9,
       name: "9th House (Wisdom)",
       body_parts: ["Hips", "Thighs", "Liver", "Vision"],
-      Welbeing_meaning: "Liver function, metabolism, vision",
+      wellbeing_meaning: "Liver function, metabolism, vision",
       life_area: "Travel, philosophy, higher learning",
     },
     house_10: {
       number: 10,
       name: "10th House (Career)",
       body_parts: ["Knees", "Joints", "Bones"],
-      Welbeing_meaning: "Skeletal Welbeing, joint function",
+      wellbeing_meaning: "Skeletal wellbeing, joint function",
       life_area: "Career, reputation, public image",
     },
     house_11: {
       number: 11,
       name: "11th House (Community)",
       body_parts: ["Circulation", "Calves", "Ankles"],
-      Welbeing_meaning: "Circulatory Welbeing, lower leg Welbeing",
+      wellbeing_meaning: "Circulatory wellbeing, lower leg wellbeing",
       life_area: "Community, friendships, goals",
     },
     house_12: {
       number: 12,
       name: "12th House (Spirituality)",
       body_parts: ["Feet", "Lymphatic system", "Immune system"],
-      Welbeing_meaning: "Immune Welbeing, lymphatic drainage",
+      wellbeing_meaning: "Immune wellbeing, lymphatic drainage",
       life_area: "Spirituality, healing, solitude",
     },
   };
@@ -794,17 +794,17 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       strengths: ["Reliability", "Patience", "Discipline", "Persistence"],
       weaknesses: ["Rigidity", "Pessimism", "Isolation", "Stubbornness"],
-      Welbeing_focus: ["Bone Welbeing", "Joint mobility", "Digestive regularity", "Skin moisture"],
+      wellbeing_focus: ["Bone wellbeing", "Joint mobility", "Digestive regularity", "Skin moisture"],
       traditional_balancing_guidance: [
         "Incorporate warm, nourishing broths and spiced teas with Ginger and Cardamom (Korerima)",
         "Nourish skin with unrefined sesame or castor oil rubs",
         "Prioritize warm, freshly cooked grains over cold or dry snacks",
         "Engage in gentle, grounding exercise (walking, gardening)",
-        "Add Welbeingy fats (Niger seed oil, ghee) for skin and joints",
+        "Add healthy fats (Niger seed oil, ghee) for skin and joints",
       ],
       nutritional_advice: [
         "Warm, moist foods: stews, soups, root vegetables",
-        "Welbeingy fats: sesame oil, ghee, Niger seed oil",
+        "healthy fats: sesame oil, ghee, Niger seed oil",
         "Spices: ginger, cardamom, cinnamon",
         "Avoid: dry, cold, and raw foods",
       ],
@@ -829,7 +829,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       strengths: ["Calmness", "Forgiveness", "Patience", "Loyalty"],
       weaknesses: ["Sluggishness", "Lethargy", "Over-sensitivity", "Resistance to change"],
-      Welbeing_focus: ["Lymphatic Welbeing", "Sinus/chest congestion", "Weight management", "Fluid balance"],
+      wellbeing_focus: ["Lymphatic wellbeing", "Sinus/chest congestion", "Weight management", "Fluid balance"],
       traditional_balancing_guidance: [
         "Favor warming, pungent spices (Berbere, Black pepper / Kundo Berbere, Garlic) to stimulate circulation",
         "Engage in vigorous morning movement to mobilise lymphatic circulation",
@@ -864,7 +864,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       strengths: ["Enthusiasm", "Creativity", "Socialability", "Optimism"],
       weaknesses: ["Inconsistency", "Anxiety", "Scattered energy", "Superficiality"],
-      Welbeing_focus: ["Respiratory Welbeing", "Nervous system balance", "Sleep quality", "Stress management"],
+      wellbeing_focus: ["Respiratory wellbeing", "Nervous system balance", "Sleep quality", "Stress management"],
       traditional_balancing_guidance: [
         "Establish grounding, rhythmic daily sleep and meal schedules",
         "Utilise calming botanical teas like Tena Adam (Ruta) and Chamomile before bed",
@@ -899,7 +899,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       strengths: ["Determination", "Courage", "Leadership", "Quick thinking"],
       weaknesses: ["Irritability", "Aggression", "Burnout", "Impatience"],
-      Welbeing_focus: ["Digestive Welbeing", "Inflammation control", "Cardiovascular Welbeing", "Stress management"],
+      wellbeing_focus: ["Digestive wellbeing", "Inflammation control", "Cardiovascular wellbeing", "Stress management"],
       traditional_balancing_guidance: [
         "Balance spicy meals with cooling accompaniments (Ayib cottage cheese, fresh greens, cucumber)",
         "Stay consistently hydrated with pure water and cooling herbal infusions",
@@ -931,17 +931,17 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       season: "Kiremt (ዋናው ክረምት / Main Rains)",
       period: "June – September",
       element_influence: "Water (Maye) – Cold & Moist",
-      Welbeing_focus: [
-        "Respiratory Welbeing (avoid dampness)",
+      wellbeing_focus: [
+        "Respiratory wellbeing (avoid dampness)",
         "Musculoskeletal support (dampness may worsen joint pain)",
-        "Digestive Welbeing (avoid heavy, cold foods)",
+        "Digestive wellbeing (avoid heavy, cold foods)",
         "Protection from respiratory infections",
       ],
       nutritional_advice: [
         "Warming, light foods (soups, stews)",
         "Spices: ginger, garlic, black pepper (to counter cold/damp)",
         "Avoid: heavy, cold, and mucus-forming foods",
-        "Include fermented foods for digestive Welbeing",
+        "Include fermented foods for digestive wellbeing",
       ],
       lifestyle_advice: [
         "Dress warmly and dryly",
@@ -955,15 +955,15 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       season: "Bega (በጋ / Dry Harvest Season)",
       period: "October – February",
       element_influence: "Earth (Afere) – Cold & Dry",
-      Welbeing_focus: [
-        "Skin Welbeing (prevent dryness)",
-        "Respiratory Welbeing (dust, dry air)",
-        "Joint Welbeing (cold may stiffen joints)",
+      wellbeing_focus: [
+        "Skin wellbeing (prevent dryness)",
+        "Respiratory wellbeing (dust, dry air)",
+        "Joint wellbeing (cold may stiffen joints)",
         "Immune support (flu season)",
       ],
       nutritional_advice: [
         "Warm, nourishing foods (stews, roasted grains)",
-        "Welbeingy fats: ghee, Niger seed oil, sesame oil",
+        "healthy fats: ghee, Niger seed oil, sesame oil",
         "Spices: cinnamon, cardamom, ginger (warming)",
         "Hydration: warm herbal teas (avoid cold drinks)",
       ],
@@ -979,9 +979,9 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       season: "Belg (በልግ / Short Rains)",
       period: "March – May",
       element_influence: "Air (Nawaye) – Warm & Moist",
-      Welbeing_focus: [
+      wellbeing_focus: [
         "Allergy management (pollen, dust)",
-        "Respiratory Welbeing (seasonal transitions)",
+        "Respiratory wellbeing (seasonal transitions)",
         "Nervous system balance (seasonal affective)",
         "Immune support (changes in weather)",
       ],
@@ -1008,57 +1008,57 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
     new_moon: {
       phase: "New Moon (በረከት)",
       description: "Beginnings, planting seeds, renewal",
-      Welbeing_focus: ["Rest", "Setting intentions", "Starting new Welbeing habits", "Detoxification"],
+      wellbeing_focus: ["Rest", "Setting intentions", "Starting new wellbeing habits", "Detoxification"],
       activities: ["Meditation", "Journaling", "Gentle exercise", "Restorative yoga"],
       nutritional_advice: ["Light meals", "Clear soups", "Hydration"],
     },
     waxing_crescent: {
       phase: "Waxing Crescent (አቦል)",
       description: "Growth, building momentum, action",
-      Welbeing_focus: ["Building energy", "Starting new routines", "Increased physical activity"],
+      wellbeing_focus: ["Building energy", "Starting new routines", "Increased physical activity"],
       activities: ["Walking", "Light cardio", "Goal setting"],
       nutritional_advice: ["Protein-rich meals", "Whole grains", "Sustained energy foods"],
     },
     first_quarter: {
       phase: "First Quarter (ቶና)",
       description: "Action, challenge, decision-making",
-      Welbeing_focus: ["Overcoming obstacles", "Assertive Welbeing actions", "Decision-making"],
-      activities: ["Strength training", "High-intensity exercise", "Welbeing decisions"],
+      wellbeing_focus: ["Overcoming obstacles", "Assertive wellbeing actions", "Decision-making"],
+      activities: ["Strength training", "High-intensity exercise", "wellbeing decisions"],
       nutritional_advice: ["Energising foods", "Balanced meals", "Avoid overeating"],
     },
     waxing_gibbous: {
       phase: "Waxing Gibbous (በረካ)",
       description: "Refinement, adjustment, fine-tuning",
-      Welbeing_focus: ["Adjusting Welbeing plans", "Fine-tuning routines", "Listening to body"],
-      activities: ["Moderate exercise", "Self-reflection", "Welbeing tracking"],
+      wellbeing_focus: ["Adjusting wellbeing plans", "Fine-tuning routines", "Listening to body"],
+      activities: ["Moderate exercise", "Self-reflection", "wellbeing tracking"],
       nutritional_advice: ["Adjust diet to needs", "Include variety", "Mindful eating"],
     },
     full_moon: {
       phase: "Full Moon (ሙሉ ጨረቃ)",
       description: "Release, completion, celebration",
-      Welbeing_focus: ["Release of stress", "Celebration of progress", "Restorative sleep"],
+      wellbeing_focus: ["Release of stress", "Celebration of progress", "Restorative sleep"],
       activities: ["Restorative yoga", "Breathing exercises", "Celebration and gratitude"],
       nutritional_advice: ["Light meals", "Avoid heavy foods", "Stay hydrated"],
     },
     waning_gibbous: {
       phase: "Waning Gibbous (አልፋ)",
       description: "Gratitude, sharing, reflection",
-      Welbeing_focus: ["Gratitude practice", "Sharing Welbeing insights", "Reflection"],
+      wellbeing_focus: ["Gratitude practice", "Sharing wellbeing insights", "Reflection"],
       activities: ["Journaling", "Community connection", "Gentle exercise"],
       nutritional_advice: ["Nourishing foods", "Community meals", "Moderation"],
     },
     last_quarter: {
       phase: "Last Quarter (ዳኅራዊ)",
       description: "Letting go, reflection, preparation",
-      Welbeing_focus: ["Letting go of bad habits", "Reflecting on progress", "Preparing for renewal"],
-      activities: ["Closure rituals", "Welbeing plan review", "Rest and reflection"],
+      wellbeing_focus: ["Letting go of bad habits", "Reflecting on progress", "Preparing for renewal"],
+      activities: ["Closure rituals", "wellbeing plan review", "Rest and reflection"],
       nutritional_advice: ["Detoxifying foods", "Light, cleansing meals", "Hydration"],
     },
     waning_crescent: {
       phase: "Waning Crescent (ጸጥታ)",
       description: "Rest, renewal, deep healing",
-      Welbeing_focus: ["Deep rest", "Renewal practices", "Preparing for new cycle", "Healing"],
-      activities: ["Deep rest", "Meditation", "Sleep hygiene", "Welbeing planning"],
+      wellbeing_focus: ["Deep rest", "Renewal practices", "Preparing for new cycle", "Healing"],
+      activities: ["Deep rest", "Meditation", "Sleep hygiene", "wellbeing planning"],
       nutritional_advice: ["Restorative foods", "Light, warming meals", "Herbal teas"],
     },
   };
@@ -1102,7 +1102,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       general_recommendations: [
         "Consult a Däbtära for personalised spiritual guidance",
-        "Use herbal remedies with caution and Debral supervision",
+        "Use herbal remedies with caution and scientific supervision",
         "Combine spiritual practices with modern medical care",
         "Respect the cultural significance of healing scrolls",
       ],
@@ -1112,22 +1112,22 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
   // -------------------------------------------------------------------------
   // GE'EZ NAME ANALYSIS
   // -------------------------------------------------------------------------
-  private geEzNameMeanings: Record<string, { meaning: string; Welbeing_insight: string; circle_affinity: number }> = {
-    "ትግስት": { meaning: "Patience", Welbeing_insight: "Encourages emotional resilience and stress management", circle_affinity: 4 },
-    "ሙሉጌታ": { meaning: "Full of grace", Welbeing_insight: "Promotes self-esteem and positive mental Welbeing", circle_affinity: 9 },
-    "ደስታ": { meaning: "Joy", Welbeing_insight: "Linked to mental well-being and happiness", circle_affinity: 5 },
-    "ወርቁ": { meaning: "Golden", Welbeing_insight: "Symbolises value and self-worth", circle_affinity: 1 },
-    "ጸሀይ": { meaning: "Sun", Welbeing_insight: "Vitality, energy, and leadership", circle_affinity: 1 },
-    "እንዳሌ": { meaning: "He returned", Welbeing_insight: "Recovery and resilience", circle_affinity: 8 },
-    "ግርማ": { meaning: "Majesty", Welbeing_insight: "Confidence and leadership", circle_affinity: 10 },
-    "አበበ": { meaning: "Flourished / Bloomed", Welbeing_insight: "Growth and vitality", circle_affinity: 5 },
-    "ሰላማዊት": { meaning: "Peaceful", Welbeing_insight: "Peace and calmness", circle_affinity: 6 },
-    "መኮንን": { meaning: "Wealthy", Welbeing_insight: "Prosperity and self-worth", circle_affinity: 2 },
-    "ሀይሌ": { meaning: "My strength", Welbeing_insight: "Courage and physical vitality", circle_affinity: 1 },
-    "በላይ": { meaning: "Above / Superior", Welbeing_insight: "Leadership and ambition", circle_affinity: 10 },
-    "አዋል": { meaning: "Perfect / Complete", Welbeing_insight: "Self-acceptance and completion", circle_affinity: 16 },
-    "አለማየሁ": { meaning: "I saw the world", Welbeing_insight: "Curiosity and learning", circle_affinity: 9 },
-    "ምርት": { meaning: "Fruit / Produce", Welbeing_insight: "Fertility and growth", circle_affinity: 5 },
+  private geEzNameMeanings: Record<string, { meaning: string; wellbeing_insight: string; circle_affinity: number }> = {
+    "ትግስት": { meaning: "Patience", wellbeing_insight: "Encourages emotional resilience and stress management", circle_affinity: 4 },
+    "ሙሉጌታ": { meaning: "Full of grace", wellbeing_insight: "Promotes self-esteem and positive mental wellbeing", circle_affinity: 9 },
+    "ደስታ": { meaning: "Joy", wellbeing_insight: "Linked to mental well-being and happiness", circle_affinity: 5 },
+    "ወርቁ": { meaning: "Golden", wellbeing_insight: "Symbolises value and self-worth", circle_affinity: 1 },
+    "ጸሀይ": { meaning: "Sun", wellbeing_insight: "Vitality, energy, and leadership", circle_affinity: 1 },
+    "እንዳሌ": { meaning: "He returned", wellbeing_insight: "Recovery and resilience", circle_affinity: 8 },
+    "ግርማ": { meaning: "Majesty", wellbeing_insight: "Confidence and leadership", circle_affinity: 10 },
+    "አበበ": { meaning: "Flourished / Bloomed", wellbeing_insight: "Growth and vitality", circle_affinity: 5 },
+    "ሰላማዊት": { meaning: "Peaceful", wellbeing_insight: "Peace and calmness", circle_affinity: 6 },
+    "መኮንን": { meaning: "Wealthy", wellbeing_insight: "Prosperity and self-worth", circle_affinity: 2 },
+    "ሀይሌ": { meaning: "My strength", wellbeing_insight: "Courage and physical vitality", circle_affinity: 1 },
+    "በላይ": { meaning: "Above / Superior", wellbeing_insight: "Leadership and ambition", circle_affinity: 10 },
+    "አዋል": { meaning: "Perfect / Complete", wellbeing_insight: "Self-acceptance and completion", circle_affinity: 16 },
+    "አለማየሁ": { meaning: "I saw the world", wellbeing_insight: "Curiosity and learning", circle_affinity: 9 },
+    "ምርት": { meaning: "Fruit / Produce", wellbeing_insight: "Fertility and growth", circle_affinity: 5 },
   };
 
   // -------------------------------------------------------------------------
@@ -1259,7 +1259,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
             domain: "cultural",
             name: `${circle.name} (${circle.number})`,
             description: `Circle ${circle.number}: ${circle.description}`,
-            evidence: `Element: ${circle.element}. Welbeing associations: ${circle.Welbeing_associations.join(", ")}. Emotional traits: ${circle.emotional_traits.join(", ")}.`,
+            evidence: `Element: ${circle.element}. wellbeing associations: ${circle.wellbeing_associations.join(", ")}. Emotional traits: ${circle.emotional_traits.join(", ")}.`,
             ethiopian_context: ["Derived from the ancient Ge'ez Awude Negest cosmological manuscripts", "Used by Däbtära for personal self-reflection and seasonal harmony"],
             relevanceScore: 0.95,
             confidence: 0.88,
@@ -1283,7 +1283,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
           domain: "cultural",
           name: "AWUDE NEGEST (ዓውደ ነገሥት)",
           description: "Ethiopian astrological system with 16 circular tables of Ge'ez letters and numbers",
-          evidence: `Each circle represents a different aspect of life, with Welbeing associations and emotional traits. Sample circles: ${sampleCircles.map(c => `${c.name} (${c.number})`).join(", ")}.`,
+          evidence: `Each circle represents a different aspect of life, with wellbeing associations and emotional traits. Sample circles: ${sampleCircles.map(c => `${c.name} (${c.number})`).join(", ")}.`,
           ethiopian_context: ["Historically utilized by traditional scholars (Däbtära) for self-reflection", "Linked to the Ethiopian calendar and seasonal cycles"],
           relevanceScore: 0.78,
           confidence: 0.85,
@@ -1308,7 +1308,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
             domain: "cultural",
             name: signData.sign.toUpperCase(),
             description: `Birth dates: ${signData.dates}. Element: ${signData.element}. Ruling planet: ${signData.ruling_planet}.`,
-            evidence: `Welbeing associations: Organs - ${signData.Welbeing_associations.organs.join(", ")}. Vulnerabilities - ${signData.Welbeing_associations.vulnerabilities.join(", ")}.`,
+            evidence: `wellbeing associations: Organs - ${signData.wellbeing_associations.organs.join(", ")}. Vulnerabilities - ${signData.wellbeing_associations.vulnerabilities.join(", ")}.`,
             ethiopian_context: [`Ethiopian calendar month: ${signData.ethiopian_calendar_month || "N/A"}`],
             relevanceScore: 0.92,
             confidence: 0.85,
@@ -1332,7 +1332,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
               domain: "cultural",
               name: data.sign.toUpperCase(),
               description: `Dates: ${data.dates}. Element: ${data.element}. Ruling planet: ${data.ruling_planet}.`,
-              evidence: `Welbeing associations: Organs - ${data.Welbeing_associations.organs.join(", ")}. Vulnerabilities - ${data.Welbeing_associations.vulnerabilities.join(", ")}.`,
+              evidence: `wellbeing associations: Organs - ${data.wellbeing_associations.organs.join(", ")}. Vulnerabilities - ${data.wellbeing_associations.vulnerabilities.join(", ")}.`,
               ethiopian_context: [`Ethiopian calendar month: ${data.ethiopian_calendar_month || "N/A"}`],
               relevanceScore: 0.75,
               confidence: 0.80,
@@ -1357,9 +1357,9 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
         domain: "cultural",
         name: humoralItem.element.toUpperCase(),
         description: `Nature: ${humoralItem.nature}. Constitutional tendencies: ${humoralItem.constitutional_tendencies.join("; ")}.`,
-        evidence: `Strengths: ${humoralItem.strengths.join(", ")}. Weaknesses: ${humoralItem.weaknesses.join(", ")}. Welbeing focus: ${humoralItem.Welbeing_focus.join(", ")}.`,
+        evidence: `Strengths: ${humoralItem.strengths.join(", ")}. Weaknesses: ${humoralItem.weaknesses.join(", ")}. wellbeing focus: ${humoralItem.wellbeing_focus.join(", ")}.`,
         ethiopian_context: [
-          "Derived from the ancient Ge'ez Awude Negest cosmological and humoral Welbeing manuscripts",
+          "Derived from the ancient Ge'ez Awude Negest cosmological and humoral wellbeing manuscripts",
           "Historically utilized by traditional scholars (Däbtära) for personal self-reflection",
         ],
         relevanceScore: 0.88,
@@ -1373,21 +1373,21 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       });
     }
 
-    // ---- 7. Planetary Welbeing ----
+    // ---- 7. Planetary wellbeing ----
     if (this.hasAlias(normalized, "sun") || this.hasAlias(normalized, "moon") || this.hasAlias(normalized, "mercury") || this.hasAlias(normalized, "venus") || this.hasAlias(normalized, "mars") || this.hasAlias(normalized, "jupiter") || this.hasAlias(normalized, "saturn")) {
-      for (const [key, data] of Object.entries(this.planetaryWelbeing)) {
+      for (const [key, data] of Object.entries(this.planetarywellbeing)) {
         if (this.hasAlias(normalized, key as keyof typeof this.queryAliases)) {
           results.push({
-            type: "planetary_Welbeing",
+            type: "planetary_wellbeing",
             strand: this.strandName,
             domain: "cultural",
             name: data.name.toUpperCase(),
             description: `Element: ${data.element}. Organs: ${data.organs.join(", ")}.`,
             evidence: `Conditions: ${data.conditions.join(", ")}. Strengthening: ${data.strengthening.join(", ")}. Weakens: ${data.weakening.join(", ")}.`,
-            ethiopian_context: data.ethiopian_context || "Planetary Welbeing association",
+            ethiopian_context: data.ethiopian_context || "Planetary wellbeing association",
             relevanceScore: 0.78,
             confidence: 0.82,
-            matches: ["planetary_Welbeing", key],
+            matches: ["planetary_wellbeing", key],
             recommendations: data.strengthening,
             management: data.strengthening,
             sources: ["Western Astrology", "Ethiopian Astrological Traditions"],
@@ -1398,22 +1398,22 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 8. House System Welbeing ----
+    // ---- 8. House System wellbeing ----
     if (this.hasAlias(normalized, "house") || normalized.includes("house") || normalized.includes("ቤት") || normalized.includes("ሀውስ")) {
-      for (const [key, data] of Object.entries(this.houseWelbeing)) {
+      for (const [key, data] of Object.entries(this.housewellbeing)) {
         if (normalized.includes(key.replace("_", " ")) || normalized.includes(`house ${data.number}`) || normalized.includes(data.name.toLowerCase())) {
           results.push({
-            type: "house_Welbeing",
+            type: "house_wellbeing",
             strand: this.strandName,
             domain: "cultural",
             name: `${data.name} (${data.number}th House)`,
-            description: `Body parts: ${data.body_parts.join(", ")}. Welbeing meaning: ${data.Welbeing_meaning}. Life area: ${data.life_area}.`,
+            description: `Body parts: ${data.body_parts.join(", ")}. wellbeing meaning: ${data.wellbeing_meaning}. Life area: ${data.life_area}.`,
             evidence: `The ${data.number}th house relates to ${data.life_area} and influences ${data.body_parts.join(", ")}.`,
             ethiopian_context: "Astrological house system used in Ethiopian and Western astrology",
             relevanceScore: 0.72,
             confidence: 0.78,
-            matches: ["house_Welbeing", key],
-            recommendations: [`Focus on ${data.Welbeing_meaning} for overall well-being`],
+            matches: ["house_wellbeing", key],
+            recommendations: [`Focus on ${data.wellbeing_meaning} for overall well-being`],
             sources: ["Western Astrology", "Ethiopian Astrological Traditions"],
             category: "Domain B",
             severity: "low",
@@ -1427,16 +1427,16 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       for (const [key, data] of Object.entries(this.seasonalGuidance)) {
         if (this.hasAlias(normalized, key as keyof typeof this.queryAliases) || normalized.includes(data.season.split(" ")[0] || "")) {
           results.push({
-            type: "seasonal_Welbeing_guidance",
+            type: "seasonal_wellbeing_guidance",
             strand: this.strandName,
             domain: "cultural",
             name: data.season.toUpperCase(),
             description: `Period: ${data.period}. Element influence: ${data.element_influence}.`,
-            evidence: `Welbeing focus: ${data.Welbeing_focus.join(", ")}. Nutritional advice: ${data.nutritional_advice.join(", ")}.`,
-            ethiopian_context: data.ethiopian_context || "Ethiopian seasonal Welbeing guidance",
+            evidence: `wellbeing focus: ${data.wellbeing_focus.join(", ")}. Nutritional advice: ${data.nutritional_advice.join(", ")}.`,
+            ethiopian_context: data.ethiopian_context || "Ethiopian seasonal wellbeing guidance",
             relevanceScore: 0.78,
             confidence: 0.80,
-            matches: ["seasonal_Welbeing", key],
+            matches: ["seasonal_wellbeing", key],
             recommendations: [...data.nutritional_advice, ...data.lifestyle_advice],
             management: [...data.nutritional_advice, ...data.lifestyle_advice],
             sources: ["Ethiopian Seasonal Calendar", "Awude Negest"],
@@ -1452,16 +1452,16 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       for (const [key, data] of Object.entries(this.lunarGuidance)) {
         if (normalized.includes(key) || normalized.includes(data.phase.split(" ")[0] || "")) {
           results.push({
-            type: "lunar_Welbeing_guidance",
+            type: "lunar_wellbeing_guidance",
             strand: this.strandName,
             domain: "cultural",
             name: data.phase.toUpperCase(),
             description: data.description,
-            evidence: `Welbeing focus: ${data.Welbeing_focus.join(", ")}. Activities: ${data.activities.join(", ")}. Nutritional advice: ${data.nutritional_advice.join(", ")}.`,
-            ethiopian_context: ["Ethiopian lunar calendar influences Welbeing and well-being"],
+            evidence: `wellbeing focus: ${data.wellbeing_focus.join(", ")}. Activities: ${data.activities.join(", ")}. Nutritional advice: ${data.nutritional_advice.join(", ")}.`,
+            ethiopian_context: ["Ethiopian lunar calendar influences wellbeing and well-being"],
             relevanceScore: 0.72,
             confidence: 0.78,
-            matches: ["lunar_Welbeing", key],
+            matches: ["lunar_wellbeing", key],
             recommendations: [...data.activities, ...data.nutritional_advice],
             management: [...data.activities, ...data.nutritional_advice],
             sources: ["Ethiopian Lunar Calendar", "Awude Negest"],
@@ -1499,14 +1499,14 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
 
     // ---- 12. Name Analysis (if user has name) ----
     if (fullName || amharicName) {
-      let nameFinding: { name: string; meaning: string; Welbeing_insight: string; circle_affinity: number } | null = null;
+      let nameFinding: { name: string; meaning: string; wellbeing_insight: string; circle_affinity: number } | null = null;
 
       // Check if we have a meaning for the Amharic name
       if (amharicName && this.geEzNameMeanings[amharicName]) {
         nameFinding = {
           name: amharicName,
           meaning: this.geEzNameMeanings[amharicName].meaning,
-          Welbeing_insight: this.geEzNameMeanings[amharicName].Welbeing_insight,
+          wellbeing_insight: this.geEzNameMeanings[amharicName].wellbeing_insight,
           circle_affinity: this.geEzNameMeanings[amharicName].circle_affinity,
         };
       }
@@ -1518,7 +1518,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
           strand: this.strandName,
           domain: "cultural",
           name: `NAME ANALYSIS: ${nameFinding.name}`,
-          description: `Meaning: ${nameFinding.meaning}. Welbeing insight: ${nameFinding.Welbeing_insight}. Circle affinity: ${nameFinding.circle_affinity}.`,
+          description: `Meaning: ${nameFinding.meaning}. wellbeing insight: ${nameFinding.wellbeing_insight}. Circle affinity: ${nameFinding.circle_affinity}.`,
           evidence: `The name ${nameFinding.name} is associated with Circle ${nameFinding.circle_affinity} in the Awude Negest system.`,
           ethiopian_context: ["Names in Ethiopian tradition carry deep meaning and influence identity"],
           relevanceScore: 0.88,
@@ -1526,7 +1526,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
           matches: ["geez_name", "naming_analysis"],
           recommendations: [
             `Embrace the meaning of your name: ${nameFinding.meaning}`,
-            `Use your name's Welbeing insight for self-reflection: ${nameFinding.Welbeing_insight}`,
+            `Use your name's wellbeing insight for self-reflection: ${nameFinding.wellbeing_insight}`,
             `Consider the Circle ${nameFinding.circle_affinity} for personal growth`,
           ],
           management: [`Reflect on the meaning of your name (${nameFinding.meaning}) for personal growth`],
@@ -1649,12 +1649,12 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   /**
-   * Get Welbeing insights for a planet
+   * Get wellbeing insights for a planet
    */
-  getPlanetaryWelbeingInsights(planet: string): { organs: string[]; conditions: string[]; recommendations: string[] } | null {
-    const planetKey = planet.toLowerCase() as keyof typeof this.planetaryWelbeing;
-    if (this.planetaryWelbeing[planetKey]) {
-      const data = this.planetaryWelbeing[planetKey];
+  getPlanetarywellbeingInsights(planet: string): { organs: string[]; conditions: string[]; recommendations: string[] } | null {
+    const planetKey = planet.toLowerCase() as keyof typeof this.planetarywellbeing;
+    if (this.planetarywellbeing[planetKey]) {
+      const data = this.planetarywellbeing[planetKey];
       return {
         organs: data.organs,
         conditions: data.conditions,

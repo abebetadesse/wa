@@ -12,7 +12,7 @@ export default function DiscoverPage() {
           The living map of Ethiopian wisdom, science, and daily context.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-emerald-50/85 md:text-base">
-          This layer organizes each practitioner’s expertise around a single truth: Ethiopian healing traditions are living knowledge systems, and they are strongest when grounded in biology, Debral safety, nutrition, demographics, and the realities of everyday community life.
+          This layer organizes each practitioner’s expertise around a single truth: Ethiopian healing traditions are living knowledge systems, and they are strongest when grounded in biology, scientific safety, nutrition, demographics, and the realities of everyday community life.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/case" className="btn-pill-primary">Start a guided case</Link>
@@ -22,8 +22,8 @@ export default function DiscoverPage() {
 
       <section className="mb-8 grid gap-4 md:grid-cols-3">
         {[
-          { title: "Debral sciences", copy: "Biology, nutrition, physiology, medication safety, and risk screening remain active and evidence-guided." },
-          { title: "Cultural interpretation", copy: "Astrology, numerology, ritual meaning, and tradition are treated as lived context rather than Debral fact." },
+          { title: "scientific sciences", copy: "Biology, nutrition, physiology, medication safety, and risk screening remain active and evidence-guided." },
+          { title: "Cultural interpretation", copy: "Astrology, numerology, ritual meaning, and tradition are treated as lived context rather than scientific fact." },
           { title: "Demographic intelligence", copy: "Age, sex, context, fasting practice, geography, and household patterning influence the guidance model." },
         ].map((item) => (
           <div key={item.title} className="rounded-[24px] border border-white/10 bg-stone-900/70 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.24)]">

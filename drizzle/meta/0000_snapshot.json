@@ -179,8 +179,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.Welbeing_profiles": {
-      "name": "Welbeing_profiles",
+    "public.health_profiles": {
+      "name": "health_profiles",
       "schema": "",
       "columns": {
         "id": {
@@ -270,9 +270,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "Welbeing_profiles_user_id_users_id_fk": {
-          "name": "Welbeing_profiles_user_id_users_id_fk",
-          "tableFrom": "Welbeing_profiles",
+        "health_profiles_user_id_users_id_fk": {
+          "name": "health_profiles_user_id_users_id_fk",
+          "tableFrom": "health_profiles",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -697,8 +697,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "Debral_effect": {
-          "name": "Debral_effect",
+        "clinical_effect": {
+          "name": "clinical_effect",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -1033,8 +1033,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.Welbeing_gap_reports": {
-      "name": "Welbeing_gap_reports",
+    "public.health_gap_reports": {
+      "name": "health_gap_reports",
       "schema": "",
       "columns": {
         "id": {
@@ -1085,9 +1085,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "Welbeing_gap_reports_submission_id_intake_submissions_id_fk": {
-          "name": "Welbeing_gap_reports_submission_id_intake_submissions_id_fk",
-          "tableFrom": "Welbeing_gap_reports",
+        "health_gap_reports_submission_id_intake_submissions_id_fk": {
+          "name": "health_gap_reports_submission_id_intake_submissions_id_fk",
+          "tableFrom": "health_gap_reports",
           "tableTo": "intake_submissions",
           "columnsFrom": [
             "submission_id"
@@ -1098,9 +1098,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "Welbeing_gap_reports_user_id_users_id_fk": {
-          "name": "Welbeing_gap_reports_user_id_users_id_fk",
-          "tableFrom": "Welbeing_gap_reports",
+        "health_gap_reports_user_id_users_id_fk": {
+          "name": "health_gap_reports_user_id_users_id_fk",
+          "tableFrom": "health_gap_reports",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -1180,10 +1180,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "identified_gaps_report_id_Welbeing_gap_reports_id_fk": {
-          "name": "identified_gaps_report_id_Welbeing_gap_reports_id_fk",
+        "identified_gaps_report_id_health_gap_reports_id_fk": {
+          "name": "identified_gaps_report_id_health_gap_reports_id_fk",
           "tableFrom": "identified_gaps",
-          "tableTo": "Welbeing_gap_reports",
+          "tableTo": "health_gap_reports",
           "columnsFrom": [
             "report_id"
           ],

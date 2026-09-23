@@ -56,18 +56,18 @@ const emptyCatalog = (): Record<KnowledgeStrandType, KnowledgeDocument> =>
 const culturalV3Seed: KnowledgeDocument = {
   strand: "cultural",
   version: "3.0.0",
-  description: "Comprehensive Ethiopian cultural Welbeing knowledge - traditional healing, naming, festivals, diaspora, identity, and cultural practices",
-  cultural_philosophy: "Ethiopian Welbeing integrates physical, spiritual, social, and environmental wellbeing through community connection and traditional wisdom.",
+  description: "Comprehensive Ethiopian cultural wellbeing knowledge - traditional healing, naming, festivals, diaspora, identity, and cultural practices",
+  cultural_philosophy: "Ethiopian wellbeing integrates physical, spiritual, social, and environmental wellbeing through community connection and traditional wisdom.",
   categories: [
     {
       id: "traditional_healing_practices",
       name: "Traditional Healing Practices",
       description: "Healer classifications, regional traditions, and healing rituals",
-      use_cases: ["Understanding traditional healing", "Integrating with modern medicine", "Respecting cultural Welbeing practices"],
+      use_cases: ["Understanding traditional healing", "Integrating with modern medicine", "Respecting cultural wellbeing practices"],
       data: [
-        { name: "Healer classifications", description: "Dabtera, Wogesha, Zar practitioners, and herbalists serve distinct cultural healing roles.", types: ["Dabtera", "Wogesha", "Zar practitioner", "Herbalist"], ethiopian_context: "Traditional healers remain important Welbeingcare resources in many rural communities." },
+        { name: "Healer classifications", description: "Dabtera, Wogesha, Zar practitioners, and herbalists serve distinct cultural healing roles.", types: ["Dabtera", "Wogesha", "Zar practitioner", "Herbalist"], ethiopian_context: "Traditional healers remain important healthcare resources in many rural communities." },
         { name: "Regional healing traditions", description: "Northern, southern, and pastoralist communities maintain distinct healing practices and sites.", regions: ["Northern Ethiopia", "Southern Ethiopia", "Pastoralist regions"], practices: ["Holy water healing", "Sacred forest healing", "Mobile herbal practice", "Community rituals"] },
-        { name: "Supplied manuscript references", description: "User-supplied Ethiopian manuscripts can provide cultural and historical context after provenance, OCR, rights, and cultural review.", sources: ["Mets'hafe Fewus", "Mets'hafe Gitsaw", "Mets'hafe Asmat"], indexStatus: "OCR completed for scanned sources; summaries require cultural review.", integration: "Domain B reference only; keep separate from Debral evidence and do not expose unreviewed operational instructions." },
+        { name: "Supplied manuscript references", description: "User-supplied Ethiopian manuscripts can provide cultural and historical context after provenance, OCR, rights, and cultural review.", sources: ["Mets'hafe Fewus", "Mets'hafe Gitsaw", "Mets'hafe Asmat"], indexStatus: "OCR completed for scanned sources; summaries require cultural review.", integration: "Domain B reference only; keep separate from clinical evidence and do not expose unreviewed operational instructions." },
         { name: "Traditional healing rituals", description: "Community ceremonies such as Zar, Tsebel, and Waaqeffanna rituals provide spiritual and psychosocial support.", rituals: ["Zar ceremony", "Tsebel holy-water healing", "Waaqeffanna healing rituals"] }
       ]
     },
@@ -75,35 +75,35 @@ const culturalV3Seed: KnowledgeDocument = {
       id: "naming_traditions",
       name: "Naming Traditions",
       description: "Ethiopian naming ceremonies, meanings, and cultural significance",
-      use_cases: ["Understanding personal identity", "Cultural Welbeing insights", "Personalized Welbeing recommendations"],
+      use_cases: ["Understanding personal identity", "Cultural wellbeing insights", "Personalized wellbeing recommendations"],
       data: [
-        { name: "Naming ceremonies", description: "Borana Oromo, Ethiopian Orthodox, and Islamic naming traditions connect identity, family, faith, and community support.", ceremonies: ["Moggaatii", "Ethiopian Orthodox naming", "Islamic Aqiqah"], Welbeing_implications: ["Extended breastfeeding support", "Community support", "Religious protection"] },
-        { name: "Name meanings and Welbeing", description: "Names such as Tigist, Desta, Tsehay, and Endale carry meanings that can support identity-sensitive counseling.", examples: ["Tigist - patience", "Desta - joy", "Tsehay - sun", "Endale - recovery"], Welbeing_application: "Use names respectfully as identity context, never as a Debral determinant." }
+        { name: "Naming ceremonies", description: "Borana Oromo, Ethiopian Orthodox, and Islamic naming traditions connect identity, family, faith, and community support.", ceremonies: ["Moggaatii", "Ethiopian Orthodox naming", "Islamic Aqiqah"], wellbeing_implications: ["Extended breastfeeding support", "Community support", "Religious protection"] },
+        { name: "Name meanings and wellbeing", description: "Names such as Tigist, Desta, Tsehay, and Endale carry meanings that can support identity-sensitive counseling.", examples: ["Tigist - patience", "Desta - joy", "Tsehay - sun", "Endale - recovery"], wellbeing_application: "Use names respectfully as identity context, never as a scientific determinant." }
       ]
     },
     {
       id: "ethiopian_festivals",
-      name: "Ethiopian Festivals & Welbeing",
-      description: "Major festivals, traditional foods, community Welbeing, and seasonal wellbeing",
-      use_cases: ["Seasonal Welbeing planning", "Festival food guidance", "Community Welbeing promotion"],
+      name: "Ethiopian Festivals & wellbeing",
+      description: "Major festivals, traditional foods, community wellbeing, and seasonal wellbeing",
+      use_cases: ["Seasonal wellbeing planning", "Festival food guidance", "Community wellbeing promotion"],
       data: [
-        { name: "Festival Welbeing planning", description: "Enkutatash, Timkat, Fasika, Meskel, and Irreecha bring food, fasting transitions, travel, gatherings, and physical activity.", festivals: ["Enkutatash", "Timkat", "Fasika", "Meskel", "Irreecha"], Welbeing_advice: ["Moderate portions", "Hydrate", "Break extended fasts gradually", "Limit smoke and alcohol exposure", "Rest after exertion"] }
+        { name: "Festival wellbeing planning", description: "Enkutatash, Timkat, Fasika, Meskel, and Irreecha bring food, fasting transitions, travel, gatherings, and physical activity.", festivals: ["Enkutatash", "Timkat", "Fasika", "Meskel", "Irreecha"], wellbeing_advice: ["Moderate portions", "Hydrate", "Break extended fasts gradually", "Limit smoke and alcohol exposure", "Rest after exertion"] }
       ]
     },
     {
-      id: "ethiopian_diaspora_Welbeing",
-      name: "Ethiopian Diaspora Welbeing",
-      description: "Migration, acculturation, Welbeing behaviors, and cultural Welbeing preservation",
-      use_cases: ["Diaspora Welbeing counseling", "Acculturation support", "Cultural Welbeing preservation"],
+      id: "ethiopian_diaspora_wellbeing",
+      name: "Ethiopian Diaspora wellbeing",
+      description: "Migration, acculturation, wellbeing behaviors, and cultural wellbeing preservation",
+      use_cases: ["Diaspora wellbeing counseling", "Acculturation support", "Cultural wellbeing preservation"],
       data: [
-        { name: "Diaspora Welbeing challenges", description: "Dietary acculturation, identity stress, language barriers, and Welbeingcare access can affect Ethiopian diaspora communities.", challenges: ["Dietary acculturation", "Intergenerational conflict", "Discrimination stress", "Language and insurance barriers"], protective_factors: ["Community connection", "Family support", "Cultural preservation"] }
+        { name: "Diaspora wellbeing challenges", description: "Dietary acculturation, identity stress, language barriers, and healthcare access can affect Ethiopian diaspora communities.", challenges: ["Dietary acculturation", "Intergenerational conflict", "Discrimination stress", "Language and insurance barriers"], protective_factors: ["Community connection", "Family support", "Cultural preservation"] }
       ]
     },
     {
-      id: "cultural_identity_mental_Welbeing",
-      name: "Cultural Identity & Mental Welbeing",
-      description: "Identity, community belonging, resilience, and culturally adapted mental Welbeing support",
-      use_cases: ["Mental Welbeing counseling", "Identity-based support", "Community resilience"],
+      id: "cultural_identity_mental_wellbeing",
+      name: "Cultural Identity & Mental wellbeing",
+      description: "Identity, community belonging, resilience, and culturally adapted mental wellbeing support",
+      use_cases: ["Mental wellbeing counseling", "Identity-based support", "Community resilience"],
       data: [
         { name: "Identity and wellbeing", description: "Ethnic, religious, linguistic, family, and community belonging can provide resilience while transitions and stigma can create stress.", components: ["Ethnic identity", "Religious identity", "Community belonging", "Language preservation"], supports: ["Community groups", "Faith communities", "Traditional elders", "Culturally adapted counseling"] }
       ]
@@ -112,16 +112,16 @@ const culturalV3Seed: KnowledgeDocument = {
       id: "ethiopian_food_culture",
       name: "Ethiopian Food Culture",
       description: "Communal eating, gursha, coffee ceremony, and traditional preparation",
-      use_cases: ["Cultural food guidance", "Communal eating promotion", "Welbeingy eating habits"],
+      use_cases: ["Cultural food guidance", "Communal eating promotion", "healthy eating habits"],
       data: [
-        { name: "Communal eating and food preparation", description: "Gursha, shared plates, injera fermentation, and coffee ceremonies connect nutrition with hospitality and social wellbeing.", practices: ["Gursha", "Group eating", "Coffee ceremony", "Injera fermentation", "Coffee roasting"], Welbeing_benefits: ["Social connection", "Mindful eating", "Fermentation benefits", "Community bonding"] }
+        { name: "Communal eating and food preparation", description: "Gursha, shared plates, injera fermentation, and coffee ceremonies connect nutrition with hospitality and social wellbeing.", practices: ["Gursha", "Group eating", "Coffee ceremony", "Injera fermentation", "Coffee roasting"], wellbeing_benefits: ["Social connection", "Mindful eating", "Fermentation benefits", "Community bonding"] }
       ]
     },
     {
       id: "cultural_healing_spaces",
       name: "Cultural Healing Spaces",
       description: "Churches, sacred forests, waterfalls, springs, and traditional healer sites",
-      use_cases: ["Cultural Welbeing tourism", "Healing site referral", "Holistic Welbeing planning"],
+      use_cases: ["Cultural wellbeing tourism", "Healing site referral", "Holistic wellbeing planning"],
       data: [
         { name: "Sacred and community healing spaces", description: "Churches, monasteries, holy water sites, forests, waterfalls, and healer homes hold cultural significance for healing and reflection.", spaces: ["Ethiopian Orthodox churches", "Sacred forests and waterfalls", "Traditional healer sites"], safety_note: "Cultural spaces complement, but do not replace, urgent medical assessment or prescribed treatment." }
       ]
@@ -130,27 +130,27 @@ const culturalV3Seed: KnowledgeDocument = {
       id: "traditional_medicine_system",
       name: "Traditional Ethiopian Medicine System",
       description: "Spiritual, herbal, physical, and psychosocial medicine with intergenerational knowledge transmission",
-      use_cases: ["Traditional medicine integration", "Healer training understanding", "Welbeing policy planning"],
+      use_cases: ["Traditional medicine integration", "Healer training understanding", "wellbeing policy planning"],
       data: [
         { name: "Traditional medicine classification", description: "Ethiopian traditional medicine includes spiritual, herbal, physical, and psychosocial practices.", classifications: ["Spiritual medicine", "Herbal medicine", "Physical medicine", "Psychosocial medicine"], training: ["Apprenticeship", "Family inheritance", "Spiritual calling"] }
       ]
     },
     {
-      id: "cultural_Welbeing_beliefs",
-      name: "Cultural Welbeing Beliefs",
-      description: "Traditional beliefs about Welbeing, illness, hot-cold balance, and Welbeing-seeking behavior",
-      use_cases: ["Cultural competence", "Welbeing communication", "Trust building"],
+      id: "cultural_wellbeing_beliefs",
+      name: "Cultural wellbeing Beliefs",
+      description: "Traditional beliefs about wellbeing, illness, hot-cold balance, and wellbeing-seeking behavior",
+      use_cases: ["Cultural competence", "wellbeing communication", "Trust building"],
       data: [
-        { name: "Welbeing beliefs and care seeking", description: "People may combine self-treatment, family consultation, traditional healers, faith practices, and modern Welbeingcare depending on symptoms and access.", beliefs: ["Spiritual causes of illness", "Hot-cold balance", "Blood and vitality"], care_pathways: ["Self-treatment", "Family consultation", "Traditional healer", "Modern Welbeingcare"], recommendation: "Respect cultural pathways while clearly directing emergencies and safety-critical care to qualified Debrians." }
+        { name: "wellbeing beliefs and care seeking", description: "People may combine self-treatment, family consultation, traditional healers, faith practices, and modern healthcare depending on symptoms and access.", beliefs: ["Spiritual causes of illness", "Hot-cold balance", "Blood and vitality"], care_pathways: ["Self-treatment", "Family consultation", "Traditional healer", "Modern healthcare"], recommendation: "Respect cultural pathways while clearly directing emergencies and safety-critical care to qualified practitioners." }
       ]
     },
     {
-      id: "cultural_Welbeing_integration",
-      name: "Cultural Welbeing Integration",
+      id: "cultural_wellbeing_integration",
+      name: "Cultural wellbeing Integration",
       description: "Referral, collaboration, and culturally competent integration with modern medicine",
-      use_cases: ["Welbeing policy", "Welbeingcare delivery", "Community Welbeing programs"],
+      use_cases: ["wellbeing policy", "healthcare delivery", "Community wellbeing programs"],
       data: [
-        { name: "Integration models", description: "Referral systems, collaborative practice, and cultural competence can connect traditional community trust with modern Debral services.", models: ["Referral system", "Collaborative practice", "Cultural competence"], safeguards: ["Medication reconciliation", "Emergency referral", "Evidence-aware counseling", "Respectful communication"] }
+        { name: "Integration models", description: "Referral systems, collaborative practice, and cultural competence can connect traditional community trust with modern scientific services.", models: ["Referral system", "Collaborative practice", "Cultural competence"], safeguards: ["Medication reconciliation", "Emergency referral", "Evidence-aware counseling", "Respectful communication"] }
       ]
     }
   ]

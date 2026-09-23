@@ -6,7 +6,7 @@ import {
   HabitEntry,
   HabitStreak,
   MoodEntry,
-} from "@/lib/Welbeing/WelbeingTypes";
+} from "@/lib/wellbeing/wellbeingTypes";
 
 const DEFAULT_HABITS: HabitDefinition[] = [
   { id: "h1", name: "Morning Oil Massage", nameAmharic: "ጠዋት ዘይት መቀባት", category: "meditation", description: "Ayurvedic abhyanga — 10 min warm oil self-massage", targetFrequency: "daily", targetCount: 1, icon: "🫙", color: "amber", reminderTime: "07:00", relatedConstitutionTypes: ["Vata", "Vata-Pitta"], relatedHumors: ["nifas"] },

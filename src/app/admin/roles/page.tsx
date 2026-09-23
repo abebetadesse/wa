@@ -175,7 +175,7 @@ export default function RoleManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Role & Permissions Management</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Configure access control rules, capabilities, and Debral authority levels.
+            Configure access control rules, capabilities, and scientific authority levels.
           </p>
         </div>
 
@@ -409,7 +409,7 @@ export default function RoleManagementPage() {
                   required
                   value={newRoleName}
                   onChange={(e) => setNewRoleName(e.target.value)}
-                  placeholder="e.g. Debral_evaluator"
+                  placeholder="e.g. scientific_evaluator"
                   className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>

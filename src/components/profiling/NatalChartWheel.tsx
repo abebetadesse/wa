@@ -255,7 +255,7 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                     <th className="p-2">Aspect</th>
                     <th className="p-2">Orb</th>
                     <th className="p-2">Nature</th>
-                    <th className="p-2">Welbeing / Somatic Influence</th>
+                    <th className="p-2">wellbeing / Somatic Influence</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -272,7 +272,7 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                           {asp.nature}
                         </span>
                       </td>
-                      <td className="p-2 text-slate-300">{asp.WelbeingImpact}</td>
+                      <td className="p-2 text-slate-300">{asp.wellbeingImpact}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -312,11 +312,11 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
                     <span className="text-slate-400 block text-[10px]">Governed Organs:</span>
-                    <span className="text-slate-200 font-medium">{selectedPlanet.WelbeingAssociations.organs.join(", ")}</span>
+                    <span className="text-slate-200 font-medium">{selectedPlanet.wellbeingAssociations.organs.join(", ")}</span>
                   </div>
                   <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
                     <span className="text-slate-400 block text-[10px]">Vitality Strength:</span>
-                    <span className="text-emerald-400 font-medium">{selectedPlanet.WelbeingAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
+                    <span className="text-emerald-400 font-medium">{selectedPlanet.wellbeingAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
                   </div>
                 </div>
               </div>

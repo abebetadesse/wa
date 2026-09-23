@@ -31,7 +31,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 4.2, bioavailabilityFactor: 1.0, note: "Prebiotic resistant starch" },
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 4.8, bioavailabilityFactor: 1.0, note: "Contains all 8 essential amino acids" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Iron-deficiency anemia", "Pre-diabetes & metabolic syndrome", "Celiac disease (naturally gluten-free)"],
       bioactiveCompounds: ["Prebiotic arabinoxylans", "Proanthocyanidins", "Resistant retrograded starch"],
       digestiveTolerance: "Excellent gastrointestinal soothing due to lactic fermentation acidity (pH 3.8–4.2).",
@@ -63,7 +63,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 4.5, bioavailabilityFactor: 1.0, note: "Gluten-free cereal protein" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 3.2, bioavailabilityFactor: 1.0, note: "Fermented grain fiber" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["General digestive wellness", "Gluten intolerance", "Cardiovascular support"],
       bioactiveCompounds: ["Soluble ferulic acid", "Resistant starch"],
       digestiveTolerance: "Very gentle on sensitive digestive tracts.",
@@ -96,7 +96,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 4.8, bioavailabilityFactor: 1.0, note: "Whole grain roughage" },
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 5.1, bioavailabilityFactor: 1.0, note: "Rich in methionine" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Highland altitude hemoglobin synthesis", "Severe nutritional anemia", "Athletic stamina"],
       bioactiveCompounds: ["High polymeric proanthocyanidins", "Bran flavonoids"],
       digestiveTolerance: "Substantial satiety; requires thorough chewing and hydration.",
@@ -128,7 +128,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 450.0, bioavailabilityFactor: 1.0, note: "Electrolyte replenishment" },
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 11.5, bioavailabilityFactor: 1.0, note: "High satiety protein" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Cholesterol reduction (LDL lowering via beta-glucan)", "Gastric ulcer soothing", "Endurance hydration"],
       bioactiveCompounds: ["Barley beta-glucans", "Tocotrienols"],
       digestiveTolerance: "Forms a soothing demulcent gel in the stomach, shielding gastric mucosa from excess acid.",
@@ -159,7 +159,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 78.0, bioavailabilityFactor: 1.0, note: "Whole grain magnesium" },
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 2.8, bioavailabilityFactor: 1.0, note: "Non-heme cereal iron" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Bowel regularity & peristalsis", "Sustained morning energy"],
       bioactiveCompounds: ["Wheat bran alkylresorcinols"],
       digestiveTolerance: "Wholesome breakfast staple; moderate portion if gluten sensitive.",
@@ -190,7 +190,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 4.2, bioavailabilityFactor: 1.15, note: "Emmer & barley iron" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 95.0, bioavailabilityFactor: 1.1, note: "Muscular recovery mineral" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Postpartum maternal recovery", "Bone fracture convalescence", "Thermal body warming"],
       bioactiveCompounds: ["Emmer avenanthramides", "Barley beta-glucans"],
       digestiveTolerance: "Heavy grounding comfort food; provides long-lasting sustained caloric satiety.",
@@ -220,7 +220,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.2, bioavailabilityFactor: 1.1, note: "Cereal zinc" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 85.0, bioavailabilityFactor: 1.0, note: "Electrolyte mineral" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Lowland arid adaptation", "High antioxidant polyphenol protection"],
       bioactiveCompounds: ["3-Deoxyanthocyanidins", "Flavones"],
       digestiveTolerance: "Good tolerance; traditionally paired with buttermilk or vegetable stews.",
@@ -251,7 +251,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.5, bioavailabilityFactor: 1.2, note: "Trace mineral" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 4.5, bioavailabilityFactor: 1.0, note: "Slow digesting fiber" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Pediatric bone mineralization", "Osteoporosis prevention in elderly", "Maternal lactation calcium support"],
       bioactiveCompounds: ["Eleusinian polyphenols", "Tryptophan"],
       digestiveTolerance: "Remarkable digestive calm; favored in Gojjam and Gondar for bone strength.",
@@ -273,7 +273,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       trypsinInhibitorLevel: "negligible",
       traditionalDegradationMethod: "High heat sand/clay roasting completely destroys trypsin inhibitors.",
       fermentationReductionPct: 60,
-      bioavailabilityUpliftDescription: "Dry thermal roasting neutralizes enzyme blockers and stabilizes Welbeingy fats.",
+      bioavailabilityUpliftDescription: "Dry thermal roasting neutralizes enzyme blockers and stabilizes healthy fats.",
     },
     macros: { caloriesKcal: 410, proteinG: 16.5, carbohydratesG: 62.0, fatsG: 11.0, dietaryFiberG: 12.0 },
     nutrients: [
@@ -283,7 +283,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 3.4, bioavailabilityFactor: 1.1, note: "Plant zinc" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 155.0, bioavailabilityFactor: 1.0, note: "High energy mineral" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Sustained mental concentration during travel/study", "Appetite stabilization"],
       bioactiveCompounds: ["Legume lignans", "Roasted seed phytosterols"],
       digestiveTolerance: "Requires slow and thorough mastication; provides hours of stable blood sugar.",
@@ -320,7 +320,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 480.0, bioavailabilityFactor: 1.0, note: "Cardiovascular electrolyte" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 6.2, bioavailabilityFactor: 1.0, note: "Soluble legume fiber" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Prenatal folate fortification", "Fasting season protein security", "Cholesterol control"],
       bioactiveCompounds: ["Chickpea isoflavones", "Allium sulfur compounds from garlic/onion"],
       digestiveTolerance: "Traditional roasting significantly reduces flatulence-inducing oligosaccharides (stachyose/raffinose).",
@@ -351,7 +351,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 5.5, bioavailabilityFactor: 1.15, note: "De-hulled lentil iron" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 7.9, bioavailabilityFactor: 1.0, note: "Prebiotic colon substrate" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Prenatal neural tube protection", "High-altitude blood regeneration", "Type 2 diabetes glycemic control"],
       bioactiveCompounds: ["Lentil lectin fragments", "Capsaicin from berbere"],
       digestiveTolerance: "Rapidly digestible; lighter on the stomach than un-hulled whole pulses.",
@@ -382,7 +382,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 4.2, bioavailabilityFactor: 1.1, note: "Plant iron" },
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 420.0, bioavailabilityFactor: 1.0, note: "Cardiovascular balance" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Gastritis and heartburn (chegura)", "Pediatric weaning nutrition", "Convalescent recovery"],
       bioactiveCompounds: ["Curcuminoids from turmeric (Ird)", "Gingerols from ginger"],
       digestiveTolerance: "Exceptionally well tolerated by individuals sensitive to spicy berbere dishes.",
@@ -413,7 +413,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 5.8, bioavailabilityFactor: 1.1, note: "Fava bean iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.6, bioavailabilityFactor: 1.1, note: "Plant zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Dopaminergic neuro-support (natural L-DOPA precursor)", "Highland muscular endurance"],
       bioactiveCompounds: ["Levodopa (L-DOPA)", "Flavonol glycosides"],
       digestiveTolerance: "Contraindicated in individuals with G6PD deficiency (favism risk).",
@@ -443,7 +443,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 4.5, bioavailabilityFactor: 1.1, note: "Plant iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.4, bioavailabilityFactor: 1.1, note: "Pulse zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Culinary fasting satisfaction", "Sustained athletic protein"],
       bioactiveCompounds: ["Chickpea saponins", "Capsaicin"],
       digestiveTolerance: "Very satisfying chewy texture without heavy animal fat.",
@@ -474,7 +474,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Folate", symbol: "B9", unit: "mcg", amountPer100g: 175.0, bioavailabilityFactor: 1.0, note: "Whole lentil folate" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 8.2, bioavailabilityFactor: 1.0, note: "High prebiotic roughage" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Rapid nutritional iron replenishment", "Metabolic digestive stimulation via mustard isothiocyanates", "Liver bile flow"],
       bioactiveCompounds: ["Sinigrin from brown mustard (Senafich)", "L-ascorbic acid"],
       digestiveTolerance: "Crisp and invigorating; stimulates digestive secretions.",
@@ -505,7 +505,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 4.8, bioavailabilityFactor: 1.1, note: "Whole seed iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.8, bioavailabilityFactor: 1.1, note: "Germinated zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Chronic constipation & sluggish colon", "Long-lasting physical labor fuel"],
       bioactiveCompounds: ["Resistant starch type 3", "Soluble arabinogalactans"],
       digestiveTolerance: "High roughage; requires adequate water intake.",
@@ -536,8 +536,8 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 3.8, bioavailabilityFactor: 1.0, note: "Pectin and cellulose" },
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 290.0, bioavailabilityFactor: 1.0, note: "Low-sodium electrolyte" },
     ],
-    DebralWelbeingNotes: {
-      primaryIndications: ["Eye Welbeing & night vision", "Mild digestive detox", "Caloric balance during fasting"],
+    physiologicalNotes: {
+      primaryIndications: ["Eye wellbeing & night vision", "Mild digestive detox", "Caloric balance during fasting"],
       bioactiveCompounds: ["Carotenoids (alpha and beta-carotene)", "Lutein"],
       digestiveTolerance: "Light, sweet, and soothing for all ages.",
     },
@@ -567,7 +567,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 4.8, bioavailabilityFactor: 1.35, note: "Fermentation liberated iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 2.5, bioavailabilityFactor: 1.3, note: "Probiotic accessible zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Gut microbiome diversity during strict fasting", "Immune modulation via allyl isothiocyanate"],
       bioactiveCompounds: ["Probiotic Lactobacillus brevis & L. plantarum", "Safflower carthamin"],
       digestiveTolerance: "Pungent and tangy; acts as a powerful digestive stimulant.",
@@ -602,7 +602,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 380.0, bioavailabilityFactor: 1.0, note: "Cellular potassium" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 1.2, bioavailabilityFactor: 1.1, note: "Trace mineral" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Irritable bowel syndrome (IBS) and mucosal inflammation", "Caloric resilience against drought", "Gastric lining repair"],
       bioactiveCompounds: ["Enset beta-sitosterol", "Butyric acid fermentation products"],
       digestiveTolerance: "Soothing and demulcent; traditionally given to comfort abdominal irritation.",
@@ -632,7 +632,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 3.2, bioavailabilityFactor: 1.0, note: "Gentle enset starch" },
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 2.1, bioavailabilityFactor: 1.0, note: "Trace iron" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Postpartum maternal recovery", "Acute gastritis relief", "Pediatric convalescence"],
       bioactiveCompounds: ["Easily assimilable amylopectin"],
       digestiveTolerance: "The gentlest traditional food in Ethiopian medicine; zero mechanical or chemical irritation.",
@@ -663,8 +663,8 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 5.1, bioavailabilityFactor: 1.0, note: "Resistant tuber starch" },
       { name: "Calcium", symbol: "Ca", unit: "mg", amountPer100g: 43.0, bioavailabilityFactor: 1.0, note: "Bioavailable post-boiling" },
     ],
-    DebralWelbeingNotes: {
-      primaryIndications: ["Hypertension management (high potassium-to-sodium ratio)", "Colon Welbeing"],
+    physiologicalNotes: {
+      primaryIndications: ["Hypertension management (high potassium-to-sodium ratio)", "Colon wellbeing"],
       bioactiveCompounds: ["Water-soluble mucilage polysaccharides"],
       digestiveTolerance: "Must be thoroughly boiled; never consume raw.",
     },
@@ -694,7 +694,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 337.0, bioavailabilityFactor: 1.0, note: "Cardiac electrolyte" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 3.5, bioavailabilityFactor: 1.0, note: "Soluble dietary fiber" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Pediatric vitamin A deficiency prevention", "Immune mucosal barrier integrity"],
       bioactiveCompounds: ["Trans-beta-carotene", "Chlorogenic acids"],
       digestiveTolerance: "Easily digestible and naturally sweet.",
@@ -724,7 +724,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 3.8, bioavailabilityFactor: 1.1, note: "Indigenous tuber iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 1.8, bioavailabilityFactor: 1.1, note: "Trace mineral" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Indigenous agrobiodiversity conservation", "Slow-release carbohydrate energy"],
       bioactiveCompounds: ["Terpenoid glycosides", "Tuber inulin"],
       digestiveTolerance: "Mild pleasant earthy flavor; highly filling.",
@@ -760,8 +760,8 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Folate", symbol: "B9", unit: "mcg", amountPer100g: 120.0, bioavailabilityFactor: 1.0, note: "Leafy green folate" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 4.0, bioavailabilityFactor: 1.0, note: "Digestive roughage" },
     ],
-    DebralWelbeingNotes: {
-      primaryIndications: ["Bone density fortification during dairy-free fasting", "Retinal macular Welbeing via lutein", "Cellular detoxification"],
+    physiologicalNotes: {
+      primaryIndications: ["Bone density fortification during dairy-free fasting", "Retinal macular wellbeing via lutein", "Cellular detoxification"],
       bioactiveCompounds: ["Glucosinolates (allyl isothiocyanate precursors)", "Lutein & zeaxanthin"],
       digestiveTolerance: "Cooking deactivates mild goitrogens; very gentle on digestion.",
     },
@@ -792,7 +792,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 27.0, bioavailabilityFactor: 1.0, note: "High protein leaf flour" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 360.0, bioavailabilityFactor: 1.1, note: "Cellular magnesium" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Severe multi-micronutrient deficiency", "Lactation enhancement", "Blood glucose modulation"],
       bioactiveCompounds: ["Moringine isothiocyanates", "Quercetin & chlorogenic acid"],
       digestiveTolerance: "Introduce gradually (1/2 tsp daily) to prevent mild laxative effect.",
@@ -822,8 +822,8 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 340.0, bioavailabilityFactor: 1.0, note: "Hypotensive electrolyte" },
       { name: "Vitamin C", symbol: "VitC", unit: "mg", amountPer100g: 15.0, bioavailabilityFactor: 0.8, note: "Vegetable vitamin C" },
     ],
-    DebralWelbeingNotes: {
-      primaryIndications: ["Visual pigment regeneration", "Prostate and urinary Welbeing", "Gentle fasting nourishment"],
+    physiologicalNotes: {
+      primaryIndications: ["Visual pigment regeneration", "Prostate and urinary wellbeing", "Gentle fasting nourishment"],
       bioactiveCompounds: ["Beta-cryptoxanthin", "Cucurbitacins"],
       digestiveTolerance: "Very gentle and easy on the intestines.",
     },
@@ -852,7 +852,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin C", symbol: "VitC", unit: "mg", amountPer100g: 32.0, bioavailabilityFactor: 1.0, note: "Raw tomato and lemon ascorbic acid" },
       { name: "Vitamin A", symbol: "VitA", unit: "mcg", amountPer100g: 210.0, bioavailabilityFactor: 1.0, note: "Lycopene and beta-carotene" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Optimal meal pairing for treating iron deficiency", "Vascular endothelial protection via lycopene"],
       bioactiveCompounds: ["Lycopene", "Flavonoid rutin"],
       digestiveTolerance: "Refreshing and hydrating; excellent cooling dish in warm weather.",
@@ -887,7 +887,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Potassium", symbol: "K", unit: "mg", amountPer100g: 410.0, bioavailabilityFactor: 1.0, note: "Cardiovascular electrolyte" },
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 2.8, bioavailabilityFactor: 1.0, note: "Plant iron" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Omega-3 fatty acid intake during fasting", "Esophageal and gastric ulcer mucosal coating", "Constipation relief"],
       bioactiveCompounds: ["Alpha-linolenic acid (ALA Omega-3)", "Secoisolariciresinol diglucoside (SDG lignan)"],
       digestiveTolerance: "Supreme mucosal demulcent; coats inflamed stomach and promotes gentle bowel movement.",
@@ -917,7 +917,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 5.2, bioavailabilityFactor: 1.25, note: "Teff & safflower iron" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 125.0, bioavailabilityFactor: 1.1, note: "Cellular magnesium" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Essential linoleic fatty acid source during vegan fasting", "Cardiovascular lipid modulation"],
       bioactiveCompounds: ["Carthamin", "Polyunsaturated fatty acids"],
       digestiveTolerance: "Light, silky, and cooling to an irritated stomach.",
@@ -948,7 +948,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 4.2, bioavailabilityFactor: 1.1, note: "High seed zinc" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 280.0, bioavailabilityFactor: 1.0, note: "Dense mineral content" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["High calorie fasting energy", "Cellular membrane fluidity via linoleic acid"],
       bioactiveCompounds: ["Linoleic acid (Omega-6)", "Sesamol-related lignans"],
       digestiveTolerance: "Nutritious and dense; consume in culinary moderation.",
@@ -983,7 +983,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 3.8, bioavailabilityFactor: 1.8, note: "Heme iron with 25-30% direct intestinal absorption" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 3.2, bioavailabilityFactor: 1.5, note: "Highly bioavailable animal zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Post-fasting remineralization & B12 repletion", "Muscle mass synthesis", "Anemia recovery"],
       bioactiveCompounds: ["Carnitine", "Carnosine", "Egg lutein"],
       digestiveTolerance: "Rich and spiced; consume with plenty of teff injera.",
@@ -1014,7 +1014,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin B12", symbol: "B12", unit: "mcg", amountPer100g: 2.1, bioavailabilityFactor: 1.0, note: "Near 100% daily B12 requirement" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 4.8, bioavailabilityFactor: 1.5, note: "Peak bioavailable zinc" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Rapid hepatic B12 store replenishment", "Zinc-dependent immune recovery"],
       bioactiveCompounds: ["Creatine", "Heme iron peptide complexes"],
       digestiveTolerance: "Substantial satiety; best paired with greens (Gomen).",
@@ -1045,7 +1045,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 5.2, bioavailabilityFactor: 1.6, note: "Unmatched bioavailable zinc" },
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 26.0, bioavailabilityFactor: 1.0, note: "Pure muscle protein" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Post-anemic recovery", "Heavy athletic power replenishment"],
       bioactiveCompounds: ["Carnitine", "CLA (Conjugated linoleic acid from grass-fed cattle)"],
       digestiveTolerance: "Raw/rare meat carries zoonotic tapeworm (Taenia saginata) risk; ensure meat is veterinary inspected or thoroughly cooked (betam-tibsel) during pregnancy.",
@@ -1075,7 +1075,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 13.5, bioavailabilityFactor: 1.0, note: "Casein and whey protein" },
       { name: "Vitamin B12", symbol: "B12", unit: "mcg", amountPer100g: 0.9, bioavailabilityFactor: 1.0, note: "Dairy B12" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Tempering acute gastrointestinal capsicum irritation", "Bone mineralization", "Sleep-supportive tryptophan"],
       bioactiveCompounds: ["Casein phosphopeptides", "L-tryptophan"],
       digestiveTolerance: "Lactic fermentation reduces lactose, making it easier to tolerate than fresh sweet milk.",
@@ -1105,7 +1105,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin B12", symbol: "B12", unit: "mcg", amountPer100g: 0.7, bioavailabilityFactor: 1.0, note: "Fermented dairy cobalamin" },
       { name: "Protein", symbol: "Pro", unit: "g", amountPer100g: 6.8, bioavailabilityFactor: 1.0, note: "Lactobacillus pre-digested proteins" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Gut microbiome restoration", "Recovery from antibiotic dysbiosis", "Calcium replenishment"],
       bioactiveCompounds: ["Lactobacillus acidophilus & Lactococcus lactis live strains", "Smoked pot phenolic traces"],
       digestiveTolerance: "Significantly lower lactose than sweet milk; well tolerated by lactose maldigesters.",
@@ -1136,8 +1136,8 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 2.1, bioavailabilityFactor: 1.7, note: "Heme iron" },
       { name: "Zinc", symbol: "Zn", unit: "mg", amountPer100g: 1.9, bioavailabilityFactor: 1.4, note: "Freshwater fish zinc" },
     ],
-    DebralWelbeingNotes: {
-      primaryIndications: ["Cognitive brain Welbeing", "Cardiovascular support", "Gentle non-red-meat protein"],
+    physiologicalNotes: {
+      primaryIndications: ["Cognitive brain wellbeing", "Cardiovascular support", "Gentle non-red-meat protein"],
       bioactiveCompounds: ["EPA & DHA omega-3 precursors", "Selenium"],
       digestiveTolerance: "Light, easily digestible, and anti-inflammatory.",
     },
@@ -1171,7 +1171,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin C", symbol: "VitC", unit: "mg", amountPer100g: 35.0, bioavailabilityFactor: 0.8, note: "Residual sun-dried vitamin C" },
       { name: "Dietary Fiber", symbol: "Fib", unit: "g", amountPer100g: 22.0, bioavailabilityFactor: 1.0, note: "Dietary spice fiber" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Peripheral circulation stimulation", "Thermogenic metabolism elevation", "Antimicrobial food preservation"],
       bioactiveCompounds: ["Capsaicin", "4-terpineol from korerima", "Trigonelline from fenugreek"],
       digestiveTolerance: "Strong thermogenic spice; moderate in active gastric ulcers or severe reflux.",
@@ -1201,7 +1201,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Iron", symbol: "Fe", unit: "mg", amountPer100g: 9.5, bioavailabilityFactor: 1.0, note: "Spice iron" },
       { name: "Magnesium", symbol: "Mg", unit: "mg", amountPer100g: 140.0, bioavailabilityFactor: 1.0, note: "Spice mineral trace" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Acute peripheral vasodilation", "Antimicrobial food defense when consuming raw kitfo"],
       bioactiveCompounds: ["Capsaicinoids", "Eugenol from cloves"],
       digestiveTolerance: "Very high heat; use sparingly as pinch condiment.",
@@ -1230,7 +1230,7 @@ export const EFCT_MASTER_FOODS: EFCTFoodItem[] = [
       { name: "Vitamin A", symbol: "VitA", unit: "mcg", amountPer100g: 850.0, bioavailabilityFactor: 1.0, note: "True preformed retinol from grass-fed highland cattle" },
       { name: "Vitamin D", symbol: "VitD", unit: "IU", amountPer100g: 65.0, bioavailabilityFactor: 1.0, note: "Natural dairy vitamin D" },
     ],
-    DebralWelbeingNotes: {
+    physiologicalNotes: {
       primaryIndications: ["Carotenoid and fat-soluble vitamin absorption catalyst", "Conjugated linoleic acid (CLA) delivery"],
       bioactiveCompounds: ["Butyric acid", "Koseret terpenes", "Thymoquinone traces from tikur azmud"],
       digestiveTolerance: "Milk solids removed; well tolerated by lactose sensitive individuals.",
@@ -1261,7 +1261,7 @@ export function searchEFCTFoods(query: string, category?: string, fastingOnly?: 
         f.nameAmharic.includes(query.trim()) ||
         f.category.toLowerCase().includes(q) ||
         f.traditionalPreparation.toLowerCase().includes(q) ||
-        f.DebralWelbeingNotes.primaryIndications.some((ind) => ind.toLowerCase().includes(q))
+        f.physiologicalNotes.primaryIndications.some((ind) => ind.toLowerCase().includes(q))
     );
   }
 

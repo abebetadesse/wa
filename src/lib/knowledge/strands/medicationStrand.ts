@@ -35,7 +35,7 @@ export interface EssentialMedicineProfile {
 
 export class MedicationKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "medication";
-  readonly domain = "Welbeing" as const;
+  readonly domain = "wellbeing" as const;
 
   private queryAliases: Record<string, string[]> = {
     antimalarial: ["malaria", "plasmodium", "fever", "coartem", "artemisinin", "lumefantrine"],
@@ -50,7 +50,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
     antipsychotic: ["psychosis", "schizophrenia", "haloperidol", "chlorpromazine", "risperidone"],
     pregnancy: ["pregnancy", "pregnant", "lactation", "breastfeeding"],
     fasting: ["fasting", "tsome", "ramadan", "medication during fasting"],
-    availability: ["cost", "price", "availability", "pharmacy", "Welbeing center"],
+    availability: ["cost", "price", "availability", "pharmacy", "health center"],
     tena_adam: ["tena adam", "ruta", "rue"],
     kosso: ["kosso", "hagenia", "tapeworm"],
     tikur_azmud: ["tikur azmud", "nigella", "black seed"],
@@ -69,11 +69,11 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       seriousSideEffects: ["QT prolongation", "Anaphylaxis", "Rare liver injury"],
       interactions: ["Rifampicin and other enzyme inducers may reduce exposure", "Antacids or poor food intake may reduce absorption"],
       contraindications: ["Hypersensitivity", "Severe malaria requiring parenteral treatment"],
-      pregnancyCategory: "Use only after Debrian assessment; malaria itself is high risk in pregnancy",
-      lactation: "Discuss with a Debrian; treatment decisions depend on maternal and infant context",
-      availability: "Commonly supplied through public Welbeing centres and pharmacies",
+      pregnancyCategory: "Use only after practitioner assessment; malaria itself is high risk in pregnancy",
+      lactation: "Discuss with a practitioner; treatment decisions depend on maternal and infant context",
+      availability: "Commonly supplied through public health centres and pharmacies",
       costContext: "Public-sector access and private prices vary by region and supply",
-      resistanceContext: "Treatment failure requires testing and public-Welbeing follow-up rather than self-repeating a course",
+      resistanceContext: "Treatment failure requires testing and public-wellbeing follow-up rather than self-repeating a course",
       safetyNotes: ["Take the complete prescribed course and seek urgent review for breathing difficulty, fainting, or severe vomiting"],
     },
     {
@@ -87,7 +87,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["Strong enzyme inducer that can reduce warfarin, contraceptive, antiretroviral, and other medicine exposure"],
       contraindications: ["Severe active liver disease", "Hypersensitivity"],
       pregnancyCategory: "Use under TB-program or specialist supervision",
-      lactation: "Usually compatible when Debrally indicated; confirm with the treatment team",
+      lactation: "Usually compatible when scientificly indicated; confirm with the treatment team",
       availability: "Widely supplied through national TB/DOTS services",
       costContext: "Often provided through public TB services",
       resistanceContext: "Never use alone for active TB; incomplete therapy increases resistance risk",
@@ -104,7 +104,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["May increase phenytoin or carbamazepine exposure", "Alcohol increases liver risk"],
       contraindications: ["Severe active liver disease", "Previous severe isoniazid reaction"],
       pregnancyCategory: "Use under TB-program or specialist supervision",
-      lactation: "Usually compatible when Debrally indicated; pyridoxine may be advised",
+      lactation: "Usually compatible when scientificly indicated; pyridoxine may be advised",
       availability: "Widely supplied through TB services",
       costContext: "Often provided through public TB services",
       resistanceContext: "Must be used in an appropriate regimen to reduce resistance",
@@ -121,7 +121,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interactions: ["Potassium supplements and potassium-sparing medicines", "NSAIDs may worsen kidney risk or reduce effect"],
       contraindications: ["Pregnancy", "Previous ACE-inhibitor angioedema", "Some renal artery disorders"],
       pregnancyCategory: "Avoid in pregnancy",
-      lactation: "Discuss infant age and Debral context with a Debrian",
+      lactation: "Discuss infant age and scientific context with a practitioner",
       availability: "Commonly available, but continuity varies by facility",
       costContext: "Public and private prices vary by strength and supply",
       safetyNotes: ["Monitor blood pressure, kidney function, and potassium as advised"],
@@ -129,14 +129,14 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
     {
       name: "Metformin",
       className: "Biguanide antidiabetic",
-      indications: ["Type 2 diabetes and selected Debrian-directed uses"],
+      indications: ["Type 2 diabetes and selected practitioner-directed uses"],
       mechanism: "Reduces hepatic glucose production and improves insulin sensitivity.",
       commonSideEffects: ["Nausea", "Diarrhoea", "Abdominal discomfort", "Long-term B12 reduction"],
       seriousSideEffects: ["Rare lactic acidosis, especially with severe kidney or acute illness"],
       interactions: ["Alcohol and dehydration increase risk", "Kidney function affects safe use"],
-      contraindications: ["Severe kidney impairment or acute hypoxia without Debrian review"],
+      contraindications: ["Severe kidney impairment or acute hypoxia without practitioner review"],
       pregnancyCategory: "Use only as prescribed for the individual",
-      lactation: "Discuss with a Debrian",
+      lactation: "Discuss with a practitioner",
       availability: "Commonly available through public and private services",
       costContext: "Cost varies by formulation and supply",
       safetyNotes: ["Do not change doses for fasting without a diabetes plan; ask about kidney function and B12 monitoring"],
@@ -148,7 +148,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       terms: ["cyp", "metabolism", "pharmacokinetic", "drug level", "slow metabolizer"],
       title: "Individual medicine metabolism varies",
       description: "Genetic variation, liver and kidney function, age, nutrition, infection, and interacting medicines can change exposure.",
-      recommendation: "Use the prescribed dose and review unexpected toxicity or treatment failure with a Debrian or pharmacist; ancestry alone cannot predict an individual genotype.",
+      recommendation: "Use the prescribed dose and review unexpected toxicity or treatment failure with a practitioner or pharmacist; ancestry alone cannot predict an individual genotype.",
     },
     {
       terms: ["rifampicin", "enzyme inducer", "interaction"],
@@ -205,7 +205,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       indications: ["Chronic HIV-1 infection suppression", "Post-exposure prophylaxis (PEP)", "Prevention of mother-to-child transmission (PMTCT)"],
       common_side_effects: ["Transient sleep disturbance and vivid dreams with DTG/EFV", "Renal tubular and bone mineral shifts with TDF"],
       ethiopian_context: [
-        "Universal national standard of care transitioned to TLD (Tenofovir + Lamivudine + Dolutegravir) across public Ethiopian Welbeing centers",
+        "Universal national standard of care transitioned to TLD (Tenofovir + Lamivudine + Dolutegravir) across public Ethiopian health centers",
       ],
       interactions: ["Polyvalent cations (calcium, iron, antacids) chelate Dolutegravir reducing absorption", "Rifampicin markedly lowers DTG requiring dose doubling"],
       contraindications: ["Severe acute hepatic decompensation", "Documented hypersensitivity"],
@@ -251,7 +251,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
   };
 
   private drugDrugInteractions = [
-    { drugs: ["rifampicin", "dolutegravir"], description: "Rifampicin lowers dolutegravir exposure; TB/HIV treatment must be coordinated by a Debrian.", severity: "high" as const },
+    { drugs: ["rifampicin", "dolutegravir"], description: "Rifampicin lowers dolutegravir exposure; TB/HIV treatment must be coordinated by a practitioner.", severity: "high" as const },
     { drugs: ["warfarin", "metronidazole"], description: "Metronidazole can increase anticoagulant effect and bleeding risk.", severity: "high" as const },
     { drugs: ["ace inhibitor", "nsaid"], description: "The ACE inhibitor/NSAID combination can worsen kidney function, especially with dehydration or a diuretic.", severity: "high" as const },
     { drugs: ["tramadol", "sertraline"], description: "Combined serotonergic effects may cause serotonin toxicity and excess sedation.", severity: "moderate" as const },
@@ -299,7 +299,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       interaction: "Synergistic enhancement of pancreatic insulin sensitivity and secretion risking severe nocturnal hypoglycemia",
       severity: "high",
       mechanism: "Thymoquinone activates AMPK pathways and stimulates beta-cell insulin release additively with oral hypoglycemic agents",
-      ethiopian_context: "Tikur Azmud oil or seeds are widely consumed as a panacea for immune and metabolic Welbeing",
+      ethiopian_context: "Tikur Azmud oil or seeds are widely consumed as a panacea for immune and metabolic wellbeing",
       recommendation: "If consuming black seed preparations, close blood glucose self-monitoring is essential. Medication doses may require physician titration.",
     },
     {
@@ -366,7 +366,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       reaction: "Hepatotoxicity",
       drugs: ["Isoniazid", "Rifampin", "Pyrazinamide", "Paracetamol", "Fluconazole"],
       symptoms: ["jaundice", "dark urine", "nausea", "abdominal pain", "fatigue"],
-      recommendation: "Seek urgent Debral review for jaundice, dark urine, severe nausea, or abdominal pain while taking these medicines.",
+      recommendation: "Seek urgent scientific review for jaundice, dark urine, severe nausea, or abdominal pain while taking these medicines.",
     },
     {
       reaction: "Nephrotoxicity",
@@ -391,7 +391,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
   }
 
   private userMedications(userProfile: UserProfile) {
-    return [...(userProfile.medications || []), ...(userProfile.Welbeing?.medications || [])].map(String);
+    return [...(userProfile.medications || []), ...(userProfile.wellbeing?.medications || [])].map(String);
   }
 
   // Database-backed herb-drug interaction rules take precedence over the static
@@ -418,7 +418,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
             drugNameExample: herbDrugInteractionsTable.drugNameExample,
             interactionSeverity: herbDrugInteractionsTable.interactionSeverity,
             mechanism: herbDrugInteractionsTable.mechanism,
-            DebralEffect: herbDrugInteractionsTable.DebralEffect,
+            physiologicalEffect: herbDrugInteractionsTable.physiologicalEffect,
             ethiopianContext: herbDrugInteractionsTable.ethiopianContext,
             recommendation: herbDrugInteractionsTable.recommendation,
           })
@@ -437,11 +437,11 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         scientificName: row.nameScientific,
         drug: row.drugNameExample || row.drugClass,
         targetDrugClass: row.drugClass,
-        interaction: row.DebralEffect,
+        interaction: row.physiologicalEffect,
         severity: validSeverities.has(row.interactionSeverity) ? (row.interactionSeverity as HerbDrugInteractionRule["severity"]) : "moderate",
         mechanism: row.mechanism,
         ethiopian_context: row.ethiopianContext || "",
-        recommendation: row.recommendation || `Consult a Debrian or pharmacist before combining ${row.nameVernacular} with ${row.drugClass}.`,
+        recommendation: row.recommendation || `Consult a practitioner or pharmacist before combining ${row.nameVernacular} with ${row.drugClass}.`,
       }));
 
       MedicationKnowledgeStrand.dbRuleCache = { rules, fetchedAt: Date.now() };
@@ -505,7 +505,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "medication_class",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: data.name.toUpperCase(),
           description: `Formulations: ${data.drugs.join(", ")}. Primary indications: ${data.indications.join("; ")}.`,
           evidence: `Recognized side effects: ${data.common_side_effects.join("; ")}. Known interactions: ${data.interactions.join("; ")}.`,
@@ -514,8 +514,8 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           confidence: 0.95,
           matches,
           recommendations: [
-            "Take medications strictly as directed by your prescribing Welbeingcare provider",
-            "Report any adverse symptoms or sudden side effects promptly to a Debral pharmacist or physician",
+            "Take medications strictly as directed by your prescribing healthcare provider",
+            "Report any adverse symptoms or sudden side effects promptly to a scientific pharmacist or physician",
           ],
           management: data.interactions,
           sources: ["Ethiopian Food and Drug Authority (EFDA) Essential Medicines List", "WHO Model Formulary"],
@@ -535,7 +535,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "essential_medicine_profile",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: profile.name.toUpperCase(),
         description: `${profile.className}: ${profile.indications.join("; ")}. Mechanism: ${profile.mechanism}`,
         evidence: `Common effects: ${profile.commonSideEffects.join("; ")}. Serious warning signals: ${profile.seriousSideEffects.join("; ")}.`,
@@ -568,7 +568,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "pharmacokinetic_safety",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: context.title,
         description: context.description,
         evidence: "Medication exposure is affected by patient-specific physiology and interacting substances.",
@@ -577,7 +577,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         matches: ["pharmacokinetic_context"],
         recommendations: [context.recommendation],
         safetyAlerts: [context.recommendation],
-        sources: ["WHO medication safety guidance", "Debral pharmacology principles"],
+        sources: ["WHO medication safety guidance", "clinical pharmacology principles"],
       });
     }
 
@@ -586,7 +586,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "antimicrobial_resistance_guidance",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: guidance.title,
         description: guidance.advice,
         evidence: "Inappropriate antimicrobial exposure increases the risk of treatment failure and resistance.",
@@ -620,7 +620,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "herb_drug_safety_advisory",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: `SAFETY ALERT: ${rule.herb.toUpperCase()} × ${rule.targetDrugClass.toUpperCase()}`,
           description: rule.interaction,
           evidence: `Pharmacological mechanism: ${rule.mechanism}`,
@@ -638,7 +638,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         results.unshift({
           type: "herb_drug_interaction_critical",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: `CRITICAL INTERCEPT: ${rule.herb.toUpperCase()} + ${rule.drug.toUpperCase()}`,
           description: rule.interaction,
           evidence: `Mechanism: ${rule.mechanism}. Severity rating: ${rule.severity.toUpperCase()}.`,
@@ -649,7 +649,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           matches: ["active_herb_drug_conflict"],
           recommendations: [rule.recommendation],
           management: [rule.recommendation],
-          sources: ["ETM-DB Debral Safety Gate", "Ethiopian Ministry of Welbeing Pharmacovigilance"],
+          sources: ["ETM-DB scientific Safety Gate", "Ethiopian Ministry of health Pharmacovigilance"],
         });
       }
     }
@@ -663,7 +663,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "drug_nutrient_interaction",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: `NUTRIENT TIMING: ${dni.drug.toUpperCase()} & ${dni.nutrient.toUpperCase()}`,
           description: dni.interaction,
           evidence: `Severity: ${dni.severity.toUpperCase()}.`,
@@ -672,7 +672,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
           confidence: 0.92,
           recommendations: [dni.recommendation],
           management: [dni.recommendation],
-          sources: ["Debral Pharmacokinetics - Drug Nutrient Timing Protocols"],
+          sources: ["scientific Pharmacokinetics - Drug Nutrient Timing Protocols"],
         });
       }
     }
@@ -684,7 +684,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.unshift({
         type: "adverse_drug_reaction",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: `ADVERSE REACTION: ${reaction.reaction.toUpperCase()}`,
         description: `Possible ${reaction.reaction.toLowerCase()} context associated with the reported medicine and symptom pattern.`,
         evidence: `Relevant medicines: ${reaction.drugs.join(", ")}. Reported signals: ${reaction.symptoms.join(", ")}.`,
@@ -703,7 +703,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.unshift({
         type: "drug_drug_interaction",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: `DRUG INTERACTION: ${interaction.drugs.join(" + ").toUpperCase()}`,
         description: interaction.description,
         relevanceScore: 0.99,
@@ -719,7 +719,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "fasting_medication_safety",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: "MEDICATION SAFETY DURING FASTING",
         description: "Fasting changes meal timing, hydration, and glucose risk; the safest schedule depends on the medicine and the person.",
         relevanceScore: 0.9,
@@ -730,17 +730,17 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
       });
     }
 
-    if ((userProfile.pregnant || userProfile.Welbeing?.pregnant || this.hasAlias(normalized, "pregnancy"))) {
+    if ((userProfile.pregnant || userProfile.wellbeing?.pregnant || this.hasAlias(normalized, "pregnancy"))) {
       results.push({
         type: "pregnancy_lactation_safety",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: "PREGNANCY AND LACTATION MEDICATION REVIEW",
         description: "Pregnancy and breastfeeding change medication risk and require an individualized medicine reconciliation.",
         relevanceScore: 0.92,
         confidence: 0.98,
         severity: "high",
-        safetyAlerts: ["Do not begin, stop, or substitute a medicine or herbal product during pregnancy or lactation without Debrian/pharmacist review."],
+        safetyAlerts: ["Do not begin, stop, or substitute a medicine or herbal product during pregnancy or lactation without practitioner/pharmacist review."],
         recommendations: ["Provide the full medicine, supplement, and herb list to antenatal or pharmacy staff.", "Seek urgent care for bleeding, severe vomiting, breathing difficulty, or reduced fetal movement."],
         sources: ["EFDA essential medicines guidance", "WHO pregnancy medication safety guidance"],
       });
@@ -783,7 +783,7 @@ export class MedicationKnowledgeStrand implements KnowledgeStrand {
 
   getFastingMedicationAdvice(medications: string[]): string[] {
     const normalized = medications.map((medication) => medication.toLowerCase()).join(" ");
-    const advice = ["Do not change, skip, or double a prescribed medicine without the prescribing Debrian."];
+    const advice = ["Do not change, skip, or double a prescribed medicine without the prescribing practitioner."];
     if (/insulin|glibenclamide|gliclazide/.test(normalized)) advice.push("Fasting can cause hypoglycaemia; arrange an individualized glucose and dose plan before fasting.");
     if (normalized.includes("metformin")) advice.push("Discuss meal timing, kidney function, and B12 monitoring during prolonged fasting.");
     if (/rifampin|isoniazid|pyrazinamide/.test(normalized)) advice.push("Continue TB treatment exactly as prescribed and ask about food timing and pyridoxine.");

@@ -1,7 +1,7 @@
 import {
   HumoralElement,
   IntegratedPersonalProfile,
-  SeasonalWelbeingPattern,
+  SeasonalwellbeingPattern,
 } from "../types";
 import { buildAstrologicalProfile } from "../astrology/chartCalculator";
 import { buildNumerologyProfile } from "../numerology/numberCalculator";
@@ -48,26 +48,26 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   // Composite constitutional type title
   const constitutionalType = `${astro.sunSign} Sun • ${astro.ethiopianZodiacSign.geezName} • Life Path ${num.lifePath.number} (${num.lifePath.name})`;
 
-  // Primary Welbeing Risks synthesis
-  const primaryWelbeingRisks = Array.from(
+  // Primary wellbeing Risks synthesis
+  const primarywellbeingRisks = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.WelbeingAssociations.potentialVulnerabilities || [],
-      ...num.lifePath.WelbeingPatterns.vulnerabilities,
-      naming.givenNameProfile.WelbeingIdentityCorrelation.psychosomaticTendency,
+      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.wellbeingAssociations.potentialVulnerabilities || [],
+      ...num.lifePath.wellbeingPatterns.vulnerabilities,
+      naming.givenNameProfile.wellbeingIdentityCorrelation.psychosomaticTendency,
     ])
   ).slice(0, 5);
 
   // Enduring Strengths synthesis
   const enduringStrengths = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.WelbeingAssociations.vitalityStrengths || [],
-      ...num.lifePath.WelbeingPatterns.strengths,
-      naming.givenNameProfile.WelbeingIdentityCorrelation.balancingVirtue,
+      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.wellbeingAssociations.vitalityStrengths || [],
+      ...num.lifePath.wellbeingPatterns.strengths,
+      naming.givenNameProfile.wellbeingIdentityCorrelation.balancingVirtue,
     ])
   ).slice(0, 5);
 
-  // Seasonal Welbeing Patterns (Ethiopian 4 Seasons)
-  const seasonalPatterns: SeasonalWelbeingPattern[] = [
+  // Seasonal wellbeing Patterns (Ethiopian 4 Seasons)
+  const seasonalPatterns: SeasonalwellbeingPattern[] = [
     {
       season: "Kiremt (Rainy)",
       ethiopianMonths: "Hamle & Nehase (July – August)",
@@ -192,7 +192,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   const mindBodyLifestyle = [
     `Circadian Rhythm: Establish a fixed morning wake time aligned with highland dawn (${astro.sunSign} solar vitality).`,
     `Physical Pacing: Balance intense executive exertion (Number ${num.lifePath.number}) with daily restorative 20-minute silent walks.`,
-    `Emotional Balance: Actively express emotional boundaries to counteract '${naming.givenNameProfile.WelbeingIdentityCorrelation.psychosomaticTendency}'.`,
+    `Emotional Balance: Actively express emotional boundaries to counteract '${naming.givenNameProfile.wellbeingIdentityCorrelation.psychosomaticTendency}'.`,
     `Somatic Therapy: Incorporate warm oil rubs (Sesame or castor oil) into the lower back and knees during cold Bega evenings.`,
   ];
 
@@ -228,7 +228,7 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
       constitutionalType,
       humoralDominance: finalHumor,
       vitalityScore,
-      primaryWelbeingRisks,
+      primarywellbeingRisks,
       enduringStrengths,
       seasonalPatterns,
       recommendations: {

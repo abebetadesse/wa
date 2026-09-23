@@ -222,7 +222,7 @@ export default function CasePage() {
         label: "Urgent attention",
         tone: "text-rose-300 border-rose-500/40 bg-rose-950/25",
         accent: "bg-rose-500",
-        action: "This case shows an urgent or high-risk pattern; encourage immediate Debral attention or emergency support.",
+        action: "This case shows an urgent or high-risk pattern; encourage immediate Scientific attention or emergency support.",
       },
     };
     return meta[level] ?? meta.low;
@@ -290,15 +290,15 @@ export default function CasePage() {
           userId: session?.userId,
           demographics: { age: profileContext["Date of birth"] || answers.age, gender: profileContext["Gender identity"] },
           medications: profileContext["Current medications"] || answers.medications || [],
-          Welbeing: { allergies: profileContext["Known allergies"] || [], conditions: profileContext["Relevant medical history"] || [] },
+          wellbeing: { allergies: profileContext["Known allergies"] || [], conditions: profileContext["Relevant medical history"] || [] },
           location: { region: profileContext["Region or state"] || answers.region || "Addis Ababa" },
           name: profileContext["Full name"] || profileContext.name,
           fullName: profileContext["Full name"] || profileContext.fullName,
           birthDate: profileContext["Date of birth"] || profileContext.birthDate,
           profileContext,
         },
-        domain: selectedCase?.id || "Welbeing",
-        domainLabel: selectedCase?.name || "Welbeing",
+        domain: selectedCase?.id || "wellbeing",
+        domainLabel: selectedCase?.name || "wellbeing",
       }),
     });
     const payload = await response.json();
@@ -438,7 +438,7 @@ export default function CasePage() {
     event.preventDefault();
     if (!session) return;
     // Validate required fields
-    const requiredFields = selectedCase?.id === "Welbeing"
+    const requiredFields = selectedCase?.id === "wellbeing"
       ? [
         ["age", "How old are you?"],
         ["location", "Where are you currently living?"],
@@ -684,7 +684,7 @@ export default function CasePage() {
           ? "text-amber-300 border-amber-500/40 bg-amber-950/20"
           : "text-emerald-300 border-emerald-500/40 bg-emerald-950/20";
 
-    const WelbeingContextLoaded = Boolean(profileContext && Object.keys(profileContext).length > 0);
+    const wellbeingContextLoaded = Boolean(profileContext && Object.keys(profileContext).length > 0);
     const hasDiagnostic = Boolean(diagnosticResult);
     const aiSignals = diagnosticResult?.summary?.matchedSignals?.slice(0, 3) ??
       assist.suggestions.slice(0, 3) ??
@@ -730,7 +730,7 @@ export default function CasePage() {
           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Care Readiness</div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
-              {WelbeingContextLoaded ? "Context" : "Context pending"}
+              {wellbeingContextLoaded ? "Context" : "Context pending"}
             </span>
             <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
               {hasDiagnostic ? "Diagnostic" : "No diagnostic"}
@@ -740,12 +740,12 @@ export default function CasePage() {
 
         {diagnosticResult && (
           <div className="rounded-2xl border border-sky-500/30 bg-sky-950/15 p-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-300">Debral Fit</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-300">Scientific Fit</div>
             <div className="mt-2 text-sm font-bold text-white">
               Confidence {Math.round(diagnosticResult.summary.confidence)}%
             </div>
             <div className="mt-2 text-[11px] text-sky-100">
-              {diagnosticResult.summary.intent || "Debral reasoning loaded"}
+              {diagnosticResult.summary.intent || "Scientific reasoning loaded"}
             </div>
           </div>
         )}
@@ -1023,8 +1023,8 @@ export default function CasePage() {
                 </p>
 
                 <form onSubmit={submitSpecific} className="space-y-5" id="specific-case-form">
-                  {/* ── Welbeing-domain purpose-built fields ── */}
-                  {selectedCase.id === "Welbeing" ? (
+                  {/* ── wellbeing-domain purpose-built fields ── */}
+                  {selectedCase.id === "wellbeing" ? (
                     <>
                       {/* Row 1: Age + Location */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1132,10 +1132,10 @@ export default function CasePage() {
                               "Traditional Medicine Safety",
                               "Chronic Disease Management",
                               "Mental Wellness",
-                              "Reproductive & Maternal Welbeing",
-                              "Digestive Welbeing",
+                              "Reproductive & Maternal wellbeing",
+                              "Digestive wellbeing",
                               "Infectious Disease Prevention",
-                              "Cardiovascular Welbeing",
+                              "Cardiovascular wellbeing",
                             ]
                           ).map((opt) => (
                             <option key={opt} value={opt}>{opt}</option>
@@ -1164,7 +1164,7 @@ export default function CasePage() {
                                   : "border-white/10 bg-black/25 text-slate-400 hover:border-white/30"
                                   }`}
                               >
-                                {val === "yes" ? "🌿 Yes" : "⚕️ No"} — {val === "yes" ? "include Domain B" : "Debral only"}
+                                {val === "yes" ? "🌿 Yes" : "⚕️ No"} — {val === "yes" ? "include Domain B" : "Scientific only"}
                               </button>
                             );
                           })}
@@ -1172,13 +1172,13 @@ export default function CasePage() {
                       </div>
                     </>
                   ) : (
-                    /* Non-Welbeing domains: generic question renderer */
+                    /* Non-wellbeing domains: generic question renderer */
                     renderQuestions()
                   )}
 
                   {/* ── Domain A / Domain B visual layer panels ── */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    {/* Domain A — Debral */}
+                    {/* Domain A — Scientific */}
                     <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-4 space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
@@ -1187,7 +1187,7 @@ export default function CasePage() {
                       <p className="text-xs text-slate-400 leading-relaxed">
                         Biochemical · Nutritional · Ecological · Drug-Herb Safety · Mechanistic
                       </p>
-                      <p className="text-[10px] text-emerald-400/70">Active — shapes Debral report</p>
+                      <p className="text-[10px] text-emerald-400/70">Active — shapes Scientific report</p>
                     </div>
 
                     {/* Domain B — Cultural (opt-in only) */}
@@ -1202,7 +1202,7 @@ export default function CasePage() {
                           Ge'ez calendar · Numerology · AwudeNegest · Traditional heritage
                         </p>
                         <p className="text-[10px] text-amber-400/70">
-                          Opted in — enrichment layer only, never alters Debral gaps
+                          Opted in — enrichment layer only, never alters Scientific gaps
                         </p>
                       </div>
                     )}
@@ -1216,9 +1216,9 @@ export default function CasePage() {
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <div className="badge badge-safe mb-2">Integrated client assessment</div>
-                        <h3 className="text-base font-bold text-white">Bring your Welbeing context into this case</h3>
+                        <h3 className="text-base font-bold text-white">Bring your wellbeing context into this case</h3>
                         <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                          Profile fields from your personal, family, geographic, cultural, economic, Welbeing, and lifestyle
+                          Profile fields from your personal, family, geographic, cultural, economic, wellbeing, and lifestyle
                           profile are sent as context. You can review and change them in Profile Edit.
                         </p>
                       </div>
@@ -1229,7 +1229,7 @@ export default function CasePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="rounded-xl border border-white/8 bg-black/30 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Welbeing Context</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">wellbeing Context</div>
                         <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-300">
                           <div>
                             <span className="block text-slate-500">Name</span>
@@ -1263,7 +1263,7 @@ export default function CasePage() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-slate-500">Care lens</span>
-                            <span className="font-semibold text-white">{String(answers.reflectionLens || "Debral only")}</span>
+                            <span className="font-semibold text-white">{String(answers.reflectionLens || "Scientific only")}</span>
                           </div>
                         </div>
                       </div>
@@ -1271,7 +1271,7 @@ export default function CasePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-300">Debral Attachments</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-300">Scientific Attachments</div>
                         <div className="mt-3 text-xs text-sky-100 space-y-2">
                           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-sky-300" /> Medications: {String(profileContext["Current medications"] || answers.medications || "None listed")}</div>
                           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-sky-300" /> History: {String(profileContext["Relevant medical history"] || "No known history")}</div>
@@ -1307,7 +1307,7 @@ export default function CasePage() {
                           <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full border border-current border-t-transparent animate-spin" />Analyzing...</span>
                         ) : "Run multi-strand diagnostic"}
                       </button>
-                      {selectedCase?.id === "Welbeing" && (
+                      {selectedCase?.id === "wellbeing" && (
                         <button
                           type="button"
                           onClick={() => void runEmbeddedIntake()}
@@ -1340,7 +1340,7 @@ export default function CasePage() {
                         <div className="flex items-center gap-2 text-sm">
                           <span className="text-amber-400">✓</span>
                           <span className="text-amber-100 font-semibold">Client intake saved:</span>
-                          <span className="text-amber-200/80 text-xs">{intakeResult.message || "Intake evaluated and Welbeing gap report generated successfully."}</span>
+                          <span className="text-amber-200/80 text-xs">{intakeResult.message || "Intake evaluated and wellbeing gap report generated successfully."}</span>
                         </div>
                         {intakeResult.reportId && (
                           <Link

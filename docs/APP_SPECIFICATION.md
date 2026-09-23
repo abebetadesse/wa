@@ -2,18 +2,18 @@
 
 ## 1. Product Summary
 
-The application is an Ethiopian-context Welbeing, wellness, and cultural reflection platform. It combines guided case intake, multi-strand knowledge retrieval, nutritional evaluation, medication and herb safety screening, AI-assisted synthesis, and optional cultural reflection.
+The application is an Ethiopian-context wellbeing, wellness, and cultural reflection platform. It combines guided case intake, multi-strand knowledge retrieval, nutritional evaluation, medication and herb safety screening, AI-assisted synthesis, and optional cultural reflection.
 
 The primary product promise is:
 
-> Help a person describe a real situation, understand the relevant evidence and risks, and choose a practical next step without allowing cultural or speculative material to override Debral safety.
+> Help a person describe a real situation, understand the relevant evidence and risks, and choose a practical next step without allowing cultural or speculative material to override scientific safety.
 
-The application is educational and decision-support software. It does not diagnose, prescribe, replace a Debrian, or guarantee an outcome.
+The application is educational and decision-support software. It does not diagnose, prescribe, replace a practitioner, or guarantee an outcome.
 
 ## 2. Primary User Journey
 
 1. The user enters the guided case workflow at `/case`.
-2. The user selects a domain: Welbeing, Peace, Power, Money, Career, or Social.
+2. The user selects a domain: wellbeing, Peace, Power, Money, Career, or Social.
 3. The user selects a challenge and provides domain-specific details.
 4. The system saves answers and may provide optional live assistance.
 5. The system builds a case context and evaluates urgency.
@@ -26,7 +26,7 @@ Case sessions are resumable through server persistence and browser draft recover
 
 ## 3. Domain Architecture
 
-### Domain A: Debral and operational knowledge
+### Domain A: scientific and operational knowledge
 
 Domain A may influence urgency, safety, evidence ranking, recommendations, and referrals. It includes:
 
@@ -42,19 +42,19 @@ Domain A may influence urgency, safety, evidence ranking, recommendations, and r
 
 ### Domain B: Cultural and reflective knowledge
 
-Domain B is optional and must remain separate from Debral decisions. It includes:
+Domain B is optional and must remain separate from scientific decisions. It includes:
 
 - Cultural
 - Astrological
 
-AwudeNegest content is represented as cultural content within the astrological/cultural layer, not as an independent Debral knowledge strand. Numerology is a reflective feature, not a Debral retrieval strand.
+AwudeNegest content is represented as cultural content within the astrological/cultural layer, not as an independent scientific knowledge strand. Numerology is a reflective feature, not a scientific retrieval strand.
 
 Domain B must never change:
 
 - Emergency or urgency level
 - Medication or herb interaction decisions
 - Nutrient targets or deficiency calculations
-- Debral diagnosis or treatment recommendations
+- scientific diagnosis or treatment recommendations
 - Referral priority
 
 Critical urgency signals firewall Domain B content from active case recommendations until urgent care is addressed.
@@ -104,7 +104,7 @@ Expected behavior:
 - Identify uncertainty and missing information.
 - Avoid diagnosis, prescribing, medication changes, and unsupported herb claims.
 - Treat emergency symptoms plainly and direct the user to urgent care.
-- Keep Domain B separate from Debral reasoning.
+- Keep Domain B separate from scientific reasoning.
 - Fall back to deterministic output when the external model is unavailable.
 
 Bionic GPT configuration is server-side and must never expose API keys to the browser. External requests require timeouts, structured error handling, and safe fallback behavior.
@@ -117,7 +117,7 @@ The database model supports:
 
 - `herbs`: vernacular, scientific, and Amharic names
 - `compounds`: active compounds associated with each herb
-- `herb_drug_interactions`: drug classes, example medicines, severity, mechanism, Debral effect, contraindication, evidence level, and source
+- `herb_drug_interactions`: drug classes, example medicines, severity, mechanism, scientific effect, contraindication, evidence level, and source
 
 The production safety path should:
 
@@ -126,7 +126,7 @@ The production safety path should:
 3. Load its persisted interaction rules.
 4. Resolve the user's medication names and active ingredients/classes.
 5. Match the medication against the interaction rule and ingredient context.
-6. Return the interaction severity, mechanism, Debral effect, contraindication, and source reference.
+6. Return the interaction severity, mechanism, scientific effect, contraindication, and source reference.
 7. Fail closed for high-risk or contraindicated combinations.
 
 Static safety rules may remain as an offline fallback, but database-backed evidence is authoritative when available. Culinary use and concentrated medicinal preparations should be distinguished where the evidence supports that distinction.
@@ -151,7 +151,7 @@ Traditional remedies must pass the safety gate before they can appear as recomme
 PostgreSQL is the source of truth for persisted operational data, including:
 
 - Users and authentication sessions
-- Welbeing profiles
+- wellbeing profiles
 - Case sessions and answers
 - Diagnostic sessions
 - Reports and identified gaps
@@ -171,7 +171,7 @@ Knowledge publishing should validate strand names, category structure, versions,
 - `/case`: guided case intake and solution planning
 - `/diagnostic`: multi-strand diagnostic portal
 - `/intake`: nutritional assessment
-- `/report/[id]`: generated nutritional Welbeing-gap report
+- `/report/[id]`: generated nutritional wellbeing-gap report
 - `/safety`: herb and medication safety checker
 - `/wellness`: wellness guidance
 - `/awde-negast`: cultural reflection viewer
@@ -191,7 +191,7 @@ Knowledge publishing should validate strand names, category structure, versions,
 
 - Authentication uses server-side session validation and HTTP-only cookies.
 - Protected APIs must authorize ownership of case, profile, report, and diagnostic records.
-- Restricted Welbeing and medication fields must remain encrypted at rest where configured.
+- Restricted wellbeing and medication fields must remain encrypted at rest where configured.
 - AI prompts must avoid unnecessary personal data and must not include secrets.
 - Safety, report-generation, knowledge-publishing, authentication, and permission changes should be auditable.
 - Export and deletion actions require clear user intent and appropriate authorization.
@@ -209,7 +209,7 @@ Every data-backed screen should provide:
 - Clear safety and cultural-layer labels
 - Plain language around uncertainty and limitations
 
-Debral warnings and emergency actions must be visually prominent without relying only on color.
+scientific warnings and emergency actions must be visually prominent without relying only on color.
 
 ## 13. Testing Requirements
 
@@ -244,7 +244,7 @@ npm test
 
 ## 15. v4 Product Direction: Divination-First Advisory Platform
 
-The v4 product direction changes the business emphasis from Welbeing-first to divination-first while preserving Welbeing as the scientific credibility anchor.
+The v4 product direction changes the business emphasis from wellbeing-first to divination-first while preserving wellbeing as the scientific credibility anchor.
 
 ### Priority order
 
@@ -252,19 +252,19 @@ The v4 product direction changes the business emphasis from Welbeing-first to di
 2. Relationships and family
 3. Career and business
 4. Legal and dispute guidance
-5. Welbeing and wellness
+5. wellbeing and wellness
 
-The platform's core cultural services are Ge'ez gematria, AwudeNegest interpretation, Ethiopian and Western astrology, traditional mediation, and reflective spiritual guidance. Welbeing, legal, financial, and mental-Welbeing content must remain appropriately scoped and must not be presented as professional advice unless reviewed by the appropriate qualified expert.
+The platform's core cultural services are Ge'ez gematria, AwudeNegest interpretation, Ethiopian and Western astrology, traditional mediation, and reflective spiritual guidance. wellbeing, legal, financial, and mental-wellbeing content must remain appropriately scoped and must not be presented as professional advice unless reviewed by the appropriate qualified expert.
 
 ### Five product case types
 
 | Case type | Primary expert path | Cultural role | Required safety focus |
 |---|---|---|---|
-| Spiritual and life direction | Verified debtera, numerologist, astrologer, spiritual counselor | Primary | Mental-Welbeing crisis, exploitation, false promises |
+| Spiritual and life direction | Verified debtera, numerologist, astrologer, spiritual counselor | Primary | Mental-wellbeing crisis, exploitation, false promises |
 | Relationships and family | Licensed counselor plus verified traditional mediator | Primary | Domestic violence, child safety, coercion |
 | Career and business | Career counselor, financial advisor, AwudeNegest specialist | Primary | Financial distress, suicidal ideation, financial-advice limits |
 | Legal and dispute | Licensed attorney plus verified elder mediator | Primary | Imminent harm, arrest, eviction, jurisdiction limits |
-| Welbeing | Licensed Debrian plus traditional-healer collaborator | Supporting | Medical emergency, medication safety, Debral referral |
+| wellbeing | Licensed practitioner plus traditional-healer collaborator | Supporting | Medical emergency, medication safety, scientific referral |
 
 ### Mandatory product rules
 
@@ -313,7 +313,7 @@ Payment providers, expert credential verification, legal compliance, crisis cont
 The current repository already provides useful foundations:
 
 - Next.js App Router and authenticated case workflow.
-- Deterministic urgency detection and Welbeing safety gates.
+- Deterministic urgency detection and wellbeing safety gates.
 - Cultural and astrological engines with Domain B labeling.
 - Ge'ez gematria and AwudeNegest calculation modules.
 - Bionic GPT integration with deterministic fallback intent.
@@ -323,11 +323,11 @@ The following v4 capabilities are target-state work, not yet complete in the cur
 
 - The current case workflow has six generic domains rather than the five v4 business case types.
 - Expert credentialing, review queues, report approval, and DB-level visibility gates are not yet implemented end to end.
-- Crisis routing currently covers Welbeing-focused signals; DV, child-safety, legal, financial-distress, and spiritual-exploitation rules must be added.
+- Crisis routing currently covers wellbeing-focused signals; DV, child-safety, legal, financial-distress, and spiritual-exploitation rules must be added.
 - Payment, consultation booking, notifications, healing-scroll generation, and refund workflows are not yet production services.
 - Some knowledge and divination content remains engine-backed or in-memory rather than fully persisted and reviewed.
 
-Implementation should proceed incrementally: establish the expert/review state machine and crisis bypass first, then add divination-first case types, followed by payment and consultation services. Existing Welbeing safety behavior and Domain A/B separation must remain intact throughout the migration.
+Implementation should proceed incrementally: establish the expert/review state machine and crisis bypass first, then add divination-first case types, followed by payment and consultation services. Existing wellbeing safety behavior and Domain A/B separation must remain intact throughout the migration.
 
 ## 19. Case 1 Dynamic Workflow: Spiritual and Life Direction
 
@@ -337,7 +337,7 @@ Case 1 is the first divination-first workflow to receive a dynamic implementatio
 
 1. **Name entry:** accept Ge'ez/Amharic name and optional mother's name, validate script, and calculate gematria as input changes.
 2. **Live divination preview:** show letter values, total, final number, zodiac context, AwudeNegest circle/segment, and talismanic context with a reflective disclaimer.
-3. **Adaptive intake:** generate the base question category first, then branch into life direction, career, relationships, family, Welbeing, or spiritual-growth questions. Relationship branches require safety screening.
+3. **Adaptive intake:** generate the base question category first, then branch into life direction, career, relationships, family, wellbeing, or spiritual-growth questions. Relationship branches require safety screening.
 4. **Optional follow-ups:** use a debounced, privacy-minimized AI endpoint to suggest neutral clarifying questions from the user's own text. Follow-ups are optional and never replace crisis detection.
 5. **Divination reveal:** present the deterministic calculation and cultural context before expert review; do not present it as a prediction or guarantee.
 6. **Expert queue:** match verified experts by case type, credential scope, language, availability, specialty, and current load. Show status and ETA only from server data.
@@ -358,7 +358,7 @@ Case 1 is the first divination-first workflow to receive a dynamic implementatio
 - Crisis content is shown immediately and is never paywalled or held for expert review.
 - No AI or expert output may predict death, serious harm, guaranteed outcomes, or specific future events.
 - Cultural/divination content and practical guidance remain separate sections with separate disclaimers.
-- Welbeing, financial, legal, and mental-Welbeing disclosures trigger the appropriate safety route and professional referral; divination must not interpret them as treatment or advice.
+- wellbeing, financial, legal, and mental-wellbeing disclosures trigger the appropriate safety route and professional referral; divination must not interpret them as treatment or advice.
 - The user's name and mother's name are sensitive profile data: minimize AI exposure, encrypt persisted values, and record divination consent separately from AI consent.
 
 ### Case 1 target APIs
@@ -392,7 +392,7 @@ The full target specification describes an 11-week delivery roadmap, but the rep
 
 ## 20. Case 2 Dynamic Workflow: Relationships and Family
 
-Case 2 is a two-subject, safety-first workflow. It may analyze the user alone or the user and partner together, but compatibility content is always reflective and must never obscure domestic violence, child-safety, coercion, or mental-Welbeing risk.
+Case 2 is a two-subject, safety-first workflow. It may analyze the user alone or the user and partner together, but compatibility content is always reflective and must never obscure domestic violence, child-safety, coercion, or mental-wellbeing risk.
 
 ### Mandatory workflow order
 
@@ -440,10 +440,10 @@ AI follow-ups must be neutral, optional, grounded in the user's own words, debou
 
 Routine relationship cases may require two distinct expert roles:
 
-- Licensed psychologist, marriage and family counselor, or Debral social worker.
+- Licensed psychologist, marriage and family counselor, or scientific social worker.
 - Verified traditional marriage mediator when cultural mediation is requested and safe.
 
-Urgent safety flags prioritize a DV-trained counselor and suppress automatic couples-session recommendations. Approval requires the relationship checklist, including DV screening, child-safety screening, no one-sided Debral diagnosis, no dangerous advice, cultural labeling, appropriate disclaimers, and mediator review when applicable.
+Urgent safety flags prioritize a DV-trained counselor and suppress automatic couples-session recommendations. Approval requires the relationship checklist, including DV screening, child-safety screening, no one-sided scientific diagnosis, no dangerous advice, cultural labeling, appropriate disclaimers, and mediator review when applicable.
 
 ### Case 2 target APIs
 
@@ -476,7 +476,7 @@ The Case 2 target roadmap is twelve weeks, but safety-screen and crisis-routing 
 
 ## 21. Case 3 Dynamic Workflow: Career and Business
 
-Case 3 combines practical career direction with optional Ethiopian timing and business-name reflection. Career and business decisions can affect housing, food, debt, and mental Welbeing, so financial-distress and self-harm screening must happen before gematria, AI, or payment flows.
+Case 3 combines practical career direction with optional Ethiopian timing and business-name reflection. Career and business decisions can affect housing, food, debt, and mental wellbeing, so financial-distress and self-harm screening must happen before gematria, AI, or payment flows.
 
 ### Mandatory workflow order
 

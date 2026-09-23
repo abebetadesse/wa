@@ -8,7 +8,7 @@ export default function OfflinePage() {
         <div className="badge badge-moderate mb-4">Offline mode</div>
         <h1 className="text-3xl font-extrabold text-white mb-3">You are temporarily offline</h1>
         <p className="text-sm text-slate-400 leading-relaxed mb-6">
-          Cached wellness and constitution tools remain available. Reconnect before submitting an intake or generating a Debral report.
+          Cached wellness and constitution tools remain available. Reconnect before submitting an intake or generating a scientific report.
         </p>
         <Link href="/wellness" className="btn-primary inline-flex text-sm py-2.5 px-5">Open cached wellness plan</Link>
       </div>

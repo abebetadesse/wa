@@ -1129,7 +1129,7 @@ export const BODY_SIGN_ZONES = {
   ],
   palm: [
     { zone: "Life Line", core: "Power", sign: "Deep and clear", meaning: "Strong vital reservoir", remedy: "Maintain physical discipline" },
-    { zone: "Heart Line", core: "Humanity", sign: "Long and curved toward Jupiter", meaning: "Deep relational capacity", remedy: "Practice Welbeingy boundaries" },
+    { zone: "Heart Line", core: "Humanity", sign: "Long and curved toward Jupiter", meaning: "Deep relational capacity", remedy: "Practice healthy boundaries" },
     { zone: "Head Line", core: "Creation", sign: "Wavy descent toward Moon mount", meaning: "Rich imaginative fertility", remedy: "Channel into tangible art" },
     { zone: "Fate Line", core: "Peace", sign: "Steady central ascent", meaning: "Clear inner compass", remedy: "Trust unhurried progression" },
     { zone: "Spirit Line", core: "Spirit", sign: "Girdle of Venus / intuitive ring", meaning: "Subtle empathic perception", remedy: "Daily silence and prayer" },

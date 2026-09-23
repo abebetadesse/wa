@@ -5,12 +5,12 @@ import {
   ScannedFoodItem,
   MealLog,
   DailyNutritionSummary,
-} from "@/lib/Welbeing/WelbeingTypes";
+} from "@/lib/wellbeing/wellbeingTypes";
 import {
   ETHIOPIAN_FOOD_DATABASE,
   searchFoodDatabase,
   generateDailySummary,
-} from "@/lib/Welbeing/foodTrackingEngine";
+} from "@/lib/wellbeing/foodTrackingEngine";
 
 type MealType = MealLog["mealType"];
 
@@ -168,7 +168,7 @@ export default function FoodTrackingView() {
                       {food.bioavailabilityModifiers.fermented && (
                         <span className="text-[10px] text-emerald-400 font-semibold">🧫 Fermented</span>
                       )}
-                      {food.WelbeingFlags.slice(0, 2).map((flag: string) => (
+                      {food.wellbeingFlags.slice(0, 2).map((flag: string) => (
                         <span key={flag} className="text-[10px] text-slate-400 font-mono">{flag}</span>
                       ))}
                     </div>

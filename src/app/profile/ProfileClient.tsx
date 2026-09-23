@@ -255,7 +255,7 @@ export default function ProfileClient() {
       setMultiNumeroData(mNum);
 
       // 5. AwudeNegest
-      const aw = calculateAwudeNegestReading({ name: targetName, category: "Welbeing" });
+      const aw = calculateAwudeNegestReading({ name: targetName, category: "wellbeing" });
       setAwudeReadingData(aw);
     } catch (err) {
       console.error("Failed to generate profile:", err);
@@ -312,7 +312,7 @@ export default function ProfileClient() {
               Astrology, Numerology &amp; Cultural Profiling
             </h1>
             <Link href="/profile/edit" className="mt-4 inline-block btn-pill-primary">
-              Edit Welbeing profile
+              Edit wellbeing profile
             </Link>
             <p className="text-slate-300 text-sm md:text-base mt-2 max-w-3xl">
               World-class profiling unifying Western &amp; Vedic Astrology, Dan Millman's 45-path framework, the 16 Circular Tables of AwudeNegest, Däbtära healing scrolls, and multi-dimensional relationship compatibility.
@@ -411,7 +411,7 @@ export default function ProfileClient() {
               </p>
             </div>
             <Link href="/profile/edit" className="btn-pill-secondary text-xs whitespace-nowrap">
-              Edit Welbeing fields
+              Edit wellbeing fields
             </Link>
           </div>
           {accountLoading ? (
@@ -675,7 +675,7 @@ export default function ProfileClient() {
                   }`}
               >
                 <span>🌿</span>
-                <span>Synthesis &amp; Welbeing</span>
+                <span>Synthesis &amp; wellbeing</span>
               </button>
 
               <button
@@ -759,7 +759,7 @@ export default function ProfileClient() {
               </button>
             </div>
 
-            {/* TAB 1: SYNTHESIS & Welbeing BLUEPRINT */}
+            {/* TAB 1: SYNTHESIS & wellbeing BLUEPRINT */}
             {activeTab === "synthesis" && (
               <div className="space-y-8">
                 {/* Strengths & Vulnerabilities Grid */}
@@ -779,13 +779,13 @@ export default function ProfileClient() {
                     </ul>
                   </div>
 
-                  {/* Primary Welbeing Risks */}
+                  {/* Primary wellbeing Risks */}
                   <div className="glass-panel p-6 border border-rose-500/20 space-y-4">
                     <h3 className="text-base font-bold text-rose-400 flex items-center gap-2">
                       <span>⚠️</span> Primary Constitutional Vulnerabilities
                     </h3>
                     <ul className="space-y-2.5">
-                      {profile.synthesis.primaryWelbeingRisks.map((risk, i) => (
+                      {profile.synthesis.primarywellbeingRisks.map((risk, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-sm text-slate-200">
                           <span className="text-rose-400 mt-1">!</span>
                           <span>{risk}</span>
@@ -995,8 +995,8 @@ export default function ProfileClient() {
 
                   {/* Overall Identity Synergy */}
                   <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 text-xs text-slate-300">
-                    <span className="font-bold text-white block">Holistic Identity &amp; Welbeing Behavior Synthesis:</span>
-                    <p>{profile.naming.overallNameIdentitySynergy.WelbeingBehaviorInfluence}</p>
+                    <span className="font-bold text-white block">Holistic Identity &amp; wellbeing Behavior Synthesis:</span>
+                    <p>{profile.naming.overallNameIdentitySynergy.wellbeingBehaviorInfluence}</p>
                     <p>{profile.naming.overallNameIdentitySynergy.mindBodyResilience}</p>
                   </div>
                 </div>
@@ -1126,7 +1126,7 @@ export default function ProfileClient() {
                       <div className="text-xs text-slate-400">{item.alignmentReason}</div>
 
                       <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
-                        <strong>Welbeing Benefit:</strong> {item.WelbeingHarmonizationBenefit}
+                        <strong>wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
                       </div>
 
                       {item.recommendation && (
@@ -1149,7 +1149,7 @@ export default function ProfileClient() {
             <span>Domain B Compliance &amp; Multi-Tradition Disclaimers</span>
           </div>
           <p className="leading-relaxed">
-            {PLATFORM_DISCLAIMERS.astrology} {PLATFORM_DISCLAIMERS.numerology} {PLATFORM_DISCLAIMERS.awudeNegest} {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.compatibility} {PLATFORM_DISCLAIMERS.Welbeing}
+            {PLATFORM_DISCLAIMERS.astrology} {PLATFORM_DISCLAIMERS.numerology} {PLATFORM_DISCLAIMERS.awudeNegest} {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.compatibility} {PLATFORM_DISCLAIMERS.wellbeing}
           </p>
         </div>
       </div>

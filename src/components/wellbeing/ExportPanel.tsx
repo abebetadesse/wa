@@ -23,7 +23,7 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
       const ext = format === "json" ? "json" : "csv";
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Welbeing-report-${reportId.slice(0, 8)}.${ext}`;
+      a.download = `wellbeing-report-${reportId.slice(0, 8)}.${ext}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -43,7 +43,7 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
         </div>
         <div>
           <h3 className="text-sm font-bold text-white">Export Report</h3>
-          <p className="text-[10px] text-slate-500">Download your Debral gap analysis</p>
+          <p className="text-[10px] text-slate-500">Download your scientific gap analysis</p>
         </div>
       </div>
 
@@ -90,7 +90,7 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
       )}
 
       <p className="mt-3 text-[10px] text-slate-700 leading-relaxed">
-        Exports contain Domain A (Debral) data only. Cultural / Ge&apos;ez heritage data (Domain B) is never included.
+        Exports contain Domain A (scientific) data only. Cultural / Ge&apos;ez heritage data (Domain B) is never included.
         Report ID: <span className="font-mono">{reportId.slice(0, 8)}…</span>
       </p>
     </div>

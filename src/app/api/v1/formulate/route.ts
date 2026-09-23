@@ -16,6 +16,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     result,
-    disclaimer: "Planning tool only; not a diagnosis or substitute for Debrian/dietitian advice. Therapeutic, pregnancy, child, medication, and chronic-disease outputs require expert review.",
+    disclaimer: "Planning tool only; not a diagnosis or substitute for practitioner/dietitian advice. Therapeutic, pregnancy, child, medication, and chronic-disease outputs require expert review.",
   }, { status: result.status === "blocked" ? 422 : 200 });
 }

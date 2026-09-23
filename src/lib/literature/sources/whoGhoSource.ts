@@ -1,7 +1,7 @@
 import type { RawArticle } from "../types";
 
 /**
- * WHO Global Welbeing Observatory (GHO) API source.
+ * WHO Global wellbeing Observatory (GHO) API source.
  * Returns epidemiological indicators for Ethiopia (ETH).
  * Translates GHO indicator data into synthetic "article" objects
  * compatible with the RawArticle interface for uniform processing.
@@ -18,7 +18,7 @@ export class WhoGhoSource {
     MDG_0000000007: "Under-5 mortality rate (per 1,000 live births)",
     NUTRITION_WA_2: "Prevalence of stunting, height for age (< -2 SD)",
     WHS4_100: "ANC4 antenatal care coverage (4+ visits)",
-    WHS4_544: "Births attended by skilled Welbeing personnel (%)",
+    WHS4_544: "Births attended by skilled wellbeing personnel (%)",
     WSH_WATER_SAFELY_MANAGED: "Population using safely managed drinking-water services (%)",
     // TB — uses slightly different endpoint path
     TB_1: "Tuberculosis notifications (all forms)",
@@ -55,19 +55,19 @@ export class WhoGhoSource {
 
         // Build a synthetic abstract for the extractor
         const abstract =
-          `WHO Global Welbeing Observatory data for Ethiopia: ${description}. ` +
+          `WHO Global wellbeing Observatory data for Ethiopia: ${description}. ` +
           `Latest value (${year}): ${value}${unit ? " " + unit : ""}. ` +
-          `Data source: World Welbeing Organization GHO. Country: Ethiopia (ETH).`;
+          `Data source: World health Organization GHO. Country: Ethiopia (ETH).`;
 
         articles.push({
           doi: `who-gho-${code}-ETH-${year}`,
           title: `[WHO GHO] ${description} — Ethiopia ${year}`,
           abstract,
-          authors: ["World Welbeing Organization"],
-          journal: "WHO Global Welbeing Observatory",
+          authors: ["World health Organization"],
+          journal: "WHO Global wellbeing Observatory",
           pubDate: String(year),
           source: "who_gho",
-          meshTerms: ["Ethiopia", "Welbeing Statistics", "World Welbeing Organization"],
+          meshTerms: ["Ethiopia", "wellbeing Statistics", "World health Organization"],
           keywords: [code, "GHO", "indicator", "Ethiopia"],
           citationCount: 0,
         });

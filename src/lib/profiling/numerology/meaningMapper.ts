@@ -8,7 +8,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Pioneering initiative, self-determination, decisive executive will",
     ethiopianAdaptation: "Tied to 'Atse' (አፄ / ንጉሥ) sovereign energy: central commanding dignity, singular vision, relates to the spinal column and central nervous axis.",
     ethiopianSymbol: "The Imperial Crown & Spear (አክሊል ወጦር) — Solitary responsibility and visionary vanguard.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["High recuperative energy", "Rapid physical resilience", "Decisive motor reflexes", "Self-motivated recovery drive"],
       vulnerabilities: ["Adrenal burnout from chronic overwork", "Tension headaches & hypertension", "Upper spine & neck stiffness", "Impatience triggering visceral stress"],
       psychosomaticTendencies: ["Suppresses physical exhaustion to maintain authority", "Experiences anxiety when forced into passive reliance on others"],
@@ -22,7 +22,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Harmonious mediation, emotional sensitivity, receptive empathy, partnership",
     ethiopianAdaptation: "Tied to 'Erq' (እርቅ) and 'Shimagille' (ሽማግሌ) elder peacemaker wisdom: communal reconciliation, deep listening, relates to mucosal fluid harmony.",
     ethiopianSymbol: "The Olive Branch & Reconciliation Cup (የወይራ ቅጠል ወጽዋ) — Dual harmony and gentle restorative patience.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Exquisite somatic sensitivity to subtle environmental shifts", "Intuitive body awareness", "Gentle autonomic recovery style"],
       vulnerabilities: ["Gastrointestinal sensitivity and nervous stomach (ጨጓራ)", "Fluid retention & sluggish lymphatic flow", "Somatization of interpersonal conflict"],
       psychosomaticTendencies: ["Absorbs emotional distress from surrounding companions into the epigastric plexus", "Suppresses personal boundaries to avoid confrontation"],
@@ -36,7 +36,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Artistic expression, social radiance, vocal charisma, boundless curiosity",
     ethiopianAdaptation: "Tied to 'Azmari' (አዝማሪ) lyricist and ecclesiastical Qine (ቅኔ) poetic inspiration: expressive vocal cords, diaphragm dynamism, respiratory vitality.",
     ethiopianSymbol: "The Masinqo & Holy Parchment Quill (ማሲንቆ ወብርዕ) — Rhythmic inspiration and vocal resonance.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Buoyant emotional optimism that elevates immune helper cells", "Dynamic lung capacity when expressive", "Rapid social rejuvenation"],
       vulnerabilities: ["Tendency toward overindulgence during communal festivities", "Throat & vocal cord strain / laryngitis", "Fluctuating energy highs followed by sudden lethargy"],
       psychosomaticTendencies: ["Suppressed creative voice manifests as throat constriction or bronchial tightness", "Distracts from painful physical symptoms through constant socializing"],
@@ -50,7 +50,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Systematic discipline, structural order, steadfast endurance, grounded practicality",
     ethiopianAdaptation: "Tied to 'Wukro' (ውቅር) rock-hewn church stonecutters (Lalibela masonry): enduring physical foundations, bone mineral density, joint resilience.",
     ethiopianSymbol: "The Lalibela Cross of Solid Stone (የድንጋይ መስቀል) — Unshakable structural endurance and timeless discipline.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Formidable musculoskeletal stamina", "High tolerance for disciplined physical conditioning", "Steadfast circadian habit adherence"],
       vulnerabilities: ["Joint stiffness & early osteo-muscular rigidity", "Lower back tension from stubborn over-exertion", "Chronic melancholic emotional withholding"],
       psychosomaticTendencies: ["Equates bodily rest with laziness, pushing through severe joint or back pain", "Difficulty adapting to sudden schedule changes causing somatic tension"],
@@ -64,7 +64,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Dynamic versatility, adventurous freedom, sensory agility, rapid transformation",
     ethiopianAdaptation: "Tied to 'Negade' (ነጋዴ) ancient caravan merchants crossing the salt trails and highlands: adaptable metabolism, lung stamina, quick nervous reflexes.",
     ethiopianSymbol: "The Caravan Bell & Open Horizon (የግመል ቃጭል) — Constant movement and sensory exploration.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Exceptional physiological adaptability to diverse altitudes and climates", "Quick neuromuscular reflexes", "High vitality in active motion"],
       vulnerabilities: ["Central nervous system sensory overload", "Adrenal exhaustion from constant novelty stimulation", "Erratic eating and digestion schedules"],
       psychosomaticTendencies: ["Restlessness turns into insomnia or digestive irritation when physically confined", "Tendency toward stimulant excess (coffee / khat) to sustain restless energy"],
@@ -78,11 +78,11 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Nurturing responsibility, communal harmony, healing service, domestic sanctuary",
     ethiopianAdaptation: "Tied to 'Idir' (ዕድር) and 'Mahber' (ማኅበር) community stewardship: heart-centered compassion, communal responsibility, maternal/paternal sanctuary.",
     ethiopianSymbol: "The Shared Injera Mesob (መሶብ) — Communal nourishment and protective sanctuary.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Strong cardiovascular resilience when supported by family/community", "Natural healing intuition for bodily signs", "Steady sustained endurance"],
       vulnerabilities: ["Caregiver burnout and cardiovascular strain", "Metabolic weight fluctuations from prioritizing others over self", "Neck and shoulder burden tension"],
       psychosomaticTendencies: ["Carries the emotional burdens of the entire family in the shoulder girdle and chest", "Feels guilt when taking personal time for medical rest"],
-      lifestyleRecommendations: ["Regular heart-Welbeing cardiovascular checkups", "Firm boundaries between personal self-care and community service", "Heart-nourishing hibiscus and Damakesse infusions"],
+      lifestyleRecommendations: ["Regular heart-wellbeing cardiovascular checkups", "Firm boundaries between personal self-care and community service", "Heart-nourishing hibiscus and Damakesse infusions"],
     },
   },
   7: {
@@ -92,7 +92,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Introspective wisdom, spiritual contemplation, philosophical depth, analytical clarity",
     ethiopianAdaptation: "Tied to 'Däbtära' (ደብተራ) and 'Bahitawi' (ባሕታዊ) monastic scholars: deep solitude, contemplative neuroplasticity, pineal and cerebral focus.",
     ethiopianSymbol: "The Sacred Ge'ez Manuscript & Hermit's Staff (የብራና መጽሐፍ ወበትር) — Spiritual solitude and inner truth.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Deep neuroplastic resilience through contemplation and meditation", "Low susceptibility to superficial physical trends", "Excellent fine sensory perception"],
       vulnerabilities: ["Sleep cycle disruption and insomnia from nocturnal cerebral activity", "Psychosomatic isolation and melancholic mood dips", "Sluggish peripheral circulation from sedentary reading"],
       psychosomaticTendencies: ["Intellectualizes physical symptoms instead of feeling bodily somatic distress", "Retreats into profound isolation when physically unwell"],
@@ -106,7 +106,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Material mastery, executive authority, organizational power, karmic justice",
     ethiopianAdaptation: "Tied to 'Dejazmach' (ደጃዝማች) commander of the gate: commanding strategic vigor, liver/gallbladder metabolic dominance, large-scale responsibility.",
     ethiopianSymbol: "The Imperial Seal & Golden Scale (ማኅተም ወሚዛን) — Executive balance, resource mastery, and commanding authority.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Immense physical stamina and work capacity", "Commanding presence that overcomes acute viral exhaustion", "High metabolic drive"],
       vulnerabilities: ["Hypertension & cardiovascular pressure", "Hepatic congestion / sluggish bile flow from high-stress diets", "Muscular jaw clenching (bruxism) and tension headaches"],
       psychosomaticTendencies: ["Views illness as weakness, delaying medical attention until symptoms become severe", "Channels high financial or organizational stress directly into vascular pressure"],
@@ -120,7 +120,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Universal compassion, selfless philanthropy, spiritual culmination, holistic detachment",
     ethiopianAdaptation: "Tied to 'Abba' (አባ) saintly spiritual fatherhood: broad global empathy, detachment from petty material conflicts, lymphatic and immune completion.",
     ethiopianSymbol: "The Flowing River of Abay (ዓባይ ወንዝ) — Boundless giving, sweeping purification, and culmination of the cycle.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Broad constitutional immunity against common ailments", "High capacity to forgive and release somatic emotional trauma", "Peaceful autonomic baseline"],
       vulnerabilities: ["Immune system depletion from global empathy fatigue", "Lymphatic stagnation in lower limbs", "Respiratory sadness / grief somatization"],
       psychosomaticTendencies: ["Absorbs collective sorrow and societal grief into the lung and lymphatic parenchyma", "Reluctance to acknowledge personal physical boundaries"],
@@ -134,7 +134,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Spiritual intuition, high-frequency nervous receptivity, inspirational conduit",
     ethiopianAdaptation: "Tied to 'Nebeey' (ነቢይ) prophetic insight and Ge'ez celestial visionary illumination: ultra-fine neural circuitry and spiritual receptivity.",
     ethiopianSymbol: "The Twin Holy Pillars of Axum (የአክሱም ሐውልቶች) — Dual conduits connecting heavenly light to highland stone.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Exceptional intuitive warning signs before physical illness takes root", "Rapid cellular response to energetic healing and pure nutrition"],
       vulnerabilities: ["Severe sensory and electromagnetic hypersensitivity", "Nervous exhaustion from high-frequency cognitive processing", "Sleep fragility"],
       psychosomaticTendencies: ["High-strung autonomic tone; can experience rapid heart flutters or sudden adrenaline surges without overt physical danger"],
@@ -148,7 +148,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Monumental vision realized into tangible form, transcendent architectural capacity",
     ethiopianAdaptation: "Tied to 'Kibre Negest' (ክብረ ነገሥት) enduring institutional creation: building hospitals, schools, and monasteries that last for centuries.",
     ethiopianSymbol: "The Monolithic Church of Saint George (ቤተ ጊዮርጊስ ላሊበላ) — Miraculous union of divine blueprint and earthly basalt.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Superhuman endurance when dedicated to a monumental cause", "Massive skeletal and muscular foundation"],
       vulnerabilities: ["Crushing somatic load from carrying national or monumental responsibilities", "Cardiovascular strain under monumental expectations"],
       psychosomaticTendencies: ["Pushes the biological vehicle past all normal limits in service of the grand architectural mission"],
@@ -162,7 +162,7 @@ export const NUMBER_ARCHETYPES: Record<number, CoreNumberAnalysis> = {
     archetype: "Christ-like compassion, unconditional maternal/paternal healing, selfless spiritual dedication",
     ethiopianAdaptation: "Tied to 'Tekle Haymanot' (ተክለ ሃይማኖት) legendary healing and ascetic devotion: boundless spiritual grace, heart-centered sacrifice.",
     ethiopianSymbol: "The Radiant Healing Cross of Lalibela (የላሊበላ ወርቅ መስቀል) — Supreme spiritual sacrifice and restorative healing light.",
-    WelbeingPatterns: {
+    wellbeingPatterns: {
       strengths: ["Profound bio-energetic healing aura that comforts others automatically", "Deep cellular serenity during compassionate service"],
       vulnerabilities: ["Profound heart-axis and emotional exhaustion if boundaries are compromised", "Chronic physical self-neglect"],
       psychosomaticTendencies: ["Willingness to take on the physical pain of loved ones, manifesting as unexplainable aches"],

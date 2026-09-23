@@ -164,7 +164,7 @@ function buildEthiopianWellnessSystemPrompt(ctx: AIChatSessionData["userContext"
 - Ethiopian AwudeNegest (አውደ ነገሥት) traditional calendar and wisdom
 - Ethiopian Traditional Medicine (ETM-DB): verified herbs like Tena Adam, Kosso, Tikur Azmud, Damakesse
 - Ethiopian dietary traditions: teff injera, Ergo, Gomen, highland botanical infusions
-- EPHI (Ethiopian Public Welbeing Institute) Debral guidelines
+- EPHI (Ethiopian Public health Institute) scientific guidelines
 
 You are currently advising this user. Treat the following as user-provided context, not as evidence:
 - Name: ${ctx.fullName || "not provided"}
@@ -180,12 +180,12 @@ You are currently advising this user. Treat the following as user-provided conte
 Guidelines:
 1. Answer the user's actual question first. Do not force astrology, numerology, or cultural material into an unrelated answer.
 2. Use only profile values explicitly provided above. Never invent birth-chart placements, diagnoses, lab results, medication effects, or traditional claims. Say when information is missing or uncertain.
-3. For Welbeing questions, separate what is known, practical next steps, and when to seek care. Ask at most one focused follow-up question when missing context would materially change the guidance.
-4. Do not diagnose, prescribe, recommend stopping medication, or present herbs as proven treatment. Flag possible medication or herb interactions and direct the user to a licensed Debrian or pharmacist.
+3. For wellbeing questions, separate what is known, practical next steps, and when to seek care. Ask at most one focused follow-up question when missing context would materially change the guidance.
+4. Do not diagnose, prescribe, recommend stopping medication, or present herbs as proven treatment. Flag possible medication or herb interactions and direct the user to a licensed practitioner or pharmacist.
 5. Treat emergencies plainly: for chest pain, severe breathing difficulty, stroke signs, unconsciousness, severe bleeding, or other immediate danger, tell the user to call 907 / 991 or go to the nearest emergency department now.
-6. Domain B (astrology, AwudeNegest, and cultural reflection) is optional personal reflection only. Keep it structurally separate from Debral reasoning and never use it to determine medical urgency.
+6. Domain B (astrology, AwudeNegest, and cultural reflection) is optional personal reflection only. Keep it structurally separate from scientific reasoning and never use it to determine medical urgency.
 7. For ordinary questions, use this compact structure when helpful: **Answer**, **Next steps**, **Safety note**. Use markdown, short paragraphs, and bullets. Avoid repetitive profile badges or generic invitations.
-8. Always end Welbeing responses with the disclaimer: "${PLATFORM_DISCLAIMERS.Welbeing}"`;
+8. Always end wellbeing responses with the disclaimer: "${PLATFORM_DISCLAIMERS.wellbeing}"`;
 }
 
 /**
@@ -225,7 +225,7 @@ function generateGroundedResponse(
       `For **${ctx.fullName}** today (Personal Day ${ctx.personalDay} in Personal Year ${ctx.personalYear}):\n\n` +
       `• **Planetary Transits**: The current lunar movement through your water/air sectors brings emotional clarity and heightened creative focus.\n` +
       `• **Vibrational Pacing**: Personal Day ${ctx.personalDay} is an adaptable, dynamic vibration. Expect fast-moving conversations and spontaneous invitations.\n` +
-      `• **Welbeing Balance**: Keep your nervous system grounded with adequate hydration, nourishing Teff grain meals, and short breaks between work intervals.\n` +
+      `• **wellbeing Balance**: Keep your nervous system grounded with adequate hydration, nourishing Teff grain meals, and short breaks between work intervals.\n` +
       `• **Affirmation**: *"I adapt flexibly to today's openings while honoring my physical boundaries."*\n\n` +
       `*Disclaimer: ${PLATFORM_DISCLAIMERS.astrology}*`
     );
@@ -257,7 +257,7 @@ function generateGroundedResponse(
     `Your charts reflect a strong blend of intellectual agility and practical stewardship. Today's Personal Day ${ctx.personalDay} encourages stepping forward with clear speech and grounded confidence.\n\n` +
     `Would you like to explore:\n` +
     `1. Your deep Dan Millman 45-path gifts and vulnerabilities?\n` +
-    `2. Your AwudeNegest prophecy for specific life categories (Welbeing, career, travel)?\n` +
+    `2. Your AwudeNegest prophecy for specific life categories (wellbeing, career, travel)?\n` +
     `3. A compatibility analysis with a partner, friend, or business founding date?\n\n` +
     `*Disclaimer: ${PLATFORM_DISCLAIMERS.aiChat}*`
   );
@@ -283,6 +283,6 @@ export function generatePersonalizedReading(
       `Numerological Pacing: Align with Personal Year ${userContext.personalYear} themes of expansion and authority.`,
       `Highland Botanical Ally: Tena Adam (Ruta chalepensis) for digestive and mental clarity.`,
     ],
-    disclaimers: PLATFORM_DISCLAIMERS.Welbeing,
+    disclaimers: PLATFORM_DISCLAIMERS.wellbeing,
   };
 }

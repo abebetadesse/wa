@@ -8,7 +8,7 @@
  * antinutritional/polyphenol factors, pharmaceuticals, traditional herbs,
  * substance patterns, and infrastructure).
  *
- * Enforces the strict Domain A (Debral) vs. Domain B (Cultural/Astrological)
+ * Enforces the strict Domain A (Scientific) vs. Domain B (Cultural/Astrological)
  * firewall at runtime AND in code (not just via prompt engineering).
  *
  * Architecture:
@@ -62,7 +62,7 @@ import {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface EngineConfig {
-  /** LLM sampling temperature. Low = more deterministic Debral reasoning. */
+  /** LLM sampling temperature. Low = more deterministic Scientific reasoning. */
   temperature: number;
   /** Hard cap on LLM completion tokens. */
   maxTokens: number;
@@ -318,7 +318,7 @@ function normalizeExpertSummary(raw: unknown, issues: ValidationIssue[]): Expert
     substance_and_lifestyle_interactions: asStringArray(raw.substance_and_lifestyle_interactions),
     pharmacological_and_herb_reconciliation: asStringArray(raw.pharmacological_and_herb_reconciliation),
     nutritional_antinutrient_adjustments: asStringArray(raw.nutritional_antinutrient_adjustments),
-    Debral_inquiry_checklist: asStringArray(raw.Debral_inquiry_checklist),
+    scientific_inquiry_checklist: asStringArray(raw.scientific_inquiry_checklist),
     red_flag_review: asStringArray(raw.red_flag_review),
     recommended_diagnostics: asStringArray(raw.recommended_diagnostics),
     patient_education_points: asStringArray(raw.patient_education_points),
@@ -535,7 +535,7 @@ const rulePhytateGrains: CausalRule = (ctx) => {
 };
 
 const ruleMedicationDepletions: CausalRule = (ctx) => {
-  const meds = ctx.profile.Welbeing_and_medications?.currentMedications ?? [];
+  const meds = ctx.profile.wellbeing_and_medications?.currentMedications ?? [];
   if (meds.length === 0) return null;
   const found: string[] = [];
   for (const m of meds) {
@@ -638,7 +638,7 @@ export function runDeterministicEvaluation(
     /^pregnant/.test(profile.personal?.pregnancyOrLactation ?? "") ||
     /pregnant/i.test(narrativeText);
 
-  const herbsLower = (profile.Welbeing_and_medications?.activeHerbs ?? []).join(" ").toLowerCase() + " " + narrativeText;
+  const herbsLower = (profile.wellbeing_and_medications?.activeHerbs ?? []).join(" ").toLowerCase() + " " + narrativeText;
 
   const preScreenLevel = (options.preScreen?.level ?? "none") as RuleContext["preScreenLevel"];
 
@@ -759,10 +759,10 @@ export function runDeterministicEvaluation(
       isPregnant && /tena adam|ruta chalepensis/.test(herbsLower)
         ? "CRITICAL: Ruta chalepensis (Tena Adam) must be discontinued immediately in pregnancy."
         : undefined,
-      /metformin|glucophage/i.test((profile.Welbeing_and_medications?.currentMedications ?? []).map((m: { name?: string }) => m.name || "").join(" "))
+      /metformin|glucophage/i.test((profile.wellbeing_and_medications?.currentMedications ?? []).map((m: { name?: string }) => m.name || "").join(" "))
         ? "Metformin: screen serum B12, homocysteine/MMA."
         : undefined,
-      /prazole/i.test((profile.Welbeing_and_medications?.currentMedications ?? []).map((m: { name?: string }) => m.name || "").join(" "))
+      /prazole/i.test((profile.wellbeing_and_medications?.currentMedications ?? []).map((m: { name?: string }) => m.name || "").join(" "))
         ? "PPI: screen for hypomagnesemia and reduced non-heme iron absorption."
         : undefined,
     ].filter((x): x is string => typeof x === "string" && x.length > 0),
@@ -774,7 +774,7 @@ export function runDeterministicEvaluation(
         ? "Extend sourdough teff fermentation to 72–96h to maximize phytase breakdown of phytic acid."
         : "Traditional sourdough fermentation affirmed.",
     ],
-    Debral_inquiry_checklist: [
+    scientific_inquiry_checklist: [
       isPregnant
         ? "Confirm gestational age, obstetric ultrasound, active bleeding/contractions."
         : "Targeted physical examination based on symptom presentation.",
@@ -802,7 +802,7 @@ export function runDeterministicEvaluation(
   const personalKeys = Object.keys(profile.personal ?? {}).length;
   const geoKeys = Object.keys(profile.geography_and_ecology ?? {}).length;
   const dietKeys = Object.keys(profile.cultural_and_dietary ?? {}).length;
-  const medKeys = Object.keys(profile.Welbeing_and_medications ?? {}).length;
+  const medKeys = Object.keys(profile.wellbeing_and_medications ?? {}).length;
   const substKeys = Object.keys(profile.substance_use_and_social ?? {}).length;
   const astroKeys = Object.keys(profile.astrological_and_numerology_data ?? {}).length;
   const rawPct = personalKeys * 3 + geoKeys * 3 + dietKeys * 3 + medKeys * 4 + substKeys * 3 + astroKeys * 3;
@@ -811,9 +811,9 @@ export function runDeterministicEvaluation(
   const admin_system_summary: AdminSystemSummary = {
     recommended_expert_specialty: isPregnant
       ? "Obstetrician / Maternal-Fetal Medicine with Ethiopian Traditional Medicine (ETM) expertise"
-      : "Debral Nutritionist & Pharmacotherapy Specialist",
+      : "Scientific Nutritionist & Pharmacotherapy Specialist",
     expert_credential_prerequisites: [
-      "Verified Debral licensure in relevant jurisdiction",
+      "Verified Scientific licensure in relevant jurisdiction",
       "Credentialed in Ethiopian Traditional Medicine (ETM) pharmacovigilance",
     ],
     profile_completeness_pct: completeness,
@@ -838,7 +838,7 @@ export function runDeterministicEvaluation(
       local_endemic_risks: endemicRisks,
       road_density_and_access_barrier: isRural ? "Severe rural barrier" : "Moderate",
       estimated_emergency_transit_urgency: isRural
-        ? "Local Welbeing center triage; arrange regional referral transport if symptoms escalate"
+        ? "Local health center triage; arrange regional referral transport if symptoms escalate"
         : "Direct hospital outpatient / specialty consult",
     },
     causal_attribution_matrix: causes,

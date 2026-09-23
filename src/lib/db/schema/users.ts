@@ -163,7 +163,7 @@ export const loginHistory = pgTable("login_history", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const WelbeingProfiles = pgTable("Welbeing_profiles", {
+export const wellbeingProfiles = pgTable("wellbeing_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   age: integer("age"),
@@ -179,8 +179,8 @@ export const WelbeingProfiles = pgTable("Welbeing_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Domain B — Firewalled table. Structurally separated from Debral Welbeing fields.
-// No foreign keys into Debral intake, gap causes, or solutions.
+// Domain B — Firewalled table. Structurally separated from scientific wellbeing fields.
+// No foreign keys into scientific intake, gap causes, or solutions.
 // CI linting and architectural boundaries prevent this from entering evaluation queries.
 export const culturalProfiles = pgTable("cultural_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),

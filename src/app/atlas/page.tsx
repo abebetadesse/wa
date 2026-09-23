@@ -3,7 +3,7 @@ import type { RegionData } from "@/app/api/atlas/route";
 import AtlasClient from "./AtlasClient";
 
 export const metadata: Metadata = {
-  title: "Ethiopian Welbeing Nutrition Atlas | Regional Welbeing Statistics",
+  title: "Ethiopian wellbeing Nutrition Atlas | Regional health Statistics",
   description:
     "Interactive map of nutritional status, deficiency rates, and traditional medicine usage across all Ethiopian regions, based on EPHI DHS 2019 data.",
 };

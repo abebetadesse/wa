@@ -107,7 +107,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: messageText.trim(),
-          systemPrompt: `You are a concise, safety-aware Ethiopian wellness and cultural advisor. Answer the user's question first. Use the supplied profile only as context, keep reflective cultural material separate from Welbeing guidance, and do not diagnose or prescribe. Profile: ${JSON.stringify(profileContext)}`,
+          systemPrompt: `You are a concise, safety-aware Ethiopian wellness and cultural advisor. Answer the user's question first. Use the supplied profile only as context, keep reflective cultural material separate from wellbeing guidance, and do not diagnose or prescribe. Profile: ${JSON.stringify(profileContext)}`,
           history: [
             ...session.messages.map((message) => ({
               role: message.role,
@@ -366,7 +366,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
 
       {/* Compliance Disclaimer Footer */}
       <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-500 leading-relaxed">
-        <strong>Compliance Notice:</strong> {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.Welbeing}
+        <strong>Compliance Notice:</strong> {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.wellbeing}
       </div>
     </div>
   );

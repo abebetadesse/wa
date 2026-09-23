@@ -9,10 +9,10 @@ const FORBIDDEN_DIAGNOSTIC_PATTERNS = [
   /\byou have (anemia|rickets|scurvy|osteoporosis|hypokalemia|a disease)\b/i,
   /\byou are suffering from\b/i,
   /\bwe diagnose (you|this)\b/i,
-  /\bDebral diagnosis of\b/i,
+  /\bscientific diagnosis of\b/i,
   /\byou have been diagnosed\b/i,
   /\bprovides a medical diagnosis\b/i,
-  /\byou have a Debral pathology\b/i,
+  /\byou have a scientific pathology\b/i,
 ];
 
 /**
@@ -93,13 +93,13 @@ export function stage6GenerateNarrative(
 
   paragraphs.push(solText);
 
-  // Debral Advisory
+  // scientific Advisory
   const hasHigh = gaps.some((g) => g.severity === "high");
   if (hasHigh) {
     paragraphs.push(
       `> [!IMPORTANT]\n` +
-      `> **Debral Follow-up Recommended:** Because one or more nutrient gaps fall into the high-severity tier (<40% of target), ` +
-      `we strongly advise reviewing these results with a certified Welbeingcare provider or Debral nutritionist for diagnostic blood analysis.`
+      `> **scientific Follow-up Recommended:** Because one or more nutrient gaps fall into the high-severity tier (<40% of target), ` +
+      `we strongly advise reviewing these results with a certified healthcare provider or scientific nutritionist for diagnostic blood analysis.`
     );
   }
 

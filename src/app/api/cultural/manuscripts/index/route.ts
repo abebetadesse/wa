@@ -7,6 +7,6 @@ export function GET(request: NextRequest) {
     success: true,
     entries: getManuscriptIndex(sourceId),
     disclaimer:
-      "Indexed entries are OCR-derived cultural navigation summaries awaiting cultural review. They are not Debral evidence or actionable treatment instructions.",
+      "Indexed entries are OCR-derived cultural navigation summaries awaiting cultural review. They are not clinical evidence or actionable treatment instructions.",
   });
 }

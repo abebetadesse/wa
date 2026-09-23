@@ -1,5 +1,5 @@
 /**
- * Emergency Schema — Domain A (Debral Safety)
+ * Emergency Schema — Domain A (Scientific Safety)
  * Stores emergency contacts, conditions, and alert logs for each user.
  * This data is also cached in the offline knowledge base (IndexedDB).
  */
@@ -28,7 +28,7 @@ export const emergencyProfiles = pgTable("emergency_profiles", {
   // Blood type (if known)
   bloodType: varchar("blood_type", { length: 10 }),
 
-  // Nearest Welbeing facility
+  // Nearest health facility
   preferredHospital: varchar("preferred_hospital", { length: 255 }),
   preferredHospitalPhone: varchar("preferred_hospital_phone", { length: 50 }),
 

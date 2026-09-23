@@ -55,7 +55,7 @@ export interface PlanetaryPosition {
   element: HumoralElement;
   ethiopianName: string;
   ethiopianInterpretation: string;
-  WelbeingAssociations: {
+  wellbeingAssociations: {
     organs: string[];
     physiologicalSystems: string[];
     potentialVulnerabilities: string[];
@@ -68,7 +68,7 @@ export interface HousePlacement {
   signOnCusp: ZodiacSignName;
   cuspDegree: number;
   traditionalBodyParts: string[];
-  WelbeingMeaning: string;
+  wellbeingMeaning: string;
   dailyRoutineImpact: string;
   activePlanets: CelestialBody[];
 }
@@ -82,7 +82,7 @@ export interface AstrologicalAspect {
   exactAngle: number;
   orb: number;
   nature: "harmonious" | "challenging" | "dynamic";
-  WelbeingImpact: string;
+  wellbeingImpact: string;
   psychosomaticIndicator: string;
 }
 
@@ -92,7 +92,7 @@ export interface TransitForecastItem {
   aspect: AspectType;
   currentSign: ZodiacSignName;
   durationWindow: string;
-  WelbeingForecast: string;
+  wellbeingForecast: string;
   balancingAdvice: string;
 }
 
@@ -105,7 +105,7 @@ export interface DabtaraHealingScrollPrescription {
   medicinalHerbs: string[];
   preparationInstructions: string;
   sacredSymbolism: string;
-  modernDebralPrecaution: string;
+  modernScientificPrecaution: string;
 }
 
 export interface TsebelAuspiciousTiming {
@@ -159,7 +159,7 @@ export interface CoreNumberAnalysis {
   archetype: string;
   ethiopianAdaptation: string;
   ethiopianSymbol: string;
-  WelbeingPatterns: {
+  wellbeingPatterns: {
     strengths: string[];
     vulnerabilities: string[];
     psychosomaticTendencies: string[];
@@ -178,7 +178,7 @@ export interface NumerologyProfile {
     digitalRoot: number;
     virtueMeaning: string;
   };
-  somaticWelbeingSummary: {
+  somaticwellbeingSummary: {
     targetOrganSystems: string[];
     primaryStressResponse: string[];
     preventiveHabits: string[];
@@ -202,7 +202,7 @@ export interface EthiopianNameRecord {
     soulUrge: number;
     personality: number;
   };
-  WelbeingIdentityCorrelation: {
+  wellbeingIdentityCorrelation: {
     selfPerceptionTheme: string;
     emotionalExpressionStyle: string;
     psychosomaticTendency: string;
@@ -221,7 +221,7 @@ export interface NameAnalysisReport {
   familyLineageProfile?: EthiopianNameRecord;
   overallNameIdentitySynergy: {
     identityNarrative: string;
-    WelbeingBehaviorInfluence: string;
+    wellbeingBehaviorInfluence: string;
     mindBodyResilience: string;
   };
 }
@@ -242,7 +242,7 @@ export interface NameSuggestionResult {
   primaryElement: HumoralElement;
   destinyNumber: number;
   alignmentReason: string;
-  WelbeingHarmonizationBenefit: string;
+  wellbeingHarmonizationBenefit: string;
   recommendation?: string;
 }
 
@@ -250,7 +250,7 @@ export interface NameSuggestionResult {
 // INTEGRATED PROFILE SYNTHESIS TYPES
 // ==========================================
 
-export interface SeasonalWelbeingPattern {
+export interface SeasonalwellbeingPattern {
   season: "Kiremt (Rainy)" | "Bega (Dry & Sunny)" | "Belg (Short Rains)" | "Pagume (Renewal)";
   ethiopianMonths: string;
   potentialVulnerabilities: string[];
@@ -276,9 +276,9 @@ export interface IntegratedPersonalProfile {
     constitutionalType: string;
     humoralDominance: HumoralElement;
     vitalityScore: number; // 0 - 100
-    primaryWelbeingRisks: string[];
+    primarywellbeingRisks: string[];
     enduringStrengths: string[];
-    seasonalPatterns: SeasonalWelbeingPattern[];
+    seasonalPatterns: SeasonalwellbeingPattern[];
     recommendations: {
       dietary: {
         therapeuticPrinciples: string[];

@@ -26,7 +26,7 @@ export class CausalInferenceEngine {
           { from: "n1", to: "n2", label: "Vector transmission" },
           { from: "n2", to: "n3", label: "Blood-stage cycle" },
           { from: "n3", to: "n4", label: "Pyrogenic cytokine surge" },
-          { from: "n4", to: "n5", label: "Debral resolution" },
+          { from: "n4", to: "n5", label: "scientific resolution" },
         ],
         integratedSolution: [
           "Seek immediate blood smear microscopy or Rapid Diagnostic Test (RDT) at a Debr",
@@ -104,7 +104,7 @@ export class CausalInferenceEngine {
           { id: "n1", label: "Environmental & Dietary Baselines", domain: "ecological", description: "Regional climate, altitude, and dietary patterns form the daily physiological substrate" },
           { id: "n2", label: "Metabolic & Immune Processing", domain: "biochemical", description: "Digestive enzyme efficiency, microbiome diversity, and cellular energy production" },
           { id: "n3", label: "Systemic Symptom Expression", domain: "symptom", description: "Physical feedback reflecting physiological imbalance or nutrient shortfall" },
-          { id: "n4", label: "Harmonized Ethiopian Care Plan", domain: "remedy", description: "Validated diet, verified safe herbal remedies, lifestyle pacing, and Debral medical checkup" },
+          { id: "n4", label: "Harmonized Ethiopian Care Plan", domain: "remedy", description: "Validated diet, verified safe herbal remedies, lifestyle pacing, and scientific medical checkup" },
         ],
         edges: [
           { from: "n1", to: "n2", label: "Nutritional intake" },
@@ -112,7 +112,7 @@ export class CausalInferenceEngine {
           { from: "n3", to: "n4", label: "Targeted correction" },
         ],
         integratedSolution: [
-          "Consult a qualified Welbeingcare provider for targeted Debral evaluation",
+          "Consult a qualified healthcare provider for targeted scientific evaluation",
           "Maintain traditional high-fiber diverse Ethiopian staples (Teff, Gomen, Shiro)",
           "Utilize the Safety Gate before consuming any traditional herbal preparation",
         ],

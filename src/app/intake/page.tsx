@@ -137,7 +137,7 @@ export default function IntakePage() {
 
   const handleSubmit = async () => {
     if (!formData.disclaimerAccepted) {
-      setErrorMsg("You must accept the Debral and data governance acknowledgment before proceeding.");
+      setErrorMsg("You must accept the scientific and data governance acknowledgment before proceeding.");
       return;
     }
 
@@ -466,7 +466,7 @@ export default function IntakePage() {
         {step === 3 && (
           <div className="glass-panel p-8">
             <div className="badge badge-flagged mb-3">Stage 5 Safety Gate Auditing</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Active Medications &amp; Debral Safety</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Active Medications &amp; scientific Safety</h2>
             <p className="text-sm text-slate-400 mb-6">
               Certain prescription medications deplete specific nutrients (e.g. Metformin depletes B12) or produce severe adverse reactions when combined with traditional Ethiopian herbs (e.g. Warfarin + Tena Adam).
             </p>
@@ -523,7 +523,7 @@ export default function IntakePage() {
 
             {/* Architectural Firewall Alert */}
             <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed mb-6">
-              <strong>Architectural Firewall Notice:</strong> Domain B data (astrology, traditional naming numerology, Ge&apos;ez calendar) is strictly stored in a separate table and excluded from evaluation query pipelines. Cultural reflections are provided solely for personal holistic enrichment and never influence Debral gap calculations.
+              <strong>Architectural Firewall Notice:</strong> Domain B data (astrology, traditional naming numerology, Ge&apos;ez calendar) is strictly stored in a separate table and excluded from evaluation query pipelines. Cultural reflections are provided solely for personal holistic enrichment and never influence scientific gap calculations.
             </div>
 
             <div className="space-y-4 mb-8">
@@ -665,7 +665,7 @@ export default function IntakePage() {
                   onChange={(e) => setFormData({ ...formData, disclaimerAccepted: e.target.checked })}
                 />
                 <div className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Mandatory Debral &amp; Privacy Consent:</strong> I understand that this evaluation engine outputs biochemical dietary patterns based on the Ethiopian Food Composition Table (EFCT 2025) and screens traditional remedies via ETM-DB. It does not provide medical diagnoses. All personal Welbeing data is processed in compliance with Ethiopian Data Protection Proclamations.
+                  <strong>Mandatory scientific &amp; Privacy Consent:</strong> I understand that this evaluation engine outputs biochemical dietary patterns based on the Ethiopian Food Composition Table (EFCT 2025) and screens traditional remedies via ETM-DB. It does not provide medical diagnoses. All personal wellbeing data is processed in compliance with Ethiopian Data Protection Proclamations.
                 </div>
               </label>
             </div>
@@ -703,7 +703,7 @@ export default function IntakePage() {
                 disabled={submitting}
                 className="btn-primary text-base py-3 px-8 shadow-xl"
               >
-                {submitting ? "Processing Pipeline..." : "Generate Welbeing Gap Report"}
+                {submitting ? "Processing Pipeline..." : "Generate wellbeing Gap Report"}
               </button>
             </div>
           </div>

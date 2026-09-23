@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { ParsedWelbeingInquiry } from "@/lib/inquiry/parser";
+import type { ParsedwellbeingInquiry } from "@/lib/inquiry/parser";
 import type { KnowledgeRetrievalResult } from "@/lib/inquiry/knowledgeRetrieval";
 import type { InquirySynthesis } from "@/lib/inquiry/solutionSynthesis";
 
-type InquiryResult = ParsedWelbeingInquiry & { knowledge: KnowledgeRetrievalResult; synthesis: InquirySynthesis };
+type InquiryResult = ParsedwellbeingInquiry & { knowledge: KnowledgeRetrievalResult; synthesis: InquirySynthesis };
 
 const suggestions = [
   "I have a headache after fasting",
@@ -139,14 +139,14 @@ export default function InquiryExperience() {
             ))}
           </div>
 
-          <label htmlFor="Welbeing-query" className="block text-sm font-bold text-white mb-2">Your concern</label>
+          <label htmlFor="wellbeing-query" className="block text-sm font-bold text-white mb-2">Your concern</label>
           {mode === "symptom" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" aria-label="Common symptoms">
               {symptomOptions.map((symptom) => <button key={symptom} type="button" onClick={() => toggleSymptom(symptom)} className={`p-3 rounded-lg border text-xs text-left ${selectedSymptoms.includes(symptom) ? "bg-rose-500/15 border-rose-400/60 text-rose-100" : "bg-black/30 border-white/10 text-slate-400"}`}>{symptom}</button>)}
             </div>
           ) : (
             <textarea
-              id="Welbeing-query"
+              id="wellbeing-query"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Example: I have stomach pain for 3 days after meals..."

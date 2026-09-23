@@ -39,7 +39,7 @@ CREATE TABLE `email_verifications` (
 	CONSTRAINT `email_verifications_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
-CREATE TABLE `Welbeing_profiles` (
+CREATE TABLE `health_profiles` (
 	`id` varchar(36) NOT NULL,
 	`user_id` varchar(36) NOT NULL,
 	`age` int,
@@ -53,7 +53,7 @@ CREATE TABLE `Welbeing_profiles` (
 	`allergies` json DEFAULT ('[]'),
 	`lifestyle_habits` json DEFAULT ('{}'),
 	`updated_at` timestamp NOT NULL DEFAULT (now()),
-	CONSTRAINT `Welbeing_profiles_id` PRIMARY KEY(`id`)
+	CONSTRAINT `health_profiles_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `login_history` (
@@ -218,7 +218,7 @@ CREATE TABLE `herb_drug_interactions` (
 	`drug_name_example` varchar(255),
 	`interaction_severity` varchar(20) NOT NULL,
 	`mechanism` text NOT NULL,
-	`Debral_effect` text NOT NULL,
+	`clinical_effect` text NOT NULL,
 	`contraindicated` boolean NOT NULL DEFAULT true,
 	`evidence_level` varchar(50) NOT NULL,
 	`source_ref` varchar(100) NOT NULL,
@@ -279,7 +279,7 @@ CREATE TABLE `gap_solutions` (
 	CONSTRAINT `gap_solutions_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
-CREATE TABLE `Welbeing_gap_reports` (
+CREATE TABLE `health_gap_reports` (
 	`id` varchar(36) NOT NULL,
 	`submission_id` varchar(36) NOT NULL,
 	`user_id` varchar(36) NOT NULL,
@@ -287,7 +287,7 @@ CREATE TABLE `Welbeing_gap_reports` (
 	`model_version` varchar(50) NOT NULL,
 	`summary_narrative` text,
 	`safety_gate_verified` boolean NOT NULL DEFAULT true,
-	CONSTRAINT `Welbeing_gap_reports_id` PRIMARY KEY(`id`)
+	CONSTRAINT `health_gap_reports_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `identified_gaps` (
@@ -522,7 +522,7 @@ CREATE TABLE `literature_sync_log` (
 ALTER TABLE `auth_sessions` ADD CONSTRAINT `auth_sessions_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `cultural_profiles` ADD CONSTRAINT `cultural_profiles_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `email_verifications` ADD CONSTRAINT `email_verifications_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `Welbeing_profiles` ADD CONSTRAINT `Welbeing_profiles_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `health_profiles` ADD CONSTRAINT `health_profiles_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `login_history` ADD CONSTRAINT `login_history_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `password_resets` ADD CONSTRAINT `password_resets_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `profile_field_definitions` ADD CONSTRAINT `profile_field_definitions_created_by_users_id_fk` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -538,9 +538,9 @@ ALTER TABLE `audit_log` ADD CONSTRAINT `audit_log_user_id_users_id_fk` FOREIGN K
 ALTER TABLE `gap_causes` ADD CONSTRAINT `gap_causes_gap_id_identified_gaps_id_fk` FOREIGN KEY (`gap_id`) REFERENCES `identified_gaps`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `gap_solutions` ADD CONSTRAINT `gap_solutions_gap_id_identified_gaps_id_fk` FOREIGN KEY (`gap_id`) REFERENCES `identified_gaps`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `gap_solutions` ADD CONSTRAINT `gap_solutions_herb_id_herbs_id_fk` FOREIGN KEY (`herb_id`) REFERENCES `herbs`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `Welbeing_gap_reports` ADD CONSTRAINT `Welbeing_gap_reports_submission_id_intake_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `intake_submissions`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `Welbeing_gap_reports` ADD CONSTRAINT `Welbeing_gap_reports_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `identified_gaps` ADD CONSTRAINT `identified_gaps_report_id_Welbeing_gap_reports_id_fk` FOREIGN KEY (`report_id`) REFERENCES `Welbeing_gap_reports`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `health_gap_reports` ADD CONSTRAINT `health_gap_reports_submission_id_intake_submissions_id_fk` FOREIGN KEY (`submission_id`) REFERENCES `intake_submissions`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `health_gap_reports` ADD CONSTRAINT `health_gap_reports_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `identified_gaps` ADD CONSTRAINT `identified_gaps_report_id_health_gap_reports_id_fk` FOREIGN KEY (`report_id`) REFERENCES `health_gap_reports`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `identified_gaps` ADD CONSTRAINT `identified_gaps_nutrient_id_nutrients_id_fk` FOREIGN KEY (`nutrient_id`) REFERENCES `nutrients`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `intake_submissions` ADD CONSTRAINT `intake_submissions_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `emergency_alerts` ADD CONSTRAINT `emergency_alerts_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint

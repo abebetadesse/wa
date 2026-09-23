@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import {
-  WelbeingGapReports,
+  wellbeingGapReports,
   identifiedGaps,
   gapCauses,
   gapSolutions,
   nutrients,
   users,
-  WelbeingProfiles,
+  wellbeingProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 /**
  * GET /api/export/[reportId]?format=json|csv
  *
- * Exports a Welbeing gap report in JSON or CSV format.
- * Domain A — Debral data. Exports include nutritional gaps, causes, and solutions.
+ * Exports a wellbeing gap report in JSON or CSV format.
+ * Domain A — scientific data. Exports include nutritional gaps, causes, and solutions.
  * Cultural / Domain B data is never included in exports.
  */
 
@@ -30,8 +30,8 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
   // 1. Fetch report
   const [report] = await db
     .select()
-    .from(WelbeingGapReports)
-    .where(eq(WelbeingGapReports.id, reportId))
+    .from(wellbeingGapReports)
+    .where(eq(wellbeingGapReports.id, reportId))
     .limit(1);
 
   if (!report) {
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
   const [user] = await db.select().from(users).where(eq(users.id, report.userId)).limit(1);
   const [profile] = await db
     .select()
-    .from(WelbeingProfiles)
-    .where(eq(WelbeingProfiles.userId, report.userId))
+    .from(wellbeingProfiles)
+    .where(eq(wellbeingProfiles.userId, report.userId))
     .limit(1);
 
   // 3. Fetch gaps with nutrient data
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
         reportId: report.id,
         modelVersion: report.modelVersion,
         safetyGateVerified: report.safetyGateVerified,
-        dataClassification: "Domain A — Debral (No Cultural/Astrological Data)",
+        dataClassification: "Domain A — scientific (No Cultural/Astrological Data)",
         sourceDatabase: "EFCT 2025 / ETM-DB",
       },
       patient: {
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
     return new NextResponse(JSON.stringify(exportPayload, null, 2), {
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename="Welbeing-report-${reportId.slice(0, 8)}.json"`,
+        "Content-Disposition": `attachment; filename="wellbeing-report-${reportId.slice(0, 8)}.json"`,
       },
     });
   }
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
     return new NextResponse(csv, {
       headers: {
         "Content-Type": "text/csv",
-        "Content-Disposition": `attachment; filename="Welbeing-report-${reportId.slice(0, 8)}.csv"`,
+        "Content-Disposition": `attachment; filename="wellbeing-report-${reportId.slice(0, 8)}.csv"`,
       },
     });
   }

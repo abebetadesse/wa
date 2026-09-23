@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sql, count, desc, eq } from "drizzle-orm";
-import { users, authSessions, auditLog, WelbeingGapReports, literatureFindings, literatureSyncLog } from "@/lib/db/schema";
+import { users, authSessions, auditLog, wellbeingGapReports, literatureFindings, literatureSyncLog } from "@/lib/db/schema";
 import { requireAnyRole } from "@/lib/auth";
 import { getSystemConfig, updateSystemConfig } from "@/lib/config/systemConfig";
 import { getLiteratureFetcher } from "@/lib/literature/literatureFetcher";
@@ -11,8 +11,8 @@ export async function GET() {
   try {
     const user = await requireAnyRole(["admin", "super_admin", "analyst"]);
 
-    // 1. Measure DB ping & Welbeing
-    let dbStatus: "Welbeingy" | "degraded" | "down" = "Welbeingy";
+    // 1. Measure DB ping & wellbeing
+    let dbStatus: "healthy" | "degraded" | "down" = "healthy";
     let dbLatencyMs = 0;
     try {
       const start = performance.now();
@@ -61,7 +61,7 @@ export async function GET() {
     } catch { }
 
     try {
-      const [c] = await db.select({ total: count() }).from(WelbeingGapReports);
+      const [c] = await db.select({ total: count() }).from(wellbeingGapReports);
       totalCasesCount = c?.total || 0;
     } catch { }
 
@@ -100,10 +100,10 @@ export async function GET() {
         },
         services: [
           { name: "PostgreSQL Database Engine", status: dbStatus, latency: `${dbLatencyMs}ms`, type: "core" },
-          { name: "Auth & Session Gateway", status: "Welbeingy", latency: "<5ms", type: "security" },
-          { name: "Literature Synthesis Engine", status: lastLiteratureSync?.errors && lastLiteratureSync.errors.length > 0 ? "warning" : "Welbeingy", latency: "async", type: "intelligence" },
-          { name: "Herb-Drug Safety Gate v3.0", status: config.flags.safetyGateStrictness === "strict_lock" ? "locked" : "Welbeingy", latency: "<2ms", type: "Debral" },
-          { name: "EFCT 2025 Nutritional Engine", status: "Welbeingy", latency: "<10ms", type: "nutrition" },
+          { name: "Auth & Session Gateway", status: "healthy", latency: "<5ms", type: "security" },
+          { name: "Literature Synthesis Engine", status: lastLiteratureSync?.errors && lastLiteratureSync.errors.length > 0 ? "warning" : "healthy", latency: "async", type: "intelligence" },
+          { name: "Herb-Drug Safety Gate v3.0", status: config.flags.safetyGateStrictness === "strict_lock" ? "locked" : "healthy", latency: "<2ms", type: "scientific" },
+          { name: "EFCT 2025 Nutritional Engine", status: "healthy", latency: "<10ms", type: "nutrition" },
           { name: "Domain A/B Security Firewall", status: config.flags.domainBEnforced ? "active" : "disabled", latency: "isolated", type: "compliance" },
         ],
         config,

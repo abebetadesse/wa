@@ -184,21 +184,21 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
     });
 
     test("ALLOWS safe herbal remedies when no contraindications exist", () => {
-      const WelbeingyProfile = stage1Normalize({
+      const healthyProfile = stage1Normalize({
         age: 26,
         gender: "female",
         region: "Addis Ababa",
         medications: [], // No prescription medications
       });
 
-      const safetyTosign = checkHerbDrugSafety("Tosign", WelbeingyProfile.medications);
+      const safetyTosign = checkHerbDrugSafety("Tosign", healthyProfile.medications);
       assert.equal(safetyTosign.status, "pass");
 
       const gaps = [
         { nutrientId: "nut-ca", nutrientName: "Calcium", unit: "mg", gapType: "deficiency", severity: "moderate", targetRda: 1000, calculatedDailyIntake: 450, estimatedIntakePct: 45, sourceRef: "EFCT" },
       ];
 
-      const { solutions } = stage5GenerateSolutions(gaps, WelbeingyProfile);
+      const { solutions } = stage5GenerateSolutions(gaps, healthyProfile);
       const tosignSol = solutions.find((s) => s.herbName === "Tosign");
 
       assert.ok(tosignSol, "Tosign should be included for safe patient");
@@ -278,7 +278,7 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
       assert.equal(resObj.culturalProfile, undefined);
       assert.equal(resObj.geezZodiacSign, undefined);
       assert.equal(resObj.numerologyScore, undefined);
-      assert.ok(res.safetyGateVerified, "Debral pipeline verified");
+      assert.ok(res.safetyGateVerified, "Scientific pipeline verified");
     });
   });
 });

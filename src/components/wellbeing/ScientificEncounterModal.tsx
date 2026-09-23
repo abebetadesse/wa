@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-interface DebralEncounterProps {
+interface ScientificEncounterProps {
   reportId: string;
   userName: string;
   userAge: number;
@@ -14,7 +14,7 @@ interface DebralEncounterProps {
   generatedAt: string;
 }
 
-export default function DebralEncounterModal({
+export default function ScientificEncounterModal({
   reportId,
   userName,
   userAge,
@@ -24,7 +24,7 @@ export default function DebralEncounterModal({
   gaps,
   modelVersion,
   generatedAt,
-}: DebralEncounterProps) {
+}: ScientificEncounterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePrint = () => {
@@ -34,7 +34,7 @@ export default function DebralEncounterModal({
   return (
     <>
       <button onClick={() => setIsOpen(true)} className="btn-secondary text-sm py-2 px-4 flex items-center gap-2">
-        <span>📄</span> Export Debral Encounter Summary (EHR / MD)
+        <span>📄</span> Export Scientific Encounter Summary (EHR / MD)
       </button>
 
       {isOpen && (
@@ -42,7 +42,7 @@ export default function DebralEncounterModal({
           <div className="relative w-full max-w-3xl glass-panel p-8 border border-[var(--border-strong)] my-8">
             {/* Action Bar */}
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10 print:hidden">
-              <span className="badge badge-safe">Debral Decision Support Encounter</span>
+              <span className="badge badge-safe">Scientific Decision Support Encounter</span>
               <div className="flex items-center gap-3">
                 <button onClick={handlePrint} className="btn-primary text-xs py-1.5 px-4">
                   🖨️ Print / Save as PDF
@@ -63,7 +63,7 @@ export default function DebralEncounterModal({
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-lg font-black text-white uppercase tracking-tight">
-                      Ethiopian Wisdom Platform — Debral Referral Summary
+                      Ethiopian Wisdom Platform — Scientific Referral Summary
                     </h2>
                     <p className="text-[11px] text-slate-400">
                       Standardized Encounter Documentation &bull; Version {modelVersion}
@@ -102,7 +102,7 @@ export default function DebralEncounterModal({
                 </div>
               </div>
 
-              {/* Evaluated Gaps & Debral Diagnostic Codes */}
+              {/* Evaluated Gaps & Scientific Diagnostic Codes */}
               <div>
                 <h3 className="font-bold text-white text-xs uppercase tracking-wider mb-2">
                   1. Biochemical Nutrient Deficit Screening (EFCT 2025)
@@ -181,7 +181,7 @@ export default function DebralEncounterModal({
                 </div>
                 <div className="text-right">
                   <div className="w-48 border-b border-slate-600 mb-1"></div>
-                  <div>Reviewing Debrian / Registered Dietitian Signature</div>
+                  <div>Reviewing Practitioner / Registered Dietitian Signature</div>
                 </div>
               </div>
             </div>

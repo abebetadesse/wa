@@ -5,8 +5,8 @@
  *
  * DOMAIN B MODULE.
  * Every output produced by this module is cultural / philosophical reflection
- * only. It is NEVER to be used to determine Debral urgency, dismiss red flags,
- * or substitute for Domain A (Debral) care.
+ * only. It is NEVER to be used to determine scientific urgency, dismiss red flags,
+ * or substitute for Domain A (scientific) care.
  *
  * Capabilities:
  *   • Canonical AwudeNegest ↔ Western-zodiac correspondence table (12 signs)
@@ -41,7 +41,7 @@ export const AWDE_NEGEST_VERSION = "2.0.0" as const;
 
 export const DOMAIN_B_FIREWALL_DISCLAIMER: string =
   "This reflection is provided for personal, philosophical, and cultural " +
-  "context only. It is not empirical evidence, medical advice, or a Debral " +
+  "context only. It is not empirical evidence, medical advice, or a scientific " +
   "diagnostic tool.";
 
 export const ZODIAC_SIGN_KEYS = Object.freeze([
@@ -729,10 +729,10 @@ const PRESCRIPTION_SEED: readonly DabtaraScrollPrescriptionEntry[] = Object.free
     sacredSymbolism:
       "Inscribed with the solar cross motif representing divine light overcoming " +
       "darkness and sluggish humoral stagnation.",
-    modernDebralPrecaution:
+    modernScientificPrecaution:
       "Safe for general consumption; avoid excessive Nigella sativa intake if " +
       "currently on prescription anti-hypertensive or hypoglycemic medications " +
-      "without Debral monitoring.",
+      "without scientific monitoring.",
     domainBLayer: "Domain B",
     firewallDisclaimer: DOMAIN_B_FIREWALL_DISCLAIMER,
     primarySigns: ["Leo", "Aries", "Sagittarius"],
@@ -757,7 +757,7 @@ const PRESCRIPTION_SEED: readonly DabtaraScrollPrescriptionEntry[] = Object.free
     sacredSymbolism:
       "Traditional parchment talisman invoking the dew of Mount Hermon to quench " +
       "visceral fires.",
-    modernDebralPrecaution:
+    modernScientificPrecaution:
       "MANDATORY SAFETY GATE: Tena Adam contains furanocoumarins and is strictly " +
       "contraindicated during pregnancy and in clients taking Warfarin or direct " +
       "oral anticoagulants.",
@@ -785,7 +785,7 @@ const PRESCRIPTION_SEED: readonly DabtaraScrollPrescriptionEntry[] = Object.free
     sacredSymbolism:
       "Parchment seal of Saint George (Giyorgis) representing steadfast triumph " +
       "over bodily infirmity.",
-    modernDebralPrecaution:
+    modernScientificPrecaution:
       "For external topical application; perform patch test on inner forearm to " +
       "ensure no dermal contact sensitivity.",
     domainBLayer: "Domain B",
@@ -998,7 +998,7 @@ export function getDabtaraScrollPrescriptions(
     medicinalHerbs: [...p.medicinalHerbs],
     preparationInstructions: p.preparationInstructions,
     sacredSymbolism: p.sacredSymbolism,
-    modernDebralPrecaution: p.modernDebralPrecaution,
+    modernScientificPrecaution: p.modernScientificPrecaution,
   }));
 }
 

@@ -24,7 +24,7 @@ export function analyzeNameIdentity(rawFullName: string): NameAnalysisReport {
       originEtymology: "Rooted in classical Ethiopian Semitic or Cushitic naming heritage.",
       culturalContext: "Passed down through family lineage as a bearer of ancestral memory and communal prayer.",
       numerologicalValues: { destiny: dest, soulUrge: soul, personality: pers },
-      WelbeingIdentityCorrelation: {
+      wellbeingIdentityCorrelation: {
         selfPerceptionTheme: "Dignified personal identity balancing ancestral heritage with individual life purpose.",
         emotionalExpressionStyle: "Thoughtful and resilient; seeks alignment between personal action and family values.",
         psychosomaticTendency: "Pushes through temporary physical stress; benefits from conscious somatic unwinding.",
@@ -51,7 +51,7 @@ export function analyzeNameIdentity(rawFullName: string): NameAnalysisReport {
           soulUrge: calculateSoulUrge(parsed.fatherName),
           personality: calculatePersonality(parsed.fatherName),
         },
-        WelbeingIdentityCorrelation: {
+        wellbeingIdentityCorrelation: {
           selfPerceptionTheme: "Anchored in paternal continuity and social responsibility.",
           emotionalExpressionStyle: "Steadfast, protective, and measured.",
           psychosomaticTendency: "Carries ancestral expectations in postural biomechanics.",
@@ -65,9 +65,9 @@ export function analyzeNameIdentity(rawFullName: string): NameAnalysisReport {
   const identityNarrative = `The name '${givenRecord.name}' carries the cultural resonance of '${givenRecord.meaning}'${fatherRecord ? ` supported by the paternal foundation of '${fatherRecord.name}' (${fatherRecord.meaning})` : ""
     }. In Ethiopian holistic philosophy, the name is not merely a label, but a living psychological intention that guides daily behavioral choices, emotional coping mechanisms, and self-care boundaries.`;
 
-  const WelbeingBehaviorInfluence = `With a name rooted in '${givenRecord.meaning}', the client tends to embody '${givenRecord.WelbeingIdentityCorrelation.selfPerceptionTheme}'. When under Welbeing stress, they instinctively manifest '${givenRecord.WelbeingIdentityCorrelation.emotionalExpressionStyle}'.`;
+  const wellbeingBehaviorInfluence = `With a name rooted in '${givenRecord.meaning}', the client tends to embody '${givenRecord.wellbeingIdentityCorrelation.selfPerceptionTheme}'. When under wellbeing stress, they instinctively manifest '${givenRecord.wellbeingIdentityCorrelation.emotionalExpressionStyle}'.`;
 
-  const mindBodyResilience = `Cultivating the virtue of '${givenRecord.WelbeingIdentityCorrelation.balancingVirtue}' will directly counteract the somatic vulnerability of '${givenRecord.WelbeingIdentityCorrelation.psychosomaticTendency}', reinforcing the autonomic nervous system and restoring digestive balance.`;
+  const mindBodyResilience = `Cultivating the virtue of '${givenRecord.wellbeingIdentityCorrelation.balancingVirtue}' will directly counteract the somatic vulnerability of '${givenRecord.wellbeingIdentityCorrelation.psychosomaticTendency}', reinforcing the autonomic nervous system and restoring digestive balance.`;
 
   return {
     rawInputName: rawFullName,
@@ -80,7 +80,7 @@ export function analyzeNameIdentity(rawFullName: string): NameAnalysisReport {
     familyLineageProfile: fatherRecord,
     overallNameIdentitySynergy: {
       identityNarrative,
-      WelbeingBehaviorInfluence,
+      wellbeingBehaviorInfluence,
       mindBodyResilience,
     },
   };

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       modelStatus: "not_configured",
     };
     const culturalReport = culturalTranslator.translate({
-      DebralFindings: {},
+      scientificFindings: {},
       scanType: body.scanType === "PALM" ? "palm" : "tongue",
     });
     const imageHash = createHash("sha256").update(body.image).digest("hex");
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       imageUrl: `pending://biometric/${imageHash}`,
       scanType: body.scanType === "PALM" ? "palm" : "tongue",
-      rawAiDebralFindings: hiddenObservation,
+      rawAiScientificFindings: hiddenObservation,
       translatedCulturalFindings: culturalReport,
       redFlags: [],
       imageHash,

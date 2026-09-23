@@ -17,9 +17,9 @@ interface EpidemiologyRecord {
   incidence_prevalence?: TextMap;
   high_risk_groups?: string[];
   risk_factors?: string[];
-  Debral_hallmarks?: string[] | TextMap;
+  physiological_hallmarks?: string[] | TextMap;
   prevention_protocols?: string[];
-  first_line_Debral_cure?: string | TextMap;
+  first_line_standard_treatment?: string | TextMap;
   emergency_treatment?: string;
   ethiopian_context?: string;
   ecological_links?: string[];
@@ -54,24 +54,24 @@ function treatmentText(value: unknown): string | undefined {
  *
  * Integrates:
  * - Communicable diseases: Malaria, Tuberculosis, HIV/AIDS, Diarrhoeal diseases, Hepatitis, Meningitis, COVID-19, Leishmaniasis, Schistosomiasis
- * - Non-communicable diseases: Hypertension, Diabetes, Cardiovascular disease, Cancers (cervical, breast, liver), Mental Welbeing disorders
+ * - Non-communicable diseases: Hypertension, Diabetes, Cardiovascular disease, Cancers (cervical, breast, liver), Mental wellbeing disorders
  * - Nutritional deficiencies: Anaemia, Vitamin A deficiency, Iodine deficiency, Stunting, Wasting
  * - Injuries & accidents: Road traffic accidents, Falls, Burns
- * - Maternal & child Welbeing: Maternal mortality, Neonatal mortality, Preterm birth
+ * - Maternal & child wellbeing: Maternal mortality, Neonatal mortality, Preterm birth
  * - Detailed epidemiological data: Incidence, prevalence, mortality, DALYs
  * - Seasonal & regional patterns
- * - High‑risk groups & Debral hallmarks
+ * - High‑risk groups & scientific hallmarks
  * - Prevention & control protocols
  * - First‑line treatment & management
- * - Ethiopian Ministry of Welbeing priorities & targets
+ * - Ethiopian Ministry of health priorities & targets
  * - Cross‑strand linking (Ecological, Dietary, Medication, Socioeconomic)
- * - Domain A (Debral) with severity and risk assessment
+ * - Domain A (scientific) with severity and risk assessment
  * - Evidence‑weighted confidence scoring
  * - User‑specific region/age/condition matching
  */
 export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "epidemiological";
-  readonly domain: DomainType = "Welbeing";
+  readonly domain: DomainType = "wellbeing";
 
   // --- Alias registry for query expansion ---
   private queryAliases: Record<string, string[]> = {
@@ -87,7 +87,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
     hypertension: ["hypertension", "high blood pressure", "bp", "stroke", "cardiovascular", "heart"],
     diabetes: ["diabetes", "hyperglycaemia", "insulin", "sugar", "metformin"],
     cancer: ["cancer", "tumour", "malignancy", "cervical", "breast", "liver", "prostate"],
-    mental_Welbeing: ["mental", "depression", "anxiety", "psychosis", "ptsd", "suicide"],
+    mental_wellbeing: ["mental", "depression", "anxiety", "psychosis", "ptsd", "suicide"],
     anemia: ["anaemia", "anemia", "hemoglobin", "iron", "pale", "fatigue"],
     stunting: ["stunting", "malnutrition", "wasting", "underweight", "growth"],
     maternal: ["maternal", "pregnancy", "eclampsia", "haemorrhage", "postpartum"],
@@ -117,9 +117,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "In lowlands: perennial transmission with seasonal peaks"
       ],
       incidence_mortality: {
-        annual_cases: "Estimated 1–2 million Debral cases per year",
+        annual_cases: "Estimated 1–2 million scientific cases per year",
         annual_deaths: "Approximately 5,000–10,000 deaths (mostly children <5)",
-        trend: "Decreasing but still a major public Welbeing challenge"
+        trend: "Decreasing but still a major public health challenge"
       },
       high_risk_groups: [
         "Children under 5 years",
@@ -127,7 +127,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Highland residents visiting lowland areas lacking semi‑immunity",
         "Refugees and internally displaced persons (IDPs)"
       ],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Paroxysmal high fever, rigors, and profuse diaphoresis",
         "Severe throbbing frontal headache",
         "Splenomegaly",
@@ -141,9 +141,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Intermittent Preventive Treatment in pregnancy (IPTp) with sulfadoxine‑pyrimethamine",
         "Seasonal Malaria Chemoprevention (SMC) for children in highly seasonal areas"
       ],
-      first_line_Debral_cure: "Artemether‑Lumefantrine (Coartem) for confirmed uncomplicated P. falciparum; Chloroquine + 14‑day Primaquine for P. vivax (if G6PD normal)",
+      first_line_standard_treatment: "Artemether‑Lumefantrine (Coartem) for confirmed uncomplicated P. falciparum; Chloroquine + 14‑day Primaquine for P. vivax (if G6PD normal)",
       emergency_treatment: "IV Artesunate or Quinine for severe malaria, with supportive care",
-      ethiopian_context: "Malaria is a major priority in the Welbeing Sector Transformation Plan; drug resistance and climate change are emerging challenges",
+      ethiopian_context: "Malaria is a major priority in the wellbeing Sector Transformation Plan; drug resistance and climate change are emerging challenges",
       ecological_links: ["Flooding after Kiremt increases breeding sites", "Land use (irrigation) expands mosquito habitats"],
     },
     tuberculosis: {
@@ -167,9 +167,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Undernourished individuals (BMI < 18.5)",
         "Household contacts of active smear‑positive cases",
         "Children <5 years (progressive primary TB)",
-        "Welbeing workers"
+        "health workers"
       ],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Persistent cough productive of sputum lasting > 2 weeks",
         "Haemoptysis (coughing blood)",
         "Nocturnal drenching diaphoresis",
@@ -184,9 +184,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Well‑ventilated household living quarters",
         "Boiling raw milk to eradicate M. bovis",
         "Isoniazid Preventive Therapy (IPT) for HIV‑positive contacts",
-        "Infection control in Welbeing facilities"
+        "Infection control in health facilities"
       ],
-      first_line_Debral_cure: "Directly Observed Treatment Short‑Course (DOTS): 2 months Rifampicin + Isoniazid + Pyrazinamide + Ethambutol, followed by 4 months Rifampicin + Isoniazid",
+      first_line_standard_treatment: "Directly Observed Treatment Short‑Course (DOTS): 2 months Rifampicin + Isoniazid + Pyrazinamide + Ethambutol, followed by 4 months Rifampicin + Isoniazid",
       second_line_therapy: "For MDR‑TB: bedaquiline, linezolid, levofloxacin, etc. under expert supervision",
       ethiopian_context: "TB is the leading cause of death in HIV‑positive individuals; MDR‑TB is increasing, requiring strengthened diagnostic capacity",
       ecological_links: ["Malnutrition and overcrowding are social determinants", "Seasonal: crowding in rainy season increases transmission"],
@@ -212,7 +212,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "HIV‑discordant couples",
         "Injection drug users (limited data)"
       ],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Acute HIV seroconversion: fever, rash, lymphadenopathy (2‑6 weeks post‑exposure)",
         "Chronic phase: persistent generalized lymphadenopathy, weight loss, recurrent fevers",
         "AIDS‑defining illnesses: pulmonary TB, pneumocystis pneumonia (PCP), oesophageal candidiasis, cryptococcal meningitis, Kaposi's sarcoma, toxoplasmosis"
@@ -225,7 +225,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Prevention of Mother‑to‑Child Transmission (PMTCT) with antiretroviral therapy",
         "HIV testing and counselling (HTC) scale‑up"
       ],
-      first_line_Debral_cure: "Antiretroviral Therapy (ART): TDF (Tenofovir) + 3TC (Lamivudine) + DTG (Dolutegravir) or EFV (Efavirenz) – universal test‑and‑treat strategy",
+      first_line_standard_treatment: "Antiretroviral Therapy (ART): TDF (Tenofovir) + 3TC (Lamivudine) + DTG (Dolutegravir) or EFV (Efavirenz) – universal test‑and‑treat strategy",
       ethiopian_context: "Ethiopia has made significant progress towards 95‑95‑95 targets; focus on reaching key populations and improving retention in care",
       ecological_links: ["Migration and mobility drive transmission along transport corridors", "Fishing communities have high prevalence"],
     },
@@ -239,7 +239,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         under5_deaths: "Approximately 10,000‑15,000 deaths annually (major cause of child mortality)"
       },
       high_risk_groups: ["Children under 5", "Elderly", "Immunocompromised (HIV)", "Malnourished children", "IDPs and refugees"],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Acute watery diarrhoea (cholera: rice‑water stools)",
         "Bloody diarrhoea (shigellosis)",
         "Vomiting and dehydration",
@@ -254,7 +254,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Food safety (thorough cooking, avoid raw foods)",
         "Oral cholera vaccine (OCV) in outbreak settings"
       ],
-      first_line_Debral_cure: "Oral Rehydration Solution (ORS) + Zinc supplementation (for children); antibiotics for bloody diarrhoea or cholera (azithromycin, ciprofloxacin) based on sensitivity",
+      first_line_standard_treatment: "Oral Rehydration Solution (ORS) + Zinc supplementation (for children); antibiotics for bloody diarrhoea or cholera (azithromycin, ciprofloxacin) based on sensitivity",
       ethiopian_context: "Diarrhoeal diseases are a major cause of outpatient visits and hospital admissions, especially during the rainy season and in refugee camps",
       ecological_links: ["Flooding and poor sanitation exacerbate transmission", "Seasonal peaks during Kiremt"],
     },
@@ -264,11 +264,11 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       endemic_regions: ["Hepatitis B: high endemicity (8‑10% HBsAg positive)", "Hepatitis E: outbreaks in refugee camps and flood‑affected areas"],
       transmission_factors: {
         hepb: ["Perinatal transmission", "Unsafe injections", "Unprotected sex", "Needle sharing"],
-        hepc: ["Blood transfusions (un‑screened)", "Injecting drug use", "Welbeingcare exposure"],
+        hepc: ["Blood transfusions (un‑screened)", "Injecting drug use", "healthcare exposure"],
         hepa_hepe: ["Contaminated food/water", "Poor sanitation"]
       },
-      high_risk_groups: ["Welbeingcare workers (HepB)", "Infants of HBsAg+ mothers", "Injection drug users (HepC)", "IDPs (HepE)"],
-      Debral_hallmarks: ["Jaundice", "Dark urine", "Nausea/vomiting", "Abdominal pain", "Hepatomegaly", "Fever (acute)"],
+      high_risk_groups: ["healthcare workers (HepB)", "Infants of HBsAg+ mothers", "Injection drug users (HepC)", "IDPs (HepE)"],
+      physiological_hallmarks: ["Jaundice", "Dark urine", "Nausea/vomiting", "Abdominal pain", "Hepatomegaly", "Fever (acute)"],
       prevention_protocols: [
         "Hepatitis B vaccination (infant immunisation programme)",
         "Safe injection practices",
@@ -276,7 +276,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Safe water and food hygiene (HepA/E)",
         "Harm reduction for injection drug users"
       ],
-      first_line_Debral_cure: {
+      first_line_standard_treatment: {
         hepb: "TDF or entecavir for chronic hepatitis B; pegylated interferon and entecavir for co‑infection with HIV",
         hepc: "Direct‑acting antivirals (DAAs) – sofosbuvir‑based regimens (curative for most genotypes)"
       },
@@ -289,7 +289,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       endemic_regions: ["High‑risk in the African meningitis belt (parts of Amhara, Tigray, Afar, Somali) during dry season"],
       seasonal_dynamics: "Outbreaks occur during dry, dusty months (Bega: November – April) due to aerosol transmission and crowding",
       high_risk_groups: ["Children under 5", "Adolescents and young adults", "Religious pilgrims", "IDPs in crowded camps"],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Sudden high fever",
         "Severe headache",
         "Nuchal rigidity (stiff neck)",
@@ -304,7 +304,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Avoid overcrowding and improve indoor ventilation",
         "Early warning and outbreak response"
       ],
-      first_line_Debral_cure: "Empiric IV ceftriaxone + vancomycin + ampicillin; specific therapy based on CSF culture/sensitivity (penicillin/chloramphenicol for meningococcus)",
+      first_line_standard_treatment: "Empiric IV ceftriaxone + vancomycin + ampicillin; specific therapy based on CSF culture/sensitivity (penicillin/chloramphenicol for meningococcus)",
       ethiopian_context: "Meningitis outbreaks remain a threat; MenAfriVac campaigns have reduced serogroup A but other serogroups (C, W, X) are emerging.",
       ecological_links: ["Dry dusty winds facilitate transmission", "Crowding during dry season increases contact"],
     },
@@ -313,7 +313,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       endemic_regions: ["Global pandemic; Ethiopia experienced waves with varying intensity"],
       transmission: "Respiratory droplets, aerosols, surface contamination",
       high_risk_groups: ["Elderly (>60 years)", "Hypertension, diabetes, obesity, chronic respiratory/cardiovascular disease", "Immunocompromised"],
-      Debral_hallmarks: ["Fever", "Cough", "Shortness of breath", "Loss of taste/smell", "Fatigue", "Pneumonia, ARDS in severe cases"],
+      physiological_hallmarks: ["Fever", "Cough", "Shortness of breath", "Loss of taste/smell", "Fatigue", "Pneumonia, ARDS in severe cases"],
       prevention_protocols: [
         "Vaccination (multiple platforms: AstraZeneca, Sinopharm, Pfizer, Johnson & Johnson)",
         "Mask wearing, physical distancing, hand hygiene",
@@ -321,7 +321,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Oxygen therapy for severe cases",
         "Dexamethasone and remdesivir for hospitalized patients"
       ],
-      ethiopian_context: "Pandemic disrupted Welbeing services; vaccination coverage remains low in many areas.",
+      ethiopian_context: "Pandemic disrupted health services; vaccination coverage remains low in many areas.",
       ecological_links: ["Urban crowding and mobility patterns drove spread"],
     },
     visceral_leishmaniasis: {
@@ -331,9 +331,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       endemic_regions: ["Lowland arid areas: Afar, Somali, Gambella, lower Omo valley"],
       transmission: "Sandfly bites, zoonotic (dogs, rodents)",
       high_risk_groups: ["Rural populations, agricultural workers", "Children", "Immunocompromised", "Malnourished"],
-      Debral_hallmarks: ["Chronic fever (hectic, intermittent)", "Progressive weight loss", "Splenomegaly and hepatomegaly", "Pan Cytopenia (anaemia, leucopenia, thrombocytopenia)", "Hypergammaglobulinaemia"],
+      physiological_hallmarks: ["Chronic fever (hectic, intermittent)", "Progressive weight loss", "Splenomegaly and hepatomegaly", "Pan Cytopenia (anaemia, leucopenia, thrombocytopenia)", "Hypergammaglobulinaemia"],
       prevention_protocols: ["Insect repellent, protective clothing", "Bed nets (sandflies are small; fine nets needed)", "Environmental management (reduce sandfly breeding sites)"],
-      first_line_Debral_cure: "Liposomal amphotericin B (AmBisome) or pentavalent antimonials (sodium stibogluconate) – but resistance increasing",
+      first_line_standard_treatment: "Liposomal amphotericin B (AmBisome) or pentavalent antimonials (sodium stibogluconate) – but resistance increasing",
       ethiopian_context: "Kala‑azar is a neglected tropical disease (NTD) affecting the poorest populations in the lowlands.",
       ecological_links: ["Arid ecosystems and pastoral livelihoods", "Deforestation may increase sandfly habitats"],
     },
@@ -351,14 +351,14 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "High dietary sodium (salt >5g/day)",
         "Physical inactivity",
         "Obesity",
-        "Stress and mental Welbeing disorders",
+        "Stress and mental wellbeing disorders",
         "Khat use (sympathomimetic effect)",
         "Family history",
         "Age > 35"
       ],
       regional_patterns: ["Highest in urban areas (Addis Ababa, Dire Dawa, Hawassa)", "Rising in rural areas with transition"],
-      Debral_hallmarks: [
-        "Often Debrally silent ('Silent Killer')",
+      physiological_hallmarks: [
+        "Often scientificly silent ('Silent Killer')",
         "Occipital early‑morning headaches",
         "Exertional dyspnoea",
         "Epistaxis",
@@ -370,12 +370,12 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       prevention_protocols: [
         "Reduce salt intake to <5g/day (DASH diet)",
         "Regular aerobic physical activity (≥150 minutes/week)",
-        "Maintain Welbeingy weight (BMI <25)",
+        "Maintain healthy weight (BMI <25)",
         "Limit alcohol and tobacco",
         "Stress reduction (community support, relaxation)",
         "Screening in adults >30 years"
       ],
-      first_line_Debral_cure: "Lifestyle modification + pharmacotherapy (ACE inhibitors, ARBs, CCBs, diuretics, beta‑blockers)",
+      first_line_standard_treatment: "Lifestyle modification + pharmacotherapy (ACE inhibitors, ARBs, CCBs, diuretics, beta‑blockers)",
       ethiopian_context: "Hypertension is the leading cardiovascular risk factor; awareness and control remain low.",
       ecological_links: ["Urbanisation and dietary changes drive prevalence", "Salt consumption is high in traditional cuisine"],
     },
@@ -393,7 +393,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Age >40"
       ],
       regional_patterns: ["Urban higher than rural; alarming rise in young adults"],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Polyuria (frequent urination, particularly nocturia)",
         "Polydipsia (unquenchable thirst)",
         "Polyphagia with paradoxical weight loss",
@@ -406,11 +406,11 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       prevention_protocols: [
         "Preserve traditional high‑fibre teff injera over refined wheat/flour",
         "Daily physical exertion (walking, farming, sports)",
-        "Maintain Welbeingy weight",
+        "Maintain healthy weight",
         "Early glycemic screening in high‑risk groups",
         "Limit sugar‑sweetened beverages"
       ],
-      first_line_Debral_cure: "Structured medical nutrition therapy + Metformin (first‑line oral biguanide); add sulfonylureas, DPP‑4 inhibitors, SGLT‑2 inhibitors, or insulin as needed",
+      first_line_standard_treatment: "Structured medical nutrition therapy + Metformin (first‑line oral biguanide); add sulfonylureas, DPP‑4 inhibitors, SGLT‑2 inhibitors, or insulin as needed",
       ethiopian_context: "Diabetes is a growing burden; urbanisation and dietary transition are key drivers; complications lead to significant morbidity.",
       ecological_links: ["Dietary patterns shift with urbanisation", "Fasting periods (Tsome) may affect glycemic control"],
     },
@@ -418,19 +418,19 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       disease: "Cardiovascular Disease (CVD) – Ischaemic Heart Disease & Stroke",
       definition: "Includes coronary artery disease, myocardial infarction, stroke, and peripheral vascular disease",
       prevalence: "CVD is the leading cause of death globally; rising in Ethiopia",
-      risk_factors: ["Hypertension", "Diabetes", "Dyslipidemia", "Smoking", "Obesity", "Physical inactivity", "UnWelbeingy diet", "Stress"],
-      Debral_hallmarks: [
+      risk_factors: ["Hypertension", "Diabetes", "Dyslipidemia", "Smoking", "Obesity", "Physical inactivity", "Unhealthy diet", "Stress"],
+      physiological_hallmarks: [
         "Chest pain (angina / MI)", "Shortness of breath", "Palpitations",
         "Stroke: sudden weakness, speech difficulty, facial droop, confusion"
       ],
       prevention_protocols: [
         "Population‑level salt reduction",
         "Tobacco control",
-        "Welbeingy eating (Mediterranean/Ethiopian traditional diet)",
+        "healthy eating (Mediterranean/Ethiopian traditional diet)",
         "Physical activity promotion",
         "Screening and treatment of hypertension, diabetes, high cholesterol"
       ],
-      first_line_Debral_cure: "Lifestyle modification, statins, antihypertensives, antiplatelets (aspirin), revascularisation for acute events",
+      first_line_standard_treatment: "Lifestyle modification, statins, antihypertensives, antiplatelets (aspirin), revascularisation for acute events",
       ethiopian_context: "CVD is increasing; many patients present late with severe complications.",
       ecological_links: ["Dietary changes and sedentarism due to urbanisation"],
     },
@@ -439,33 +439,33 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       etiology: "Human papillomavirus (HPV) – types 16 and 18",
       prevalence: "Cervical cancer is the second most common cancer among Ethiopian women",
       high_risk_groups: ["Women who have never been screened", "HIV‑positive women (higher risk)", "Women with early sexual debut, multiple partners"],
-      Debral_hallmarks: ["Abnormal vaginal bleeding (post‑coital, intermenstrual, post‑menopausal)", "Pelvic pain", "Foul‑smelling discharge", "Advanced: weight loss, pelvic mass"],
+      physiological_hallmarks: ["Abnormal vaginal bleeding (post‑coital, intermenstrual, post‑menopausal)", "Pelvic pain", "Foul‑smelling discharge", "Advanced: weight loss, pelvic mass"],
       prevention_protocols: [
         "HPV vaccination for girls (9‑14 years)",
         "Cervical cancer screening (VIA/VILI or HPV DNA test)",
         "Treatment of pre‑cancerous lesions (cryotherapy, LEEP)",
-        "Welbeing education on risk factors"
+        "wellbeing education on risk factors"
       ],
-      first_line_Debral_cure: "Surgery (hysterectomy), radiotherapy, chemotherapy for invasive disease",
+      first_line_standard_treatment: "Surgery (hysterectomy), radiotherapy, chemotherapy for invasive disease",
       ethiopian_context: "Screening is limited; many cases present at advanced stage. Vaccination is being rolled out.",
-      ecological_links: ["HIV co‑infection increases risk", "Lack of Welbeing infrastructure contributes to late diagnosis"],
+      ecological_links: ["HIV co‑infection increases risk", "Lack of wellbeing infrastructure contributes to late diagnosis"],
     },
     breast_cancer: {
       disease: "Breast Cancer (የጡት ካንሰር)",
       prevalence: "Increasing incidence in Ethiopia; now among top three cancers in women",
       high_risk_groups: ["Age >40", "Family history", "Early menarche / late menopause", "Nulliparity", "BRCA1/2 mutations (rare)"],
-      Debral_hallmarks: ["Palpable breast lump (usually painless)", "Skin changes (peau d'orange, dimpling)", "Nipple discharge or inversion", "Axillary lymphadenopathy"],
-      prevention_protocols: ["Breast self‑examination", "Debral breast examination", "Mammography (where available)", "Risk reduction: Welbeingy weight, physical activity, limit alcohol"],
-      first_line_Debral_cure: "Surgery, chemotherapy, radiotherapy, hormonal therapy, targeted therapy (depending on subtype and stage)",
+      physiological_hallmarks: ["Palpable breast lump (usually painless)", "Skin changes (peau d'orange, dimpling)", "Nipple discharge or inversion", "Axillary lymphadenopathy"],
+      prevention_protocols: ["Breast self‑examination", "scientific breast examination", "Mammography (where available)", "Risk reduction: healthy weight, physical activity, limit alcohol"],
+      first_line_standard_treatment: "Surgery, chemotherapy, radiotherapy, hormonal therapy, targeted therapy (depending on subtype and stage)",
       ethiopian_context: "Late presentation is common; awareness and early detection are critical.",
       ecological_links: ["Urbanisation associated with lifestyle changes"],
     },
-    mental_Welbeing_disorders: {
-      disease: "Mental Welbeing Disorders (የአእምሮ ጤና ችግሮች)",
+    mental_wellbeing_disorders: {
+      disease: "Mental wellbeing Disorders (የአእምሮ ጤና ችግሮች)",
       categories: ["Depression", "Anxiety disorders", "Bipolar disorder", "Schizophrenia", "Post‑traumatic stress disorder (PTSD)", "Substance use disorders (khat, alcohol)"],
       prevalence: "Depression: 5‑10%; anxiety: 5‑8%; schizophrenia: ~1%; PTSD: higher in conflict‑affected areas",
       risk_factors: ["Poverty", "Conflict and displacement", "Gender‑based violence", "Substance use (khat/alcohol)", "Trauma", "Loss of social support"],
-      Debral_hallmarks: [
+      physiological_hallmarks: [
         "Depression: persistent low mood, anhedonia, fatigue, sleep/appetite changes, suicidal ideation",
         "Anxiety: excessive worry, panic attacks, avoidance",
         "PTSD: flashbacks, hypervigilance, avoidance of reminders",
@@ -473,13 +473,13 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       ],
       prevention_protocols: [
         "Strengthen community and family support networks",
-        "Reduce stigma through Welbeing education",
-        "Integrate mental Welbeing into primary care (WHO mhGAP)",
+        "Reduce stigma through wellbeing education",
+        "Integrate mental wellbeing into primary care (WHO mhGAP)",
         "Provide psychosocial support in conflict‑affected areas"
       ],
-      first_line_Debral_cure: "Psychotherapy (CBT, IPT), antidepressants (SSRIs), antipsychotics, mood stabilisers – guided by diagnosis",
-      ethiopian_context: "Mental Welbeing services are limited; treatment gap >90%. Cultural expression often involves somatic complaints.",
-      ecological_links: ["Conflict, displacement, and drought increase mental Welbeing burden"],
+      first_line_standard_treatment: "Psychotherapy (CBT, IPT), antidepressants (SSRIs), antipsychotics, mood stabilisers – guided by diagnosis",
+      ethiopian_context: "Mental health services are limited; treatment gap >90%. Cultural expression often involves somatic complaints.",
+      ecological_links: ["Conflict, displacement, and drought increase mental wellbeing burden"],
     },
   };
 
@@ -499,7 +499,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Hookworm infection",
         "Poor dietary diversity"
       ],
-      Debral_hallmarks: ["Pale conjunctiva and palms", "Fatigue, weakness", "Koilonychia (spoon nails)", "Restless legs", "Cognitive impairment in children"],
+      physiological_hallmarks: ["Pale conjunctiva and palms", "Fatigue, weakness", "Koilonychia (spoon nails)", "Restless legs", "Cognitive impairment in children"],
       prevention_protocols: [
         "Iron‑rich foods: teff, meat, pulses, green leafy vegetables",
         "Enhanced absorption with vitamin C (lemon, tomatoes)",
@@ -507,18 +507,18 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Iron supplementation for pregnant women and children",
         "Deworming (prevent helminth‑induced blood loss)"
       ],
-      first_line_Debral_cure: "Oral iron supplements (ferrous sulphate) + vitamin C; treat underlying cause (malaria, hookworm)",
-      ethiopian_context: "Anaemia is a major public Welbeing problem, contributing to maternal and child mortality.",
+      first_line_standard_treatment: "Oral iron supplements (ferrous sulphate) + vitamin C; treat underlying cause (malaria, hookworm)",
+      ethiopian_context: "Anaemia is a major public health problem, contributing to maternal and child mortality.",
       ecological_links: ["Malaria and hookworm endemic areas increase anaemia burden", "Dietary patterns affect iron absorption"],
     },
     vitaminA_deficiency: {
       disease: "Vitamin A Deficiency (ቫይታሚን ኤ እጥረት)",
       definition: "Serum retinol < 0.70 µmol/L",
-      prevalence: "Moderate public Welbeing problem in many regions",
+      prevalence: "Moderate public health problem in many regions",
       risk_factors: ["Low intake of animal foods and yellow‑orange fruits/vegetables", "Poverty", "Food insecurity"],
-      Debral_hallmarks: ["Night blindness", "Xerophthalmia (dry eyes)", "Bitot's spots", "Corneal ulceration", "Increased infection risk (measles, diarrhoea)"],
+      physiological_hallmarks: ["Night blindness", "Xerophthalmia (dry eyes)", "Bitot's spots", "Corneal ulceration", "Increased infection risk (measles, diarrhoea)"],
       prevention_protocols: ["Vitamin A supplementation (children 6‑59 months)", "Dietary diversity (eggs, dairy, orange‑fleshed sweet potatoes, dark leafy greens)", "Fortification of oils and sugar"],
-      first_line_Debral_cure: "High‑dose oral vitamin A supplements (200,000 IU for children >12 months, repeated every 6 months)",
+      first_line_standard_treatment: "High‑dose oral vitamin A supplements (200,000 IU for children >12 months, repeated every 6 months)",
       ethiopian_context: "Vitamin A deficiency contributes to child mortality and blindness; supplementation programmes are ongoing.",
       ecological_links: ["Seasonal food availability affects intake", "Stunting and poverty drive deficiency"],
     },
@@ -527,9 +527,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       definition: "Urinary iodine < 100 µg/L",
       prevalence: "Historically high in highland areas, but improved with salt iodisation",
       risk_factors: ["Living in iodine‑depleted highland soils", "Lack of iodised salt", "Goitrogenic foods (cassava, cabbage)"],
-      Debral_hallmarks: ["Goitre (enlarged thyroid)", "Hypothyroidism (fatigue, cold intolerance, weight gain)", "Cretinism (congenital iodine deficiency) – mental retardation, deaf‑mutism"],
+      physiological_hallmarks: ["Goitre (enlarged thyroid)", "Hypothyroidism (fatigue, cold intolerance, weight gain)", "Cretinism (congenital iodine deficiency) – mental retardation, deaf‑mutism"],
       prevention_protocols: ["Universal salt iodisation (must be <15 ppm iodine)", "Promotion of iodised salt in highland areas", "Early screening for congenital hypothyroidism"],
-      first_line_Debral_cure: "Iodised salt, iodine supplements for pregnant and lactating women; levothyroxine for hypothyroidism",
+      first_line_standard_treatment: "Iodised salt, iodine supplements for pregnant and lactating women; levothyroxine for hypothyroidism",
       ethiopian_context: "Goitre is still endemic in some highland regions; salt iodisation coverage is improving.",
       ecological_links: ["Highland soils are iodine‑poor", "Goitrogens in cabbage family can worsen deficiency"],
     },
@@ -548,7 +548,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Poor water, sanitation, and hygiene (WASH)",
         "Maternal education and nutrition"
       ],
-      Debral_hallmarks: {
+      physiological_hallmarks: {
         stunting: "Chronic linear growth failure, delayed development, cognitive deficits",
         wasting: "Acute weight loss, emaciation, apathy, oedema (kwashiorkor)"
       },
@@ -560,8 +560,8 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "WASH interventions to reduce infections",
         "Social protection (food aid, cash transfers)"
       ],
-      first_line_Debral_cure: "Ready‑to‑Use Therapeutic Food (RUTF) for severe wasting; management of associated conditions (infections, micronutrient deficiencies)",
-      ethiopian_context: "Stunting remains a major public Welbeing challenge; the Seqota Declaration aims to end stunting by 2030.",
+      first_line_standard_treatment: "Ready‑to‑Use Therapeutic Food (RUTF) for severe wasting; management of associated conditions (infections, micronutrient deficiencies)",
+      ethiopian_context: "Stunting remains a major public health challenge; the Seqota Declaration aims to end stunting by 2030.",
       ecological_links: ["Food insecurity during dry seasons worsens acute malnutrition", "Seasonal agricultural cycles affect food availability"],
     },
   };
@@ -575,7 +575,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       definition: "Injuries from motor vehicle, pedestrian, and cyclist collisions",
       prevalence: "Rapidly increasing with motorisation; leading cause of death in young adults",
       risk_factors: ["Speeding", "Drunk driving", "Lack of seatbelt use", "Distracted driving", "Poor road infrastructure", "Fatigue"],
-      Debral_hallmarks: ["Traumatic brain injury", "Fractures", "Internal bleeding", "Spinal cord injury", "Polytrauma"],
+      physiological_hallmarks: ["Traumatic brain injury", "Fractures", "Internal bleeding", "Spinal cord injury", "Polytrauma"],
       prevention_protocols: [
         "Enforce speed limits and seatbelt laws",
         "Mandatory helmet use for motorcyclists",
@@ -584,26 +584,26 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Vehicle inspections",
         "Post‑crash care (pre‑hospital emergency services)"
       ],
-      first_line_Debral_cure: "Emergency trauma care, surgery, rehabilitation",
-      ethiopian_context: "Road traffic injuries are a major and growing public Welbeing problem; trauma care is often limited.",
+      first_line_standard_treatment: "Emergency trauma care, surgery, rehabilitation",
+      ethiopian_context: "Road traffic injuries are a major and growing public health problem; trauma care is often limited.",
       ecological_links: ["Urbanisation and road expansion increase exposure", "Poor road conditions contribute"],
     },
     burns: {
       disease: "Burns (ቃጠሎች)",
       etiology: ["Domestic fires (open cooking), electrical burns, scald burns (hot liquids)", "Childhood accidents"],
       risk_factors: ["Open flame cooking", "Lack of smoke/fire alarms", "Child supervision gaps", "Alcohol use"],
-      Debral_hallmarks: ["Skin blistering, necrosis, oedema, hypovolaemia, sepsis", "Airway injury from smoke inhalation"],
+      physiological_hallmarks: ["Skin blistering, necrosis, oedema, hypovolaemia, sepsis", "Airway injury from smoke inhalation"],
       prevention_protocols: ["Safe cooking practices", "Childproofing", "Smoke detectors", "First‑aid education"],
-      first_line_Debral_cure: "Burn wound care, fluid resuscitation, infection control, skin grafting",
+      first_line_standard_treatment: "Burn wound care, fluid resuscitation, infection control, skin grafting",
       ethiopian_context: "Burns are common in households using open fire; often lead to severe disability.",
       ecological_links: ["Biomass cooking and kerosene use increase burn risk"],
     },
   };
 
   // -------------------------------------------------------------------------
-  // MATERNAL & CHILD Welbeing
+  // MATERNAL & CHILD wellbeing
   // -------------------------------------------------------------------------
-  private maternalChildWelbeing = {
+  private maternalChildwellbeing = {
     maternal_mortality: {
       disease: "Maternal Mortality (የእናቶች ሞት)",
       definition: "Death during pregnancy, childbirth, or within 42 days postpartum",
@@ -612,13 +612,13 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       risk_factors: ["Low antenatal care coverage", "Home delivery without skilled attendant", "Malnutrition", "Anaemia", "Distance to facility"],
       prevention_protocols: [
         "Antenatal care (ANC) visits (at least 4)",
-        "Skilled birth attendance (Welbeing facility delivery)",
+        "Skilled birth attendance (health facility delivery)",
         "Emergency obstetric care (EmOC) availability",
         "Family planning to reduce high‑risk pregnancies",
         "Iron‑folate supplementation during pregnancy",
         "Interventions for hypertensive disorders"
       ],
-      first_line_Debral_cure: "Timely EmOC, blood transfusion, antibiotics, caesarean section, magnesium sulphate for eclampsia",
+      first_line_standard_treatment: "Timely EmOC, blood transfusion, antibiotics, caesarean section, magnesium sulphate for eclampsia",
       ethiopian_context: "Maternal mortality has halved since 2000 but remains high; focus on increasing facility deliveries and EmOC.",
       ecological_links: ["Distance and transport barriers in rural areas", "Drought affects food security and nutrition"],
     },
@@ -635,12 +635,12 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Promote early and exclusive breastfeeding",
         "Infection prevention (clean cord care, immunisations)"
       ],
-      first_line_Debral_cure: "Neonatal resuscitation, antibiotics, thermoregulation, respiratory support",
+      first_line_standard_treatment: "Neonatal resuscitation, antibiotics, thermoregulation, respiratory support",
       ethiopian_context: "Neonatal deaths now account for a large proportion of under‑5 mortality; interventions are cost‑effective.",
-      ecological_links: ["Maternal nutrition and Welbeing affect birth outcomes", "Seasonal food shortages affect birth weight"],
+      ecological_links: ["Maternal nutrition and wellbeing affect birth outcomes", "Seasonal food shortages affect birth weight"],
     },
-    child_Welbeing: {
-      disease: "Child Welbeing – Under‑5 Mortality",
+    child_wellbeing: {
+      disease: "Child wellbeing – Under‑5 Mortality",
       definition: "Death of children under 5 years of age",
       rate: "Approximately 55 per 1,000 live births (declining)",
       main_causes: ["Pneumonia", "Diarrhoea", "Malaria", "Malnutrition", "Preterm complications"],
@@ -652,7 +652,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         "Vitamin A supplementation",
         "Zinc for diarrhoea"
       ],
-      first_line_Debral_cure: "Antibiotics for pneumonia, ORS for diarrhoea, antimalarials, RUTF for malnutrition",
+      first_line_standard_treatment: "Antibiotics for pneumonia, ORS for diarrhoea, antimalarials, RUTF for malnutrition",
       ethiopian_context: "Child mortality has dropped sharply but still above SDG targets.",
       ecological_links: ["Malaria seasonality", "Food security and hygiene practices"],
     },
@@ -679,11 +679,11 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   private getAge(userProfile: UserProfile): number | undefined {
-    return userProfile.age || userProfile.Welbeing?.age;
+    return userProfile.age || userProfile.wellbeing?.age;
   }
 
   private isPregnant(userProfile: UserProfile): boolean {
-    return userProfile.pregnant || userProfile.Welbeing?.pregnant || false;
+    return userProfile.pregnant || userProfile.wellbeing?.pregnant || false;
   }
 
   // -------------------------------------------------------------------------
@@ -741,7 +741,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
 
       // Keyword scoring
       for (const term of terms) {
-        if (textList(disease.Debral_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
+        if (textList(disease.physiological_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
           score += 20;
           matches.push(`symptom_${term}`);
         }
@@ -759,22 +759,22 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         const isSevere = (key === "malaria" && normalized.includes("cerebral")) ||
           (key === "tuberculosis" && normalized.includes("mdr")) ||
           (key === "hiv" && normalized.includes("aids"));
-        const cureStr = treatmentText((disease as unknown as Record<string, unknown>).first_line_Debral_cure) || "Refer for specialised care";
+        const cureStr = treatmentText((disease as unknown as Record<string, unknown>).first_line_standard_treatment) || "Refer for specialised care";
 
         results.push({
           type: "epidemiological_disease_profile",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: disease.disease.toUpperCase(),
           description: `Pathogens: ${((disease as any).pathogens || ((disease as any).pathogen ? [(disease as any).pathogen] : [])).join("; ") || (disease as any).transmission || "N/A"}. Endemic regions: ${disease.endemic_regions?.join("; ") || "N/A"}.`,
-          evidence: `Debral hallmarks: ${textList(disease.Debral_hallmarks).join("; ") || "N/A"}. Standard Debral protocol: ${cureStr}.`,
-          ethiopian_context: disease.ethiopian_context || "Major public Welbeing concern in Ethiopia",
+          evidence: `scientific hallmarks: ${textList(disease.physiological_hallmarks).join("; ") || "N/A"}. Standard scientific protocol: ${cureStr}.`,
+          ethiopian_context: disease.ethiopian_context || "Major public health concern in Ethiopia",
           relevanceScore: Math.min(score / 60, 0.98),
           confidence: 0.92,
           matches,
           recommendations: disease.prevention_protocols || [],
           management: [cureStr],
-          sources: ["EPHI National Disease Surveillance", "WHO Global Welbeing Observatory"],
+          sources: ["EPHI National Disease Surveillance", "WHO Global wellbeing Observatory"],
           category: "Domain A",
           severity: isSevere ? "critical" : score > 40 ? "high" : "moderate",
           risk_assessment: {
@@ -834,7 +834,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       }
 
       for (const term of terms) {
-        if (textList(disease.Debral_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
+        if (textList(disease.physiological_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
           score += 15;
           matches.push(`symptom_${term}`);
         }
@@ -852,7 +852,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "epidemiological_ncd_profile",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: disease.disease.toUpperCase(),
           description: `Definition: ${disease.definition || "N/A"}. Prevalence: ${disease.prevalence || "N/A"}.`,
           evidence: `Risk factors: ${disease.risk_factors?.join("; ") || "N/A"}. Complications: ${disease.complications?.join("; ") || "N/A"}.`,
@@ -861,7 +861,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
           confidence: 0.88,
           matches,
           recommendations: disease.prevention_protocols || [],
-          management: [treatmentText(disease.first_line_Debral_cure) || "Lifestyle modification + pharmacotherapy"],
+          management: [treatmentText(disease.first_line_standard_treatment) || "Lifestyle modification + pharmacotherapy"],
           sources: ["EPHI NCD Surveillance", "WHO NCD Country Profiles"],
           category: "Domain A",
           severity: "moderate",
@@ -902,7 +902,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
         }
 
         for (const term of terms) {
-          if (textList(def.Debral_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
+          if (textList(def.physiological_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
             score += 15;
             matches.push(`symptom_${term}`);
           }
@@ -920,16 +920,16 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "nutritional_deficiency",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: def.disease.toUpperCase(),
             description: `Definition: ${def.definition || "N/A"}. Prevalence: ${def.prevalence || "N/A"}.`,
-            evidence: `Risk factors: ${def.risk_factors?.join("; ") || "N/A"}. Debral hallmarks: ${textList(def.Debral_hallmarks).join("; ") || "N/A"}.`,
-            ethiopian_context: def.ethiopian_context || "Public Welbeing nutrition priority in Ethiopia",
+            evidence: `Risk factors: ${def.risk_factors?.join("; ") || "N/A"}. scientific hallmarks: ${textList(def.physiological_hallmarks).join("; ") || "N/A"}.`,
+            ethiopian_context: def.ethiopian_context || "Public health nutrition priority in Ethiopia",
             relevanceScore: Math.min(score / 50, 0.92),
             confidence: 0.88,
             matches,
             recommendations: def.prevention_protocols || [],
-            management: [treatmentText(def.first_line_Debral_cure) || "Supplementation and dietary improvement"],
+            management: [treatmentText(def.first_line_standard_treatment) || "Supplementation and dietary improvement"],
             sources: ["EPHI Nutritional Surveillance", "WHO Nutrition Landscape"],
             category: "Domain A",
             severity: "moderate",
@@ -957,9 +957,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
             score += 15;
             matches.push(`risk_${term}`);
           }
-          if (textList(inj.Debral_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
+          if (textList(inj.physiological_hallmarks).some((h: string) => h.toLowerCase().includes(term))) {
             score += 15;
-            matches.push(`Debral_${term}`);
+            matches.push(`scientific_${term}`);
           }
           if (inj.ethiopian_context?.toLowerCase().includes(term)) {
             score += 10;
@@ -971,16 +971,16 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "injury_profile",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: inj.disease.toUpperCase(),
             description: `Etiology: ${inj.etiology || "N/A"}. Risk factors: ${inj.risk_factors?.join("; ") || "N/A"}.`,
-            evidence: `Debral hallmarks: ${textList(inj.Debral_hallmarks).join("; ") || "N/A"}.`,
+            evidence: `scientific hallmarks: ${textList(inj.physiological_hallmarks).join("; ") || "N/A"}.`,
             ethiopian_context: inj.ethiopian_context || "Preventable injury burden in Ethiopia",
             relevanceScore: Math.min(score / 50, 0.85),
             confidence: 0.80,
             matches,
             recommendations: inj.prevention_protocols || [],
-            management: [treatmentText(inj.first_line_Debral_cure) || "Emergency care and rehabilitation"],
+            management: [treatmentText(inj.first_line_standard_treatment) || "Emergency care and rehabilitation"],
             sources: ["WHO Injury Surveillance", "EPHI Trauma Data"],
             category: "Domain A",
             severity: "high",
@@ -989,9 +989,9 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 5. Maternal & Child Welbeing ----
+    // ---- 5. Maternal & Child wellbeing ----
     if (pregnant || normalized.includes("maternal") || normalized.includes("child") || normalized.includes("neonatal") || normalized.includes("childbirth")) {
-      for (const [key, mch] of Object.entries(this.maternalChildWelbeing) as [string, EpidemiologyRecord][]) {
+      for (const [key, mch] of Object.entries(this.maternalChildwellbeing) as [string, EpidemiologyRecord][]) {
         let score = 0;
         const matches: string[] = [];
 
@@ -1025,19 +1025,19 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
 
         if (score > 15) {
           results.push({
-            type: "maternal_child_Welbeing",
+            type: "maternal_child_wellbeing",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: mch.disease.toUpperCase(),
             description: `Definition: ${mch.definition || "N/A"}. Rate: ${mch.rate || mch.ratio || "N/A"}.`,
             evidence: `Causes: ${textList(mch.causes).join("; ") || "N/A"}. Risk factors: ${mch.risk_factors?.join("; ") || "N/A"}.`,
-            ethiopian_context: mch.ethiopian_context || "Maternal and child Welbeing is a priority for Ethiopia",
+            ethiopian_context: mch.ethiopian_context || "Maternal and child wellbeing is a priority for Ethiopia",
             relevanceScore: Math.min(score / 50, 0.92),
             confidence: 0.88,
             matches,
             recommendations: mch.prevention_protocols || [],
-            management: [treatmentText(mch.first_line_Debral_cure) || "Skilled care and referral"],
-            sources: ["EPHI Maternal and Child Welbeing Reports", "WHO Maternal Mortality"],
+            management: [treatmentText(mch.first_line_standard_treatment) || "Skilled care and referral"],
+            sources: ["EPHI Maternal and Child wellbeing Reports", "WHO Maternal Mortality"],
             category: "Domain A",
             severity: "high",
           });
@@ -1070,13 +1070,13 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
    */
   getPreventionForDisease(diseaseName: string): string[] {
     const search = diseaseName.toLowerCase();
-    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.injuries, ...this.maternalChildWelbeing };
+    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.injuries, ...this.maternalChildwellbeing };
     for (const [key, data] of Object.entries(all) as [string, EpidemiologyRecord][]) {
       if (data.disease.toLowerCase().includes(search) || key.includes(search)) {
         return data.prevention_protocols || [];
       }
     }
-    return ["Consult your Welbeingcare provider for personalized advice."];
+    return ["Consult your healthcare provider for personalized advice."];
   }
 
   /**
@@ -1094,14 +1094,14 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   /**
-   * Get Debral hallmarks for a disease
+   * Get scientific hallmarks for a disease
    */
-  getDebralHallmarks(diseaseName: string): string[] {
+  getScientificHallmarks(diseaseName: string): string[] {
     const search = diseaseName.toLowerCase();
     const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies };
     for (const [key, data] of Object.entries(all) as [string, EpidemiologyRecord][]) {
       if (data.disease.toLowerCase().includes(search) || key.includes(search)) {
-        return textList(data.Debral_hallmarks);
+        return textList(data.physiological_hallmarks);
       }
     }
     return [];
@@ -1112,17 +1112,17 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
    */
   getTreatmentForDisease(diseaseName: string): string[] {
     const search = diseaseName.toLowerCase();
-    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.injuries, ...this.maternalChildWelbeing };
+    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.injuries, ...this.maternalChildwellbeing };
     for (const [key, data] of Object.entries(all) as [string, EpidemiologyRecord][]) {
       if (data.disease.toLowerCase().includes(search) || key.includes(search)) {
         const treatments: string[] = [];
-        const firstLine = treatmentText(data.first_line_Debral_cure);
+        const firstLine = treatmentText(data.first_line_standard_treatment);
         if (firstLine) treatments.push(`First‑line: ${firstLine}`);
         if (data.emergency_treatment) treatments.push(`Emergency: ${data.emergency_treatment}`);
         return treatments;
       }
     }
-    return ["Consult a Welbeingcare provider for appropriate management."];
+    return ["Consult a healthcare provider for appropriate management."];
   }
 
   /**
@@ -1130,7 +1130,7 @@ export class EpidemiologicalKnowledgeStrand implements KnowledgeStrand {
    */
   getEpidemiologyStats(diseaseName: string): { incidence?: string; prevalence?: string; mortality?: string } | null {
     const search = diseaseName.toLowerCase();
-    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.maternalChildWelbeing };
+    const all = { ...this.communicableDiseases, ...this.nonCommunicableDiseases, ...this.nutritionalDeficiencies, ...this.maternalChildwellbeing };
     for (const [key, data] of Object.entries(all) as [string, EpidemiologyRecord][]) {
       if (data.disease.toLowerCase().includes(search) || key.includes(search)) {
         if (data.incidence_mortality) {

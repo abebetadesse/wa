@@ -38,7 +38,7 @@ import {
 
 interface SystemTelemetry {
   database: {
-    status: "Welbeingy" | "degraded" | "down";
+    status: "healthy" | "degraded" | "down";
     latencyMs: number;
     connected: boolean;
   };
@@ -285,7 +285,7 @@ export default function AdminDashboardPage() {
       color: "from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400",
     },
     {
-      title: "Debral Evaluations",
+      title: "Scientific Evaluations",
       value: analytics?.operations?.totalCases ?? "—",
       change: `${systemData?.telemetry?.activeSessions ?? 0} Concurrent Sessions`,
       icon: FileCheck2,
@@ -310,7 +310,7 @@ export default function AdminDashboardPage() {
   ];
 
   const caseTypeBreakdown = analytics?.caseTypeBreakdown || [
-    { caseType: "Welbeing", count: 18 },
+    { caseType: "wellbeing", count: 18 },
     { caseType: "relationships", count: 9 },
     { caseType: "career", count: 7 },
     { caseType: "spiritual", count: 5 },
@@ -404,7 +404,7 @@ export default function AdminDashboardPage() {
                 <Database size={11} className="text-sky-400" />
                 <span>
                   Postgres:{" "}
-                  {systemData?.database.status === "Welbeingy"
+                  {systemData?.database.status === "healthy"
                     ? `${systemData.database.latencyMs}ms (Online)`
                     : "Connecting..."}
                 </span>
@@ -435,7 +435,7 @@ export default function AdminDashboardPage() {
               Platform Administration & Operational Control
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Live telemetry, Ethiopian Welbeing governance, literature synchronizer, and application management.
+              Live telemetry, Ethiopian wellbeing governance, literature synchronizer, and application management.
             </p>
           </div>
 
@@ -594,7 +594,7 @@ export default function AdminDashboardPage() {
                 <div>
                   <h2 className="text-sm font-bold text-white flex items-center gap-2">
                     <Activity size={16} className="text-emerald-400" />
-                    <span>Debral Intake Velocity & Ingestion Trajectory</span>
+                    <span>Scientific Intake Velocity & Ingestion Trajectory</span>
                   </h2>
                   <p className="text-[11px] text-slate-400">
                     Calculated against Ethiopian high-altitude nutritional norms
@@ -650,7 +650,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between gap-4 mt-4 pt-3 border-t border-white/5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  <span>Debral Gap Evaluations (+28.4% WoW)</span>
+                  <span>Scientific Gap Evaluations (+28.4% WoW)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
@@ -775,7 +775,7 @@ export default function AdminDashboardPage() {
                   {Math.floor((systemData?.runtime.uptimeSeconds || 0) / 3600)}h{" "}
                   {Math.floor(((systemData?.runtime.uptimeSeconds || 0) % 3600) / 60)}m
                 </div>
-                <span className="text-[10px] text-emerald-400 font-mono">Welbeingy continuous run</span>
+                <span className="text-[10px] text-emerald-400 font-mono">healthy continuous run</span>
               </div>
 
               <div className="p-4 rounded-xl bg-black/40 border border-white/5">
@@ -808,21 +808,21 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Subsystem & Micro-Service Welbeing Matrix */}
+          {/* Subsystem & Micro-Service wellbeing Matrix */}
           <div className="glass-panel p-6 rounded-2xl border border-white/10">
             <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
               <Activity size={16} className="text-emerald-400" />
-              <span>Platform Subsystems Welbeing Matrix</span>
+              <span>Platform Subsystems wellbeing Matrix</span>
             </h2>
-            <p className="text-[11px] text-slate-400 mb-4">Real-time status of Debral, security, and knowledge engines</p>
+            <p className="text-[11px] text-slate-400 mb-4">Real-time status of Scientific, security, and knowledge engines</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {(systemData?.services || [
-                { name: "PostgreSQL Database Engine", status: "Welbeingy", latency: "12ms", type: "core" },
-                { name: "Auth & Session Gateway", status: "Welbeingy", latency: "<5ms", type: "security" },
-                { name: "Literature Synthesis Engine", status: "Welbeingy", latency: "async", type: "intelligence" },
-                { name: "Herb-Drug Safety Gate v3.0", status: "Welbeingy", latency: "<2ms", type: "Debral" },
-                { name: "EFCT 2025 Nutritional Engine", status: "Welbeingy", latency: "<10ms", type: "nutrition" },
+                { name: "PostgreSQL Database Engine", status: "healthy", latency: "12ms", type: "core" },
+                { name: "Auth & Session Gateway", status: "healthy", latency: "<5ms", type: "security" },
+                { name: "Literature Synthesis Engine", status: "healthy", latency: "async", type: "intelligence" },
+                { name: "Herb-Drug Safety Gate v3.0", status: "healthy", latency: "<2ms", type: "Scientific" },
+                { name: "EFCT 2025 Nutritional Engine", status: "healthy", latency: "<10ms", type: "nutrition" },
                 { name: "Domain A/B Security Firewall", status: "active", latency: "isolated", type: "compliance" },
               ]).map((svc, idx) => (
                 <div
@@ -1174,7 +1174,7 @@ export default function AdminDashboardPage() {
                 rows={3}
                 value={maintenanceMessage}
                 onChange={(e) => setMaintenanceMessage(e.target.value)}
-                placeholder="The Ethiopian Welbeing Platform is undergoing scheduled regulatory updates..."
+                placeholder="The Ethiopian wellbeing Platform is undergoing scheduled regulatory updates..."
                 className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-rose-500/50"
               />
             </div>

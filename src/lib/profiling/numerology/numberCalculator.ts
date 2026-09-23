@@ -1,6 +1,6 @@
 import { CoreNumberAnalysis, NumerologyProfile } from "../types";
 import { getNumerologyMeaning } from "./meaningMapper";
-import { getSomaticWelbeingSummary } from "./WelbeingAdapter";
+import { getSomaticwellbeingSummary } from "./wellbeingAdapter";
 import { calculateGeezGematria } from "@/lib/cultural/geezFidelGematria";
 
 // Standard Pythagorean Letter Values (1 - 9)
@@ -113,7 +113,7 @@ export function buildNumerologyProfile(fullName: string, birthDateStr: string): 
     };
   }
 
-  const somaticWelbeingSummary = getSomaticWelbeingSummary(lifePathNum, destinyNum);
+  const somaticwellbeingSummary = getSomaticwellbeingSummary(lifePathNum, destinyNum);
 
   return {
     lifePath,
@@ -122,6 +122,6 @@ export function buildNumerologyProfile(fullName: string, birthDateStr: string): 
     personality,
     birthDayNumber,
     geezGematriaSynergy,
-    somaticWelbeingSummary,
+    somaticwellbeingSummary,
   };
 }

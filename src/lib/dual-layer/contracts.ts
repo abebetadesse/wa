@@ -1,4 +1,4 @@
-export type HiddenDebralFindings = Record<string, unknown>;
+export type HiddenScientificFindings = Record<string, unknown>;
 
 export type CulturalFinding = {
   title: string;

@@ -313,7 +313,7 @@ export default function FastingExperience() {
           </div>
 
           <div className="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-500/20 text-xs">
-            <strong className="text-emerald-400">Tailored Debral & Cultural Advice:</strong>{" "}
+            <strong className="text-emerald-400">Tailored Scientific & Cultural Advice:</strong>{" "}
             <span className="text-slate-200">{archetypeProfile.tailoredHabeshaAdvice}</span>
           </div>
         </div>

@@ -24,7 +24,7 @@ export async function POST(
     const temporaryPassword =
       typeof body.temporaryPassword === "string" && body.temporaryPassword.trim()
         ? body.temporaryPassword.trim()
-        : `EthioWelbeing@${Math.floor(1000 + Math.random() * 9000)}!`;
+        : `Ethiowellbeing@${Math.floor(1000 + Math.random() * 9000)}!`;
 
     const token = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);

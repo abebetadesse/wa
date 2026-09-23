@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, roles, userActivities, authSessions, WelbeingGapReports } from "@/lib/db/schema";
+import { users, roles, userActivities, authSessions, wellbeingGapReports } from "@/lib/db/schema";
 import { requireAnyRole, getUserPermissions, validateEthiopianPhone } from "@/lib/auth";
 import { logAuditEvent, logUserActivity } from "@/lib/audit";
 import { eq, desc, count } from "drizzle-orm";
@@ -24,7 +24,7 @@ export async function GET(
     // Stats
     let casesCount = 0;
     try {
-      const [c] = await db.select({ total: count() }).from(WelbeingGapReports).where(eq(WelbeingGapReports.userId, user.id));
+      const [c] = await db.select({ total: count() }).from(wellbeingGapReports).where(eq(wellbeingGapReports.userId, user.id));
       casesCount = c?.total || 0;
     } catch { }
 

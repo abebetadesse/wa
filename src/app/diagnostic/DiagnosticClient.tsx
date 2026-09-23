@@ -35,7 +35,7 @@ const quickSuggestions = [
 ];
 
 const domainOptions = [
-  { id: "Welbeing", label: "Welbeing", icon: "✚", description: "Symptoms, recovery, nutrition, medication safety, and preventive care." },
+  { id: "wellbeing", label: "wellbeing", icon: "✚", description: "Symptoms, recovery, nutrition, medication safety, and preventive care." },
   { id: "peace", label: "Peace", icon: "☼", description: "Stress, safety, sleep, emotional steadiness, and restoration." },
   { id: "power", label: "Power", icon: "◇", description: "Agency, boundaries, energy, motivation, and leadership." },
   { id: "money", label: "Money", icon: "◈", description: "Stability, obligations, planning, and resource pressure." },
@@ -47,8 +47,8 @@ const domainOptions = [
 ];
 
 const domainInsightMap: Record<string, { headline: string; emphasis: string; questions: string[] }> = {
-  Welbeing: {
-    headline: "Welbeing-focused synthesis",
+  wellbeing: {
+    headline: "wellbeing-focused synthesis",
     emphasis: "The analysis is anchored on symptoms, physiology, medication-herb safety, nutrition, and recovery patterns.",
     questions: ["What is changing most in your body or daily function?", "Have you started any new medicines, herbs, supplements, or fasting patterns?", "What is making symptoms worse or better?"],
   },
@@ -79,7 +79,7 @@ const domainInsightMap: Record<string, { headline: string; emphasis: string; que
   },
   spiritual: {
     headline: "Spiritual & Life Direction synthesis",
-    emphasis: "This lens emphasizes purpose, life direction, ritual meaning, and reflective guidance while keeping mental-Welbeing safety distinct.",
+    emphasis: "This lens emphasizes purpose, life direction, ritual meaning, and reflective guidance while keeping mental-wellbeing safety distinct.",
     questions: ["What area of life feels most unclear or spiritually heavy right now?", "What traditions or questions feel most meaningful to you?", "What would help you feel more grounded in purpose?"],
   },
   legal: {
@@ -149,8 +149,8 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 export default function DiagnosticClient() {
   const [mode, setMode] = useState<InputMode>("text");
   const [query, setQuery] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState<string>("Welbeing");
-  const [analyzedDomain, setAnalyzedDomain] = useState<string>("Welbeing");
+  const [selectedDomain, setSelectedDomain] = useState<string>("wellbeing");
+  const [analyzedDomain, setAnalyzedDomain] = useState<string>("wellbeing");
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [selectedBotanical, setSelectedBotanical] = useState<string | null>(null);
   const [userRegion, setUserRegion] = useState("Addis Ababa (2,400m)");
@@ -237,11 +237,11 @@ export default function DiagnosticClient() {
         .map((s) => s.label);
       finalQuery = `Patient reports experiencing: ${symptomLabels.join(", ")}. ${query}`.trim();
     } else if (mode === "image" && selectedBotanical) {
-      finalQuery = `Botanical photo inspection of ${selectedBotanical}. Debral inquiry: ${query || "Assess medicinal safety and interactions"}`.trim();
+      finalQuery = `Botanical photo inspection of ${selectedBotanical}. Scientific inquiry: ${query || "Assess medicinal safety and interactions"}`.trim();
     }
 
     if (!finalQuery || finalQuery.trim().length < 2) {
-      setError("Please describe your Welbeing concern or select symptoms first.");
+      setError("Please describe your wellbeing concern or select symptoms first.");
       return;
     }
 
@@ -260,7 +260,7 @@ export default function DiagnosticClient() {
         ? userMedications.split(",").map((m) => m.trim()).filter(Boolean)
         : [];
 
-      const domainLabel = domainOptions.find((d) => d.id === selectedDomain)?.label || "Welbeing";
+      const domainLabel = domainOptions.find((d) => d.id === selectedDomain)?.label || "wellbeing";
 
       const response = await fetch("/api/diagnostic/analyze", {
         method: "POST",
@@ -351,7 +351,7 @@ export default function DiagnosticClient() {
               Intelligent Diagnostic Portal
             </h1>
             <p className="text-sm md:text-base text-slate-400 mt-2 max-w-2xl leading-relaxed">
-              Processes Welbeing concerns across <strong className="text-emerald-400">11 specialized knowledge domains</strong> with cross-strand causal inference, ETM-DB safety gates, and 5-stage action plans.
+              Processes wellbeing concerns across <strong className="text-emerald-400">11 specialized knowledge domains</strong> with cross-strand causal inference, ETM-DB safety gates, and 5-stage action plans.
             </p>
           </div>
 
@@ -481,11 +481,11 @@ export default function DiagnosticClient() {
           {/* Mode 1: Text Input */}
           {mode === "text" && (
             <div>
-              <label htmlFor="Welbeing-query" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+              <label htmlFor="wellbeing-query" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
                 Describe your symptoms, duration, triggers &amp; concerns
               </label>
               <textarea
-                id="Welbeing-query"
+                id="wellbeing-query"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={domainInsightMap[selectedDomain]?.questions[0] || "Describe what is happening and what you need help with..."}
@@ -828,7 +828,7 @@ export default function DiagnosticClient() {
                 <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3">
                   <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 font-bold mb-2">Domain lens</div>
                   <div className="text-sm font-semibold text-white">
-                    {domainInsightMap[analyzedDomain]?.headline || "Welbeing-focused synthesis"}
+                    {domainInsightMap[analyzedDomain]?.headline || "wellbeing-focused synthesis"}
                   </div>
                   <p className="text-xs text-slate-300 mt-2 leading-relaxed">
                     {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
@@ -848,7 +848,7 @@ export default function DiagnosticClient() {
               </div>
 
               <div className="glass-panel p-5 text-center flex flex-col justify-between">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Debral Intent</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Scientific Intent</div>
                 <div className="my-2">
                   <span className="text-xl font-extrabold text-amber-300 capitalize">{result.summary.intent}</span>
                   <p className="text-xs text-slate-400 mt-1">Language: {result.language.toUpperCase()}</p>
@@ -860,7 +860,7 @@ export default function DiagnosticClient() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="glass-panel p-6">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">What this domain is asking</div>
-                <h3 className="text-lg font-bold text-white mb-3">{domainInsightMap[analyzedDomain]?.headline || "Welbeing-focused synthesis"}</h3>
+                <h3 className="text-lg font-bold text-white mb-3">{domainInsightMap[analyzedDomain]?.headline || "wellbeing-focused synthesis"}</h3>
                 <p className="text-xs text-slate-300 leading-relaxed mb-4">
                   {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
                 </p>
@@ -879,7 +879,7 @@ export default function DiagnosticClient() {
                 <div className="space-y-3">
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Primary focus</div>
-                    <div className="text-sm font-semibold text-white">{domainOptions.find((d) => d.id === analyzedDomain)?.label || "Welbeing"}</div>
+                    <div className="text-sm font-semibold text-white">{domainOptions.find((d) => d.id === analyzedDomain)?.label || "wellbeing"}</div>
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
                     <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Urgency signal</div>
@@ -1079,7 +1079,7 @@ export default function DiagnosticClient() {
                   Potential Herb-Drug &amp; Nutrient Interactions Detected
                 </h3>
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-                  The Debral safety gate intercepted potential adverse biochemical interactions between traditional remedies and prescription drugs:
+                  The Scientific safety gate intercepted potential adverse biochemical interactions between traditional remedies and prescription drugs:
                 </p>
                 <div className="space-y-3">
                   {result.safety.herbDrugInteractions.map((hdi) => (
@@ -1265,7 +1265,7 @@ export default function DiagnosticClient() {
               <div>
                 <h4 className="text-sm font-bold text-white">Save or Share Your Diagnostic Report</h4>
                 <p className="text-xs text-slate-400">
-                  Export machine-readable JSON or generate a printable Debral summary for your practitioner.
+                  Export machine-readable JSON or generate a printable Scientific summary for your practitioner.
                 </p>
               </div>
 
@@ -1320,7 +1320,7 @@ export default function DiagnosticClient() {
 
             {/* Legal Disclaimers */}
             <div className="text-[11px] text-slate-500 space-y-1.5 p-4 rounded-xl bg-black/30 border border-white/5">
-              <p className="font-bold text-slate-400">Official Debral Governance Notice:</p>
+              <p className="font-bold text-slate-400">Official Scientific Governance Notice:</p>
               {result.safety.disclaimers.map((disc, idx) => (
                 <p key={idx} className="leading-relaxed">&bull; {disc}</p>
               ))}
@@ -1352,7 +1352,7 @@ export default function DiagnosticClient() {
 
               <div className="space-y-3 mb-6">
                 {[
-                  { name: "EPHI Toll-Free Public Welbeing Hotline", number: "907", desc: "Ethiopian Public Welbeing Institute (24/7 National Dispatch)" },
+                  { name: "EPHI Toll-Free Public health Hotline", number: "907", desc: "Ethiopian Public health Institute (24/7 National Dispatch)" },
                   { name: "Ethiopian Red Cross Ambulance", number: "991", desc: "Emergency medical transport across major cities" },
                   { name: "National Emergency Police", number: "911", desc: "Addis Ababa & Regional Emergency Response" },
                   { name: "Tikur Anbessa Hospital Emergency Desk", number: "+251-11-551-1211", desc: "Central tertiary trauma & acute care referral center" },

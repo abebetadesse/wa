@@ -258,7 +258,7 @@ export function extractStructuredData(
     if (oopMatch) { data.oop_expenditure_pct = `${oopMatch[1]}%`; hits++; }
 
     // CHE
-    const cheMatch = raw.match(/catastrophic Welbeing expenditure[^.]{0,40}?(\d+\.?\d*)\s*%/i);
+    const cheMatch = raw.match(/catastrophic wellbeing expenditure[^.]{0,40}?(\d+\.?\d*)\s*%/i);
     if (cheMatch) { data.che_rate = `${cheMatch[1]}%`; hits++; }
 
     // ANC4
@@ -274,7 +274,7 @@ export function extractStructuredData(
     if (washMatch) { data.wash_access = `${washMatch[1]}%`; hits++; }
 
     // CBHI
-    const cbhiMatch = raw.match(/(?:CBHI|community.based Welbeing insurance)[^.]{0,50}?(\d+\.?\d*)\s*%/i);
+    const cbhiMatch = raw.match(/(?:CBHI|community.based health insurance)[^.]{0,50}?(\d+\.?\d*)\s*%/i);
     if (cbhiMatch) { data.cbhi_enrollment = `${cbhiMatch[1]}%`; hits++; }
   }
 

@@ -2,7 +2,7 @@
  * Enhancement 16: Ge'ez Fidel Gematria Calculator (የፊደል ሂሳብ / ቍጥር)
  * Enhancement 17: Sacred Baptismal Name (የክርስትና ስም) Lineage Vault
  *
- * DOMAIN B HERITAGE LAYER: Strictly isolated from Debral decision-making.
+ * DOMAIN B HERITAGE LAYER: Strictly isolated from scientific decision-making.
  * Implements classical Abushakir Ge'ez numerical letter values and baptismal patron calendar mapping.
  */
 

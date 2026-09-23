@@ -12,7 +12,7 @@ export const intakeSubmissions = pgTable("intake_submissions", {
   errorMessage: text("error_message"),
 });
 
-export const WelbeingGapReports = pgTable("Welbeing_gap_reports", {
+export const wellbeingGapReports = pgTable("wellbeing_gap_reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   submissionId: uuid("submission_id").references(() => intakeSubmissions.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.id).notNull(),
@@ -24,7 +24,7 @@ export const WelbeingGapReports = pgTable("Welbeing_gap_reports", {
 
 export const identifiedGaps = pgTable("identified_gaps", {
   id: uuid("id").primaryKey().defaultRandom(),
-  reportId: uuid("report_id").references(() => WelbeingGapReports.id, { onDelete: "cascade" }).notNull(),
+  reportId: uuid("report_id").references(() => wellbeingGapReports.id, { onDelete: "cascade" }).notNull(),
   nutrientId: uuid("nutrient_id").references(() => nutrients.id).notNull(),
   gapType: varchar("gap_type", { length: 20 }).notNull(), // "deficiency" | "excess"
   severity: varchar("severity", { length: 20 }).notNull(), // "low" | "moderate" | "high"

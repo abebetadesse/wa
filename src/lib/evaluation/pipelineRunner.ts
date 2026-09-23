@@ -8,7 +8,7 @@ import { FoodEntry, FoodNutrientRow, EvaluationReportResult } from "./types";
 import { db } from "../db";
 import {
   intakeSubmissions,
-  WelbeingGapReports,
+  wellbeingGapReports,
   identifiedGaps,
   gapCauses,
   gapSolutions,
@@ -144,7 +144,7 @@ export async function runEvaluationAndPersist(submissionId: string, userId: stri
 
     // 5. Persist report
     const [reportRow] = await db
-      .insert(WelbeingGapReports)
+      .insert(wellbeingGapReports)
       .values({
         submissionId,
         userId,
@@ -152,7 +152,7 @@ export async function runEvaluationAndPersist(submissionId: string, userId: stri
         summaryNarrative: reportResult.summaryNarrative,
         safetyGateVerified: true,
       })
-      .returning({ id: WelbeingGapReports.id });
+      .returning({ id: wellbeingGapReports.id });
 
     const reportId = reportRow.id;
 

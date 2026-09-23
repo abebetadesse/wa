@@ -56,17 +56,17 @@ export function evaluateCareerSafetyScreen(
           "Please reach out to one of these services now. This information is free " +
           "and always available — no payment, no registration required.",
         hotlines: [
-          { name: "Mental Welbeing Crisis Line (GBV & All)", number: "952" },
+          { name: "Mental wellbeing Crisis Line (GBV & All)", number: "952" },
           { name: "EPHI Hotline", number: "907" },
-          { name: "Amanuel Mental Welbeing Hospital", number: "+251-11-275-1234" },
+          { name: "Amanuel Mental wellbeing Hospital", number: "+251-11-275-1234" },
           { name: "Police Emergency", number: "911" },
           { name: "Ethiopian Red Cross Ambulance", number: "991" },
         ],
         safetyPlanSteps: [
           "If you are in immediate danger, call 911 now.",
           "Reach out to a trusted friend, family member, or elder.",
-          "Consider going to the nearest Welbeing facility for in-person support.",
-          "Call 952 — the confidential mental Welbeing and crisis support line.",
+          "Consider going to the nearest health facility for in-person support.",
+          "Call 952 — the confidential mental wellbeing and crisis support line.",
           "You are not alone. Support is available right now, for free.",
         ],
       },
@@ -87,17 +87,17 @@ export function evaluateCareerSafetyScreen(
         hotlines: [
           { name: "Ethiopian Red Cross Assistance", number: "991" },
           { name: "Social Services Hotline", number: "0800-000-0000" },
-          { name: "Mental Welbeing Support", number: "952" },
+          { name: "Mental wellbeing Support", number: "952" },
         ],
         safetyPlanSteps: [
-          "Contact a social worker at your local Welbeing center.",
+          "Contact a social worker at your local health center.",
           "Reach out to community elders or religious leaders for immediate support.",
           "The Productive Safety Net Programme (PSNP) may be able to provide food and income assistance.",
           "Ethiopian Red Cross can connect you with emergency food and shelter programs.",
         ],
         resources: [
           "Productive Safety Net Programme (PSNP)",
-          "Local Welbeing center social worker",
+          "Local health center social worker",
           "Community elder / kebele committee",
           "Ethiopian Red Cross food assistance",
         ],

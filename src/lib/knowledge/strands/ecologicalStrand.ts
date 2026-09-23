@@ -7,19 +7,19 @@ import { KnowledgeStrand, KnowledgeStrandType, StrandFinding, UserProfile, Domai
  * - 5 major ecosystems (Highlands, Mid-Highlands, Lowlands, Rift Valley, Desert)
  * - Climate patterns (Kiremt, Bega, Belg, Climate change impacts)
  * - Ethiopian biomes (Afromontane, Savanna, Desert)
- * - Ecological Welbeing risks (Malaria, Schistosomiasis, Dengue, Chikungunya, Leishmaniasis, Fluorosis, Podoconiosis)
+ * - Ecological wellbeing risks (Malaria, Schistosomiasis, Dengue, Chikungunya, Leishmaniasis, Fluorosis, Podoconiosis)
  * - Water resources (Lakes, Rivers, Groundwater quality)
  * - Land use & degradation (Agriculture, Pastoralism, Deforestation, Soil erosion)
  * - Biodiversity & conservation (Endemic species, Protected areas)
- * - Environmental Welbeing policies & adaptation
+ * - Environmental wellbeing policies & adaptation
  * - Cross‑strand linking with Epidemiological, Dietary, and Cultural strands
- * - Domain A (Debral/Welbeing risks) and Domain B (cultural/ecological context)
+ * - Domain A (scientific/wellbeing risks) and Domain B (cultural/ecological context)
  * - Evidence‑weighted confidence and region‑specific recommendations
  * - User‑specific location/altitude matching
  */
 export class EcologicalKnowledgeStrand implements KnowledgeStrand {
   readonly strandName: KnowledgeStrandType = "ecological";
-  readonly domain: DomainType = "Welbeing";
+  readonly domain: DomainType = "wellbeing";
 
   // --- Alias registry for query expansion ---
   private queryAliases: Record<string, string[]> = {
@@ -33,7 +33,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
     kiremt: ["kiremt", "rains", "monsoon", "june", "september", "malaria peak"],
     bega: ["bega", "dry", "harvest", "october", "february", "meningitis"],
     belg: ["belg", "short rains", "march", "may"],
-    // Welbeing risks
+    // wellbeing risks
     malaria: ["malaria", "plasmodium", "mosquito", "anopheles", "fever"],
     schistosomiasis: ["bilharzia", "snail", "lake", "rift valley", "endod"],
     fluorosis: ["fluorosis", "fluoride", "teeth", "bone", "skeletal"],
@@ -56,7 +56,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Ethiopian Highlands (Dega & Wurch Zones)",
       altitude_range: "2,300m – 4,600m",
       climate: "Cool temperate to afro‑alpine; high UV‑B irradiance; reduced oxygen partial pressure (hypoxia)",
-      Welbeing_implications: [
+      wellbeing_implications: [
         "Physiological highland erythropoiesis and elevated daily basal iron requirements (+15% to +25% above sea‑level RDA)",
         "Cold stress and seasonal acute lower respiratory infections (pneumonia, bronchiolitis) in children",
         "Low ambient vector transmission (malaria transmission generally absent above 2,200m)",
@@ -81,7 +81,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Mid‑Altitude Agrarian Belt (Woina Dega Zone)",
       altitude_range: "1,500m – 2,300m",
       climate: "Moderate temperate; annual rainfall 800–1,200mm; prime agricultural zone with highest demographic density",
-      Welbeing_implications: [
+      wellbeing_implications: [
         "Unstable seasonal and microclimatic malaria transmission along river valleys and irrigation dams",
         "Pollen and agro‑chemical respiratory sensitizations during planting and harvest seasons",
         "Intestinal helminthiasis (Ascaris, Trichuris) in wet agricultural soils",
@@ -104,7 +104,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Lowlands & Arid Basins (Kolla & Bereha Zones)",
       altitude_range: "Below 1,500m",
       climate: "Hot arid to semi‑arid; extreme ambient daytime temperatures (30°C–45°C); erratic precipitation",
-      Welbeing_implications: [
+      wellbeing_implications: [
         "Hyper‑endemic perennial and seasonal vector‑borne diseases: Plasmodium falciparum malaria, Visceral Leishmaniasis (Kala‑azar), Dengue fever, Chikungunya",
         "Dehydration, heat exhaustion, and urinary tract lithiasis",
         "Nutritional vulnerabilities during prolonged droughts (protein‑calorie and micronutrient wasting)",
@@ -127,7 +127,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Great East African Rift Valley Zone",
       altitude_range: "600m – 1,800m",
       climate: "Warm semi‑arid; active volcanic geology and tectonic lakes (Ziway, Langano, Shala, Awassa, Chamo)",
-      Welbeing_implications: [
+      wellbeing_implications: [
         "Endemic dental and skeletal fluorosis due to excessive geochemical fluoride in deep groundwater (> 1.5–10+ mg/L vs WHO 1.5 mg/L threshold)",
         "Intestinal and urogenital schistosomiasis (bilharzia) transmission via freshwater Bulinus and Biomphalaria snail hosts",
         "Silica‑rich volcanic dust exposure predisposing to non‑filarial elephantiasis (podoconiosis) in bare‑foot agriculturalists",
@@ -151,7 +151,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Danakil Desert & Extreme Arid Zone",
       altitude_range: "−125m to 500m (below sea level to low altitude)",
       climate: "Extremely hot and arid; one of the hottest places on Earth with annual temperatures > 40°C",
-      Welbeing_implications: [
+      wellbeing_implications: [
         "Severe dehydration and heatstroke risks during daytime exposure",
         "Hypersalinity and mineral‑rich waters (soda lakes) causing skin irritation and electrolyte imbalances",
         "Limited vector‑borne diseases but potential for cholera if water sources are contaminated",
@@ -161,7 +161,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       traditional_healing_flora: ["Acacia species", "Drought‑resistant succulents"],
       ethiopian_context: [
         "The Danakil Depression is one of the most extreme environments on Earth",
-        "Salt mining is a traditional livelihood with associated occupational Welbeing risks",
+        "Salt mining is a traditional livelihood with associated occupational wellbeing risks",
       ],
       recommendations: [
         "Avoid daytime outdoor exertion; wear protective clothing and hydrate copiously",
@@ -252,7 +252,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       ecosystem_services: ["Water catchment", "Carbon storage", "Medicinal plant source", "Tourism"],
       threats: ["Deforestation", "Agriculture encroachment", "Climate change"],
       conservation_status: "Critical; many areas are protected but still under pressure",
-      Welbeing_relevance: "Clean water supply and biodiversity for medicinal plants",
+      wellbeing_relevance: "Clean water supply and biodiversity for medicinal plants",
     },
     savanna_woodlands: {
       name: "Savanna Woodlands",
@@ -261,7 +261,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       endemic_species: ["Acacia", "Commiphora", "Large herbivores (zebra, antelope)"],
       ecosystem_services: ["Grazing land for pastoralists", "Wildlife tourism", "Carbon sequestration"],
       threats: ["Overgrazing", "Desertification", "Bush encroachment", "Climate change"],
-      Welbeing_relevance: "Supports pastoral livelihoods and traditional medicine (gum arabic, myrrh)",
+      wellbeing_relevance: "Supports pastoral livelihoods and traditional medicine (gum arabic, myrrh)",
     },
     wetlands_and_rivers: {
       name: "Wetlands & Riverine Ecosystems",
@@ -269,7 +269,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       locations: ["Blue Nile / Abay", "Awash River", "Lake Tana", "Rift Valley lakes"],
       ecosystem_services: ["Freshwater supply", "Fisheries", "Irrigation", "Tourism"],
       threats: ["Water diversion", "Pollution (agricultural runoff)", "Invasive species (water hyacinth)"],
-      Welbeing_relevance: "Water‑borne disease transmission (schistosomiasis) but also essential for livelihoods",
+      wellbeing_relevance: "Water‑borne disease transmission (schistosomiasis) but also essential for livelihoods",
     },
   };
 
@@ -281,7 +281,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       name: "Rift Valley Lakes",
       description: "Freshwater and soda lakes with varying water quality",
       lakes: ["Ziway", "Langano", "Awasa", "Shala", "Chamo", "Abaya"],
-      Welbeing_risks: ["Schistosomiasis (snail hosts)", "Cyanobacterial toxins (microcystins) in some lakes", "Fluoride in groundwater (affects drinking water)"],
+      wellbeing_risks: ["Schistosomiasis (snail hosts)", "Cyanobacterial toxins (microcystins) in some lakes", "Fluoride in groundwater (affects drinking water)"],
       benefits: ["Fisheries", "Irrigation", "Tourism", "Biodiversity"],
       recommendations: [
         "Avoid swimming in lake shallows; use safe drinking water sources",
@@ -294,7 +294,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Major river systems and underground aquifers",
       major_rivers: ["Blue Nile (Abay)", "Awash", "Omo", "Tekeze", "Wabe Shebelle"],
       water_quality_issues: ["Sedimentation", "Agricultural runoff (pesticides, fertilisers)", "Industrial pollution (urban areas)"],
-      Welbeing_risks: ["Water‑borne diseases (cholera, typhoid)", "Fluoride in Rift Valley groundwater"],
+      wellbeing_risks: ["Water‑borne diseases (cholera, typhoid)", "Fluoride in Rift Valley groundwater"],
       recommendations: [
         "Promote safe drinking water practices (boiling, filtration)",
         "Reduce agricultural runoff through sustainable farming",
@@ -312,7 +312,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       annual_loss: "Estimated 1.0‑1.5% forest cover per year",
       causes: ["Expansion of agriculture", "Charcoal production", "Population pressure", "Urbanisation"],
       consequences: ["Loss of biodiversity", "Soil erosion", "Water cycle disruption", "Reduced carbon storage"],
-      Welbeing_impact: ["Loss of medicinal plants", "Increased respiratory issues (dust)", "Reduced clean water supply"],
+      wellbeing_impact: ["Loss of medicinal plants", "Increased respiratory issues (dust)", "Reduced clean water supply"],
       recommendations: [
         "Promote reforestation and agroforestry (e.g., planting trees on farms)",
         "Provide alternative energy sources to reduce fuelwood demand",
@@ -323,7 +323,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Accelerated soil erosion due to deforestation, overgrazing, and inappropriate cultivation",
       severity: "High in highland areas; contributes to reservoir sedimentation",
       consequences: ["Loss of agricultural productivity", "Nutrient depletion", "Landslides", "Siltation of water bodies"],
-      Welbeing_impact: ["Reduced food security", "Malnutrition", "Loss of traditional livelihoods"],
+      wellbeing_impact: ["Reduced food security", "Malnutrition", "Loss of traditional livelihoods"],
       recommendations: [
         "Implement terracing and contour ploughing",
         "Promote cover cropping and crop rotation",
@@ -334,7 +334,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       description: "Pastoralism in arid and semi‑arid areas, with seasonal mobility",
       benefits: ["Sustainable use of marginal lands", "Rich livestock biodiversity"],
       challenges: ["Overgrazing near water points", "Land tenure conflicts", "Vulnerability to drought"],
-      Welbeing_impact: ["Zoonotic diseases (anthrax, brucellosis)", "Water scarcity", "Malnutrition during droughts"],
+      wellbeing_impact: ["Zoonotic diseases (anthrax, brucellosis)", "Water scarcity", "Malnutrition during droughts"],
       recommendations: [
         "Support pastoralist adaptation to climate change",
         "Improve water access and veterinary services",
@@ -344,9 +344,9 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
   };
 
   // -------------------------------------------------------------------------
-  // ECOLOGICAL Welbeing RISKS (vector‑borne, zoonotic, environmental)
+  // ECOLOGICAL wellbeing RISKS (vector‑borne, zoonotic, environmental)
   // -------------------------------------------------------------------------
-  private ecologicalWelbeingRisks = {
+  private ecologicalwellbeingRisks = {
     malaria: {
       disease: "Malaria",
       ecology: "Breeding in stagnant water; Anopheles mosquitoes",
@@ -355,7 +355,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       prevention: ["Insecticide‑treated nets (ITNs)", "Indoor residual spraying (IRS)", "Chemoprevention (IPTp)"],
       high_risk_groups: ["Children <5", "Pregnant women", "Non‑immune immigrants"],
       treatment: ["Artemisinin‑based combination therapies (ACTs)"],
-      ethiopian_context: "Major Welbeing burden; emerging resistance to ACTs in some regions",
+      ethiopian_context: "Major wellbeing burden; emerging resistance to ACTs in some regions",
     },
     schistosomiasis: {
       disease: "Schistosomiasis (Bilharzia)",
@@ -469,9 +469,9 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
 
       // Keyword scoring
       for (const term of terms) {
-        if (eco.Welbeing_implications.some((hi) => hi.toLowerCase().includes(term))) {
+        if (eco.wellbeing_implications.some((hi) => hi.toLowerCase().includes(term))) {
           score += 15;
-          matches.push(`Welbeing_risk_${term}`);
+          matches.push(`wellbeing_risk_${term}`);
         }
         if (eco.name.toLowerCase().includes(term) || eco.climate.toLowerCase().includes(term)) {
           score += 10;
@@ -487,10 +487,10 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "ecological_zone",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: eco.name.toUpperCase(),
           description: `Altitude range: ${eco.altitude_range}. Climate: ${eco.climate}.`,
-          evidence: `Regional Welbeing risks: ${eco.Welbeing_implications.join("; ")}. Indigenous flora: ${eco.traditional_healing_flora.join(", ")}.`,
+          evidence: `Regional health risks: ${eco.wellbeing_implications.join("; ")}. Indigenous flora: ${eco.traditional_healing_flora.join(", ")}.`,
           ethiopian_context: eco.ethiopian_context,
           relevanceScore: Math.min(score / 60, 0.96),
           confidence: 0.90,
@@ -529,11 +529,11 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "seasonal_climate_pattern",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: season.season.toUpperCase(),
           description: `Period: ${season.period}. Characteristics: ${season.characteristics}.`,
           evidence: `Seasonal epidemiological vulnerabilities: ${season.epidemiological_hazards.join("; ")}.`,
-          ethiopian_context: ["Seasonal shifts govern vector density, crop harvest, and Welbeing risks"],
+          ethiopian_context: ["Seasonal shifts govern vector density, crop harvest, and wellbeing risks"],
           relevanceScore: Math.min(score / 50, 0.90),
           confidence: 0.88,
           matches,
@@ -566,9 +566,9 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
             score += 15;
             matches.push(`threat_${term}`);
           }
-          if (bio.Welbeing_relevance?.toLowerCase().includes(term)) {
+          if (bio.wellbeing_relevance?.toLowerCase().includes(term)) {
             score += 10;
-            matches.push(`Welbeing_${term}`);
+            matches.push(`wellbeing_${term}`);
           }
         }
 
@@ -610,7 +610,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
             score += 10;
             matches.push(`desc_${term}`);
           }
-          if (water.Welbeing_risks?.some((r) => r.toLowerCase().includes(term))) {
+          if (water.wellbeing_risks?.some((r) => r.toLowerCase().includes(term))) {
             score += 20;
             matches.push(`risk_${term}`);
           }
@@ -625,11 +625,11 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
           results.push({
             type: "water_resource",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: water.name.toUpperCase(),
-            description: water.description || "Water resource with Welbeing implications",
-            evidence: `Welbeing risks: ${water.Welbeing_risks?.join(", ") || "N/A"}. Benefits: ${(water as any).benefits?.join(", ") || "N/A"}.`,
-            ethiopian_context: "Water resources are vital for Welbeing, agriculture, and livelihoods",
+            description: water.description || "Water resource with wellbeing implications",
+            evidence: `wellbeing risks: ${water.wellbeing_risks?.join(", ") || "N/A"}. Benefits: ${(water as any).benefits?.join(", ") || "N/A"}.`,
+            ethiopian_context: "Water resources are vital for wellbeing, agriculture, and livelihoods",
             relevanceScore: Math.min(score / 50, 0.88),
             confidence: 0.82,
             matches,
@@ -663,23 +663,23 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
             score += 15;
             matches.push(`conseq_${term}`);
           }
-          const WelbeingImpacts: string[] = Array.isArray(land.Welbeing_impact) ? land.Welbeing_impact : (land.Welbeing_impact ? [land.Welbeing_impact] : []);
-          if (WelbeingImpacts.some((h) => h.toLowerCase().includes(term))) {
+          const wellbeingImpacts: string[] = Array.isArray(land.wellbeing_impact) ? land.wellbeing_impact : (land.wellbeing_impact ? [land.wellbeing_impact] : []);
+          if (wellbeingImpacts.some((h) => h.toLowerCase().includes(term))) {
             score += 10;
-            matches.push(`Welbeing_${term}`);
+            matches.push(`wellbeing_${term}`);
           }
         }
 
         if (score > 15) {
-          const WelbeingImpacts: string[] = Array.isArray(land.Welbeing_impact) ? land.Welbeing_impact : (land.Welbeing_impact ? [land.Welbeing_impact] : []);
+          const wellbeingImpacts: string[] = Array.isArray(land.wellbeing_impact) ? land.wellbeing_impact : (land.wellbeing_impact ? [land.wellbeing_impact] : []);
           results.push({
             type: "land_use",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: key.toUpperCase(),
             description: land.description,
-            evidence: `Consequences: ${((land as any).consequences || (land as any).challenges || []).join(", ") || "N/A"}. Welbeing impact: ${WelbeingImpacts.join("; ") || "N/A"}.`,
-            ethiopian_context: "Land degradation threatens food security and Welbeing",
+            evidence: `Consequences: ${((land as any).consequences || (land as any).challenges || []).join(", ") || "N/A"}. wellbeing impact: ${wellbeingImpacts.join("; ") || "N/A"}.`,
+            ethiopian_context: "Land degradation threatens food security and wellbeing",
             relevanceScore: Math.min(score / 50, 0.85),
             confidence: 0.80,
             matches,
@@ -693,7 +693,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       }
     }
 
-    // ---- 6. Ecological Welbeing Risks (vector‑borne, zoonotic, environmental) ----
+    // ---- 6. Ecological wellbeing Risks (vector‑borne, zoonotic, environmental) ----
     if (
       this.hasAlias(normalized, "malaria") ||
       this.hasAlias(normalized, "schistosomiasis") ||
@@ -702,7 +702,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
       this.hasAlias(normalized, "podoconiosis") ||
       this.hasAlias(normalized, "fluorosis")
     ) {
-      for (const [key, risk] of Object.entries(this.ecologicalWelbeingRisks)) {
+      for (const [key, risk] of Object.entries(this.ecologicalwellbeingRisks)) {
         let score = 0;
         const matches: string[] = [];
 
@@ -734,13 +734,13 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
 
         if (score > 15) {
           results.push({
-            type: "ecological_Welbeing_risk",
+            type: "ecological_wellbeing_risk",
             strand: this.strandName,
-            domain: "Welbeing",
+            domain: "wellbeing",
             name: risk.disease.toUpperCase(),
             description: `Ecology: ${risk.ecology}. Endemic areas: ${risk.endemic_areas?.join(", ") || "N/A"}.`,
             evidence: `Seasonal patterns: ${(risk as any).seasonal_patterns || "N/A"}. Prevention: ${risk.prevention?.join(", ") || "N/A"}.`,
-            ethiopian_context: risk.ethiopian_context || "Significant Welbeing concern in specific ecological zones",
+            ethiopian_context: risk.ethiopian_context || "Significant wellbeing concern in specific ecological zones",
             relevanceScore: Math.min(score / 60, 0.95),
             confidence: 0.92,
             matches,
@@ -767,11 +767,11 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
   // -------------------------------------------------------------------------
 
   /**
-   * Get ecological Welbeing risks for a given region
+   * Get ecological wellbeing risks for a given region
    */
   getRisksForRegion(region: string): string[] {
     const risks: string[] = [];
-    for (const [key, risk] of Object.entries(this.ecologicalWelbeingRisks)) {
+    for (const [key, risk] of Object.entries(this.ecologicalwellbeingRisks)) {
       if (risk.endemic_areas?.some((a) => a.toLowerCase().includes(region.toLowerCase()))) {
         risks.push(`${risk.disease}: ${risk.ecology}`);
       }
@@ -795,7 +795,7 @@ export class EcologicalKnowledgeStrand implements KnowledgeStrand {
   }
 
   /**
-   * Get seasonal Welbeing advice
+   * Get seasonal wellbeing advice
    */
   getSeasonalAdvice(currentMonth: number): string[] {
     // Month: 0 = Jan, 5 = Jun, 8 = Sep, etc.

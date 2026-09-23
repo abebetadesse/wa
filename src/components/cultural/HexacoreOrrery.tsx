@@ -815,7 +815,7 @@ export default function HexacoreOrrery() {
               <div className="rounded-3xl border border-amber-400/20 bg-amber-500/[0.04] p-6 space-y-4">
                 <div className="flex items-center gap-2 text-amber-300">
                   <AlertTriangle className="h-5 w-5" />
-                  <h4 className="font-bold text-base">Ethiopian Herbal Integration & Debral Safety Profile</h4>
+                  <h4 className="font-bold text-base">Ethiopian Herbal Integration & Scientific Safety Profile</h4>
                 </div>
                 <p className="text-xs text-amber-200/80">
                   Traditional botanical correspondences are documented for cultural inquiry only. Certain herbs (such as Kosso / <em>Hagenia abyssinica</em>) pose known toxicological risks (e.g. optic nerve toxicity at high doses).

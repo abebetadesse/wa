@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 
 const CASE_TYPES = [
-  ["Welbeing", "Welbeing & wellness"],
+  ["wellbeing", "wellbeing & wellness"],
   ["relationships", "Relationships & family"],
   ["career", "Career & business"],
   ["legal", "Legal & dispute support"],
@@ -21,7 +21,7 @@ export default function ProfileOnboarding() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [caseType, setCaseType] = useState("Welbeing");
+  const [caseType, setCaseType] = useState("wellbeing");
   const [birthLocation, setBirthLocation] = useState("");
   const [motherName, setMotherName] = useState("");
   const [socialHandles, setSocialHandles] = useState("");

@@ -14,7 +14,7 @@ export function profileToStrandFindings(profile: IntegratedPersonalProfile): Str
     strand: "astrological",
     name: `Constitutional Awde Negest: ${profile.astrology.ethiopianZodiacSign.geezName}`,
     description: `Sun in ${profile.astrology.sunSign}, Moon in ${profile.astrology.moonSign}, Ascendant in ${profile.astrology.risingSign}. Dominant Humor: ${profile.synthesis.humoralDominance.toUpperCase()}.`,
-    evidence: `Astrological Welbeing analysis mapped to ${profile.astrology.planetaryPositions[0]?.WelbeingAssociations.organs.join(", ")}. Däbtära healing scroll guidance: ${profile.astrology.dabtaraPrescriptions[0]?.title}.`,
+    evidence: `Astrological wellbeing analysis mapped to ${profile.astrology.planetaryPositions[0]?.wellbeingAssociations.organs.join(", ")}. Däbtära healing scroll guidance: ${profile.astrology.dabtaraPrescriptions[0]?.title}.`,
     ethiopian_context: [
       `Awde Negest Constellation: ${profile.astrology.ethiopianZodiacSign.englishName} (${profile.astrology.ethiopianZodiacSign.dateRange})`,
       `Holy Water Auspicious Timing: ${profile.astrology.tsebelTiming.recommendedSpring} on ${profile.astrology.tsebelTiming.auspiciousDaysOfWeek.join(", ")}`,
@@ -36,15 +36,15 @@ export function profileToStrandFindings(profile: IntegratedPersonalProfile): Str
     strand: "cultural",
     name: `Name Identity: ${profile.naming.givenNameProfile.name} (${profile.naming.givenNameProfile.meaning})`,
     description: profile.naming.overallNameIdentitySynergy.identityNarrative,
-    evidence: `Linguistic origin: ${profile.naming.givenNameProfile.language}. Welbeing-identity correlation: ${profile.naming.givenNameProfile.WelbeingIdentityCorrelation.psychosomaticTendency}.`,
+    evidence: `Linguistic origin: ${profile.naming.givenNameProfile.language}. wellbeing-identity correlation: ${profile.naming.givenNameProfile.wellbeingIdentityCorrelation.psychosomaticTendency}.`,
     ethiopian_context: [
       `Cultural Context: ${profile.naming.givenNameProfile.culturalContext}`,
-      `Balancing Virtue: ${profile.naming.givenNameProfile.WelbeingIdentityCorrelation.balancingVirtue}`,
+      `Balancing Virtue: ${profile.naming.givenNameProfile.wellbeingIdentityCorrelation.balancingVirtue}`,
     ],
     relevanceScore: 0.82,
     confidence: 0.92,
     recommendations: [
-      `Counteract somatic stress by cultivating '${profile.naming.givenNameProfile.WelbeingIdentityCorrelation.balancingVirtue}'.`,
+      `Counteract somatic stress by cultivating '${profile.naming.givenNameProfile.wellbeingIdentityCorrelation.balancingVirtue}'.`,
       ...profile.synthesis.recommendations.culturalTraditionsIntegration,
     ],
     details: {

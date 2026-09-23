@@ -37,7 +37,7 @@ export default function ZoonoticExperience() {
     <div className="app-container py-10 space-y-12">
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2">
-          <span>Terroir, Apiculture & Debral Safety Gates</span>
+          <span>Terroir, Apiculture & Scientific Safety Gates</span>
           <span>•</span>
           <span className="text-amber-400">Enhancements 6, 7, 8, 9 & 12</span>
         </div>
@@ -45,7 +45,7 @@ export default function ZoonoticExperience() {
           Zoonotic Safety, Zebu Lipidomics & Apitherapy
         </h1>
         <p className="text-slate-400 text-sm md:text-base max-w-3xl mt-2">
-          Debral safety surveillance for raw meat consumption and toxic Kosso interception, highland Zebu pasture lipidomics,
+          Scientific safety surveillance for raw meat consumption and toxic Kosso interception, highland Zebu pasture lipidomics,
           subterranean Tazma honey pharmacopeia, lowland malaria vector iron gating, and Enset colonic butyrate modeling.
         </p>
       </div>
@@ -113,10 +113,10 @@ export default function ZoonoticExperience() {
                 <span>{parasitologyAssessment.kossoSafetyIntercept.warningTitle}</span>
               </div>
               <p className="text-slate-300 text-[11px] leading-relaxed">
-                {parasitologyAssessment.kossoSafetyIntercept.DebralAlert}
+                {parasitologyAssessment.kossoSafetyIntercept.scientificAlert}
               </p>
               <div className="p-2.5 rounded bg-black/40 border border-rose-500/20 text-emerald-300 text-[11px] space-y-1">
-                <strong>Debrally Validated Safe Protocol:</strong>
+                <strong>Scientificly Validated Safe Protocol:</strong>
                 <p className="text-slate-200">{parasitologyAssessment.kossoSafetyIntercept.saferConventionalAlternative}</p>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function ZoonoticExperience() {
           {vectorAssessment.gateWarningTitle && (
             <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/40 text-xs space-y-1">
               <span className="text-amber-400 font-bold block">{vectorAssessment.gateWarningTitle}</span>
-              <p className="text-slate-300 text-[11px] leading-relaxed">{vectorAssessment.DebralRationale}</p>
+              <p className="text-slate-300 text-[11px] leading-relaxed">{vectorAssessment.scientificRationale}</p>
             </div>
           )}
 

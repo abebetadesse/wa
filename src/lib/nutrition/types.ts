@@ -51,7 +51,7 @@ export interface EFCTFoodItem {
   antinutrients: AntinutrientProfile;
   macros: MacroSummary;
   nutrients: FoodNutrientValue[];
-  DebralWelbeingNotes: {
+  physiologicalNotes: {
     primaryIndications: string[];
     bioactiveCompounds: string[];
     digestiveTolerance: string;

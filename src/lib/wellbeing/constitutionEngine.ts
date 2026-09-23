@@ -10,7 +10,7 @@ import {
   HolisticConstitutionProfile,
   DoshaType,
   EthiopianHumor,
-} from "./WelbeingTypes";
+} from "./wellbeingTypes";
 
 export interface ConstitutionQuestion {
   id: string;

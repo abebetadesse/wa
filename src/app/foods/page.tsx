@@ -2,6 +2,9 @@ import { db } from "@/lib/db";
 import { foods, foodNutrients, nutrients } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
+// Reads live data from the database; never prerender at build time.
+export const dynamic = "force-dynamic";
+
 export default async function FoodsPage() {
   const allFoods = await db.select().from(foods);
   const allFoodNutrients = await db
@@ -45,7 +48,7 @@ export default async function FoodsPage() {
         {[
           { title: "Traditional processing", copy: "Fermentation, soaking, and preparation methods are treated as meaningful cultural knowledge and as part of nutritional biochemistry." },
           { title: "Scientific baseline", copy: "EFCT data provides objective nutrient values so human assessment remains grounded in measurable evidence." },
-          { title: "Debral relevance", copy: "Food choices are considered alongside anemia risk, fasting cycles, demographic needs, and more sustainable healing patterns." },
+          { title: "Scientific relevance", copy: "Food choices are considered alongside anemia risk, fasting cycles, demographic needs, and more sustainable healing patterns." },
         ].map((item) => (
           <div key={item.title} className="rounded-[24px] border border-white/10 bg-stone-900/70 p-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">{item.title}</p>

@@ -12,12 +12,12 @@ import {
 } from "../lib/case-workflow/engine.ts";
 
 test("guided workflow supports the expanded case taxonomy and interest refinement", () => {
-  assert.deepEqual(listCases().map((item) => item.id), ["Welbeing", "peace", "power", "money", "career", "relationships", "spiritual", "legal", "social"]);
+  assert.deepEqual(listCases().map((item) => item.id), ["wellbeing", "peace", "power", "money", "career", "relationships", "spiritual", "legal", "social"]);
 
   const session = startSession("career");
   saveAnswers(session.id, { challenge: "Finding work" });
   saveAnswers(session.id, {
-    detail: "I want a role in public Welbeing",
+    detail: "I want a role in public health",
     stage: "Exploring",
     selectedInterest: "skill building",
     reflectionLens: "Yes",
@@ -33,7 +33,7 @@ test("guided workflow supports the expanded case taxonomy and interest refinemen
 
   const revised = confirmReport(session.id, false);
   assert.equal(revised?.currentStep, "specialized");
-  saveAnswers(session.id, { detail: "I want a community Welbeing role" });
+  saveAnswers(session.id, { detail: "I want a community wellbeing role" });
   assert.equal(processSession(session.id)?.currentStep, "reportReview");
 
   const confirmed = confirmReport(session.id, true);
@@ -51,7 +51,7 @@ test("guided workflow supports the expanded case taxonomy and interest refinemen
 });
 
 test("case synthesis incorporates full identity, birth data, and geographic context", () => {
-  const session = startSession("Welbeing");
+  const session = startSession("wellbeing");
   saveAnswers(session.id, {
     challenge: "Symptoms or a new concern",
     fullName: "Selam Bekele",
@@ -76,8 +76,8 @@ test("case synthesis incorporates full identity, birth data, and geographic cont
   assert.ok(report.profileSynthesis.summary.toLowerCase().includes("selam") || report.profileSynthesis.summary.length > 0);
 });
 
-test("critical Welbeing signals gate Domain B recommendations", () => {
-  const session = startSession("Welbeing");
+test("critical wellbeing signals gate Domain B recommendations", () => {
+  const session = startSession("wellbeing");
   saveAnswers(session.id, { challenge: "Symptoms or a new concern" });
   saveAnswers(session.id, {
     detail: "I have chest pain and cannot breathe",

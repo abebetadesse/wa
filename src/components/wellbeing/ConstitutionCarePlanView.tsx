@@ -4,13 +4,13 @@ import { useState } from "react";
 import {
   HolisticConstitutionProfile,
   PersonalizedCarePlan,
-} from "@/lib/Welbeing/WelbeingTypes";
+} from "@/lib/wellbeing/wellbeingTypes";
 import {
   CONSTITUTION_QUESTIONS,
   ConstitutionQuestion,
   buildConstitutionProfile,
-} from "@/lib/Welbeing/constitutionEngine";
-import { generateCarePlan } from "@/lib/Welbeing/carePlanEngine";
+} from "@/lib/wellbeing/constitutionEngine";
+import { generateCarePlan } from "@/lib/wellbeing/carePlanEngine";
 
 type ViewMode = "quiz" | "constitution" | "careplan";
 
@@ -331,7 +331,7 @@ export default function ConstitutionCarePlanView() {
             </div>
 
             <div className="mb-4">
-              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Welbeing Goals (select up to 3)</label>
+              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">wellbeing Goals (select up to 3)</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   "Improve energy and vitality", "Optimize digestion", "Reduce stress and anxiety",

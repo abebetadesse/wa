@@ -71,7 +71,7 @@ export async function checkHerbDrugSafetyFromDatabase(
       flaggedMedication: medicationName,
       severity: matched.interaction.interactionSeverity as "high" | "moderate" | "caution",
       mechanism: `${matched.interaction.mechanism} Active ingredients: ${activeIngredients.join(", ") || "not recorded"}.`,
-      DebralEffect: matched.interaction.DebralEffect,
+      physiologicalEffect: matched.interaction.physiologicalEffect,
       contraindicated: matched.interaction.contraindicated,
       sourceRef: matched.interaction.sourceRef,
     };

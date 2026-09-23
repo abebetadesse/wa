@@ -54,15 +54,15 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.equal(r4.detectedLanguage, "om");
 
     // English Astrological
-    const r5 = intentClassifier.classify("What is my Welbeing constitution according to Awde Negest star element?");
+    const r5 = intentClassifier.classify("What is my wellbeing constitution according to Awde Negest star element?");
     assert.equal(r5.intent, "astrological");
   });
 
   test("case filters link to registered strands and workflow routing", () => {
     const registered = new Set(KNOWLEDGE_STRANDS);
-    const WelbeingCase = listCases().find((item) => item.id === "Welbeing");
-    assert.ok(WelbeingCase);
-    assert.deepEqual(new Set(WelbeingCase.knowledgeStrandFilters), registered);
+    const wellbeingCase = listCases().find((item) => item.id === "wellbeing");
+    assert.ok(wellbeingCase);
+    assert.deepEqual(new Set(wellbeingCase.knowledgeStrandFilters), registered);
 
     for (const caseDefinition of listCases()) {
       assert.ok(
@@ -162,7 +162,7 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(psychFindings.length > 0, "Psychological strand should return findings");
 
     const socioStrand = new SocioEconomicKnowledgeStrand();
-    const socioFindings = await socioStrand.query("rural Welbeing Debr Debr hospital", mockProfile);
+    const socioFindings = await socioStrand.query("rural wellbeing Debr Debr hospital", mockProfile);
     assert.ok(socioFindings.length > 0, "Socioeconomic strand should return findings");
 
     const dietStrand = new DietaryKnowledgeStrand();
@@ -255,7 +255,7 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(ephi, "Expected 907 EPHI hotline");
   });
 
-  test("8. Diagnostic cache separates Debrally different profiles", async () => {
+  test("8. Diagnostic cache separates scientificly different profiles", async () => {
     const query = "persistent fatigue and dizziness";
     const intentResult = intentClassifier.classify(query);
     const entities = entityExtractor.extract(query);

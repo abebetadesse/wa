@@ -107,7 +107,7 @@ export function buildRelationshipCompatibility(
     score,
     summary:
       score >= 70
-        ? "The relationship shows a Welbeingy foundation with room for more intentional communication."
+        ? "The relationship shows a healthy foundation with room for more intentional communication."
         : score >= 45
           ? "The relationship has potential, but it will likely benefit from clearer boundaries and honest conversations."
           : "The relationship is under stress and may need skilled support, clearer safety planning, and more intentional pacing.",

@@ -146,7 +146,7 @@ export default function ProfileEditPage() {
   const sections = [...new Set(visibleFields.map((field) => field.section))];
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <h1 className="text-3xl font-bold">My Welbeing profile</h1>
+      <h1 className="text-3xl font-bold">My wellbeing profile</h1>
       <p className="text-slate-600">Your profile is used to personalize workflows. You control what you provide.</p>
       {loading ? <p role="status">Loading your profile...</p> : (
         <form onSubmit={save} className="card-warm space-y-8 p-6">

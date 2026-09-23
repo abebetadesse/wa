@@ -76,7 +76,7 @@ export default function AtlasClient({ regions }: AtlasClientProps) {
             EPHI DHS 2019 · MiNDO Survey · WHO SEARO
           </div>
           <h1 className="text-3xl font-extrabold text-white mb-2">
-            Ethiopian Welbeing <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Nutrition Atlas</span>
+            Ethiopian wellbeing <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Nutrition Atlas</span>
           </h1>
           <p className="text-slate-400 text-sm max-w-2xl">
             Population-level nutritional deficiency rates, stunting, and anaemia prevalence across all Ethiopian regions.
@@ -207,7 +207,7 @@ export default function AtlasClient({ regions }: AtlasClientProps) {
         </div>
 
         <p className="mt-4 text-xs text-slate-600 text-center">
-          Data: EPHI DHS 2019 / MiNDO National Micronutrient Survey / WHO SEARO. Population-level estimates — individual Debral assessments require the full evaluation pipeline.
+          Data: EPHI DHS 2019 / MiNDO National Micronutrient Survey / WHO SEARO. Population-level estimates — individual scientific assessments require the full evaluation pipeline.
         </p>
       </div>
     </div>
@@ -363,36 +363,36 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
         </>
       )}
 
-      {region.locationWelbeingProfile && (
+      {region.locationWellbeingProfile && (
         <>
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Demographic profile</div>
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-              <span>Urban: {region.locationWelbeingProfile.demographics.urbanPopulationPct}%</span>
-              <span>Median age: {region.locationWelbeingProfile.demographics.medianAgeYears}</span>
-              <span>Under five: {region.locationWelbeingProfile.demographics.underFivePopulationPct}%</span>
-              <span>Household: {region.locationWelbeingProfile.demographics.averageHouseholdSize}</span>
-              <span>Female: {region.locationWelbeingProfile.demographics.anthropometrics.genderDistributionPct.female}%</span>
-              <span>Births: {region.locationWelbeingProfile.birthRatePer1000}/1k</span>
+              <span>Urban: {region.locationWellbeingProfile.demographics.urbanPopulationPct}%</span>
+              <span>Median age: {region.locationWellbeingProfile.demographics.medianAgeYears}</span>
+              <span>Under five: {region.locationWellbeingProfile.demographics.underFivePopulationPct}%</span>
+              <span>Household: {region.locationWellbeingProfile.demographics.averageHouseholdSize}</span>
+              <span>Female: {region.locationWellbeingProfile.demographics.anthropometrics.genderDistributionPct.female}%</span>
+              <span>Births: {region.locationWellbeingProfile.birthRatePer1000}/1k</span>
             </div>
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Anthropometric profile</div>
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-              <span>Average BMI: {region.locationWelbeingProfile.demographics.anthropometrics.averageBmi}</span>
-              <span>Fertility: {region.locationWelbeingProfile.totalFertilityRate}</span>
-              <span>Height F/M: {region.locationWelbeingProfile.demographics.anthropometrics.averageHeightCm.female}/{region.locationWelbeingProfile.demographics.anthropometrics.averageHeightCm.male} cm</span>
-              <span>Weight F/M: {region.locationWelbeingProfile.demographics.anthropometrics.averageWeightKg.female}/{region.locationWelbeingProfile.demographics.anthropometrics.averageWeightKg.male} kg</span>
+              <span>Average BMI: {region.locationWellbeingProfile.demographics.anthropometrics.averageBmi}</span>
+              <span>Fertility: {region.locationWellbeingProfile.totalFertilityRate}</span>
+              <span>Height F/M: {region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.female}/{region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.male} cm</span>
+              <span>Weight F/M: {region.locationWellbeingProfile.demographics.anthropometrics.averageWeightKg.female}/{region.locationWellbeingProfile.demographics.anthropometrics.averageWeightKg.male} kg</span>
             </div>
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Family and birth indicators</div>
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-              <span>Polygamous unions: {region.locationWelbeingProfile.marriageAndInheritance.polygamousUnionPct}%</span>
+              <span>Polygamous unions: {region.locationWellbeingProfile.marriageAndInheritance.polygamousUnionPct}%</span>
               <span>Scope: married unions</span>
             </div>
             <div className="mt-2 space-y-1.5">
-              {region.locationWelbeingProfile.marriageAndInheritance.birthDefects.map((indicator) => (
+              {region.locationWellbeingProfile.marriageAndInheritance.birthDefects.map((indicator) => (
                 <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
                   <span className="text-slate-300">{indicator.condition}</span>
                   <span className="text-violet-300">{indicator.value}/10k births</span>
@@ -403,7 +403,7 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Inherited-condition indicators</div>
             <div className="space-y-1.5">
-              {region.locationWelbeingProfile.marriageAndInheritance.geneticDisorders.map((indicator) => (
+              {region.locationWellbeingProfile.marriageAndInheritance.geneticDisorders.map((indicator) => (
                 <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
                   <span className="text-slate-300">{indicator.condition}</span>
                   <span className="text-cyan-300">
@@ -416,7 +416,7 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Communicable disease indicators</div>
             <div className="space-y-1.5">
-              {region.locationWelbeingProfile.communicableDiseaseRates.map((rate) => (
+              {region.locationWellbeingProfile.communicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
                   <span className="text-slate-300">{rate.condition}</span>
                   <span className="text-rose-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
@@ -427,7 +427,7 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
           <div>
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Non-communicable disease indicators</div>
             <div className="space-y-1.5">
-              {region.locationWelbeingProfile.nonCommunicableDiseaseRates.map((rate) => (
+              {region.locationWellbeingProfile.nonCommunicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
                   <span className="text-slate-300">{rate.condition}</span>
                   <span className="text-amber-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
@@ -442,7 +442,7 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
         <p className="text-[10px] text-slate-600">
           Population: ~{(region.population / 1_000_000).toFixed(1)}M · Nutrition source: EPHI DHS 2019
         </p>
-        {region.locationWelbeingProfile && <p className="mt-1 text-[10px] text-slate-600">{region.locationWelbeingProfile.sourceNote}</p>}
+        {region.locationWellbeingProfile && <p className="mt-1 text-[10px] text-slate-600">{region.locationWellbeingProfile.sourceNote}</p>}
       </div>
     </div>
   );

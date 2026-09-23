@@ -203,7 +203,7 @@ export default function AdminSettingsPage() {
             }`}
         >
           <ShieldCheck size={14} />
-          <span>Debral & Safety Gates</span>
+          <span>Scientific & Safety Gates</span>
         </button>
         <button
           onClick={() => setActiveSection("auth")}
@@ -347,7 +347,7 @@ export default function AdminSettingsPage() {
           <div>
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <ShieldCheck size={16} className="text-emerald-400" />
-              <span>Debral Herb-Drug Safety & Architectural Firewall</span>
+              <span>Scientific Herb-Drug Safety & Architectural Firewall</span>
             </h2>
             <p className="text-[11px] text-slate-400">
               Stage 5 Safety Gate release-blocking canaries and Domain A/B isolation rules
@@ -408,7 +408,7 @@ export default function AdminSettingsPage() {
                 <p className="text-xs font-semibold text-white">Domain A/B Architectural Firewall</p>
                 <p className="text-[11px] text-slate-400 max-w-xl">
                   Enforces strict isolation between Domain A (biochemical EFCT evaluation engine) and Domain B
-                  (cultural, lunar, astrological layers). Prevents cultural attributions from masquerading as Debral diagnoses.
+                  (cultural, lunar, astrological layers). Prevents cultural attributions from masquerading as Scientific diagnoses.
                 </p>
               </div>
               <button
@@ -461,7 +461,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="text-xs font-semibold text-white">Allow Public Self-Registration</p>
                 <p className="text-[11px] text-slate-400">
-                  When disabled, new accounts can only be created by administrators or Welbeing institution leads.
+                  When disabled, new accounts can only be created by administrators or health institution leads.
                 </p>
               </div>
               <button
@@ -564,7 +564,7 @@ export default function AdminSettingsPage() {
               <div>
                 <p className="text-xs font-semibold text-white">Automated Background Literature Sync</p>
                 <p className="text-[11px] text-slate-400">
-                  Periodically queries PubMed API for new Debral findings across Ethiopian indigenous botanicals.
+                  Periodically queries PubMed API for new Scientific findings across Ethiopian indigenous botanicals.
                 </p>
               </div>
               <button
@@ -592,7 +592,7 @@ export default function AdminSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
                   <p className="font-bold text-slate-200">PubMed / NCBI</p>
-                  <p className="text-[11px] text-slate-400">Debral trials & mesh pharmacology</p>
+                  <p className="text-[11px] text-slate-400">Clinical trials & mesh pharmacology</p>
                   <span className="text-[10px] text-emerald-400 font-mono mt-1 block">Status: Connected</span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">

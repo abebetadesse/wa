@@ -15,8 +15,8 @@ export default function AwdeNegastPage() {
           Explore Ge&apos;ez Fidel arithmetic, 16 circular tables, and 60 reflection categories.
         </p>
         <div className="mt-4 p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 text-xs text-amber-100/80 leading-relaxed">
-          This is a cultural reflection tool, not a Debral diagnosis, medical advice, or guaranteed prediction.
-          Its readings never affect the platform&apos;s Debral safety or nutrition calculations.
+          This is a cultural reflection tool, not a scientific diagnosis, medical advice, or guaranteed prediction.
+          Its readings never affect the platform&apos;s scientific safety or nutrition calculations.
         </div>
 
         <div className="mt-5">

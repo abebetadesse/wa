@@ -89,7 +89,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       conditions: ["G6PD deficiency", "Oxidative stress", "Fava bean sensitivity"],
       ethiopian_context: ["Fava bean (Baqela) can trigger hemolysis in people with G6PD deficiency"],
       interactions: ["Glutathione redox cycle", "Nucleotide synthesis"],
-      recommendations: ["If G6PD deficiency is known, seek Debrian guidance before fava beans or oxidizing medicines"],
+      recommendations: ["If G6PD deficiency is known, seek practitioner guidance before fava beans or oxidizing medicines"],
     },
     urea_cycle: {
       description: "Hepatic conversion of ammonia to urea for safe excretion",
@@ -98,7 +98,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       conditions: ["Liver disease", "Hyperammonemia", "High protein diets"],
       ethiopian_context: ["Fermented milk foods are part of several Ethiopian dietary traditions"],
       interactions: ["Hepatic encephalopathy", "Cirrhosis"],
-      recommendations: ["Liver disease and high-protein changes require a qualified Debrian or dietitian"],
+      recommendations: ["Liver disease and high-protein changes require a qualified practitioner or dietitian"],
     },
     gluconeogenesis: {
       description: "Glucose synthesis from lactate, amino acids, and glycerol during fasting",
@@ -173,14 +173,14 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Teff, pumpkin seeds, sesame, and legumes provide culturally familiar magnesium sources"],
       deficiency: "Muscle cramps, constipation, migraine, fatigue, and sleep disturbance",
       sources: ["Teff", "Pumpkin seeds", "Niger seeds", "Legumes", "Dark leafy greens"],
-      recommendations: ["Use food-first sources and confirm persistent symptoms with a Debrian before supplementing"],
+      recommendations: ["Use food-first sources and confirm persistent symptoms with a practitioner before supplementing"],
     },
     vitamin_d_endocrine: {
       description: "Cutaneous 7-dehydrocholesterol photolysis to cholecalciferol and renal 1-alpha hydroxylation",
-      enhancers: ["Mid-day equatorial sun exposure", "Dietary Welbeingy fats"],
+      enhancers: ["Mid-day equatorial sun exposure", "Dietary healthy fats"],
       inhibitors: ["Melanin epidermal filtering", "Indoor sedentary shielding", "Air pollution"],
       factors: ["Melanin epidermal filtering", "Solar zenith angle", "Altitude UV-B irradiance", "Body surface exposure"],
-      ethiopian_context: ["Despite high solar irradiance in Ethiopian highlands, indoor urban shifts and dark skin pigmentation often lead to subDebral hypovitaminosis D"],
+      ethiopian_context: ["Despite high solar irradiance in Ethiopian highlands, indoor urban shifts and dark skin pigmentation often lead to subscientific hypovitaminosis D"],
       deficiency: "Musculoskeletal pain, decreased bone mineral density, elevated parathyroid hormone, depressed immune surveillance",
       sources: ["Equatorial high-altitude sunlight", "Egg yolks", "Pasture butter", "Wild lake fish (Tana Tilapia)"],
       recommendations: [
@@ -198,7 +198,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       sources: ["Beef liver", "Fish", "Fermented dairy", "Fortified nutritional yeast"],
       recommendations: [
         "Monitor B12 during prolonged fasting periods like Abiy Tsom (Lent)",
-        "Incorporate nutritional yeast or Debral cobalamin supplementation if fasting continuously",
+        "Incorporate nutritional yeast or scientific cobalamin supplementation if fasting continuously",
       ],
     },
     folate_metabolism: {
@@ -208,7 +208,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Gomen and pulses provide folate; quick cooking preserves more folate than prolonged boiling"],
       deficiency: "Megaloblastic anemia, elevated homocysteine, and neural tube risk in pregnancy",
       sources: ["Gomen", "Pulses", "Teff", "Avocado", "Fortified grains"],
-      recommendations: ["People who may become pregnant should discuss folate needs with a qualified Debrian"],
+      recommendations: ["People who may become pregnant should discuss folate needs with a qualified practitioner"],
     },
     omega3_omega6_balance: {
       description: "Competition between fatty-acid pathways influences inflammatory and cardiovascular signaling",
@@ -217,7 +217,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       ethiopian_context: ["Niger seed oil and Lake Tana fish are local food contexts for fatty-acid discussions"],
       deficiency: "Dry skin, inflammatory tendency, and possible cardiovascular risk",
       sources: ["Niger seed oil", "Lake fish", "Flaxseed", "Walnuts"],
-      recommendations: ["Favor dietary variety and discuss concentrated supplements with a Debrian"],
+      recommendations: ["Favor dietary variety and discuss concentrated supplements with a practitioner"],
     },
     vitamin_k2_calcium_axis: {
       description: "Vitamin K-dependent proteins help route calcium toward bone and support vascular tissue",
@@ -232,7 +232,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
 
   private enzymeSystems = {
     cytochrome_p450: {
-      description: "Hepatic Phase I hemoprotein monooxygenases responsible for the oxidative biotransformation of 70-80% of Debral drugs",
+      description: "Hepatic Phase I hemoprotein monooxygenases responsible for the oxidative biotransformation of 70-80% of scientific drugs",
       isoforms: ["CYP1A2", "CYP2C9", "CYP2C19", "CYP2D6", "CYP3A4"],
       inducers: ["Rifampin (anti-TB)", "Carbamazepine", "Phenobarbital", "Tobacco polycyclic hydrocarbons"],
       inhibitors: ["Ciprofloxacin", "Erythromycin", "Fluconazole", "Cimetidine"],
@@ -240,7 +240,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         "Ruta chalepensis (Tena Adam) contains furanocoumarins that inhibit CYP3A4 and alter clearance of calcium channel blockers and statins",
         "Hagenia abyssinica (Kosso) induces severe mucosal and hepatotoxic stress competing with hepatic clearance mechanisms",
       ],
-      Debral_warning: "Concurrent use of traditional botanical extracts with prescription medications may produce either toxic drug accumulation or therapeutic failure.",
+      scientific_warning: "Concurrent use of traditional botanical extracts with prescription medications may produce either toxic drug accumulation or therapeutic failure.",
     },
     glutathione_antioxidant_system: {
       description: "Primary cellular non-enzymatic antioxidant defense and conjugation system (GSH, GPx, GR)",
@@ -255,7 +255,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       cofactors: ["NAD+", "Thiamine", "Zinc", "Magnesium"],
       ethiopian_context: ["Traditional Tella and Tej fermentation can produce acetaldehyde alongside alcohol"],
       deficiency: "Flushing, nausea, tachycardia, and increased alcohol-related cancer risk",
-      recommendations: ["Avoid alcohol if it causes flushing or other adverse symptoms and seek Debral advice"],
+      recommendations: ["Avoid alcohol if it causes flushing or other adverse symptoms and seek scientific advice"],
     },
     monoamine_oxidase: {
       description: "Breaks down serotonin, dopamine, and norepinephrine in mitochondria",
@@ -290,7 +290,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       nutrients: ["Iodine", "Selenium", "Zinc", "Iron", "Tyrosine"],
       conditions: ["Hypothyroidism", "Hyperthyroidism", "Goitre"],
       ethiopian_context: ["Highland iodine and selenium access can vary by location and diet"],
-      recommendations: ["Use iodized salt appropriately and obtain thyroid symptoms or labs through Debral care"],
+      recommendations: ["Use iodized salt appropriately and obtain thyroid symptoms or labs through scientific care"],
     },
     adrenal_cortisol_stress: {
       description: "The HPA axis coordinates cortisol response to stress and energy demand",
@@ -298,7 +298,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       nutrients: ["Vitamin C", "Magnesium", "Zinc", "Omega-3"],
       conditions: ["Chronic stress", "Burnout", "Anxiety", "Depression"],
       ethiopian_context: ["Coffee ceremonies can provide social connection while caffeine may worsen anxiety or sleep"],
-      recommendations: ["Protect sleep and review persistent distress with a qualified mental-Welbeing professional"],
+      recommendations: ["Protect sleep and review persistent distress with a qualified mental-health professional"],
     },
     melatonin_sleep_axis: {
       description: "Melatonin and cortisol coordinate circadian rhythm and sleep timing",
@@ -345,7 +345,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
     ampk: {
       description: "Cellular energy sensor activated when ATP is low and energy demand rises",
       signals: ["AMP", "Exercise", "Fasting", "Metformin"],
-      contexts: ["exercise", "fasting", "glucose regulation", "mitochondrial Welbeing"],
+      contexts: ["exercise", "fasting", "glucose regulation", "mitochondrial wellbeing"],
       recommendations: ["Interpret exercise and fasting effects within medication and diabetes safety context"],
     },
     pi3k_mapk: {
@@ -378,7 +378,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
   private profileMedications(userProfile: UserProfile) {
     return [
       ...(userProfile.medications || []),
-      ...(userProfile.Welbeing?.medications || []),
+      ...(userProfile.wellbeing?.medications || []),
     ].map(String);
   }
 
@@ -433,8 +433,8 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         }
       }
 
-      if (userProfile.conditions || userProfile.Welbeing?.conditions) {
-        const conditions = [...(userProfile.conditions || []), ...(userProfile.Welbeing?.conditions || [])];
+      if (userProfile.conditions || userProfile.wellbeing?.conditions) {
+        const conditions = [...(userProfile.conditions || []), ...(userProfile.wellbeing?.conditions || [])];
         for (const condition of conditions) {
           if (pathway.conditions.some((c) => c.toLowerCase().includes(condition.toLowerCase()))) {
             score += 25;
@@ -452,7 +452,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "metabolic_pathway",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: pathwayKey.replace(/_/g, " ").toUpperCase(),
           description: pathway.description,
           evidence: `Involved key enzymes: ${pathway.key_enzymes.join(", ")}. Cofactors: ${pathway.nutrients.join(", ")}.`,
@@ -518,7 +518,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         results.push({
           type: "nutrient_interaction",
           strand: this.strandName,
-          domain: "Welbeing",
+          domain: "wellbeing",
           name: nutrientKey.replace(/_/g, " ").toUpperCase(),
           description: interaction.description,
           evidence: `Enhancers: ${interaction.enhancers.join(", ")} | Inhibitors: ${interaction.inhibitors.join(", ")}. Primary deficiency manifestations: ${interaction.deficiency}.`,
@@ -533,7 +533,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
             risk_factors: interaction.inhibitors,
             recommendations: interaction.recommendations,
           },
-          sources: ["Ethiopian Public Welbeing Institute (EPHI) Micronutrient Assessment", "EFCT 2025 Bioavailability Matrix"],
+          sources: ["Ethiopian Public health Institute (EPHI) Micronutrient Assessment", "EFCT 2025 Bioavailability Matrix"],
           details: { fastingRelevant: fasting, region },
         });
       }
@@ -545,7 +545,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "enzyme_system",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: "CYTOCHROME P450 HEPATIC METABOLISM",
         description: cyp.description,
         evidence: `Isoforms: ${cyp.isoforms.join(", ")}. Potent inducers: ${cyp.inducers.join(", ")}. Potent inhibitors: ${cyp.inhibitors.join(", ")}.`,
@@ -555,7 +555,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         matches: ["cytochrome_p450_screen"],
         recommendations: [
           "Always verify traditional herbs against prescribed medicines using the Safety Gate",
-          "Inform your doctor or Debral pharmacist about all traditional remedies used",
+          "Inform your doctor or scientific pharmacist about all traditional remedies used",
         ],
         severity: "high",
         risk_assessment: {
@@ -563,7 +563,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
           risk_factors: cyp.ethiopian_context,
           recommendations: [
             "Do not start, stop, or change a medicine or concentrated herb based on this finding.",
-            "Ask a Debrian or pharmacist to review the complete medication and supplement list.",
+            "Ask a practitioner or pharmacist to review the complete medication and supplement list.",
           ],
         },
         sources: ["Fullas, F. 'Interactions of Ethiopian Herbal Medicines and Prescription Drugs'", "ETM-DB Pharmacopoeia"],
@@ -580,7 +580,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "enzyme_system",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: enzymeKey.replace(/_/g, " ").toUpperCase(),
         description: enzyme.description,
         evidence: `Cofactors and isoforms: ${[...("cofactors" in enzyme ? enzyme.cofactors : []), ...("isoforms" in enzyme ? enzyme.isoforms : [])].join(", ")}.`,
@@ -588,8 +588,8 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         relevanceScore: 0.78,
         confidence: 0.82,
         matches: ["enzyme_context_match"],
-        recommendations: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified Debrian."],
-        management: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified Debrian."],
+        recommendations: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified practitioner."],
+        management: "recommendations" in enzyme ? enzyme.recommendations : ["Review this biochemical context with a qualified practitioner."],
         severity: enzymeKey === "monoamine_oxidase" ? "high" : "moderate",
         sources: ["Lehninger Principles of Biochemistry, 8th Ed.", "Ethiopian traditional medicine safety context"],
       });
@@ -601,7 +601,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "hormonal_axis",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: hormoneKey.replace(/_/g, " ").toUpperCase(),
         description: hormone.description,
         evidence: `Hormones: ${hormone.hormones.join(", ")}. Nutrients: ${hormone.nutrients.join(", ")}.`,
@@ -612,7 +612,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
         recommendations: hormone.recommendations,
         management: hormone.recommendations,
         severity: "moderate",
-        sources: ["Williams Textbook of Endocrinology", "Ethiopian Public Welbeing Institute"],
+        sources: ["Williams Textbook of Endocrinology", "Ethiopian Public health Institute"],
       });
     }
 
@@ -624,7 +624,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       results.push({
         type: "cell_signaling",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: signalKey.replace(/_/g, " ").toUpperCase(),
         description: signal.description,
         evidence: `Signals and contexts: ${[...signal.signals, ...signal.contexts].join(", ")}.`,
@@ -675,7 +675,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       findings.push({
         type: "nutrient_gap",
         strand: this.strandName,
-        domain: "Welbeing",
+        domain: "wellbeing",
         name: `${nutrient.toUpperCase()} INTAKE GAP`,
         description: `Recorded intake provides approximately ${percent}% of the general reference target; this is a screening signal, not a diagnosis.`,
         relevanceScore: Math.min(1, 1 - intake / target),
@@ -702,7 +702,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
     return [{
       type: "herb_drug_safety",
       strand: this.strandName,
-      domain: "Welbeing",
+      domain: "wellbeing",
       name: "HERB-MEDICATION SAFETY GATE",
       description: "A potential herb-medication interaction requires professional review.",
       evidence: warnings.join(" "),
@@ -710,7 +710,7 @@ export class BiochemicalKnowledgeStrand implements KnowledgeStrand {
       confidence: 0.9,
       severity: "high",
       safetyAlerts: warnings,
-      recommendations: ["Do not start or stop a medicine or concentrated herb without a Debrian or pharmacist."],
+      recommendations: ["Do not start or stop a medicine or concentrated herb without a practitioner or pharmacist."],
       sources: ["ETM-DB Pharmacopoeia", "Medication safety rules"],
     }];
   }

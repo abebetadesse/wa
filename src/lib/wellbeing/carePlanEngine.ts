@@ -1,6 +1,6 @@
 /**
  * Care Plan Generator
- * Inspired by NaraCare.AI - Personalized AI-Driven Welbeing Journeys
+ * Inspired by NaraCare.AI - Personalized AI-Driven wellbeing Journeys
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   CarePlanWeek,
   CarePlanGoal,
   CarePlanIntervention,
-} from "./WelbeingTypes";
+} from "./wellbeingTypes";
 
 function generateWeeklyPlan(
   week: number,
@@ -241,13 +241,13 @@ export function generateCarePlan(
     duration,
     currentPhase: "foundation",
     currentWeek: 1,
-    primaryWelbeingGoals: primaryGoals,
+    primarywellbeingGoals: primaryGoals,
     constitution: profile,
     weeklyPlans,
     overallProgress: 0,
     aiInsight: `Your ${profile.dosha.primaryDosha} Prakriti combined with ${profile.humor.dominantHumor === "esat" ? "Esat (Fire)" : profile.humor.dominantHumor === "afere" ? "Afere (Earth)" : profile.humor.dominantHumor === "nifas" ? "Nifas (Air)" : "May (Water)"} humoral dominance points to specific protocols in your first weeks. Focus on establishing rhythm before refinement — the Ethiopian wisdom of "meser qen" (foundation days) applies directly.`,
     nextMilestone: "Complete Week 1 baseline: establish 3-meal rhythm, begin morning oil massage, add fermented foods daily.",
     disclaimer:
-      "This care plan is a wellness and lifestyle guidance tool. It does not replace medical care. Always consult your Welbeingcare provider before making significant dietary or lifestyle changes, especially regarding herbal supplements and fasting protocols.",
+      "This care plan is a wellness and lifestyle guidance tool. It does not replace medical care. Always consult your healthcare provider before making significant dietary or lifestyle changes, especially regarding herbal supplements and fasting protocols.",
   };
 }

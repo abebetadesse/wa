@@ -4,7 +4,7 @@ Use this prompt when continuing the Debtera production refactor. Treat the repos
 
 ## Mission
 
-Bring the Ethiopian Wisdom platform to a production-ready standard without weakening Debral safety boundaries, authentication, auditability, accessibility, or the existing Ethiopian cultural context. Preserve working behavior and deliver incremental, validated improvements.
+Bring the Ethiopian Wisdom platform to a production-ready standard without weakening scientific safety boundaries, authentication, auditability, accessibility, or the existing Ethiopian cultural context. Preserve working behavior and deliver incremental, validated improvements.
 
 ## Non-negotiable workflow
 
@@ -13,13 +13,13 @@ Bring the Ethiopian Wisdom platform to a production-ready standard without weake
 3. Before editing, inspect the actual repository files and state one local hypothesis plus one cheap check that could disprove it.
 4. Make the smallest coherent edit, then immediately run the narrowest available validation. Do not broaden scope after a failed check until the touched slice is repaired.
 5. Never reset, overwrite, or revert user changes. Do not commit or create branches unless explicitly requested.
-6. Keep medical, traditional, cultural, and wellness content clearly separated. Cultural or reflective outputs must never influence Debral safety gates, nutrient calculations, medication checks, or urgency decisions.
+6. Keep medical, traditional, cultural, and wellness content clearly separated. Cultural or reflective outputs must never influence scientific safety gates, nutrient calculations, medication checks, or urgency decisions.
 
 ## Current repository reality
 
 - Next.js 15 App Router with React 19 and TypeScript.
 - Global shell: `src/app/layout.tsx`, `src/components/Navbar.tsx`, `src/components/Footer.tsx`, and `src/styles/globals.css`.
-- Theme tokens already use Luminous Debral Blue with light, dark, and high-contrast modes.
+- Theme tokens already use Luminous scientific Blue with light, dark, and high-contrast modes.
 - Fonts actually loaded are DM Sans, Manrope, and JetBrains Mono.
 - Case workflow is the main guided interaction and includes server autosave, live assistance, diagnostic assessment, voice input, and local draft recovery.
 - Do not invent the audited `tailwind.config.ts`, React Query, Capacitor, or role-dashboard structure unless the repository first gains those files through an explicit scoped change.
@@ -29,19 +29,19 @@ Bring the Ethiopian Wisdom platform to a production-ready standard without weake
 ### P0: Correctness and safety
 
 - Fix undefined or conflicting CSS variables and remove stale palette references.
-- Replace hardcoded legacy dark-green surfaces with shared design tokens, starting with admin, report, auth, and Debral encounter views.
+- Replace hardcoded legacy dark-green surfaces with shared design tokens, starting with admin, report, auth, and scientific encounter views.
 - Verify every protected route enforces authorization server-side; client checks are only presentation.
 - Preserve audit events for authentication, impersonation, role changes, knowledge publishing, report generation, and safety decisions.
 - Add safe loading, empty, error, retry, and offline states to every data-backed screen.
-- Ensure destructive actions have explicit confirmation and never silently discard Debral or case data.
+- Ensure destructive actions have explicit confirmation and never silently discard scientific or case data.
 
 ### P1: Design system consistency
 
 - Use the existing CSS variables and shared classes for surfaces, borders, text, focus states, buttons, badges, and inputs.
 - Keep semantic classes semantically named. If compatibility requires legacy names such as `emerald`, document them as aliases and do not add more legacy aliases.
 - Use Lucide icons for actions and provide accessible labels/tooltips for icon-only controls.
-- Keep cards at modest radii, avoid nested decorative cards, and preserve the Debral blue visual hierarchy.
-- Keep typography limited to the loaded font families: DM Sans for body, Manrope for headings, JetBrains Mono for Debral/data values.
+- Keep cards at modest radii, avoid nested decorative cards, and preserve the scientific blue visual hierarchy.
+- Keep typography limited to the loaded font families: DM Sans for body, Manrope for headings, JetBrains Mono for scientific/data values.
 - Respect reduced motion, keyboard navigation, high contrast, touch targets, and responsive layouts.
 
 ### P1: Navigation and workflow ergonomics

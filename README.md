@@ -4,7 +4,7 @@ An Ethiopian-centered wisdom, wellness, knowledge, and expert-review platform bu
 
 The application combines two intentionally separated knowledge domains:
 
-- **Domain A — Welbeing and evidence:** wellness intake, nutrition, medication and herb safety, urgency detection, diagnostic-adjacent reasoning, and practical next steps.
+- **Domain A — wellbeing and evidence:** wellness intake, nutrition, medication and herb safety, urgency detection, diagnostic-adjacent reasoning, and practical next steps.
 - **Domain B — cultural and reflective knowledge:** Ethiopian heritage, manuscripts, Awde Negast, astrology, numerology, Hexacore reflection, naming, traditional medicine, ritual context, and spiritual interpretation.
 
 Domain B can enrich a user-requested reflection, but it is not presented as a diagnosis, prescription, emergency response, or substitute for licensed professional care.
@@ -15,7 +15,7 @@ The platform supports:
 
 - Account registration, email verification, login, logout, password recovery, session management, and role-based access.
 - Profile onboarding with consent-based personal and optional device information.
-- Case intake for Welbeing, peace, power, money, relationships, career, legal, social, and spiritual/cultural topics.
+- Case intake for wellbeing, peace, power, money, relationships, career, legal, social, and spiritual/cultural topics.
 - Question-driven case sessions with autosaved answers and recoverable browser drafts.
 - Safety screening and crisis routing before specialized workflows continue.
 - Preliminary analysis, cause refinement, solution selection, and report review.
@@ -349,7 +349,7 @@ Privacy expectations:
 - Do not add secrets to source control.
 - Do not assume browser access to private contacts or social accounts.
 - Collect only information required for routing, safety, personalization, or the user-requested cultural workflow.
-- Treat birth data, identity information, case narratives, and Welbeing-related fields as sensitive.
+- Treat birth data, identity information, case narratives, and wellbeing-related fields as sensitive.
 - Preserve the distinction between user-entered data and inferred or calculated output.
 
 ## Project structure
@@ -457,9 +457,9 @@ The application contains both database-backed and in-memory workflow components.
 
 The current system also does not silently obtain phone contacts or social-media identities. If those data sources are ever added, they must use an explicit provider integration, consent, scoped permissions, data minimization, and a documented deletion path.
 
-AI, diagnostic-adjacent, divination, numerology, astrology, body-sign, herbal, and cultural outputs must remain bounded by their declared purpose. The application should never claim to diagnose, cure, guarantee, predict with certainty, replace emergency services, or replace qualified legal, medical, mental-Welbeing, or safeguarding professionals.
+AI, diagnostic-adjacent, divination, numerology, astrology, body-sign, herbal, and cultural outputs must remain bounded by their declared purpose. The application should never claim to diagnose, cure, guarantee, predict with certainty, replace emergency services, or replace qualified legal, medical, mental-wellbeing, or safeguarding professionals.
 
 ## Safety disclaimer
 
-This platform provides educational, reflective, cultural, and wellness-oriented information. It is not a substitute for emergency services or qualified professional advice. Do not delay urgent medical, mental-Welbeing, safeguarding, legal, or other professional care because of content shown by the application.
+This platform provides educational, reflective, cultural, and wellness-oriented information. It is not a substitute for emergency services or qualified professional advice. Do not delay urgent medical, mental-wellbeing, safeguarding, legal, or other professional care because of content shown by the application.
 

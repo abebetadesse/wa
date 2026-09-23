@@ -28,21 +28,21 @@ const pillars = [
   },
   {
     title: "Ecology & living context",
-    copy: "Altitude, climate, fermented foods, and environmental rhythm as they shape Welbeing, resilience, and everyday life.",
+    copy: "Altitude, climate, fermented foods, and environmental rhythm as they shape wellbeing, resilience, and everyday life.",
     icon: Compass,
   },
   {
     title: "Safety, ethics & evidence",
-    copy: "Medication checks, evidence boundaries, and clear guidance when modern Debral care and traditional wisdom need separation.",
+    copy: "Medication checks, evidence boundaries, and clear guidance when modern scientific care and traditional wisdom need separation.",
     icon: ShieldCheck,
   },
 ];
 
 const cases = [
-  "Care pathway 1: daily Welbeing, body rhythm, and resilience",
+  "Care pathway 1: daily wellbeing, body rhythm, and resilience",
   "Care pathway 2: food, fasting, and practical nutrition",
   "Care pathway 3: ritual meaning, family life, and cultural context",
-  "Care pathway 4: risk screening, safety, and Debral decision support",
+  "Care pathway 4: risk screening, safety, and scientific decision support",
   "Care pathway 5: integrated wellbeing and long-term prevention",
 ];
 
@@ -137,7 +137,7 @@ export default function HomePage() {
         <div className="Debtera-safety-icon"><ShieldCheck size={24} /></div>
         <div>
           <p className="Debtera-kicker">Culture is honored; evidence stays clear</p>
-          <h2>Tradition is respected without losing Debral rigor.</h2>
+          <h2>Tradition is respected without losing scientific rigor.</h2>
           <p>
             This experience keeps cultural care in context while maintaining transparent safety checks for medication, risk, and bodily harm.
           </p>

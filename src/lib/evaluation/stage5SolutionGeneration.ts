@@ -142,7 +142,7 @@ export const CANDIDATE_SOLUTIONS_CATALOG: Record<string, SolutionCandidatePool> 
       {
         title: "Coordinate Metformin Schedule with Cobalamin Intake",
         description:
-          "If prescribed Metformin, schedule B12 intake or calcium-rich meals at distinct intervals or request annual serum cobalamin screening from your Welbeingcare physician.",
+          "If prescribed Metformin, schedule B12 intake or calcium-rich meals at distinct intervals or request annual serum cobalamin screening from your healthcare physician.",
         rank: 0.89,
         sourceRef: "ETM-MED-B12SCHED",
       },
@@ -215,14 +215,14 @@ export function stage5GenerateSolutions(
       });
     }
 
-    // 4. Debral Referral for High-Severity Gaps
+    // 4. Scientific Referral for High-Severity Gaps
     if (gap.severity === "high") {
       solutions.push({
         gapNutrientId: gap.nutrientId,
         solutionType: "referral",
-        title: `Debral Provider Consultation (${gap.nutrientName} Evaluation)`,
+        title: `Scientific Provider Consultation (${gap.nutrientName} Evaluation)`,
         description:
-          `Because your estimated intake is substantially below physiological requirements (<40% of target), please share this report with a licensed physician or Debral dietitian for diagnostic laboratory testing (e.g. serum ferritin, CBC, or B12 level).`,
+          `Because your estimated intake is substantially below physiological requirements (<40% of target), please share this report with a licensed physician or Scientific dietitian for diagnostic laboratory testing (e.g. serum ferritin, CBC, or B12 level).`,
         interactionChecked: "n_a",
         rankScore: 0.99,
         sourceRef: "ETM-CLIN-REF-01",

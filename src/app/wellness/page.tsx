@@ -116,7 +116,7 @@ export default function WellnessPage() {
         </div>
 
         <p className="text-xs text-slate-500 leading-relaxed border-t border-white/10 pt-5">
-          Educational planning only. This page is not a diagnosis or treatment plan. Medication changes, supplements, fasting, and herbal products should be reviewed with a qualified Welbeingcare professional.
+          Educational planning only. This page is not a diagnosis or treatment plan. Medication changes, supplements, fasting, and herbal products should be reviewed with a qualified healthcare professional.
         </p>
       </div>
     </div>

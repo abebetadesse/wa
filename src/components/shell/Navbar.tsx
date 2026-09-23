@@ -98,7 +98,7 @@ export default function Navbar() {
         { href: "/discover", label: "Read the knowledge map", tone: "discover" },
         { href: "/integrative", label: "Whole-person assessment", tone: "integrative" },
         { href: "/intake", label: t.nav.intake },
-        { href: "/diagnostic", label: t.nav.diagnostic || "Debral review", tone: "diagnostic" },
+        { href: "/diagnostic", label: t.nav.diagnostic || "Scientific review", tone: "diagnostic" },
         { href: "/wellness", label: "Daily wellness rhythm" },
         { href: "/profile", label: "Client profile", tone: "profile" },
       ],

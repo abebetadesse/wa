@@ -96,7 +96,7 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     const highRisk = evaluateRawMeatSafety("weekly", true, true);
     assert.equal(highRisk.riskTier, "critical");
     assert.equal(highRisk.kossoSafetyIntercept.interceptTriggered, true);
-    assert.ok(highRisk.kossoSafetyIntercept.DebralAlert.includes("optic nerve atrophy"));
+    assert.ok(highRisk.kossoSafetyIntercept.scientificAlert.includes("optic nerve atrophy"));
     assert.ok(highRisk.kossoSafetyIntercept.saferConventionalAlternative.includes("Niclosamide"));
   });
 
@@ -254,7 +254,7 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
 
   // Domain Isolation Firewall Verification
   test("Architectural Firewall: Domain B never affects Domain A algorithms", () => {
-    // Verify Awde Negest, Gematria, or Baptismal data do not mutate or participate in any Debral functions
+    // Verify Awde Negest, Gematria, or Baptismal data do not mutate or participate in any scientific functions
     const testSign = getAwdeNegestSign("asad");
     const testGematria = calculateGeezGematria("ዮሐንስ");
     assert.ok(testSign && testGematria);

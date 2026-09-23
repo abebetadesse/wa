@@ -180,7 +180,7 @@ export default function SpiritualDivinationPage({
           <p className="leading-relaxed">
             This divination is grounded in classical Ethiopian parchment traditions. It provides a mirror for spiritual
             self-reflection and personal clarity. It does NOT predict specific deterministic events, guarantee commercial
-            outcomes, or replace medical, legal, or licensed mental Welbeing counsel. Your reading is personally verified by
+            outcomes, or replace medical, legal, or licensed mental wellbeing counsel. Your reading is personally verified by
             a certified debtera.
           </p>
         </div>

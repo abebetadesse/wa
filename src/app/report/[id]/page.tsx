@@ -2,21 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  WelbeingGapReports,
+  wellbeingGapReports,
   identifiedGaps,
   gapCauses,
   gapSolutions,
   nutrients,
   users,
-  WelbeingProfiles,
+  wellbeingProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import NutrientRadarChart from "@/components/Welbeing/NutrientRadarChart";
-import DebralEncounterModal from "@/components/Welbeing/DebralEncounterModal";
-import ExportPanel from "@/components/Welbeing/ExportPanel";
+import NutrientRadarChart from "@/components/wellbeing/NutrientRadarChart";
+import ScientificEncounterModal from "@/components/wellbeing/ScientificEncounterModal";
+import ExportPanel from "@/components/wellbeing/ExportPanel";
 import AwudeHeritageContext from "@/components/cultural/AwudeHeritageContext";
 import { explainGap } from "@/lib/evaluation/explainability";
 import { GapType, Severity } from "@/lib/evaluation/types";
+
+// Reads live data from the database; never prerender at build time.
+export const dynamic = "force-dynamic";
 
 interface ReportPageProps {
   params: Promise<{ id: string }>;
@@ -28,8 +31,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
   // 1. Fetch Report
   const reports = await db
     .select()
-    .from(WelbeingGapReports)
-    .where(eq(WelbeingGapReports.id, id))
+    .from(wellbeingGapReports)
+    .where(eq(wellbeingGapReports.id, id))
     .limit(1);
 
   if (reports.length === 0) {
@@ -38,12 +41,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const report = reports[0];
 
-  // 2. Fetch User & Welbeing Profile
+  // 2. Fetch User & wellbeing Profile
   const [user] = await db.select().from(users).where(eq(users.id, report.userId)).limit(1);
   const [profile] = await db
     .select()
-    .from(WelbeingProfiles)
-    .where(eq(WelbeingProfiles.userId, report.userId))
+    .from(wellbeingProfiles)
+    .where(eq(wellbeingProfiles.userId, report.userId))
     .limit(1);
 
   // 3. Fetch Gaps & Nutrients
@@ -121,11 +124,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="badge badge-safe">Domain A Debral Evaluation</span>
+                <span className="badge badge-safe">Domain A Scientific Evaluation</span>
                 <span className="text-xs text-slate-400 font-mono">EFCT 2025 Standard</span>
               </div>
               <h1 className="text-3xl font-extrabold text-white">
-                Biochemical Welbeing Gap &amp; Safety Report
+                Biochemical wellbeing Gap &amp; Safety Report
               </h1>
               <p className="text-sm text-slate-300 mt-1">
                 Evaluated for <strong className="text-white">{user?.name || "Client"}</strong> ({profile?.age} yo {profile?.gender}, {profile?.region} &bull; {profile?.altitudeMeters}m altitude calibration)
@@ -141,8 +144,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <div className="text-xs font-black text-white">Safety Gate Active</div>
               </div>
 
-              {/* Debral Export Encounter Modal */}
-              <DebralEncounterModal
+              {/* Scientific Export Encounter Modal */}
+              <ScientificEncounterModal
                 reportId={report.id}
                 userName={user?.name || "Client User"}
                 userAge={profile?.age || 30}
@@ -156,7 +159,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
             </div>
           </div>
 
-          {/* Debral Explanatory Narrative Box */}
+          {/* Scientific Explanatory Narrative Box */}
           {report.summaryNarrative && (
             <div className="p-5 rounded-xl bg-black/40 border border-white/10 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
               {report.summaryNarrative}
@@ -175,7 +178,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </div>
         )}
 
-        {/* Section 1: Identified Welbeing Gaps */}
+        {/* Section 1: Identified wellbeing Gaps */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -363,7 +366,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/governance" className="btn-secondary text-sm">
-              Debral Governance
+              Scientific Governance
             </Link>
             <Link href="/audit" className="btn-primary text-sm">
               View Immutable Audit Log &rarr;

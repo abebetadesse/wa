@@ -8,7 +8,7 @@ export interface InquiryEntity {
   confidence: number;
 }
 
-export interface ParsedWelbeingInquiry {
+export interface ParsedwellbeingInquiry {
   raw: string;
   language: InquiryLanguage;
   intent: InquiryIntent;
@@ -98,12 +98,12 @@ function detectUrgency(text: string, symptoms: InquiryEntity[], duration: Inquir
   const hasMedium = mediumUrgencySignals.some((signal) => normalized.includes(signal)) || Boolean(duration && /month|year/i.test(duration.value));
 
   if (hasCritical) return { level: "critical" as const, score: 100, action: "EMERGENCY_CARE", recommendation: "Call local emergency services or go to the nearest emergency department now.", matchedSignals };
-  if (hasHigh) return { level: "high" as const, score: 80, action: "URGENT_REVIEW", recommendation: "Arrange urgent review by a qualified Welbeingcare professional, ideally today.", matchedSignals };
-  if (hasMedium) return { level: "medium" as const, score: 55, action: "SCHEDULE_REVIEW", recommendation: "Schedule a Welbeingcare visit soon, especially if symptoms persist or worsen.", matchedSignals };
+  if (hasHigh) return { level: "high" as const, score: 80, action: "URGENT_REVIEW", recommendation: "Arrange urgent review by a qualified healthcare professional, ideally today.", matchedSignals };
+  if (hasMedium) return { level: "medium" as const, score: 55, action: "SCHEDULE_REVIEW", recommendation: "Schedule a healthcare visit soon, especially if symptoms persist or worsen.", matchedSignals };
   return { level: "low" as const, score: 20, action: "MONITOR", recommendation: "Monitor the pattern, use the educational tools below, and seek care if it persists or worsens.", matchedSignals };
 }
 
-export function parseWelbeingInquiry(raw: string): ParsedWelbeingInquiry {
+export function parsewellbeingInquiry(raw: string): ParsedwellbeingInquiry {
   const text = raw.trim();
   const symptoms = findEntities(text, symptomAliases);
   const bodyParts = findEntities(text, bodyPartAliases);

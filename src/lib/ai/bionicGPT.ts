@@ -580,7 +580,7 @@ export async function synthesizeCaseReportAnalysis(
   if (!isBionicConfigured()) return fallback;
 
   try {
-    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and Debral-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Keep every recommendation ethical, non-diagnostic, culturally grounded, and concise.`;
+    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and scientific-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Keep every recommendation ethical, non-diagnostic, culturally grounded, and concise.`;
     const messages = buildBionicMessages(systemPrompt, [
       {
         role: "user",

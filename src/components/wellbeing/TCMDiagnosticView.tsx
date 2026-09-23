@@ -9,8 +9,8 @@ import {
   TongueDiagnosisResult,
   PulseQuality,
   PulseDiagnosisResult,
-} from "@/lib/Welbeing/WelbeingTypes";
-import { analyzeTongue, analyzePulse } from "@/lib/Welbeing/tcmDiagnosisEngine";
+} from "@/lib/wellbeing/wellbeingTypes";
+import { analyzeTongue, analyzePulse } from "@/lib/wellbeing/tcmDiagnosisEngine";
 
 type DiagMode = "tongue" | "pulse";
 
@@ -54,7 +54,7 @@ export default function TCMDiagnosticView() {
           <div className="badge badge-safe mb-2">Huazhen TCM · Visual Diagnosis</div>
           <h2 className="text-xl font-bold text-white">AI-Guided TCM & Ethiopian Humoral Assessment</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Self-reported tongue and pulse analysis cross-mapped with Ethiopian humoral medicine. Not a Debral diagnosis.
+            Self-reported tongue and pulse analysis cross-mapped with Ethiopian humoral medicine. Not a scientific diagnosis.
           </p>
         </div>
         <div className="flex gap-2">
@@ -263,7 +263,7 @@ export default function TCMDiagnosticView() {
                   ))}
                 </div>
 
-                <p className="text-sm text-slate-300 leading-relaxed">{tongueResult.DebralSignificance}</p>
+                <p className="text-sm text-slate-300 leading-relaxed">{tongueResult.scientificSignificance}</p>
               </div>
 
               <div className="glass-panel p-5">

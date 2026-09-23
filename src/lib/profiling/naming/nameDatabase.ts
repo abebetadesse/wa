@@ -11,7 +11,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Derived from the Ge'ez root 'አግሠጸ / ትዕግሥት' (Ta'agasa - to endure with steadfast grace).",
     culturalContext: "Historically bestowed upon daughters as a prayer for enduring grace and resilient composure through life's trials.",
     numerologicalValues: { destiny: 5, soulUrge: 8, personality: 6 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Deep interior resilience, reluctance to complain or express acute physical vulnerability.",
       emotionalExpressionStyle: "Internalizes emotional distress; absorbs relational tension silently before seeking relief.",
       psychosomaticTendency: "Gastrointestinal somatization (acid buildup / stomach tension) and upper shoulder holding from chronic patience.",
@@ -27,7 +27,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Mulu' (ሙሉ - full/complete) and 'Geta' (ጌታ - Lord / master / benefactor).",
     culturalContext: "Bestowed in gratitude for family survival and divine blessing, representing holistic completeness.",
     numerologicalValues: { destiny: 7, soulUrge: 9, personality: 7 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Quiet spiritual dignity, noble self-reliance, expectation of wholeness in body and spirit.",
       emotionalExpressionStyle: "Introspective and contemplative; prefers philosophical reflection to impulsive confrontation.",
       psychosomaticTendency: "Prone to introspective overthinking, nocturnal sleep phase delays, and cognitive fatigue.",
@@ -43,7 +43,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the verb 'አበበ' (Abebe - to blossom/flower, from the root አበባ).",
     culturalContext: "Celebrates the blossoming of a family lineage, the arrival of spring rains, and vibrant renewal.",
     numerologicalValues: { destiny: 1, soulUrge: 6, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Youthful vitality, natural optimism, expectation of growth and rapid physical recovery.",
       emotionalExpressionStyle: "Expansive and expressive; readily projects warmth and energy to companions.",
       psychosomaticTendency: "Elevated metabolic pace; tendency toward acute inflammatory surges when growth is blocked.",
@@ -59,11 +59,11 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the Semitic Ethiopian root 'በቀለ' (Baqala - to sprout forth from the earth).",
     culturalContext: "A name celebrating agricultural abundance, hardy highland crops, and survival against frost.",
     numerologicalValues: { destiny: 8, soulUrge: 6, personality: 2 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Grounded earthy endurance, physical stamina rooted in the soil, practical work ethic.",
       emotionalExpressionStyle: "Measured and steady; does not display erratic emotional highs or lows.",
       psychosomaticTendency: "Skeletal stiffness in knees and lower back; tendency to push through physical pain.",
-      balancingVirtue: "Joint lubrication through Welbeingy fats (sesame, flaxseed) and hot mineral spring soaks.",
+      balancingVirtue: "Joint lubrication through healthy fats (sesame, flaxseed) and hot mineral spring soaks.",
     },
   },
   {
@@ -75,7 +75,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Rooted in classical Ge'ez/Arabic loanword for diamond (ألماس / አልማዝ).",
     culturalContext: "Given to cherish a rare and invaluable daughter, symbolizing purity and radiant strength.",
     numerologicalValues: { destiny: 4, soulUrge: 2, personality: 2 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Unbreakable inner core, pristine aesthetic standards, high somatic sensitivity.",
       emotionalExpressionStyle: "Graceful and contained; maintains strong poise even during acute stress.",
       psychosomaticTendency: "High dermal and sensory sensitivity; physical tension around the neck and jawline.",
@@ -91,7 +91,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Classical Semitic root 'ሰ-ለ-መ' (SLM - peace, soundness, reconciliation).",
     culturalContext: "Bestowed during times of communal peace or as a prayer for domestic tranquility.",
     numerologicalValues: { destiny: 6, soulUrge: 6, personality: 9 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "The peacemaker and mediator; vital sign balance directly tied to harmonious relationships.",
       emotionalExpressionStyle: "Calming and de-escalating; deeply distressed by loud arguments or chaotic environments.",
       psychosomaticTendency: "Heart palpitations and epigastric fluttering during relational turmoil.",
@@ -107,7 +107,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the biblical name David (Ge'ez: ዳዊት - Beloved).",
     culturalContext: "Associated with the Psalms of David (መዝሙረ ዳዊት) used for holistic prayer and healing.",
     numerologicalValues: { destiny: 3, soulUrge: 1, personality: 2 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Resilient courage, musical harmony, capacity to conquer overwhelming obstacles.",
       emotionalExpressionStyle: "Charismatic and poetic; channels emotional stress into song, prayer, or creative labor.",
       psychosomaticTendency: "Vocal fatigue, throat tightness, and upper thoracic tension under heavy responsibility.",
@@ -123,7 +123,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Derived from 'ታሪክ' (Tarik - history/chronicle) with 3rd-person suffix '-u'.",
     culturalContext: "Commemorates an unforgettable event or ancestral continuity across generations.",
     numerologicalValues: { destiny: 9, soulUrge: 4, personality: 5 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Custodianship of the past; high sense of ancestral accountability.",
       emotionalExpressionStyle: "Narrative-driven; processes bodily sensations through storytelling and reflection.",
       psychosomaticTendency: "Nervous system exhaustion from carrying intergenerational family duties.",
@@ -139,7 +139,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From ancient Persian/Biblical roots adopted into Ge'ez (ኮከብ / አስቴር).",
     culturalContext: "Celebrated for bravery, radiant beauty, and stepping forward to save one's community.",
     numerologicalValues: { destiny: 2, soulUrge: 6, personality: 5 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Luminous guidance, social devotion, acute intuitive perception.",
       emotionalExpressionStyle: "Empathetic and socially responsive; sensitive to ambient group moods.",
       psychosomaticTendency: "Circulatory sensitivity, cold hands and feet during nervous anticipation.",
@@ -155,11 +155,11 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Ge'ez 'ዮሐንስ' (Yoḥannəs - Hebrew Yohanan - Yahweh is gracious).",
     culturalContext: "Echoes the ascetic discipline of John the Baptist and the prophetic wisdom of the Evangelist.",
     numerologicalValues: { destiny: 7, soulUrge: 8, personality: 8 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Ascetic purity, philosophical discipline, high tolerance for physical simplicity.",
       emotionalExpressionStyle: "Solemn and principled; values authenticity over superficial social ease.",
       psychosomaticTendency: "Digestive dryness during strict religious fasting; melancholy in isolated environments.",
-      balancingVirtue: "Nutritious broths during fasting periods, Welbeingy sesame oils, and warm sunlit community walks.",
+      balancingVirtue: "Nutritious broths during fasting periods, healthy sesame oils, and warm sunlit community walks.",
     },
   },
   {
@@ -171,7 +171,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the Ge'ez noun 'ኃይል' (Hayl - strength/power/might) with possessive suffix.",
     culturalContext: "Evokes divine and physical fortitude; commonly given to invoke protective power for a son.",
     numerologicalValues: { destiny: 1, soulUrge: 6, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Unyielding strength, commanding vigor, innate expectation of physical endurance.",
       emotionalExpressionStyle: "Assertive, protective, and direct; uncomfortable showing hesitation or frailty.",
       psychosomaticTendency: "High vascular tone, elevated blood pressure under stress, muscular shoulder clenching.",
@@ -187,7 +187,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Ge'ez 'ገነት' (Ganat - Eden / heavenly garden).",
     culturalContext: "Celebrates pure joy, fertility, verdant natural landscapes, and sweet maternal warmth.",
     numerologicalValues: { destiny: 3, soulUrge: 1, personality: 2 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Verdant life, joyful nurturing, connection to living green flora and culinary arts.",
       emotionalExpressionStyle: "Generous and welcoming; delights in feeding companions and cultivating sanctuary.",
       psychosomaticTendency: "Tendency to overindulge in rich festive dishes; fluid sluggishness when sedentary.",
@@ -203,7 +203,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the verb 'ታየ' (Taye - to appear, be seen, become visible).",
     culturalContext: "Often given when a long-awaited son finally arrives, proving divine presence.",
     numerologicalValues: { destiny: 4, soulUrge: 7, personality: 6 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Visible dignity, clear purpose, accountability to be present for others.",
       emotionalExpressionStyle: "Measured and steady; observant of physical and environmental details.",
       psychosomaticTendency: "Visual eye strain and tension headaches from intense focus and observation.",
@@ -221,7 +221,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Tekle' (ተክለ - plant/sapling) and 'Haymanot' (ሃይማኖት - faith).",
     culturalContext: "Honors Ethiopia's great 13th-century monk-healer saint Abune Tekle Haymanot of Debre Libanos.",
     numerologicalValues: { destiny: 33, soulUrge: 11, personality: 22 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Sacred healer and ascetic servant; immense spiritual endurance.",
       emotionalExpressionStyle: "Reverent, meditative, and self-sacrificing.",
       psychosomaticTendency: "Musculoskeletal fatigue from standing or kneeling for hours; joint stress in knees.",
@@ -237,7 +237,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Gebre' (ገብረ - servant/maker) and 'Meskel' (መስቀል - cross).",
     culturalContext: "Ancient royal and ecclesiastical name invoking steadfast protection and service.",
     numerologicalValues: { destiny: 22, soulUrge: 6, personality: 7 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Protective shield, unwavering duty, structural foundation for community survival.",
       emotionalExpressionStyle: "Stoic and duty-bound; rarely vocalizes personal physical distress.",
       psychosomaticTendency: "Chronic spinal compression and thoracic rigidity from bearing heavy burdens.",
@@ -253,8 +253,8 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Wolde' (ወልደ - son of) and 'Mariam' (ማርያም - Mary).",
     culturalContext: "Dedicated to the Virgin Mary for lifetime protection and compassionate guidance.",
     numerologicalValues: { destiny: 9, soulUrge: 8, personality: 1 },
-    WelbeingIdentityCorrelation: {
-      selfPerceptionTheme: "Maternal protection, compassionate heart, receptive to intuitive Welbeing healing.",
+    wellbeingIdentityCorrelation: {
+      selfPerceptionTheme: "Maternal protection, compassionate heart, receptive to intuitive wellbeing healing.",
       emotionalExpressionStyle: "Tender and protective; attentive to the emotional atmosphere of the household.",
       psychosomaticTendency: "Visceral digestive empathy; reacts strongly to emotional distress of close relatives.",
       balancingVirtue: "Gentle warm herbal teas (Damakesse, Koseret) and emotional grounding exercises.",
@@ -269,7 +269,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Walatta' (ወለተ - daughter of) and 'Petros' (ጴጥሮስ - Peter/Rock).",
     culturalContext: "Named after the historic 17th-century female monastic leader and saint who defended Ethiopian traditions.",
     numerologicalValues: { destiny: 11, soulUrge: 7, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Fierce spiritual integrity, intellectual fearlessness, leadership of women.",
       emotionalExpressionStyle: "Articulate and decisive; stands unshakable in defense of principles.",
       psychosomaticTendency: "High nervous system voltage, migraine headaches from high cognitive alertness.",
@@ -285,7 +285,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "Compound of 'Habte' (ሀብተ - gift/grace of) and 'Selassie' (ሥላሴ - Trinity).",
     culturalContext: "Signifies a child received as a miraculous gift from the Holy Trinity.",
     numerologicalValues: { destiny: 8, soulUrge: 11, personality: 6 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Consecrated purpose, high ethical standards, deep spiritual gratitude.",
       emotionalExpressionStyle: "Dignified and generous; acts as a pillar of emotional strength for family.",
       psychosomaticTendency: "Adrenal burnout from striving to live up to consecrated expectations.",
@@ -303,7 +303,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the Afaan Oromo root 'Caaluu' (to surpass, excel, or be superior).",
     culturalContext: "Given to a daughter celebrated for outstanding beauty, grace, and superior vitality.",
     numerologicalValues: { destiny: 5, soulUrge: 4, personality: 1 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Natural leadership among peers, high vitality, refusal to settle for mediocrity.",
       emotionalExpressionStyle: "Vibrant, dynamic, and direct; inspires energy in others.",
       psychosomaticTendency: "Restless tension in the legs, fast metabolic burn with sudden hunger dips.",
@@ -319,7 +319,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'Tola' (goodness/kindness/grace) in Afaan Oromo.",
     culturalContext: "Celebrates the traditional Gadaa virtue of benevolence and community welfare.",
     numerologicalValues: { destiny: 6, soulUrge: 2, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Community benefactor, fair mediator, steady guardian of the vulnerable.",
       emotionalExpressionStyle: "Warm, supportive, and reconciliatory.",
       psychosomaticTendency: "Shoulder tension from carrying community problems, delayed self-care.",
@@ -335,7 +335,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'Bona' (the dry sunny harvest season / winter sun) in Afaan Oromo.",
     culturalContext: "Associated with golden sunshine, harvest abundance, and radiant personal dignity.",
     numerologicalValues: { destiny: 1, soulUrge: 7, personality: 3 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Solar confidence, proud posture, resilience against cold or gloomy conditions.",
       emotionalExpressionStyle: "Warm and authoritative; speaks with deliberate confidence.",
       psychosomaticTendency: "Prone to inflammatory heat, acute fever reactions, and sun-induced headaches.",
@@ -351,7 +351,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From the verb 'Obsuu' (to endure with dignity and calm patience).",
     culturalContext: "A cornerstone virtue in Oromo Gadaa governance; leaders must possess boundless Obsa.",
     numerologicalValues: { destiny: 4, soulUrge: 7, personality: 6 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Immovable rock of composure; deep inner psychological stamina.",
       emotionalExpressionStyle: "Calm, slow to anger, thoughtful before responding.",
       psychosomaticTendency: "Internalizes somatic stress into the gut wall; risks digestive slow motility.",
@@ -367,7 +367,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'Hawwii' (desire, wish, aspiration, hope) in Afaan Oromo.",
     culturalContext: "Given to embody a family's hope for a brighter future and generational prosperity.",
     numerologicalValues: { destiny: 3, soulUrge: 1, personality: 2 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Future-focused optimism, buoyant energy, radiant aspirational vision.",
       emotionalExpressionStyle: "Enthusiastic and encouraging; uplifts companions in distress.",
       psychosomaticTendency: "Respiratory sensitivity; can hyperventilate or sigh deeply when dreams are frustrated.",
@@ -383,7 +383,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'Biftuu' (the morning sun / sunrise light) in Afaan Oromo.",
     culturalContext: "Celebrates the arrival of dawn after dark night; symbolizes awakening and clean beginnings.",
     numerologicalValues: { destiny: 7, soulUrge: 3, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Awakened consciousness, early morning peak vitality, sensory alertness.",
       emotionalExpressionStyle: "Clear, illuminating, and insightful.",
       psychosomaticTendency: "Sensitive to circadian disruptions; performs poorly with irregular night shifts.",
@@ -396,10 +396,10 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     language: "Afaan Oromo",
     meaning: "The Healer — one who brings recovery, wellness, and salvation",
     gender: "male",
-    originEtymology: "From 'Fayyisuu' (to heal, cure, restore Welbeing, or deliver) in Afaan Oromo.",
+    originEtymology: "From 'Fayyisuu' (to heal, cure, restore wellbeing, or deliver) in Afaan Oromo.",
     culturalContext: "Given to a son born after illness or dedicated to the art of healing and restorative medicine.",
     numerologicalValues: { destiny: 9, soulUrge: 11, personality: 7 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Instinctive healer and caregiver; draws energy from restoring harmony to others.",
       emotionalExpressionStyle: "Compassionate, gentle, and biologically attuned.",
       psychosomaticTendency: "Vulnerable to somatic empathy fatigue, taking on patients' or relatives' aches.",
@@ -415,7 +415,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'Caaluu' (to surpass, prevail, or be the best).",
     culturalContext: "Bestowed with aspirations for top excellence in physical athletics, knowledge, and leadership.",
     numerologicalValues: { destiny: 8, soulUrge: 2, personality: 6 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Competitiveness, peak physical conditioning, desire to excel in stamina.",
       emotionalExpressionStyle: "Dynamic and goal-directed.",
       psychosomaticTendency: "Overtraining syndrome, tendon and ligament strain from relentless exercise.",
@@ -433,7 +433,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Tigrinya 'Gide' (share/portion/destiny) with first-person possessive '-ey'.",
     culturalContext: "Expresses gratitude that the family has received their rightful blessing from Providence.",
     numerologicalValues: { destiny: 6, soulUrge: 5, personality: 1 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Contentment with one's rightful allotment; steady, resilient self-possession.",
       emotionalExpressionStyle: "Pragmatic, grounded, and appreciative of everyday blessings.",
       psychosomaticTendency: "Metabolic balance dependent on feeling satisfied and secure in life's baseline.",
@@ -449,7 +449,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Ge'ez/Tigrinya 'ብርሃን' (Birhan - light) with first-person suffix.",
     culturalContext: "Given to illuminate a household; represents intellect, clear vision, and spiritual insight.",
     numerologicalValues: { destiny: 1, soulUrge: 6, personality: 4 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Clarity of vision, radiant optimism, intellectual vitality.",
       emotionalExpressionStyle: "Direct, enlightened, and encouraging.",
       psychosomaticTendency: "Nerve strain from excessive cognitive effort, eye fatigue.",
@@ -465,7 +465,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Ge'ez/Tigrinya 'ሰናይ' (Sanay - good, pleasing, virtuous, fair).",
     culturalContext: "Celebrates moral virtue, aesthetic grace, and radiant goodness of spirit.",
     numerologicalValues: { destiny: 2, soulUrge: 6, personality: 5 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Inherent goodness and gentleness; creates a calm, soothing atmosphere for others.",
       emotionalExpressionStyle: "Soft-spoken, pleasant, and highly sensitive to disharmony.",
       psychosomaticTendency: "Digestive delicacy; upsets in relationships cause immediate appetite loss.",
@@ -481,7 +481,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From 'ሰመረ' (Samara - to unite, succeed, or find harmonious completion).",
     culturalContext: "Given when an enterprise or reconciliation succeeds; represents unity and harvest.",
     numerologicalValues: { destiny: 4, soulUrge: 1, personality: 3 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Integrator and builder; finds vitality when disparate parts come together harmoniously.",
       emotionalExpressionStyle: "Constructive and collaborative; dislikes wasted effort.",
       psychosomaticTendency: "Physical tension in the diaphragm when projects or relationships stall.",
@@ -497,7 +497,7 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Tigrinya 'Luwam' (deep peacefulness, restful tranquility, and sweet slumber).",
     culturalContext: "Given with prayers for a tranquil life, undisturbed rest, and soothing peace.",
     numerologicalValues: { destiny: 7, soulUrge: 4, personality: 3 },
-    WelbeingIdentityCorrelation: {
+    wellbeingIdentityCorrelation: {
       selfPerceptionTheme: "Sanctuary of peace; naturally requires peaceful environments for cellular recuperation.",
       emotionalExpressionStyle: "Serene, tranquil, and contemplative.",
       psychosomaticTendency: "Severe somatic sensitivity to noise pollution, chaotic lighting, or loud conflict.",
@@ -513,11 +513,11 @@ export const ETHIOPIAN_NAMES_DATABASE: EthiopianNameRecord[] = [
     originEtymology: "From Ge'ez/Tigrinya 'መሐረ' (Mahara - to have mercy, forgive, or show compassion).",
     culturalContext: "Honors divine forgiveness and human compassion; brings restorative reconciliation.",
     numerologicalValues: { destiny: 9, soulUrge: 6, personality: 3 },
-    WelbeingIdentityCorrelation: {
-      selfPerceptionTheme: "Compassionate healer and forgiver; releases grudges quickly to protect cardiovascular Welbeing.",
+    wellbeingIdentityCorrelation: {
+      selfPerceptionTheme: "Compassionate healer and forgiver; releases grudges quickly to protect cardiovascular wellbeing.",
       emotionalExpressionStyle: "Gentle, forgiving, and open-hearted.",
       psychosomaticTendency: "Cardiovascular sensitivity; absorbs emotional grief if forgiveness is delayed.",
-      balancingVirtue: "Emotional release practices, heart-Welbeingy antioxidants, and brisk nature walks.",
+      balancingVirtue: "Emotional release practices, heart-healthy antioxidants, and brisk nature walks.",
     },
   },
 ];

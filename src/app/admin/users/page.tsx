@@ -274,7 +274,7 @@ export default function UserManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">User Administration</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Manage registered Ethiopian Welbeing platform accounts, roles, access statuses, and sessions.
+            Manage registered Ethiopian wellbeing platform accounts, roles, access statuses, and sessions.
           </p>
         </div>
 
@@ -577,7 +577,7 @@ export default function UserManagementPage() {
                   >
                     <option value="user">Standard User</option>
                     <option value="premium">Premium User</option>
-                    <option value="practitioner">Welbeing Practitioner</option>
+                    <option value="practitioner">wellbeing Practitioner</option>
                     <option value="editor">Content Editor</option>
                     <option value="reviewer">Reviewer</option>
                     <option value="analyst">Analyst</option>

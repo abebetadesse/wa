@@ -1,6 +1,6 @@
 import { AspectType, CelestialBody } from "../types";
 
-export interface PlanetaryWelbeingInfo {
+export interface PlanetarywellbeingInfo {
   ethiopianName: string;
   ethiopianInterpretation: string;
   organs: string[];
@@ -9,7 +9,7 @@ export interface PlanetaryWelbeingInfo {
   vitalityStrengths: string[];
 }
 
-export const PLANETARY_Welbeing_MAP: Record<CelestialBody, PlanetaryWelbeingInfo> = {
+export const PLANETARY_wellbeing_MAP: Record<CelestialBody, PlanetarywellbeingInfo> = {
   Sun: {
     ethiopianName: "Shems / Tsehay (ፀሐይ)",
     ethiopianInterpretation: "Represents primordial life force ('Hiwot'), sovereign vitality, and the central heart axis of the kingdom.",
@@ -108,106 +108,106 @@ export const PLANETARY_Welbeing_MAP: Record<CelestialBody, PlanetaryWelbeingInfo
   },
 };
 
-export const HOUSE_Welbeing_MAP: Record<number, { bodyParts: string[]; WelbeingMeaning: string; dailyRoutineImpact: string }> = {
+export const HOUSE_wellbeing_MAP: Record<number, { bodyParts: string[]; wellbeingMeaning: string; dailyRoutineImpact: string }> = {
   1: {
     bodyParts: ["Head", "Brain hemispheres", "Face", "General physical constitution"],
-    WelbeingMeaning: "Primary constitutional vitality, self-image, bodily armor, and raw physical presence.",
+    wellbeingMeaning: "Primary constitutional vitality, self-image, bodily armor, and raw physical presence.",
     dailyRoutineImpact: "Sets the baseline energy rhythm upon waking and the body's immediate sensory receptivity.",
   },
   2: {
     bodyParts: ["Throat", "Neck", "Thyroid gland", "Vocal cords", "Oral mucosa"],
-    WelbeingMeaning: "Nutrient assimilation, metabolic energy storage, voice resonance, and biochemical grounding.",
+    wellbeingMeaning: "Nutrient assimilation, metabolic energy storage, voice resonance, and biochemical grounding.",
     dailyRoutineImpact: "Governs dietary intake habits, chew pace, and steady sustained stamina through the workday.",
   },
   3: {
     bodyParts: ["Shoulders", "Arms", "Hands", "Lungs & Respiratory bronchi", "Peripheral nerves"],
-    WelbeingMeaning: "Locomotion, short-distance physical mobility, cognitive agility, and breath coordination.",
+    wellbeingMeaning: "Locomotion, short-distance physical mobility, cognitive agility, and breath coordination.",
     dailyRoutineImpact: "Impacts daily desk posture, typing strain, daily sensory commute, and breathing patterns.",
   },
   4: {
     bodyParts: ["Chest", "Breasts", "Epigastric stomach", "Internal core sanctuary"],
-    WelbeingMeaning: "Emotional safety, visceral digestion, ancestry-rooted bodily memory, and restful sanctuary.",
+    wellbeingMeaning: "Emotional safety, visceral digestion, ancestry-rooted bodily memory, and restful sanctuary.",
     dailyRoutineImpact: "Governs evening unwinding, domestic meal environments, and feeling safe in one's home space.",
   },
   5: {
     bodyParts: ["Heart", "Spine & Upper back", "Vital warmth", "Sperm / Ova reproductive vitality"],
-    WelbeingMeaning: "Joyful vitality, creative expression, cardiovascular pulse, and recreational play.",
+    wellbeingMeaning: "Joyful vitality, creative expression, cardiovascular pulse, and recreational play.",
     dailyRoutineImpact: "Governs physical exercise enthusiasm, cardiovascular workouts, and artistic or playful recreation.",
   },
   6: {
     bodyParts: ["Digestive tract", "Small & Large intestines", "Abdominal organs", "Immune surveillance"],
-    WelbeingMeaning: "Daily Welbeing habits, digestive hygiene, workplace ergonomics, and micro-nutrient assimilation.",
-    dailyRoutineImpact: "The central house of daily Welbeing routines: meal timings, bowel regularity, and stress mitigation at work.",
+    wellbeingMeaning: "Daily wellbeing habits, digestive hygiene, workplace ergonomics, and micro-nutrient assimilation.",
+    dailyRoutineImpact: "The central house of daily wellbeing routines: meal timings, bowel regularity, and stress mitigation at work.",
   },
   7: {
     bodyParts: ["Kidneys & Renal system", "Lower back (Lumbar)", "Adrenal balance", "Buttocks"],
-    WelbeingMeaning: "Interpersonal nervous equilibrium, balance between self and other, and renal fluid balance.",
+    wellbeingMeaning: "Interpersonal nervous equilibrium, balance between self and other, and renal fluid balance.",
     dailyRoutineImpact: "Governs relational stress management, emotional boundaries with partners, and lumbar ergonomics.",
   },
   8: {
     bodyParts: ["Reproductive organs", "Excretory organs", "Prostate / Pelvic bowl", "Colon"],
-    WelbeingMeaning: "Deep tissue regeneration, detoxification, hormonal cycles, and psychological release of trauma.",
+    wellbeingMeaning: "Deep tissue regeneration, detoxification, hormonal cycles, and psychological release of trauma.",
     dailyRoutineImpact: "Governs deep sleep detoxification, bowel evacuation, sexual wellness, and processing intense emotions.",
   },
   9: {
     bodyParts: ["Hips", "Thighs & Femur", "Sciatic nerve", "Liver lobes"],
-    WelbeingMeaning: "Expansive movement, outdoor nature endurance, philosophical resilience, and high-altitude adaptation.",
+    wellbeingMeaning: "Expansive movement, outdoor nature endurance, philosophical resilience, and high-altitude adaptation.",
     dailyRoutineImpact: "Governs long-distance walking/hiking, mental horizons, pilgrimages to monasteries/sacred springs, and mental optimism.",
   },
   10: {
     bodyParts: ["Knees & Patella", "Skeletal joints", "Skin epidermis", "Postural spine"],
-    WelbeingMeaning: "Career resilience, public endurance, structural posture, and occupational stress tolerance.",
+    wellbeingMeaning: "Career resilience, public endurance, structural posture, and occupational stress tolerance.",
     dailyRoutineImpact: "Governs work stamina, managing deadline stress, preventing postural collapse, and career pacing.",
   },
   11: {
     bodyParts: ["Calves", "Shins", "Ankles & Achilles tendons", "Peripheral circulatory network"],
-    WelbeingMeaning: "Community Welbeing support, collective stamina, visionary energy, and bio-electric flow.",
+    wellbeingMeaning: "Community wellbeing support, collective stamina, visionary energy, and bio-electric flow.",
     dailyRoutineImpact: "Governs participation in social mahber/idir community circles, group wellness walks, and shared collective meals.",
   },
   12: {
     bodyParts: ["Feet", "Toes", "Lymphatic fluid network", "Pineal gland & Deep sleep neurochemistry"],
-    WelbeingMeaning: "Subconscious somatic memory, spiritual retreat, dream life, and subtle immune sanctuary.",
+    wellbeingMeaning: "Subconscious somatic memory, spiritual retreat, dream life, and subtle immune sanctuary.",
     dailyRoutineImpact: "Governs meditation, pre-sleep ritual, quiet solitude, prayer, and protection against over-stimulation.",
   },
 };
 
-export function getPlanetaryWelbeingAssociations(planet: CelestialBody): PlanetaryWelbeingInfo {
-  return PLANETARY_Welbeing_MAP[planet] || PLANETARY_Welbeing_MAP.Sun;
+export function getPlanetarywellbeingAssociations(planet: CelestialBody): PlanetarywellbeingInfo {
+  return PLANETARY_wellbeing_MAP[planet] || PLANETARY_wellbeing_MAP.Sun;
 }
 
-export function getHouseWelbeingMapping(houseNum: number) {
-  return HOUSE_Welbeing_MAP[houseNum] || HOUSE_Welbeing_MAP[1];
+export function getHousewellbeingMapping(houseNum: number) {
+  return HOUSE_wellbeing_MAP[houseNum] || HOUSE_wellbeing_MAP[1];
 }
 
-export function getAspectWelbeingImpact(
+export function getAspectwellbeingImpact(
   p1: CelestialBody,
   p2: CelestialBody,
   aspect: AspectType
-): { WelbeingImpact: string; psychosomaticIndicator: string } {
+): { wellbeingImpact: string; psychosomaticIndicator: string } {
   if (aspect === "trine" || aspect === "sextile") {
     return {
-      WelbeingImpact: `Harmonious physiological synergy between ${p1} and ${p2}: supports steady cellular vitality and smooth autonomic recuperation.`,
+      wellbeingImpact: `Harmonious physiological synergy between ${p1} and ${p2}: supports steady cellular vitality and smooth autonomic recuperation.`,
       psychosomaticIndicator: `Ease in emotional self-regulation; somatic stress dissipates naturally without internal organ stagnation.`,
     };
   }
 
   if (aspect === "conjunction") {
     return {
-      WelbeingImpact: `Intensified metabolic fusion of ${p1} and ${p2}: powerful energetic output concentrated in shared organ zones.`,
+      wellbeingImpact: `Intensified metabolic fusion of ${p1} and ${p2}: powerful energetic output concentrated in shared organ zones.`,
       psychosomaticIndicator: `Heightened conscious awareness of bodily signals; requires intentional pacing to avoid over-stimulation.`,
     };
   }
 
   if (aspect === "square") {
     return {
-      WelbeingImpact: `Frictional tension between ${p1} and ${p2}: elevated risk of acute inflammation, muscle tightening, or periodic energy spikes.`,
+      wellbeingImpact: `Frictional tension between ${p1} and ${p2}: elevated risk of acute inflammation, muscle tightening, or periodic energy spikes.`,
       psychosomaticIndicator: `Tendency to store emotional frustration in smooth muscles and vascular tone; mindful breathing and cooling herbs recommended.`,
     };
   }
 
   // Opposition
   return {
-    WelbeingImpact: `Polarized balance between ${p1} and ${p2}: fluctuating vitality levels; organ systems pull in opposing directions requiring conscious equilibrium.`,
+    wellbeingImpact: `Polarized balance between ${p1} and ${p2}: fluctuating vitality levels; organ systems pull in opposing directions requiring conscious equilibrium.`,
     psychosomaticIndicator: `Sensitivity to interpersonal stress causing somatic shifts in digestion or blood pressure; regular grounding routines essential.`,
   };
 }

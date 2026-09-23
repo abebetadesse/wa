@@ -141,7 +141,7 @@ async function runDryTest() {
   box("TEST 3 · Cultural · Direct LLM extraction (synthetic abstract)", GREEN);
   const syntheticAbstract = `
     A cross-sectional study in Amhara region found that 67.3% of study participants 
-    consulted traditional healers (wogesh, debtera) before attending formal Welbeing facilities. 
+    consulted traditional healers (wogesh, debtera) before attending formal health facilities. 
     The median delay to facility-based care was 8.5 days. Illness attribution included 
     evil eye (buda) in 41.2% and Zar spirit possession in 28.7% of cases. 
     Traditional birth attendant (TBA) delivery was 34.1% in rural kebeles. 

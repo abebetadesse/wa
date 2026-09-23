@@ -9,7 +9,7 @@ export default function ConstitutionPage() {
           Constitution & rhythm
         </div>
         <h1 className="max-w-4xl text-3xl font-black tracking-tight text-white md:text-5xl">
-          Welbeing, temperament, and daily resilience through a rooted Ethiopian lens.
+          Wellbeing, temperament, and daily resilience through a rooted Ethiopian lens.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-emerald-50/85 md:text-base">
           Each expert can use a constitution-style assessment to understand energy, digestion, sleep, stress, movement, and environmental comfort. The underlying logic is evidence-aware, but the presentation remains respectful of traditional body knowledge, practical daily living, and cultural rhythm.

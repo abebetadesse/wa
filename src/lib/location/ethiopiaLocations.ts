@@ -106,7 +106,7 @@ export interface EthiopianLocation {
   agroZone: EthiopianAgroZone;
   riftValley: boolean;
   commonLanguages: string[];
-  WelbeingProfile: EthiopianLocationWelbeingProfile;
+  wellbeingProfile: EthiopianLocationWellbeingProfile;
   systemsProfile: EthiopianLocationSystemsProfile;
   denseData: {
     observations: LocationObservation[];
@@ -141,7 +141,7 @@ export interface GeneticDisorderIndicator {
   populationScope: string;
 }
 
-export interface EthiopianLocationWelbeingProfile {
+export interface EthiopianLocationWellbeingProfile {
   dataLabel: "indicative_planning_estimate";
   referenceYear: number;
   sourceNote: string;
@@ -219,7 +219,7 @@ const profile = (
   return {
     dataLabel: "indicative_planning_estimate" as const,
     referenceYear: 2024,
-    sourceNote: "Indicative planning estimate assembled from public Ethiopian population-Welbeing patterns; anthropometric, birth-defect, polygamy, and inherited-condition indicators are modeled town averages, not a patient diagnosis or official surveillance rate.",
+    sourceNote: "Indicative planning estimate assembled from public Ethiopian population-wellbeing patterns; anthropometric, birth-defect, polygamy, and inherited-condition indicators are modeled town averages, not a patient diagnosis or official surveillance rate.",
     demographics: {
       estimatedPopulation,
       urbanPopulationPct,
@@ -436,7 +436,7 @@ const buildSystemsProfile = (
       ingredients: [base.crops[0], "Water", "Salt where used"],
       processingMethods: ["Cleaning", "Milling", "Cooking or fermentation according to local recipe"],
       preservationMethods: ["Dry grain storage", "Sun-drying", "Hermetic or sealed storage where available"],
-      compositionSource: { name: "EFCT", reference: "Use matching EFCT food record before Debral calculations.", intendedUse: "human_food" },
+      compositionSource: { name: "EFCT", reference: "Use matching EFCT food record before scientific calculations.", intendedUse: "human_food" },
     },
     {
       food: base.livestock[0],
@@ -531,19 +531,19 @@ const buildSystemsProfile = (
 };
 
 const RAW_ETHIOPIAN_LOCATIONS: Omit<EthiopianLocation, "systemsProfile" | "denseData">[] = [
-  { id: "addis-ababa", region: "Addis Ababa", name: "Addis Ababa", nameAmharic: "አዲስ አበባ", aliases: ["Finfinnee"], latitude: 9.03, longitude: 38.74, altitudeMeters: 2400, agroZone: "dega", riftValley: false, commonLanguages: ["Amharic", "Afaan Oromo", "English"], WelbeingProfile: profile(3600000, 79, 20, 4.0, communicable(12, 145, 3.2, 8200), nonCommunicable(24, 5.8, 310, 92)) },
-  { id: "bahir-dar", region: "Amhara", name: "Bahir Dar", nameAmharic: "ባሕር ዳር", aliases: [], latitude: 11.57, longitude: 37.36, altitudeMeters: 1800, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], WelbeingProfile: profile(500000, 58, 19, 4.7, communicable(65, 170, 2.1, 11500), nonCommunicable(18, 3.9, 360, 65)) },
-  { id: "gondar", region: "Amhara", name: "Gondar", nameAmharic: "ጎንደር", aliases: [], latitude: 12.61, longitude: 37.47, altitudeMeters: 2133, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], WelbeingProfile: profile(500000, 62, 19, 4.8, communicable(48, 190, 2.0, 10800), nonCommunicable(19, 4.2, 375, 70)) },
-  { id: "mekelle", region: "Tigray", name: "Mekelle", nameAmharic: "መቀሌ", aliases: [], latitude: 13.50, longitude: 39.47, altitudeMeters: 2084, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Tigrinya", "Amharic"], WelbeingProfile: profile(500000, 70, 20, 4.3, communicable(25, 210, 1.8, 9200), nonCommunicable(22, 5.0, 420, 82)) },
-  { id: "adama", region: "Oromia", name: "Adama", nameAmharic: "አዳማ", aliases: ["Nazret"], latitude: 8.54, longitude: 39.27, altitudeMeters: 1712, agroZone: "weina_dega", riftValley: true, commonLanguages: ["Afaan Oromo", "Amharic"], WelbeingProfile: profile(500000, 76, 21, 4.2, communicable(80, 155, 2.6, 9800), nonCommunicable(25, 6.4, 330, 105)) },
-  { id: "hawassa", region: "Sidama", name: "Hawassa", nameAmharic: "ሀዋሳ", aliases: [], latitude: 7.06, longitude: 38.48, altitudeMeters: 1708, agroZone: "weina_dega", riftValley: true, commonLanguages: ["Sidamo", "Amharic", "Afaan Oromo"], WelbeingProfile: profile(500000, 62, 20, 4.5, communicable(95, 165, 3.1, 10500), nonCommunicable(23, 5.9, 340, 98)) },
-  { id: "arbaminch", region: "South Ethiopia", name: "Arba Minch", nameAmharic: "አርባ ምንጭ", aliases: ["Arba Minch"], latitude: 6.03, longitude: 37.55, altitudeMeters: 1285, agroZone: "kolla", riftValley: true, commonLanguages: ["Gamo", "Amharic"], WelbeingProfile: profile(120000, 48, 19, 5.0, communicable(130, 175, 2.5, 13200), nonCommunicable(19, 4.0, 300, 68)) },
-  { id: "dire-dawa", region: "Dire Dawa", name: "Dire Dawa", nameAmharic: "ድሬ ዳዋ", aliases: [], latitude: 9.60, longitude: 41.85, altitudeMeters: 1276, agroZone: "kolla", riftValley: false, commonLanguages: ["Afaan Oromo", "Somali", "Amharic"], WelbeingProfile: profile(530000, 72, 21, 4.1, communicable(105, 150, 2.4, 9800), nonCommunicable(27, 6.8, 360, 112)) },
-  { id: "jigjiga", region: "Somali", name: "Jigjiga", nameAmharic: "ጅጅጋ", aliases: [], latitude: 9.35, longitude: 42.80, altitudeMeters: 1609, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Somali", "Amharic"], WelbeingProfile: profile(250000, 45, 18, 5.4, communicable(35, 125, 1.5, 14600), nonCommunicable(16, 3.1, 260, 52,), 15) },
-  { id: "semera", region: "Afar", name: "Semera", nameAmharic: "ሰመራ", aliases: [], latitude: 11.79, longitude: 41.01, altitudeMeters: 430, agroZone: "bereha", riftValley: true, commonLanguages: ["Afar", "Amharic"], WelbeingProfile: profile(60000, 78, 19, 5.1, communicable(210, 135, 1.3, 16100), nonCommunicable(17, 3.4, 240, 45)) },
-  { id: "assosa", region: "Benishangul-Gumuz", name: "Assosa", nameAmharic: "አሶሳ", aliases: [], latitude: 10.07, longitude: 34.53, altitudeMeters: 1570, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic", "Berta"], WelbeingProfile: profile(70000, 42, 18, 5.3, communicable(180, 220, 2.2, 15800), nonCommunicable(15, 2.8, 250, 48)) },
-  { id: "gambella", region: "Gambella", name: "Gambella", nameAmharic: "ጋምቤላ", aliases: [], latitude: 8.25, longitude: 34.59, altitudeMeters: 526, agroZone: "kolla", riftValley: false, commonLanguages: ["Nuer", "Anywaa", "Amharic"], WelbeingProfile: profile(75000, 48, 18, 5.5, communicable(260, 240, 3.0, 18300), nonCommunicable(14, 2.6, 220, 42)) },
-  { id: "harar", region: "Harari", name: "Harar", nameAmharic: "ሐረሪ", aliases: [], latitude: 9.31, longitude: 42.13, altitudeMeters: 1885, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Harari", "Afaan Oromo", "Amharic"], WelbeingProfile: profile(125000, 85, 22, 3.9, communicable(44, 130, 2.8, 7600), nonCommunicable(29, 7.2, 390, 120)) },
+  { id: "addis-ababa", region: "Addis Ababa", name: "Addis Ababa", nameAmharic: "አዲስ አበባ", aliases: ["Finfinnee"], latitude: 9.03, longitude: 38.74, altitudeMeters: 2400, agroZone: "dega", riftValley: false, commonLanguages: ["Amharic", "Afaan Oromo", "English"], wellbeingProfile: profile(3600000, 79, 20, 4.0, communicable(12, 145, 3.2, 8200), nonCommunicable(24, 5.8, 310, 92)) },
+  { id: "bahir-dar", region: "Amhara", name: "Bahir Dar", nameAmharic: "ባሕር ዳር", aliases: [], latitude: 11.57, longitude: 37.36, altitudeMeters: 1800, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], wellbeingProfile: profile(500000, 58, 19, 4.7, communicable(65, 170, 2.1, 11500), nonCommunicable(18, 3.9, 360, 65)) },
+  { id: "gondar", region: "Amhara", name: "Gondar", nameAmharic: "ጎንደር", aliases: [], latitude: 12.61, longitude: 37.47, altitudeMeters: 2133, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], wellbeingProfile: profile(500000, 62, 19, 4.8, communicable(48, 190, 2.0, 10800), nonCommunicable(19, 4.2, 375, 70)) },
+  { id: "mekelle", region: "Tigray", name: "Mekelle", nameAmharic: "መቀሌ", aliases: [], latitude: 13.50, longitude: 39.47, altitudeMeters: 2084, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Tigrinya", "Amharic"], wellbeingProfile: profile(500000, 70, 20, 4.3, communicable(25, 210, 1.8, 9200), nonCommunicable(22, 5.0, 420, 82)) },
+  { id: "adama", region: "Oromia", name: "Adama", nameAmharic: "አዳማ", aliases: ["Nazret"], latitude: 8.54, longitude: 39.27, altitudeMeters: 1712, agroZone: "weina_dega", riftValley: true, commonLanguages: ["Afaan Oromo", "Amharic"], wellbeingProfile: profile(500000, 76, 21, 4.2, communicable(80, 155, 2.6, 9800), nonCommunicable(25, 6.4, 330, 105)) },
+  { id: "hawassa", region: "Sidama", name: "Hawassa", nameAmharic: "ሀዋሳ", aliases: [], latitude: 7.06, longitude: 38.48, altitudeMeters: 1708, agroZone: "weina_dega", riftValley: true, commonLanguages: ["Sidamo", "Amharic", "Afaan Oromo"], wellbeingProfile: profile(500000, 62, 20, 4.5, communicable(95, 165, 3.1, 10500), nonCommunicable(23, 5.9, 340, 98)) },
+  { id: "arbaminch", region: "South Ethiopia", name: "Arba Minch", nameAmharic: "አርባ ምንጭ", aliases: ["Arba Minch"], latitude: 6.03, longitude: 37.55, altitudeMeters: 1285, agroZone: "kolla", riftValley: true, commonLanguages: ["Gamo", "Amharic"], wellbeingProfile: profile(120000, 48, 19, 5.0, communicable(130, 175, 2.5, 13200), nonCommunicable(19, 4.0, 300, 68)) },
+  { id: "dire-dawa", region: "Dire Dawa", name: "Dire Dawa", nameAmharic: "ድሬ ዳዋ", aliases: [], latitude: 9.60, longitude: 41.85, altitudeMeters: 1276, agroZone: "kolla", riftValley: false, commonLanguages: ["Afaan Oromo", "Somali", "Amharic"], wellbeingProfile: profile(530000, 72, 21, 4.1, communicable(105, 150, 2.4, 9800), nonCommunicable(27, 6.8, 360, 112)) },
+  { id: "jigjiga", region: "Somali", name: "Jigjiga", nameAmharic: "ጅጅጋ", aliases: [], latitude: 9.35, longitude: 42.80, altitudeMeters: 1609, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Somali", "Amharic"], wellbeingProfile: profile(250000, 45, 18, 5.4, communicable(35, 125, 1.5, 14600), nonCommunicable(16, 3.1, 260, 52,), 15) },
+  { id: "semera", region: "Afar", name: "Semera", nameAmharic: "ሰመራ", aliases: [], latitude: 11.79, longitude: 41.01, altitudeMeters: 430, agroZone: "bereha", riftValley: true, commonLanguages: ["Afar", "Amharic"], wellbeingProfile: profile(60000, 78, 19, 5.1, communicable(210, 135, 1.3, 16100), nonCommunicable(17, 3.4, 240, 45)) },
+  { id: "assosa", region: "Benishangul-Gumuz", name: "Assosa", nameAmharic: "አሶሳ", aliases: [], latitude: 10.07, longitude: 34.53, altitudeMeters: 1570, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic", "Berta"], wellbeingProfile: profile(70000, 42, 18, 5.3, communicable(180, 220, 2.2, 15800), nonCommunicable(15, 2.8, 250, 48)) },
+  { id: "gambella", region: "Gambella", name: "Gambella", nameAmharic: "ጋምቤላ", aliases: [], latitude: 8.25, longitude: 34.59, altitudeMeters: 526, agroZone: "kolla", riftValley: false, commonLanguages: ["Nuer", "Anywaa", "Amharic"], wellbeingProfile: profile(75000, 48, 18, 5.5, communicable(260, 240, 3.0, 18300), nonCommunicable(14, 2.6, 220, 42)) },
+  { id: "harar", region: "Harari", name: "Harar", nameAmharic: "ሐረሪ", aliases: [], latitude: 9.31, longitude: 42.13, altitudeMeters: 1885, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Harari", "Afaan Oromo", "Amharic"], wellbeingProfile: profile(125000, 85, 22, 3.9, communicable(44, 130, 2.8, 7600), nonCommunicable(29, 7.2, 390, 120)) },
 ];
 
 export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.map((location) => ({
@@ -552,14 +552,14 @@ export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.
   denseData: {
     ...buildDenseLocationData(location.id),
     observations: [
-      ...location.WelbeingProfile.communicableDiseaseRates,
-      ...location.WelbeingProfile.nonCommunicableDiseaseRates,
+      ...location.wellbeingProfile.communicableDiseaseRates,
+      ...location.wellbeingProfile.nonCommunicableDiseaseRates,
     ].map((rate, index): LocationObservation => ({
       observationUid: `urn:obs:et:${location.id}:${index + 1}`,
-      observationId: `${location.id}-${rate.condition.toLowerCase().replaceAll(" ", "-")}-${location.WelbeingProfile.referenceYear}-${index + 1}`,
+      observationId: `${location.id}-${rate.condition.toLowerCase().replaceAll(" ", "-")}-${location.wellbeingProfile.referenceYear}-${index + 1}`,
       locationId: location.id,
       spatialId: `urn:loc:et:${location.id}`,
-      indicatorCode: `Welbeing.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
+      indicatorCode: `wellbeing.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
       value: rate.value,
       unit: rate.measure === "prevalence_pct" ? "pct" : rate.measure === "mortality_per_100k" ? "per_100k" : "per_100k",
       method: "estimate",
@@ -568,11 +568,11 @@ export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.
       disaggregation: rate.populationScope,
       disaggregationAxes: { population_scope: rate.populationScope },
       periodType: "year",
-      periodValue: String(location.WelbeingProfile.referenceYear),
-      validFrom: `${location.WelbeingProfile.referenceYear}-01-01`,
-      validTo: `${location.WelbeingProfile.referenceYear}-12-31`,
+      periodValue: String(location.wellbeingProfile.referenceYear),
+      validFrom: `${location.wellbeingProfile.referenceYear}-01-01`,
+      validTo: `${location.wellbeingProfile.referenceYear}-12-31`,
       transactionFrom: "2026-09-18T00:00:00Z",
-      referenceYear: location.WelbeingProfile.referenceYear,
+      referenceYear: location.wellbeingProfile.referenceYear,
       dataStatus: "estimated",
       confidenceLevel: "very_low",
       confidenceBasis: "inferred",
@@ -598,7 +598,7 @@ export function resolveEthiopianLocation(input?: string): EthiopianLocation {
 }
 
 export function getEthiopianLocationOptions() {
-  return ETHIOPIAN_LOCATIONS.map(({ id, region, name, nameAmharic, altitudeMeters, agroZone, WelbeingProfile, systemsProfile, denseData }) => ({
-    id, region, name, nameAmharic, altitudeMeters, agroZone, WelbeingProfile, systemsProfile, denseData,
+  return ETHIOPIAN_LOCATIONS.map(({ id, region, name, nameAmharic, altitudeMeters, agroZone, wellbeingProfile, systemsProfile, denseData }) => ({
+    id, region, name, nameAmharic, altitudeMeters, agroZone, wellbeingProfile, systemsProfile, denseData,
   }));
 }

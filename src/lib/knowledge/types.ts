@@ -11,7 +11,7 @@ export type KnowledgeStrandType =
   | "cultural"
   | "astrological";
 
-export type DomainType = "Welbeing" | "cultural" | "cross-strand";
+export type DomainType = "wellbeing" | "cultural" | "cross-strand";
 
 export interface PubmedEvidence {
   pmid?: string;
@@ -98,7 +98,7 @@ export interface UserProfile {
     education?: string;
     employment?: string;
   };
-  Welbeing?: {
+  wellbeing?: {
     conditions?: string[];
     medications?: string[];
     allergies?: string[];
@@ -109,7 +109,7 @@ export interface UserProfile {
     lactating?: boolean;
     age?: number;
     fasting?: boolean;
-    mentalWelbeingConditions?: string[];
+    mentalwellbeingConditions?: string[];
     bmi?: number;
     hivStatus?: string;
   };
@@ -170,11 +170,11 @@ export interface UserProfile {
   hivStatus?: string;
   bmi?: number;
   deficiencies?: string[];
-  gutWelbeing?: {
+  gutwellbeing?: {
     problems?: string[];
   };
   riskFactors?: string[];
-  mentalWelbeing?: {
+  mentalwellbeing?: {
     symptoms?: string[];
     conditions?: string[];
     traumaHistory?: boolean;
@@ -198,7 +198,7 @@ export interface ActionPlanItem {
   title: string;
   action: string;
   priority: "critical" | "high" | "medium" | "low";
-  category: "Debral" | "dietary" | "herbal" | "lifestyle" | "monitoring";
+  category: "scientific" | "dietary" | "herbal" | "lifestyle" | "monitoring";
   completed?: boolean;
 }
 

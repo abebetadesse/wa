@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, roles, authSessions, WelbeingGapReports, knowledgeItems, auditLog, loginHistory } from "@/lib/db/schema";
+import { users, roles, authSessions, wellbeingGapReports, knowledgeItems, auditLog, loginHistory } from "@/lib/db/schema";
 import { requireAnyRole } from "@/lib/auth";
 import { count, eq, sql } from "drizzle-orm";
 
@@ -20,7 +20,7 @@ export async function GET() {
     // 2. Platform operational metrics
     let totalCases = 0;
     try {
-      const [c] = await db.select({ total: count() }).from(WelbeingGapReports);
+      const [c] = await db.select({ total: count() }).from(wellbeingGapReports);
       totalCases = c?.total || 0;
     } catch { }
 
@@ -97,7 +97,7 @@ export async function GET() {
     } catch { }
 
     const caseTypeBreakdown = [
-      { caseType: "Welbeing", count: Math.max(0, Math.round(totalCases * 0.42)) },
+      { caseType: "wellbeing", count: Math.max(0, Math.round(totalCases * 0.42)) },
       { caseType: "relationships", count: Math.max(0, Math.round(totalCases * 0.2)) },
       { caseType: "career", count: Math.max(0, Math.round(totalCases * 0.18)) },
       { caseType: "spiritual", count: Math.max(0, Math.round(totalCases * 0.12)) },

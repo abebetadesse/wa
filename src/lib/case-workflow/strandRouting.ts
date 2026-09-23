@@ -1,14 +1,14 @@
 import { KNOWLEDGE_STRANDS } from "@/lib/knowledge/catalog";
 import { KnowledgeStrandType } from "@/lib/knowledge/types";
 
-export type CaseDomain = "Welbeing" | "peace" | "power" | "money" | "career" | "relationships" | "spiritual" | "legal" | "social";
+export type CaseDomain = "wellbeing" | "peace" | "power" | "money" | "career" | "relationships" | "spiritual" | "legal" | "social";
 
 const ALL_CASE_STRANDS = [...KNOWLEDGE_STRANDS];
 const domainA = ALL_CASE_STRANDS.filter((strand) => strand !== "cultural" && strand !== "astrological");
 const domainB = ["cultural", "astrological"] as KnowledgeStrandType[];
 
 export const CASE_STRAND_FILTERS: Record<CaseDomain, KnowledgeStrandType[]> = {
-  Welbeing: ALL_CASE_STRANDS,
+  wellbeing: ALL_CASE_STRANDS,
   peace: ALL_CASE_STRANDS,
   power: ALL_CASE_STRANDS,
   money: ALL_CASE_STRANDS,
@@ -20,7 +20,7 @@ export const CASE_STRAND_FILTERS: Record<CaseDomain, KnowledgeStrandType[]> = {
 };
 
 export const CASE_DOMAIN_A_STRANDS: Record<CaseDomain, KnowledgeStrandType[]> = {
-  Welbeing: domainA,
+  wellbeing: domainA,
   peace: domainA,
   power: domainA,
   money: domainA,
@@ -32,7 +32,7 @@ export const CASE_DOMAIN_A_STRANDS: Record<CaseDomain, KnowledgeStrandType[]> = 
 };
 
 export const CASE_DOMAIN_B_STRANDS: Record<CaseDomain, KnowledgeStrandType[]> = {
-  Welbeing: domainB,
+  wellbeing: domainB,
   peace: domainB,
   power: domainB,
   money: domainB,

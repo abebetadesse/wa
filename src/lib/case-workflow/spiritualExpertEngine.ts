@@ -163,7 +163,7 @@ export const EXPERTS_REGISTRY: Expert[] = [
     credential: "Senior Debtera & Astrologer",
     titleAmharic: "ደብተራ አበበወ ወርቁ",
     specialization: "Abushakir Computus & Family Reconciliation",
-    specialization_tags: ["family", "relationships", "Welbeing", "life_direction"],
+    specialization_tags: ["family", "relationships", "wellbeing", "life_direction"],
     case_types: ["spiritual"],
     languages: ["am", "om", "en"],
     region: "amhara",

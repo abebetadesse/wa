@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, intakeSubmissions, WelbeingProfiles, culturalProfiles } from "@/lib/db/schema";
+import { users, intakeSubmissions, wellbeingProfiles, culturalProfiles } from "@/lib/db/schema";
 import { runEvaluationAndPersist } from "@/lib/evaluation/pipelineRunner";
 import { stage1Normalize } from "@/lib/evaluation/stage1Normalize";
 import { encryptRestrictedField } from "@/lib/security/encryption";
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
     const encryptedMedicalHistory = encryptRestrictedField(normalized.medicalHistory);
     const encryptedMedications = encryptRestrictedField(normalized.medications);
 
-    // Save Welbeing Profile (Domain A)
-    await db.insert(WelbeingProfiles).values({
+    // Save wellbeing Profile (Domain A)
+    await db.insert(wellbeingProfiles).values({
       userId,
       age: normalized.age,
       gender: normalized.gender,
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       jobId,
       submissionId,
       reportId,
-      message: "Intake evaluated and Welbeing gap report generated successfully.",
+      message: "Intake evaluated and wellbeing gap report generated successfully.",
     });
   } catch (error: any) {
     console.error("API Intake error:", error);

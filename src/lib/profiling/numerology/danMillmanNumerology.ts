@@ -33,7 +33,7 @@ const DAN_MILLMAN_PATHS: Record<
     innateGifts: ["Charismatic leadership", "Dynamic resilience", "Executive capacity", "Inspirational communication"],
     recurringChallenges: ["Oscillating between self-doubt and excessive control", "Fear of failure", "Impulsive financial risks"],
     vulnerabilities: ["Cardiovascular circulation, reproductive vitality, stress-induced headaches."],
-    vitalityPractices: ["Aerobic highland hiking", "Mindfulness meditation to balance ego drives", "Nourishing heart-Welbeingy diets (Teff, Flax)"],
+    vitalityPractices: ["Aerobic highland hiking", "Mindfulness meditation to balance ego drives", "Nourishing heart-healthy diets (Teff, Flax)"],
     careerAffinities: ["Entrepreneurship", "Public leadership", "Media production", "Philanthropic fund direction"],
     relationshipDynamics: ["Requires an autonomous partner who will not compete for control and who values emotional transparency."],
   },
@@ -50,7 +50,7 @@ const DAN_MILLMAN_PATHS: Record<
     corePurpose: "To evolve through personal creativity (1) and universal integrity (9) into self-confident, pioneering leadership (10).",
     innateGifts: ["Independent visionary", "Courageous integrity", "Natural magnetism", "Trailblazing spirit"],
     recurringChallenges: ["Loneliness at the top", "Reluctance to ask for assistance", "Perfectionistic burnout"],
-    vulnerabilities: ["Circulatory Welbeing, upper spine tension, eye strain."],
+    vulnerabilities: ["Circulatory wellbeing, upper spine tension, eye strain."],
     vitalityPractices: ["Sun salutations at dawn", "Regular digital detox", "Expressive singing or chanting"],
     careerAffinities: ["Pioneering technology", "Social entrepreneurship", "Author/Philosopher", "Director"],
     relationshipDynamics: ["Needs autonomy while learning to let partners contribute equally without feeling managed."],
@@ -70,7 +70,7 @@ const DAN_MILLMAN_PATHS: Record<
     recurringChallenges: ["Expecting perfection from others", "Martyrdom in service", "Struggles with financial equilibrium"],
     vulnerabilities: ["Lymphatic system, liver congestion, tension in shoulders and neck."],
     vitalityPractices: ["Dry brushing", "Gentle stretching routines", "Hydration with lemon and honey"],
-    careerAffinities: ["Welbeingcare management", "Sustainable agriculture stewardship", "Legal advocacy", "Social enterprises"],
+    careerAffinities: ["healthcare management", "Sustainable agriculture stewardship", "Legal advocacy", "Social enterprises"],
     relationshipDynamics: ["Deeply protective and loyal; must avoid taking over the partner's responsibilities."],
   },
   "32/5": {
@@ -158,7 +158,7 @@ export function calculateDanMillmanLifePath(birthDateStr: string): DanMillmanLif
     corePurpose: pathData.corePurpose,
     innateGifts: pathData.innateGifts,
     recurringChallenges: pathData.recurringChallenges,
-    physicalWelbeingTendencies: {
+    physicalwellbeingTendencies: {
       vulnerabilities: pathData.vulnerabilities,
       vitalityPractices: pathData.vitalityPractices,
     },

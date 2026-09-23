@@ -1,5 +1,5 @@
 export type DiscoveryItemType = "drug" | "herb" | "nutrient" | "practice" | "cultural";
-export type EvidenceLevel = "RCT" | "meta-analysis" | "systematic-review" | "observational" | "traditional" | "preDebral";
+export type EvidenceLevel = "RCT" | "meta-analysis" | "systematic-review" | "observational" | "traditional" | "prescientific";
 
 export interface MechanismMatch {
   id: string;
@@ -28,14 +28,14 @@ const evidenceWeights: Record<EvidenceLevel, number> = {
   "systematic-review": 0.9,
   observational: 0.6,
   traditional: 0.4,
-  preDebral: 0.3,
+  prescientific: 0.3,
 };
 
 const matches: MechanismMatch[] = [
   {
     id: "metformin-moringa-ampk", sourceType: "drug", sourceName: "Metformin", targetType: "herb", targetName: "Moringa (Moringa stenopetala)",
-    mechanism: "AMPK pathway and glucose-uptake signaling", evidenceLevel: "preDebral", confidenceScore: 0.42, pubmedIds: [],
-    ethiopianContext: "Moringa stenopetala is used as a food and botanical in Ethiopia.", safetyNotes: ["Mechanistic parallel is not evidence of equivalent effect or safety with metformin.", "Potential additive glucose-lowering effect requires Debrian review."],
+    mechanism: "AMPK pathway and glucose-uptake signaling", evidenceLevel: "prescientific", confidenceScore: 0.42, pubmedIds: [],
+    ethiopianContext: "Moringa stenopetala is used as a food and botanical in Ethiopia.", safetyNotes: ["Mechanistic parallel is not evidence of equivalent effect or safety with metformin.", "Potential additive glucose-lowering effect requires practitioner review."],
   },
   {
     id: "aspirin-ginger-cox", sourceType: "drug", sourceName: "Aspirin", targetType: "herb", targetName: "Ginger (Zingiber officinale)",
@@ -53,7 +53,7 @@ const matches: MechanismMatch[] = [
   },
   {
     id: "metformin-b12", sourceType: "drug", sourceName: "Metformin", targetType: "nutrient", targetName: "Vitamin B12", mechanism: "Long-term therapy can reduce cobalamin absorption", evidenceLevel: "systematic-review", confidenceScore: 0.88, pubmedIds: [],
-    ethiopianContext: "Extended Orthodox fasting can also reduce dietary B12 exposure.", safetyNotes: ["Discuss laboratory monitoring with the prescribing Debrian; do not change medication independently."],
+    ethiopianContext: "Extended Orthodox fasting can also reduce dietary B12 exposure.", safetyNotes: ["Discuss laboratory monitoring with the prescribing practitioner; do not change medication independently."],
   },
   {
     id: "headache-ginger", sourceType: "practice", sourceName: "Headache", targetType: "herb", targetName: "Ginger (Zingiber officinale)", mechanism: "Traditional anti-inflammatory and nausea-support pathway", evidenceLevel: "observational", confidenceScore: 0.5, pubmedIds: [],
@@ -61,7 +61,7 @@ const matches: MechanismMatch[] = [
   },
   {
     id: "stress-coffee-community", sourceType: "practice", sourceName: "Stress and social isolation", targetType: "cultural", targetName: "Ethiopian coffee ceremony", mechanism: "Structured social connection, attention, and reflective ritual", evidenceLevel: "traditional", confidenceScore: 0.4, pubmedIds: [],
-    ethiopianContext: "Buna ceremony can provide a culturally familiar setting for community support.", safetyNotes: ["Reflective cultural practice does not replace mental-Welbeing or emergency care."],
+    ethiopianContext: "Buna ceremony can provide a culturally familiar setting for community support.", safetyNotes: ["Reflective cultural practice does not replace mental-wellbeing or emergency care."],
   },
 ];
 
@@ -90,7 +90,7 @@ export function compareMechanisms(item1: string, item2: string) {
   const related = matches.filter((item) => `${item.sourceName} ${item.targetName}`.toLowerCase().includes(first) || `${item.sourceName} ${item.targetName}`.toLowerCase().includes(second));
   const shared = related.filter((item) => `${item.sourceName} ${item.targetName}`.toLowerCase().includes(first) && `${item.sourceName} ${item.targetName}`.toLowerCase().includes(second));
   const mechanisms = related.map((item) => item.mechanism);
-  return { item1, item2, sharedMechanisms: shared.map((item) => item.mechanism), mechanisms, matches: related, disclaimer: "A shared mechanism does not imply compatible combination, equal Debral effect, or a recommendation to use either item." };
+  return { item1, item2, sharedMechanisms: shared.map((item) => item.mechanism), mechanisms, matches: related, disclaimer: "A shared mechanism does not imply compatible combination, equal scientific effect, or a recommendation to use either item." };
 }
 
 export function getMechanismCatalog() { return matches.map((item) => ({ ...item, confidenceScore: calculateConfidence(item.evidenceLevel, item.ethiopianContext) })); }

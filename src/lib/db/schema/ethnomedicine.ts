@@ -2,7 +2,7 @@
  * Ethiopian Ethnomedicine & Wisdom Platform foundation schema.
  *
  * Domain A data is stored separately from Domain B data:
- * - scientificAnalyses and biometricScans.rawAiDebralFindings are restricted
+ * - scientificAnalyses and biometricScans.rawAiScientificFindings are restricted
  *   operational data for authorized admin/PhD reviewers.
  * - culturalReports and biometricScans.translatedCulturalFindings are the
  *   user-facing interpretation layer.
@@ -43,7 +43,7 @@ export const platformCases = pgTable("cases", {
 });
 
 /**
- * Domain A: restricted scientific/Debral-adjacent analysis.
+ * Domain A: restricted scientific/scientific-adjacent analysis.
  *
  * No user-facing route should select or serialize this table. Admin/PhD
  * routes must enforce role checks before reading it.
@@ -97,7 +97,7 @@ export const biometricScans = pgTable("biometric_scans", {
    * Domain A restricted output. Keep this column out of all user-facing
    * serializers and APIs.
    */
-  rawAiDebralFindings: jsonb("raw_ai_Debral_findings").$type<Record<string, unknown>>(),
+  rawAiScientificFindings: jsonb("raw_ai_scientific_findings").$type<Record<string, unknown>>(),
   /**
    * Domain B reviewed interpretation. This must remain reflective and
    * non-diagnostic, with a safety notice included in the API response.

@@ -49,7 +49,7 @@ async function hasValidAccessToken(token: string | undefined) {
   if (!encodedPayload || !encodedSignature) return false;
 
   try {
-    const secret = process.env.AUTH_SECRET || "ethiopian-holistic-Welbeing-development-secret-key-2026";
+    const secret = process.env.AUTH_SECRET || "ethiopian-holistic-wellbeing-development-secret-key-2026";
     const key = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(secret),

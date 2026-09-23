@@ -6,12 +6,12 @@ export interface HerbInteractionRule {
   targetDrugClass: string;
   interactionSeverity: "high" | "moderate" | "caution";
   mechanism: string;
-  DebralEffect: string;
+  physiologicalEffect: string;
   contraindicated: boolean;
   sourceRef: string;
 }
 
-// Certified Debral interaction database (ETM-DB)
+// Certified scientific interaction database (ETM-DB)
 export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
   {
     herbName: "Tena Adam",
@@ -19,7 +19,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Anticoagulants / Antiplatelets",
     interactionSeverity: "high",
     mechanism: "Furanocoumarins and rutin exert potent additive antiplatelet and antithrombotic effects, inhibiting CYP3A4-mediated drug metabolism.",
-    DebralEffect: "Significant risk of gastrointestinal hemorrhage and uncontrollable bleeding.",
+    physiologicalEffect: "Significant risk of gastrointestinal hemorrhage and uncontrollable bleeding.",
     contraindicated: true,
     sourceRef: "ETM-SAFETY-WAR-01",
   },
@@ -29,7 +29,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Anticoagulants / Antiplatelets",
     interactionSeverity: "high",
     mechanism: "Kosotoxin causes mucosal gastrointestinal erosion and hepatotoxic stress, compounding anticoagulant-induced hemorrhage.",
-    DebralEffect: "Life-threatening internal hemorrhage and hepatic decompensation.",
+    physiologicalEffect: "Life-threatening internal hemorrhage and hepatic decompensation.",
     contraindicated: true,
     sourceRef: "ETM-SAFETY-KOS-02",
   },
@@ -39,7 +39,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Hypoglycemics",
     interactionSeverity: "high",
     mechanism: "Disruption of systemic acid-base equilibrium and additive metabolic strain with biguanides.",
-    DebralEffect: "Uncontrolled metabolic destabilization and lactic acidosis risk.",
+    physiologicalEffect: "Uncontrolled metabolic destabilization and lactic acidosis risk.",
     contraindicated: true,
     sourceRef: "ETM-SAFETY-KOS-03",
   },
@@ -49,7 +49,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Hypoglycemics",
     interactionSeverity: "moderate",
     mechanism: "Thymoquinone enhances pancreatic insulin secretion and tissue glucose uptake additively with oral hypoglycemic agents.",
-    DebralEffect: "Risk of symptomatic or nocturnal hypoglycemia.",
+    physiologicalEffect: "Risk of symptomatic or nocturnal hypoglycemia.",
     contraindicated: false,
     sourceRef: "ETM-SAFETY-GLU-03",
   },
@@ -59,7 +59,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Antihypertensives",
     interactionSeverity: "moderate",
     mechanism: "Synergistic vasodilatory effect potentiating systemic vascular resistance reduction.",
-    DebralEffect: "Sudden orthostatic hypotension, syncope, and dizziness.",
+    physiologicalEffect: "Sudden orthostatic hypotension, syncope, and dizziness.",
     contraindicated: false,
     sourceRef: "ETM-SAFETY-HYP-04",
   },
@@ -69,7 +69,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     targetDrugClass: "Diuretics",
     interactionSeverity: "moderate",
     mechanism: "Additive natriuresis and aqueous diuresis compounding fluid/potassium losses.",
-    DebralEffect: "Electrolyte depletion, prerenal azotemia, and dehydration.",
+    physiologicalEffect: "Electrolyte depletion, prerenal azotemia, and dehydration.",
     contraindicated: false,
     sourceRef: "ETM-SAFETY-DIU-05",
   },
@@ -78,7 +78,7 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
 /**
  * MANDATORY SAFETY GATE:
  * Evaluates candidate traditional herbal remedies against client's active prescription medications.
- * If ANY high-severity interaction or strict contraindication is found, or if flagged by Debral rules,
+ * If ANY high-severity interaction or strict contraindication is found, or if flagged by scientific rules,
  * the remedy MUST be culled and NEVER surfaced to the user.
  */
 export function checkHerbDrugSafety(
@@ -117,7 +117,7 @@ export function checkHerbDrugSafety(
               flaggedMedication: med.name,
               severity: rule.interactionSeverity,
               mechanism: rule.mechanism,
-              DebralEffect: rule.DebralEffect,
+              physiologicalEffect: rule.physiologicalEffect,
               contraindicated: rule.contraindicated,
               sourceRef: rule.sourceRef,
             };

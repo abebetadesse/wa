@@ -13,7 +13,7 @@ function SpiritualPaymentContent({ caseId }: { caseId: string }) {
   const [paymentMethod, setPaymentMethod] = useState(initialMethod);
   const [phoneNumber, setPhoneNumber] = useState("0911234567");
   const [fullName, setFullName] = useState("Selamawit");
-  const [email, setEmail] = useState("seeker@ethioWelbeing.com");
+  const [email, setEmail] = useState("seeker@ethiowellbeing.com");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 

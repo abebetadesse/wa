@@ -92,7 +92,7 @@ export default function EmergencyClient() {
             OFFLINE-READY · EPHI EMERGENCY PROTOCOLS
           </div>
           <h1 className="text-3xl font-extrabold text-white mb-2">
-            Emergency <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">Welbeing Profile</span>
+            Emergency <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">wellbeing Profile</span>
           </h1>
           <p className="text-slate-400 text-sm max-w-2xl">
             Your emergency contacts, active conditions, medications, and blood type — stored locally on your device for immediate offline access by first responders.
@@ -303,7 +303,7 @@ export default function EmergencyClient() {
 
         {/* Preferred Hospital */}
         <div className="glass-panel p-5 mt-6">
-          <h2 className="text-sm font-bold text-white mb-3">Preferred Hospital / Welbeing Facility</h2>
+          <h2 className="text-sm font-bold text-white mb-3">Preferred Hospital / health Facility</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {ETHIOPIAN_HOSPITALS.map((h) => (
               <button

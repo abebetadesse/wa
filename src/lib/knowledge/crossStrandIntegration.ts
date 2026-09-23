@@ -27,7 +27,7 @@ export class CrossStrandIntegrationEngine {
         strands: ["biochemical", "medication"],
         description: `Hepatic Cytochrome P450 pathway alters or competes with active pharmaceutical clearance for ${activeMed.name}.`,
         evidence: "Biochemical xenobiotic Phase I hemoprotein clearance rules and verified ETM-DB drug interaction registries.",
-        recommendation: "Avoid co-administering traditional botanical extracts without consulting a Debral pharmacist or prescribing physician.",
+        recommendation: "Avoid co-administering traditional botanical extracts without consulting a scientific pharmacist or prescribing physician.",
         severity: activeMed.severity || "high",
         priority: 1,
         confidence: 0.95,
@@ -72,14 +72,14 @@ export class CrossStrandIntegrationEngine {
 
     // 4. Psychological + Addiction Intersection
     const psychDistress = psych.find((f) => f.type === "psychological_condition");
-    const addictionUse = add.find((f) => f.type === "substance_Welbeing_impact");
+    const addictionUse = add.find((f) => f.type === "substance_wellbeing_impact");
     if (psychDistress && addictionUse) {
       intersections.push({
         type: "psychological_addiction",
         strands: ["psychological", "addiction"],
         description: `Symptom overlap: ${psychDistress.name} is closely linked with the use patterns and post-use withdrawal crashes of ${addictionUse.name}.`,
         evidence: "Sympathomimetic stimulant crash and chronic dopamine receptor downregulation intensify secondary anxiety and depressive anhedonia.",
-        recommendation: "Address substance cessation alongside mental Welbeing support. Tapering substance use is necessary to stabilize mood and sleep.",
+        recommendation: "Address substance cessation alongside mental wellbeing support. Tapering substance use is necessary to stabilize mood and sleep.",
         severity: "high",
         priority: 2,
         confidence: 0.91,
@@ -94,13 +94,13 @@ export class CrossStrandIntegrationEngine {
       intersections.push({
         type: "socioeconomic_epidemiological",
         strands: ["socioeconomic", "epidemiological"],
-        description: `Welbeingcare transit and resource constraints in ${ruralAccess.name} heighten the urgency of early intervention for ${severeEpi.name}.`,
+        description: `healthcare transit and resource constraints in ${ruralAccess.name} heighten the urgency of early intervention for ${severeEpi.name}.`,
         evidence: "Geographic distance to tertiary centers and limited primary post diagnostics can delay life-saving treatment.",
-        recommendation: "Do not wait for symptoms to worsen; utilize community transport and present to the nearest Welbeing Center immediately.",
+        recommendation: "Do not wait for symptoms to worsen; utilize community transport and present to the nearest health Center immediately.",
         severity: "high",
         priority: 1,
         confidence: 0.9,
-        causal_pathway: ["Remote Geographic Location", "Limited Local Diagnostic Equipment", "Delayed Debral Presentation", "Elevated Complication Risk"],
+        causal_pathway: ["Remote Geographic Location", "Limited Local Diagnostic Equipment", "Delayed scientific Presentation", "Elevated Complication Risk"],
       });
     }
 
@@ -117,7 +117,7 @@ export class CrossStrandIntegrationEngine {
         severity: "moderate",
         priority: 3,
         confidence: 0.93,
-        causal_pathway: ["Orthodox Vegan Fasting (Tsome)", "Zero Dietary Cobalamin / Heme Iron", "Hepatic Store Mobilization", "SubDebral Nutrient Dip", "Need for Plant-Based Complementarity"],
+        causal_pathway: ["Orthodox Vegan Fasting (Tsome)", "Zero Dietary Cobalamin / Heme Iron", "Hepatic Store Mobilization", "Subscientific Nutrient Dip", "Need for Plant-Based Complementarity"],
       });
     }
 
@@ -128,7 +128,7 @@ export class CrossStrandIntegrationEngine {
         strands: ["cultural", "astrological"],
         description: "Traditional Awde Negest constitutional balance complements cultural rhythms of communal coffee ceremonies and seasonal rest.",
         evidence: "Domain B Cultural Heritage Layer: Personal reflection on constitutional temperaments and community containment.",
-        recommendation: "Reflect on traditional seasonal pacing and family/community support while following all modern Debral advice.",
+        recommendation: "Reflect on traditional seasonal pacing and family/community support while following all modern scientific advice.",
         severity: "low",
         priority: 4,
         confidence: 0.85,

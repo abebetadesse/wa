@@ -54,7 +54,7 @@ test("evaluates complex multi-strand case: altitude, fasting, coffee polyphenol 
         },
         grainPreparation: "Short 24h fermentation mixed with unfermented sorghum",
       },
-      Welbeing_and_medications: {
+      wellbeing_and_medications: {
         currentMedications: [
           { name: "Metformin", dose: "500mg BID", indication: "Impaired fasting glucose" },
           { name: "Omeprazole", dose: "20mg daily", indication: "Reflux" },
@@ -79,7 +79,7 @@ test("evaluates complex multi-strand case: altitude, fasting, coffee polyphenol 
     },
     submittedCase: {
       caseId: "case_tigist_001",
-      caseType: "Welbeing",
+      caseType: "wellbeing",
       primaryChallenge: "Extreme fatigue, shortness of breath on slight inclines, and mild lower abdominal cramps",
       detailedNarrative: "I am 16 weeks pregnant. Feeling drained every afternoon. Drinking Tena Adam for stomach aches. Keeping the fast faithfully.",
       selectedInterest: "nutrition and recovery",
@@ -147,13 +147,13 @@ test("evaluates substance-driven case with Khat, Areke, and critical red-flag em
         alcohol: "Drinks traditional Areke (distilled katikala) 3-4 evenings weekly",
         tobacco: "Smokes 10 cigarettes daily",
       },
-      Welbeing_and_medications: {
+      wellbeing_and_medications: {
         currentMedications: [{ name: "Hydrochlorothiazide", dose: "25mg", indication: "Hypertension" }],
       },
     },
     submittedCase: {
       caseId: "case_subst_002",
-      caseType: "Welbeing",
+      caseType: "wellbeing",
       primaryChallenge: "Severe crushing chest pain radiating to left jaw, accompanied by heavy sweating and shortness of breath for the past 45 minutes",
       detailedNarrative: "I was chewing khat and drinking areke when sudden pressure hit my chest like an elephant sitting on me. Feeling dizzy and nauseous.",
       includeDomainBReflection: true,

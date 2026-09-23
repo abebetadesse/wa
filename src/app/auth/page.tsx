@@ -273,12 +273,12 @@ function AuthPageInner() {
           </Link>
           <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {tab === "login" && "Sign In to Your Workspace"}
-            {tab === "register" && "Create Your Holistic Welbeing Account"}
+            {tab === "register" && "Create Your Holistic wellbeing Account"}
             {tab === "forgot" && "Recover Your Account Password"}
           </h1>
           <p className="mt-1.5 text-xs sm:text-sm text-slate-400">
-            {tab === "login" && "Access Debral evaluations, Awde Negest divination sessions, and traditional Welbeing records."}
-            {tab === "register" && "Join certified debteras, Debral nutritionists, and patients across all Ethiopian regions."}
+            {tab === "login" && "Access scientific evaluations, Awde Negest divination sessions, and traditional wellbeing records."}
+            {tab === "register" && "Join certified debteras, scientific nutritionists, and patients across all Ethiopian regions."}
             {tab === "forgot" && "Enter your registered email to receive a password recovery verification token."}
           </p>
         </div>
@@ -559,7 +559,7 @@ function AuthPageInner() {
                         className="mt-0.5 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300 leading-relaxed">
-                        I accept the <span className="text-emerald-400 underline">Terms of Service</span> and acknowledge the Ethiopian Ministry of Welbeing and EFMHACA ethical compliance guidelines.
+                        I accept the <span className="text-emerald-400 underline">Terms of Service</span> and acknowledge the Ethiopian Ministry of health and EFMHACA ethical compliance guidelines.
                       </span>
                     </label>
                   </div>

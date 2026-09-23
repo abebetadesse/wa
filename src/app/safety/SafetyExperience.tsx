@@ -18,7 +18,7 @@ const MED_OPTIONS = [
   { name: "Metformin", drugClass: "Hypoglycemics" },
   { name: "Lisinopril", drugClass: "Antihypertensives" },
   { name: "Furosemide (Lasix)", drugClass: "Diuretics" },
-  { name: "None (Welbeingy individual)", drugClass: "None" },
+  { name: "None (healthy individual)", drugClass: "None" },
 ];
 
 export default function SafetyExperience() {
@@ -119,7 +119,7 @@ export default function SafetyExperience() {
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
                   {safetyResult.status === "flagged"
                     ? `The algorithm flags ${selectedHerb.name} due to adverse pharmacological interaction with ${selectedMed.name} (${selectedMed.drugClass}). This remedy is NEVER shown to the client.`
-                    : `No documented high-severity Debral contraindication exists between ${selectedHerb.name} and ${selectedMed.name}. The remedy is safe to surface.`}
+                    : `No documented high-severity scientific contraindication exists between ${selectedHerb.name} and ${selectedMed.name}. The remedy is safe to surface.`}
                 </p>
 
                 {safetyResult.status === "flagged" && (
@@ -130,8 +130,8 @@ export default function SafetyExperience() {
                     </div>
 
                     <div>
-                      <span className="text-rose-400 font-semibold block mb-0.5">Debral Adverse Effect:</span>
-                      <p className="text-slate-300">{safetyResult.DebralEffect}</p>
+                      <span className="text-rose-400 font-semibold block mb-0.5">scientific Adverse Effect:</span>
+                      <p className="text-slate-300">{safetyResult.physiologicalEffect}</p>
                     </div>
 
                     <div className="pt-2 border-t border-rose-500/20 text-[10px] font-mono text-slate-400">

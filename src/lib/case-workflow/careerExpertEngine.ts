@@ -18,7 +18,7 @@ export type AdvisorRole =
   | "financial_advisor"  // licensed only — financial_advisor flag required
   | "sector_specialist"
   | "cultural_advisor"
-  | "mental_Welbeing_referral";  // for cases flagged with safety concern
+  | "mental_wellbeing_referral";  // for cases flagged with safety concern
 
 export interface CareerAdvisor {
   id: string;
@@ -121,7 +121,7 @@ const ADVISOR_POOL: CareerAdvisor[] = [
     nameAmharic: "ትግስት በቀለ",
     titleAmharic: "የሙያ አሰልጣኝ",
     role: "career_coach",
-    specialization_sectors: ["Education", "Welbeingcare", "NGO", "Government"],
+    specialization_sectors: ["Education", "healthcare", "NGO", "Government"],
     career_stages: ["exploring", "job_seeking", "transitioning", "recovering"],
     languages: ["Amharic", "English"],
     region: "Addis Ababa",
@@ -280,12 +280,12 @@ function scoreAdvisor(advisor: CareerAdvisor, profile: CareerProfile, needsFinan
 
 export function assignCareerAdvisor(
   profile: CareerProfile,
-  options?: { needsFinancialAdvisor?: boolean; needsMentalWelbeingReferral?: boolean }
+  options?: { needsFinancialAdvisor?: boolean; needsMentalwellbeingReferral?: boolean }
 ): ExpertAssignmentResult | null {
   const needsFinancialAdvisor = options?.needsFinancialAdvisor ?? false;
-  const needsMentalWelbeingReferral = options?.needsMentalWelbeingReferral ?? false;
+  const needsMentalwellbeingReferral = options?.needsMentalwellbeingReferral ?? false;
 
-  if (needsMentalWelbeingReferral) {
+  if (needsMentalwellbeingReferral) {
     // Return a referral notice instead of a career advisor
     return null;
   }

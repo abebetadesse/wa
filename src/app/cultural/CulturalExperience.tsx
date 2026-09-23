@@ -30,7 +30,7 @@ interface EthiopianCalendarInfo {
 interface CoffeeCeremonyStage {
   name: string;
   description: string;
-  WelbeingEffect: string;
+  wellbeingEffect: string;
   timing: string;
 }
 
@@ -40,30 +40,30 @@ const ETHIOPIAN_MONTHS = [
 ];
 
 const FASTING_PERIODS = [
-  { name: "Abiy Tsom (Lent)", duration: "55 days", season: "Feb-Apr", WelbeingNote: "Vegan, requires B12 & iron monitoring" },
-  { name: "Filseta (Assumption)", duration: "16 days", season: "Aug", WelbeingNote: "Vegan, ensure adequate hydration" },
-  { name: "Weekly Wednesdays", duration: "Every week", season: "Year-round", WelbeingNote: "Vegan, moderate nutrient intake" },
-  { name: "Weekly Fridays", duration: "Every week", season: "Year-round", WelbeingNote: "Vegan, ensure protein variety" },
-  { name: "Nineveh Fast", duration: "3 days", season: "Feb", WelbeingNote: "Vegan, rest and reflection" },
+  { name: "Abiy Tsom (Lent)", duration: "55 days", season: "Feb-Apr", wellbeingNote: "Vegan, requires B12 & iron monitoring" },
+  { name: "Filseta (Assumption)", duration: "16 days", season: "Aug", wellbeingNote: "Vegan, ensure adequate hydration" },
+  { name: "Weekly Wednesdays", duration: "Every week", season: "Year-round", wellbeingNote: "Vegan, moderate nutrient intake" },
+  { name: "Weekly Fridays", duration: "Every week", season: "Year-round", wellbeingNote: "Vegan, ensure protein variety" },
+  { name: "Nineveh Fast", duration: "3 days", season: "Feb", wellbeingNote: "Vegan, rest and reflection" },
 ];
 
 const COFFEE_CEREMONY_STAGES: CoffeeCeremonyStage[] = [
   {
     name: "Abol (አቦል)",
     description: "The first and strongest round, for serious discussion and community decision-making.",
-    WelbeingEffect: "Promotes social bonding and mental clarity; antioxidants from fresh roast.",
+    wellbeingEffect: "Promotes social bonding and mental clarity; antioxidants from fresh roast.",
     timing: "Morning / early afternoon"
   },
   {
     name: "Tona (ቶና)",
     description: "The second round, for deeper reflection and sharing of wisdom.",
-    WelbeingEffect: "Sustained alertness; enhances emotional connection and storytelling.",
+    wellbeingEffect: "Sustained alertness; enhances emotional connection and storytelling.",
     timing: "Afternoon"
   },
   {
     name: "Bereka (በረካ)",
     description: "The third and final round, a blessing of peace and gratitude.",
-    WelbeingEffect: "Calming and grounding; closes the social ritual with a sense of completion.",
+    wellbeingEffect: "Calming and grounding; closes the social ritual with a sense of completion.",
     timing: "Late afternoon / evening"
   }
 ];
@@ -136,7 +136,7 @@ export default function CulturalExperience() {
 
         <div className="mt-4 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed max-w-3xl">
           <strong>Architectural Firewall Guarantee:</strong> Under the enterprise architecture rules, Domain B is structurally
-          firewalled from Domain A (Debral Evaluation). No astrological constellation, baptismal record, or gematria score ever
+          firewalled from Domain A (Scientific Evaluation). No astrological constellation, baptismal record, or gematria score ever
           influences biochemical nutrient requirements or drug safety gating.
         </div>
       </div>
@@ -352,7 +352,7 @@ export default function CulturalExperience() {
           <div>
             <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Enhancement 20</span>
             <h2 className="text-xl font-bold text-white">Ethiopian Calendar & Fasting Seasons (የኢትዮጵያ ቀን መቁጠርያ)</h2>
-            <p className="text-xs text-slate-400 mt-1">Current date, holidays, and fasting periods with Welbeing notes.</p>
+            <p className="text-xs text-slate-400 mt-1">Current date, holidays, and fasting periods with wellbeing notes.</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -407,7 +407,7 @@ export default function CulturalExperience() {
                     <span className="text-[10px] text-amber-400">{fast.duration}</span>
                   </div>
                   <p className="text-slate-300 text-[11px] mt-1">Season: {fast.season}</p>
-                  <p className="text-slate-400 text-[11px] mt-1">Welbeing note: {fast.WelbeingNote}</p>
+                  <p className="text-slate-400 text-[11px] mt-1">wellbeing note: {fast.wellbeingNote}</p>
                 </div>
               ))}
             </div>
@@ -564,7 +564,7 @@ export default function CulturalExperience() {
                 <span className="text-[10px] text-slate-500">{stage.timing}</span>
               </div>
               <p className="text-slate-300 leading-relaxed">{stage.description}</p>
-              <p className="text-slate-400 text-[11px]">🌿 {stage.WelbeingEffect}</p>
+              <p className="text-slate-400 text-[11px]">🌿 {stage.wellbeingEffect}</p>
             </div>
           ))}
         </div>
@@ -611,7 +611,7 @@ export default function CulturalExperience() {
             },
             {
               name: "Tsebel (ጸበል)",
-              description: "Holy water healing at churches, believed to cleanse and restore spiritual and physical Welbeing.",
+              description: "Holy water healing at churches, believed to cleanse and restore spiritual and physical wellbeing.",
               icon: "💧"
             }
           ].map((practice, idx) => (

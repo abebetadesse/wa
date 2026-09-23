@@ -223,7 +223,7 @@ export function calculateVedicChart(
     { code: "D20", name: "Vimshamsha", purpose: "Spiritual practice, meditation, devotion (bhakti), sacred study." },
     { code: "D24", name: "Chaturvimshamsha", purpose: "Higher education, academic brilliance, knowledge retention." },
     { code: "D27", name: "Saptavimshamsha", purpose: "Innate subconscious strengths, vulnerabilities, resilience." },
-    { code: "D30", name: "Trimshamsha", purpose: "Misfortunes, Welbeing hazards, karmic debt remediation." },
+    { code: "D30", name: "Trimshamsha", purpose: "Misfortunes, wellbeing hazards, karmic debt remediation." },
     { code: "D60", name: "Shashtiamsha", purpose: "Past life karma, root cause of deep recurring life events." },
   ];
 
@@ -405,9 +405,9 @@ export function generatePrashnaKundli(
   let karyaBhava = 1;
   let topic = "General Endeavor & Vitality";
 
-  if (qLower.includes("Welbeing") || qLower.includes("sick") || qLower.includes("cure") || qLower.includes("doctor")) {
+  if (qLower.includes("wellbeing") || qLower.includes("sick") || qLower.includes("cure") || qLower.includes("doctor")) {
     karyaBhava = 6;
-    topic = "Welbeing & Recovery";
+    topic = "wellbeing & Recovery";
   } else if (qLower.includes("love") || qLower.includes("marry") || qLower.includes("partner") || qLower.includes("relationship")) {
     karyaBhava = 7;
     topic = "Partnership & Affection";

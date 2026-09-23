@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseWelbeingInquiry } from "@/lib/inquiry/parser";
+import { parsewellbeingInquiry } from "@/lib/inquiry/parser";
 import { retrieveInquiryKnowledge } from "@/lib/inquiry/knowledgeRetrieval";
 import { synthesizeInquiry } from "@/lib/inquiry/solutionSynthesis";
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Please keep the concern under 2,000 characters." }, { status: 400 });
     }
 
-    const inquiry = parseWelbeingInquiry(query);
+    const inquiry = parsewellbeingInquiry(query);
     const knowledge = await retrieveInquiryKnowledge(inquiry);
     const synthesis = synthesizeInquiry(inquiry, knowledge);
 

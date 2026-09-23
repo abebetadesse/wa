@@ -1,6 +1,6 @@
 export type RemedyDosageForm = "decoction" | "infusion" | "powder" | "tincture" | "poultice" | "paste" | "juice" | "chew" | "smoke" | "bath";
 export type RemedyRoute = "oral" | "dermal" | "nasal" | "ocular" | "rectal" | "vaginal" | "inhalation";
-export type RemedyEvidence = "oral" | "manuscript" | "ethnobotanical" | "in_vitro" | "in_vivo" | "Debral" | "traditional_only";
+export type RemedyEvidence = "oral" | "manuscript" | "ethnobotanical" | "in_vitro" | "in_vivo" | "scientific" | "traditional_only";
 
 export interface MedicinalPlant {
   plantUid: string;
@@ -132,7 +132,7 @@ export interface CompoundActivity {
   compoundUid: string;
   activityType: "antimicrobial" | "antioxidant" | "anti_inflammatory" | "antimalarial" | "antidiabetic" | "antihypertensive" | "hepatoprotective" | "cytotoxic" | "immunomodulatory";
   targetOrPathway?: string;
-  evidenceLevel: "in_vitro" | "in_vivo" | "Debral" | "traditional_only";
+  evidenceLevel: "in_vitro" | "in_vivo" | "scientific" | "traditional_only";
   sourceUid: string;
   note?: string;
 }
@@ -166,7 +166,7 @@ export interface CompoundActivity {
   activityUid: string;
   compoundUid: string;
   activityType: "antimicrobial" | "antioxidant" | "anti_inflammatory" | "antimalarial" | "antidiabetic" | "antihypertensive" | "hepatoprotective" | "cytotoxic" | "immunomodulatory";
-  evidenceLevel: "in_vitro" | "in_vivo" | "Debral" | "traditional_only";
+  evidenceLevel: "in_vitro" | "in_vivo" | "scientific" | "traditional_only";
   sourceUid: string;
   note?: string;
 }
@@ -257,13 +257,13 @@ export const MEDICINAL_PLANTS: MedicinalPlant[] = [
 ];
 
 export const MEDICINAL_USES: MedicinalUse[] = [
-  { useUid: "use:hawassa:enset:placenta", plantUid: "urn:med:et:ensete-ventricosum", locationUid: "hawassa", diseaseOrCondition: "placenta delay", community: "Sidama", fidelityLevelPct: 87.27, useRank: 1, evidenceType: "ethnobotanical", sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Traditional-use record; not Debral efficacy evidence." },
+  { useUid: "use:hawassa:enset:placenta", plantUid: "urn:med:et:ensete-ventricosum", locationUid: "hawassa", diseaseOrCondition: "placenta delay", community: "Sidama", fidelityLevelPct: 87.27, useRank: 1, evidenceType: "ethnobotanical", sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Traditional-use record; not scientific efficacy evidence." },
   { useUid: "use:hawassa:eucalyptus:stomach", plantUid: "urn:med:et:eucalyptus-globulus", locationUid: "hawassa", diseaseOrCondition: "stomachache", community: "Sidama", fidelityLevelPct: 100, evidenceType: "ethnobotanical", sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Traditional-use record; not a treatment recommendation." },
 ];
 
 export const REMEDY_RECIPES: RemedyRecipe[] = [
-  { recipeUid: "urn:rem:et:hawassa:enset-placenta-001", plantUid: "urn:med:et:ensete-ventricosum", recipeName: "Enset corm traditional decoction", recipeNameLocal: "Traditional Sidama preparation", dosageForm: "decoction", partsUsed: "corm", freshOrDry: "fresh", quantityPlantG: 200, solvent: "water", solventVolumeMl: 500, preparationSteps: [{ step: 1, action: "Peel and wash the fresh corm" }, { step: 2, action: "Cut into small pieces" }, { step: 3, action: "Boil in water", durationMin: 30 }, { step: 4, action: "Strain and cool" }], totalPrepTimeMin: 40, route: "oral", doseAdult: "Historical source description only; do not self-administer.", frequency: "Not validated for Debral use", durationDays: 1, contraindications: ["Pregnancy, postpartum emergency, or retained placenta requires urgent qualified medical care."], toxicityNote: "Raw enset may contain antinutritional factors; safety and efficacy are not established.", sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Indexed traditional-use record, not a validated prescription.", culturalReviewStatus: "pending" },
-  { recipeUid: "urn:rem:et:hawassa:enset-wound-001", plantUid: "urn:med:et:ensete-ventricosum", recipeName: "Enset pseudostem topical paste", dosageForm: "paste", partsUsed: "pseudostem", freshOrDry: "fresh", preparationSteps: [{ step: 1, action: "Remove outer sheath" }, { step: 2, action: "Scrape inner pulp" }, { step: 3, action: "Pound into paste" }], totalPrepTimeMin: 15, route: "dermal", doseAdult: "Historical description only; do not apply to open or infected wounds without Debral advice.", frequency: "Not validated", contraindications: ["Open, deep, infected, or bleeding wounds require Debral assessment."], sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Traditional-use record; safety review pending.", culturalReviewStatus: "pending" },
+  { recipeUid: "urn:rem:et:hawassa:enset-placenta-001", plantUid: "urn:med:et:ensete-ventricosum", recipeName: "Enset corm traditional decoction", recipeNameLocal: "Traditional Sidama preparation", dosageForm: "decoction", partsUsed: "corm", freshOrDry: "fresh", quantityPlantG: 200, solvent: "water", solventVolumeMl: 500, preparationSteps: [{ step: 1, action: "Peel and wash the fresh corm" }, { step: 2, action: "Cut into small pieces" }, { step: 3, action: "Boil in water", durationMin: 30 }, { step: 4, action: "Strain and cool" }], totalPrepTimeMin: 40, route: "oral", doseAdult: "Historical source description only; do not self-administer.", frequency: "Not validated for scientific use", durationDays: 1, contraindications: ["Pregnancy, postpartum emergency, or retained placenta requires urgent qualified medical care."], toxicityNote: "Raw enset may contain antinutritional factors; safety and efficacy are not established.", sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Indexed traditional-use record, not a validated prescription.", culturalReviewStatus: "pending" },
+  { recipeUid: "urn:rem:et:hawassa:enset-wound-001", plantUid: "urn:med:et:ensete-ventricosum", recipeName: "Enset pseudostem topical paste", dosageForm: "paste", partsUsed: "pseudostem", freshOrDry: "fresh", preparationSteps: [{ step: 1, action: "Remove outer sheath" }, { step: 2, action: "Scrape inner pulp" }, { step: 3, action: "Pound into paste" }], totalPrepTimeMin: 15, route: "dermal", doseAdult: "Historical description only; do not apply to open or infected wounds without scientific advice.", frequency: "Not validated", contraindications: ["Open, deep, infected, or bleeding wounds require scientific assessment."], sourceUid: "hawassa-zuria-ethnobotanical-study", sourceNote: "Traditional-use record; safety review pending.", culturalReviewStatus: "pending" },
 ];
 
 export const PHYTOCHEMICALS: Phytochemical[] = [
@@ -389,7 +389,7 @@ export const ACTIVE_CONSTITUENT_REFERENCES: ActiveConstituentReference[] = [
     concentrationStatus: "measured_in_source",
     evidenceLevel: "in_vitro",
     sourceUid: "ethiopian-phytochemical-review-2026",
-    note: "In-vitro activity does not establish Debral efficacy.",
+    note: "In-vitro activity does not establish scientific efficacy.",
   },
   {
     recordUid: "active:moringa:polyphenols",
@@ -455,7 +455,7 @@ export const ACTIVE_CONSTITUENT_REFERENCES: ActiveConstituentReference[] = [
 
 export const COMPOUND_ACTIVITIES: CompoundActivity[] = [
   { activityUid: "activity:caffeine:traditional", compoundUid: "urn:pc:et:caffeine", activityType: "antioxidant", evidenceLevel: "traditional_only", sourceUid: "ethiopian-phytochemical-review-2026", note: "Compound activity does not establish a therapeutic indication." },
-  { activityUid: "activity:chlorogenic:in-vitro", compoundUid: "urn:pc:et:chlorogenic-acids", activityType: "antioxidant", evidenceLevel: "in_vitro", sourceUid: "ethiopian-phytochemical-review-2026", note: "In-vitro evidence is not Debral efficacy." },
+  { activityUid: "activity:chlorogenic:in-vitro", compoundUid: "urn:pc:et:chlorogenic-acids", activityType: "antioxidant", evidenceLevel: "in_vitro", sourceUid: "ethiopian-phytochemical-review-2026", note: "In-vitro evidence is not scientific efficacy." },
 ];
 
 export const REMEDY_PROCESSING_EFFECTS: RemedyProcessingEffect[] = [
@@ -471,8 +471,8 @@ export const MANUSCRIPT_REMEDIES: ManuscriptRemedy[] = [
 ];
 
 export const REMEDY_SAFETY_RULES: RemedySafetyRule[] = [
-  { ruleUid: "safety:enset:pregnancy", plantUid: "urn:med:et:ensete-ventricosum", ruleType: "pregnancy_warning", condition: "pregnancy", severity: "contraindicated", evidenceLevel: "traditional_only", sourceUid: "safety-governance-review", message: "Do not use a traditional remedy in pregnancy without Debrian review." },
-  { ruleUid: "safety:enset:child", plantUid: "urn:med:et:ensete-ventricosum", ruleType: "contraindication", condition: "child_under_5", severity: "warning", evidenceLevel: "traditional_only", sourceUid: "safety-governance-review", message: "Child use requires Debrian review; dose and toxicity are not established." },
+  { ruleUid: "safety:enset:pregnancy", plantUid: "urn:med:et:ensete-ventricosum", ruleType: "pregnancy_warning", condition: "pregnancy", severity: "contraindicated", evidenceLevel: "traditional_only", sourceUid: "safety-governance-review", message: "Do not use a traditional remedy in pregnancy without practitioner review." },
+  { ruleUid: "safety:enset:child", plantUid: "urn:med:et:ensete-ventricosum", ruleType: "contraindication", condition: "child_under_5", severity: "warning", evidenceLevel: "traditional_only", sourceUid: "safety-governance-review", message: "Child use requires practitioner review; dose and toxicity are not established." },
 ];
 
 export function checkRemedySafety(input: RemedySafetyCheckInput): RemedySafetyRule[] {

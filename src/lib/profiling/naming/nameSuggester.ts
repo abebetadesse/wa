@@ -26,7 +26,7 @@ interface CuratedNameCandidate {
 }
 
 // Curated from the supplied biblical-name references and common Ethiopian forms.
-// Definitions are presented as cultural/name meanings, not predictions or Welbeing claims.
+// Definitions are presented as cultural/name meanings, not predictions or wellbeing claims.
 const CURATED_NAME_CANDIDATES: CuratedNameCandidate[] = [
   { name: "Abraham", meaning: "Father of many nations", gender: "male", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 3, element: "afere" },
   { name: "Sarah", meaning: "Princess; noblewoman", gender: "female", language: "Hebrew", sourceTradition: "Biblical", destinyNumber: 8, element: "may" },
@@ -81,7 +81,7 @@ function buildProfileRecommendation(criteria: SuggestionCriteria, elem: HumoralE
     nifas: "Use a breathable air rhythm with creative structure, verbal reflection, and balanced social rhythm.",
   };
 
-  return `For ${profileBase}, born ${date} near ${city}, ${name} aligns with ${elem.toUpperCase()} harmony and is recommended to pair with ${profileMap[elem]} Share this choice with your profile Welbeing context.`;
+  return `For ${profileBase}, born ${date} near ${city}, ${name} aligns with ${elem.toUpperCase()} harmony and is recommended to pair with ${profileMap[elem]} Share this choice with your profile wellbeing context.`;
 }
 
 export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSuggestionResult[] {
@@ -167,8 +167,8 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
       scoreBreakdown: { destinyMatch, genderMatch, languageMatch, meaningAlignment },
       primaryElement: elem,
       destinyNumber: item.numerologicalValues.destiny,
-      alignmentReason: `Harmonizes with ${elem.toUpperCase()} humoral balancing, fostering a Destiny ${item.numerologicalValues.destiny} vibration of '${item.WelbeingIdentityCorrelation.balancingVirtue}'.`,
-      WelbeingHarmonizationBenefit: benefit,
+      alignmentReason: `Harmonizes with ${elem.toUpperCase()} humoral balancing, fostering a Destiny ${item.numerologicalValues.destiny} vibration of '${item.wellbeingIdentityCorrelation.balancingVirtue}'.`,
+      wellbeingHarmonizationBenefit: benefit,
       recommendation: buildProfileRecommendation(criteria, elem, generatedName),
     });
 
@@ -195,7 +195,7 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
         primaryElement: candidate.element,
         destinyNumber: candidate.destinyNumber,
         alignmentReason: `Cultural meaning aligns with ${candidate.sourceTradition} naming tradition and the selected reflection criteria.`,
-        WelbeingHarmonizationBenefit: "Reflective identity alignment only; this name does not predict Welbeing or personality.",
+        wellbeingHarmonizationBenefit: "Reflective identity alignment only; this name does not predict wellbeing or personality.",
         recommendation: buildProfileRecommendation(criteria, candidate.element, candidate.name),
       });
     }
@@ -226,7 +226,7 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
         primaryElement: elem,
         destinyNumber: (left.numerologicalValues.destiny + right.numerologicalValues.destiny) % 9 || 1,
         alignmentReason: `Combined lineage resonance for ${elem.toUpperCase()} balance and profile continuity.`,
-        WelbeingHarmonizationBenefit: `Balances ${left.WelbeingIdentityCorrelation.balancingVirtue} with ${right.WelbeingIdentityCorrelation.balancingVirtue}.`,
+        wellbeingHarmonizationBenefit: `Balances ${left.wellbeingIdentityCorrelation.balancingVirtue} with ${right.wellbeingIdentityCorrelation.balancingVirtue}.`,
         recommendation: buildProfileRecommendation(criteria, elem, combined),
       };
 

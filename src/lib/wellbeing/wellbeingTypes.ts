@@ -1,5 +1,5 @@
 /**
- * Welbeing Module Types
+ * wellbeing Module Types
  * Integrating best practices from Huazhen TCM, FoodTrack, AyurAI, AyurGenie, NaraCare.AI, Thryval
  */
 
@@ -28,7 +28,7 @@ export interface TongueDiagnosisResult {
   tcmPattern: string;
   ethiopianHumoralCorrelation: string;
   organSystems: string[];
-  DebralSignificance: string;
+  scientificSignificance: string;
   dietaryRecommendations: string[];
   herbalRecommendations: {
     herb: string;
@@ -103,7 +103,7 @@ export interface ScannedFoodItem {
   };
   traditionalPreparation?: string;
   sourceRef: "EFCT-2025" | "USDA" | "user-entered" | "ai-estimated";
-  WelbeingFlags: string[];
+  wellbeingFlags: string[];
 }
 
 export interface MealLog {
@@ -136,7 +136,7 @@ export interface DailyNutritionSummary {
   mealCount: number;
   fastingHours: number;
   waterIntakeMl?: number;
-  ethioAlignmentScore: number; // 0-100, how well diet matches Ethiopian Welbeing wisdom
+  ethioAlignmentScore: number; // 0-100, how well diet matches Ethiopian wellbeing wisdom
 }
 
 export interface FoodScanSession {
@@ -263,7 +263,7 @@ export interface CarePlanIntervention {
   id: string;
   type:
   | "dietary" | "herbal" | "lifestyle" | "movement" | "breathwork"
-  | "fasting" | "spiritual" | "Debral_referral";
+  | "fasting" | "spiritual" | "scientific_referral";
   title: string;
   description: string;
   frequency: string;
@@ -297,7 +297,7 @@ export interface PersonalizedCarePlan {
   duration: "4-weeks" | "8-weeks" | "12-weeks" | "6-months";
   currentPhase: CarePlanPhase;
   currentWeek: number;
-  primaryWelbeingGoals: string[];
+  primarywellbeingGoals: string[];
   constitution: HolisticConstitutionProfile;
   weeklyPlans: CarePlanWeek[];
   overallProgress: number;
