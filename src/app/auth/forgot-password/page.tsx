@@ -24,8 +24,8 @@ export default function ForgotPasswordPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Request failed");
-      setSuccess(data.message || "Reset token generated.");
-      if (data.demoResetToken) setToken(data.demoResetToken);
+      setSuccess(data.data?.message || "Reset token generated.");
+      if (data.data?.demoResetToken) setToken(data.data?.demoResetToken);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");
     } finally {

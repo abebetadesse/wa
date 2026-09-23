@@ -221,9 +221,9 @@ function AuthPageInner() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Resend failed");
-      if (data.demoOtpCode) {
-        setDemoCodeNotice(data.demoOtpCode);
-        setVerificationCode(data.demoOtpCode);
+      if (data.data?.demoOtpCode) {
+        setDemoCodeNotice(data.data?.demoOtpCode);
+        setVerificationCode(data.data?.demoOtpCode);
       }
       setSuccessMsg("A new verification code has been dispatched.");
     } catch (err) {
@@ -244,9 +244,9 @@ function AuthPageInner() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Request failed");
-      setSuccessMsg(data.message || "Reset link dispatched.");
-      if (data.demoResetToken) {
-        setDemoResetToken(data.demoResetToken);
+      setSuccessMsg(data.data?.message || "Reset link dispatched.");
+      if (data.data?.demoResetToken) {
+        setDemoResetToken(data.data?.demoResetToken);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");

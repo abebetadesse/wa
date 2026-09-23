@@ -18,6 +18,7 @@ import { ZodError, type ZodType, type ZodTypeDef } from "zod";
 import { getAuthenticatedUser, type AuthenticatedUser } from "@/lib/auth";
 import { logAuditEvent } from "@/lib/audit";
 import { roleHasPermission } from "@/lib/db/schema/rbac";
+import { clientIp, consumeRateLimit } from "./rateLimit";
 import type { PlatformRole } from "./authGuard";
 
 export type RouteAccess =
@@ -69,6 +70,8 @@ export interface RouteDefinition<A extends RouteAccess, B, Q, P extends Params, 
     resourceId?: (ctx: RouteContext<A, B, Q, P>, result: NoInfer<R>) => string | undefined;
     details?: (ctx: RouteContext<A, B, Q, P>, result: NoInfer<R>) => Record<string, unknown>;
   };
+  /** Per-client-IP request budget for this route (e.g. login, code verification). */
+  rateLimit?: { limit: number; windowMs: number };
   status?: number;
   handler: (ctx: RouteContext<A, B, Q, P>) => Promise<R> | R;
 }
@@ -139,6 +142,16 @@ export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined,
 ) {
   return async (req: NextRequest, segment: { params: Promise<Params> }): Promise<Response> => {
     try {
+      if (def.rateLimit) {
+        const key = `${req.method} ${req.nextUrl.pathname} ${clientIp(req.headers)}`;
+        const verdict = consumeRateLimit(key, def.rateLimit.limit, def.rateLimit.windowMs);
+        if (!verdict.allowed) {
+          return NextResponse.json(
+            { success: false, error: "Too many requests. Please wait and try again." },
+            { status: 429, headers: { "Retry-After": String(verdict.retryAfterSeconds) } },
+          );
+        }
+      }
       const user = checkAccess(def.access, await getAuthenticatedUser());
       const rawParams = (await segment?.params) ?? {};
       const params = (def.params ? def.params.parse(rawParams) : rawParams) as P;
@@ -159,7 +172,7 @@ export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined,
             ...details?.(ctx, result),
             ...(user?.isImpersonating ? { impersonatedUserId: user.id } : {}),
           },
-          ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+          ipAddress: clientIp(req.headers),
           userAgent: req.headers.get("user-agent"),
         });
       }
