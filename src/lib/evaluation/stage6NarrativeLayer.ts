@@ -63,9 +63,9 @@ export function stage6GenerateNarrative(
   paragraphs.push(
     `Our biochemical nutritional evaluation for your profile in ${profile.region} (elevation ${profile.altitudeMeters}m) ` +
     `identified potential dietary intake gaps: ${deficiencyList || "none"}. ` +
-    `The weighted statistical model estimates an overall risk score of ${statistics.overallRiskScore}/100 with ${statistics.confidence.toFixed(2)} confidence and ${statistics.evidenceCoverage}% evidence coverage. ` +
+    `The weighted statistical model estimates an overall risk score of ${statistics.overallRiskScore}/100 with ${statistics.confidence.toFixed(2)} confidence, ${statistics.evidenceCoverage}% evidence coverage, and a source trust score of ${statistics.sourceTrustScore}/100. ` +
     `These findings highlight nutritional patterns based on your reported intake and do not constitute a medical diagnosis. ` +
-    `Reference standard: Ethiopian Food Composition Table (EFCT 2025).`
+    `Reference standard: Ethiopian Food Composition Table (EFCT 2025) with linked evidence provenance checks.`
   );
 
   if (statistics.topDrivers.length > 0) {

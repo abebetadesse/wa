@@ -110,6 +110,7 @@ export interface StatisticalSummary {
   weightedSeverity: number;
   confidence: number;
   evidenceCoverage: number;
+  sourceTrustScore: number;
   topDrivers: string[];
 }
 
@@ -152,14 +153,27 @@ export function computeStatisticalSummary(
       )
     : 100;
 
+  const sourceTrustScore = causes.length
+    ? Math.min(
+        100,
+        Math.round(
+          (causes.reduce((sum, cause) => {
+            const normalized = cause.sourceRef.toUpperCase();
+            return sum + (/(EFCT|ETM|WHO|CLIN|GUIDE|NUTRITION|DIRECTIVE)/.test(normalized) ? 1 : 0.65);
+          }, 0) / causes.length) * 100
+        )
+      )
+    : 85;
+
   const confidence = Math.min(
     0.99,
     Number(
       (
-        0.45 +
-        (evidenceCoverage / 100) * 0.35 +
-        (solutions.length > 0 ? 0.1 : 0) +
-        Math.min(1, gaps.length / 4) * 0.1
+        0.38 +
+        (evidenceCoverage / 100) * 0.34 +
+        (sourceTrustScore / 100) * 0.18 +
+        (solutions.length > 0 ? 0.08 : 0) +
+        Math.min(1, gaps.length / 4) * 0.08
       ).toFixed(2)
     )
   );
@@ -178,6 +192,7 @@ export function computeStatisticalSummary(
     weightedSeverity: Math.min(100, Math.round(weightedGapScore)),
     confidence,
     evidenceCoverage,
+    sourceTrustScore,
     topDrivers,
   };
 }

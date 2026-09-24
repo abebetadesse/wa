@@ -11,6 +11,7 @@ import { validateNarrativeGuardrails, stage6GenerateNarrative } from "../lib/eva
 import { evaluateProfileInMemory } from "../lib/evaluation/pipelineRunner.ts";
 import { explainGap } from "../lib/evaluation/explainability.ts";
 import { computeStatisticalSummary } from "../lib/evaluation/types.ts";
+import { getEthiopianLocationDataset } from "../lib/location/ethiopiaLocations.ts";
 
 describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
   const mockNutrients = [
@@ -127,7 +128,17 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
       assert.ok(summary.overallRiskScore >= 60, "Risk score should reflect combined nutrient deficits and altitude factors");
       assert.ok(summary.confidence >= 0.7, "Confidence should rise with evidence strength and relevant signal volume");
       assert.ok(summary.evidenceCoverage >= 70, "Evidence coverage should reflect the established/probable evidence mix");
+      assert.ok(summary.sourceTrustScore >= 70, "Source trust should reward evidence-linked sources");
       assert.ok(summary.topDrivers.length >= 2, "Top drivers should capture the strongest risk pathways");
+    });
+
+    test("emits a conservative provenance score for location indicators built from indicative planning estimates", () => {
+      const location = getEthiopianLocationDataset().find((entry) => entry.id === "addis-ababa");
+
+      assert.ok(location, "Addis Ababa should be present in the location registry");
+      assert.ok(["low", "medium", "unknown"].includes(location.sourceConfidence), "Indicative datasets should not claim unverified high-certainty scientific provenance");
+      assert.ok(location.provenanceSummary.confidenceScore >= 0, "A numeric provenance confidence score should be present");
+      assert.ok(location.provenanceSummary.unresolvedGaps.length >= 0, "Missing-source gaps should be surfaced to users");
     });
   });
 

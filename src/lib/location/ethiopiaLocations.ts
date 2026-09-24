@@ -597,8 +597,126 @@ export function resolveEthiopianLocation(input?: string): EthiopianLocation {
   ) || ETHIOPIAN_LOCATIONS[0];
 }
 
+export type DataProvenanceLevel = "high" | "medium" | "low" | "unknown";
+
+export interface LocationProvenanceSummary {
+  overallConfidence: DataProvenanceLevel;
+  confidenceScore: number;
+  sourceCoveragePct: number;
+  verifiedSources: number;
+  unresolvedGaps: string[];
+}
+
+export interface EthiopianLocationDatasetEntry {
+  id: string;
+  region: string;
+  name: string;
+  nameAmharic: string;
+  aliases: string[];
+  latitude: number;
+  longitude: number;
+  altitudeMeters: number;
+  agroZone: EthiopianAgroZone;
+  riftValley: boolean;
+  commonLanguages: string[];
+  population: number;
+  urbanPopulationPct: number;
+  medianAgeYears: number;
+  averageHouseholdSize: number;
+  birthRatePer1000: number;
+  totalFertilityRate: number;
+  diseaseSummary: {
+    communicable: string[];
+    nonCommunicable: string[];
+  };
+  stapleFoods: string[];
+  traditionalMedicines: string[];
+  sourceConfidence: DataProvenanceLevel;
+  provenanceSummary: LocationProvenanceSummary;
+}
+
+export function getLocationProvenanceSummary(location: Pick<EthiopianLocation, "denseData">): LocationProvenanceSummary {
+  const allObservations = location.denseData?.observations ?? [];
+  const provenanceRecords = location.denseData?.provenance ?? [];
+  const weights: Record<DataProvenanceLevel, number> = { high: 1, medium: 0.7, low: 0.35, unknown: 0.15 };
+
+  const averageSourceConfidence = provenanceRecords.length > 0
+    ? provenanceRecords.reduce((sum, record) => sum + (weights[record.confidence] ?? 0.15), 0) / provenanceRecords.length
+    : 0.2;
+
+  const sourceCoveragePct = allObservations.length > 0
+    ? Math.round((allObservations.filter((observation) => Boolean(observation.sourceId || observation.citationUid)).length / allObservations.length) * 100)
+    : 0;
+
+  const confidenceScore = Math.min(100, Math.round((averageSourceConfidence * 70) + (sourceCoveragePct * 0.3)));
+  const overallConfidence: DataProvenanceLevel = confidenceScore >= 80 ? "high" : confidenceScore >= 60 ? "medium" : confidenceScore >= 35 ? "low" : "unknown";
+
+  const unresolvedGaps = [
+    ...(location.denseData?.dataQuality?.gaps ?? []),
+    ...(allObservations.filter((observation) => !observation.sourceId && !observation.citationUid).slice(0, 2).map((observation) => `Missing citation for ${observation.indicatorCode}`)),
+    ...(provenanceRecords.length === 0 ? ["No provenance records are currently linked to this location dataset."] : []),
+  ].slice(0, 4);
+
+  return {
+    overallConfidence,
+    confidenceScore,
+    sourceCoveragePct,
+    verifiedSources: provenanceRecords.length,
+    unresolvedGaps,
+  };
+}
+
 export function getEthiopianLocationOptions() {
   return ETHIOPIAN_LOCATIONS.map(({ id, region, name, nameAmharic, altitudeMeters, agroZone, wellbeingProfile, systemsProfile, denseData }) => ({
     id, region, name, nameAmharic, altitudeMeters, agroZone, wellbeingProfile, systemsProfile, denseData,
   }));
+}
+
+export function getEthiopianLocationById(id: string): EthiopianLocation | undefined {
+  return ETHIOPIAN_LOCATIONS.find((location) => location.id === id || location.name === id || location.aliases.includes(id));
+}
+
+export function getEthiopianLocationProfile(id: string): EthiopianLocation | undefined {
+  return getEthiopianLocationById(id);
+}
+
+export function getEthiopianLocationDataset(): EthiopianLocationDatasetEntry[] {
+  return ETHIOPIAN_LOCATIONS.map((location) => {
+    const provenanceSummary = getLocationProvenanceSummary(location);
+
+    return {
+      id: location.id,
+      region: location.region,
+      name: location.name,
+      nameAmharic: location.nameAmharic,
+      aliases: location.aliases,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      altitudeMeters: location.altitudeMeters,
+      agroZone: location.agroZone,
+      riftValley: location.riftValley,
+      commonLanguages: location.commonLanguages,
+      population: location.wellbeingProfile.demographics.estimatedPopulation,
+      urbanPopulationPct: location.wellbeingProfile.demographics.urbanPopulationPct,
+      medianAgeYears: location.wellbeingProfile.demographics.medianAgeYears,
+      averageHouseholdSize: location.wellbeingProfile.demographics.averageHouseholdSize,
+      birthRatePer1000: location.wellbeingProfile.birthRatePer1000,
+      totalFertilityRate: location.wellbeingProfile.totalFertilityRate,
+      diseaseSummary: {
+        communicable: location.wellbeingProfile.communicableDiseaseRates.map((rate) => `${rate.condition} (${rate.value}${rate.measure === "prevalence_pct" ? "%" : "/100k"})`),
+        nonCommunicable: location.wellbeingProfile.nonCommunicableDiseaseRates.map((rate) => `${rate.condition} (${rate.value}${rate.measure === "prevalence_pct" ? "%" : "/100k"})`),
+      },
+      stapleFoods: location.systemsProfile.foodAndNutrition.stapleFoods,
+      traditionalMedicines: location.systemsProfile.culturalAndHeritage.traditionalMedicines,
+      sourceConfidence: provenanceSummary.overallConfidence,
+      provenanceSummary,
+    };
+  });
+}
+
+export function getEthiopianLocationDatasetForRegion(region: string): EthiopianLocationDatasetEntry[] {
+  const normalized = region.trim().toLowerCase();
+  return getEthiopianLocationDataset().filter((location) =>
+    location.region.toLowerCase() === normalized || location.name.toLowerCase() === normalized || location.id.toLowerCase() === normalized,
+  );
 }
