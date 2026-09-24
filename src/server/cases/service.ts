@@ -20,7 +20,7 @@ import {
 } from "./machine";
 import { getPaymentProvider, newPurchaseId, type PaymentMethod, type PaymentProvider } from "./payments";
 import { dbCaseStore, type CaseStore } from "./store";
-import type { ConsultationRecord, DraftReport, WorkflowCase, WorkflowDomain } from "./types";
+import type { ConsultationRecord, ConsentRecord, DraftReport, WorkflowCase, WorkflowDomain } from "./types";
 import { toExpertView, toOwnerView } from "./views";
 
 interface Deps {
@@ -61,14 +61,19 @@ export function createCaseService(deps: Deps) {
         description: config.description,
         pricing: config.pricing,
         safetyQuestions: config.safetyQuestions,
+        startQuestions: config.startQuestions ?? [],
       }));
     },
 
-    async start(user: AuthenticatedUser, domain: WorkflowDomain, input: { safetyAnswers: Record<string, unknown>; answers: Record<string, unknown> }) {
+    async start(user: AuthenticatedUser, domain: WorkflowDomain, input: {
+      safetyAnswers: Record<string, unknown>;
+      answers: Record<string, unknown>;
+      consent?: Partial<ConsentRecord>;
+    }) {
       const config = getDomainConfig(domain);
       const missing = config.safetyQuestions.filter((question) => input.safetyAnswers[question.id] === undefined).map((question) => question.id);
       if (missing.length) throw ApiError.badRequest("Please answer every safety question.", { missing });
-      const record = createCase({ id: crypto.randomUUID(), userId: user.id, config, ...input });
+      const record = createCase({ id: crypto.randomUUID(), userId: user.id, config, ...input, consent: input.consent ?? { dataUsage: true, emergencySupport: true, thirdPartySharing: false, retention: "90_days", consentedAt: new Date().toISOString(), consentTextVersion: "v1" } });
       await store.insert(record);
       return ownerView(record);
     },

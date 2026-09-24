@@ -10,6 +10,7 @@ import { checkHerbDrugSafety } from "../lib/evaluation/stage5SafetyGate.ts";
 import { validateNarrativeGuardrails, stage6GenerateNarrative } from "../lib/evaluation/stage6NarrativeLayer.ts";
 import { evaluateProfileInMemory } from "../lib/evaluation/pipelineRunner.ts";
 import { explainGap } from "../lib/evaluation/explainability.ts";
+import { computeStatisticalSummary } from "../lib/evaluation/types.ts";
 
 describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
   const mockNutrients = [
@@ -97,6 +98,36 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
 
       assert.ok(b12Gap, "B12 deficiency should be flagged (0 intake)");
       assert.equal(b12Gap.severity, "high", "Zero B12 intake should be high severity");
+    });
+  });
+
+  describe("Weighted statistical confidence model", () => {
+    test("produces a calibrated risk score and evidence coverage for high-risk nutrient patterns", () => {
+      const profile = stage1Normalize({
+        age: 32,
+        gender: "female",
+        region: "Addis Ababa",
+        altitudeMeters: 2400,
+        pregnancyOrLactation: "pregnant_t2",
+        lifestyleHabits: { teaWithMeals: true, coffeeRitualTwiceDaily: true },
+      });
+
+      const gaps = [
+        { nutrientId: "nut-iron", nutrientName: "Iron", unit: "mg", gapType: "deficiency", severity: "moderate", targetRda: 20.7, calculatedDailyIntake: 8.0, estimatedIntakePct: 38.6, sourceRef: "EFCT" },
+        { nutrientId: "nut-b12", nutrientName: "Vitamin B12", unit: "mcg", gapType: "deficiency", severity: "high", targetRda: 2.4, calculatedDailyIntake: 0, estimatedIntakePct: 0, sourceRef: "EFCT" },
+      ];
+
+      const causes = [
+        { gapNutrientId: "nut-iron", causeType: "absorption_inhibitor", title: "Post-meal tannin chelation", description: "Iron absorption inhibited by tea/coffee", evidenceStrength: "established", sourceRef: "ETM-CLIN" },
+        { gapNutrientId: "nut-b12", causeType: "medication", title: "Pregnancy and nutrient depletion cluster", description: "B12 intake is effectively absent", evidenceStrength: "probable", sourceRef: "EFCT" },
+      ];
+
+      const summary = computeStatisticalSummary(profile, gaps, causes, []);
+
+      assert.ok(summary.overallRiskScore >= 60, "Risk score should reflect combined nutrient deficits and altitude factors");
+      assert.ok(summary.confidence >= 0.7, "Confidence should rise with evidence strength and relevant signal volume");
+      assert.ok(summary.evidenceCoverage >= 70, "Evidence coverage should reflect the established/probable evidence mix");
+      assert.ok(summary.topDrivers.length >= 2, "Top drivers should capture the strongest risk pathways");
     });
   });
 

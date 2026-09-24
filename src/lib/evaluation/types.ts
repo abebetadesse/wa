@@ -105,6 +105,83 @@ export interface SafetyCheckResult {
   sourceRef: string;
 }
 
+export interface StatisticalSummary {
+  overallRiskScore: number;
+  weightedSeverity: number;
+  confidence: number;
+  evidenceCoverage: number;
+  topDrivers: string[];
+}
+
+export function computeStatisticalSummary(
+  profile: Partial<NormalizedProfile> | NormalizedProfile,
+  gaps: Gap[],
+  causes: Cause[],
+  solutions: Solution[] = []
+): StatisticalSummary {
+  const severityWeight: Record<Severity, number> = { low: 20, moderate: 45, high: 75 };
+  const evidenceWeight: Record<EvidenceStrength, number> = { established: 1, probable: 0.7, preliminary: 0.45 };
+
+  const weightedGapScore = gaps.length
+    ? gaps.reduce((sum, gap) => {
+        const gapShortfall = gap.gapType === "deficiency"
+          ? Math.max(0, 1 - gap.estimatedIntakePct / 100)
+          : Math.min(1, Math.max(0, gap.estimatedIntakePct - 100) / 200);
+        const severityBias = severityWeight[gap.severity] ?? 20;
+        return sum + ((severityBias * 0.7) + (gapShortfall * 100 * 0.3));
+      }, 0) / gaps.length
+    : 0;
+
+  const weightedCauseScore = causes.length
+    ? causes.reduce((sum, cause) => sum + (evidenceWeight[cause.evidenceStrength] ?? 0.45) * 100, 0) / causes.length
+    : 0;
+
+  const altitudeModifier = profile.altitudeMeters && profile.altitudeMeters >= 2000 ? 1.15 : 1;
+  const demographicModifier = profile.pregnancyOrLactation !== "none" ? 1.1 : 1;
+  const overallRiskScore = Math.min(
+    100,
+    Math.max(0, Math.round(((weightedGapScore * 0.75) + (weightedCauseScore * 0.25)) * altitudeModifier * demographicModifier))
+  );
+
+  const evidenceCoverage = causes.length
+    ? Math.min(
+        100,
+        Math.round(
+          (causes.reduce((sum, cause) => sum + (evidenceWeight[cause.evidenceStrength] ?? 0.45), 0) / causes.length) * 100
+        )
+      )
+    : 100;
+
+  const confidence = Math.min(
+    0.99,
+    Number(
+      (
+        0.45 +
+        (evidenceCoverage / 100) * 0.35 +
+        (solutions.length > 0 ? 0.1 : 0) +
+        Math.min(1, gaps.length / 4) * 0.1
+      ).toFixed(2)
+    )
+  );
+
+  const topDrivers = causes
+    .map((cause) => ({
+      title: cause.title,
+      score: (evidenceWeight[cause.evidenceStrength] ?? 0.45) * 100 + ((severityWeight[(gaps.find((gap) => gap.nutrientId === cause.gapNutrientId)?.severity ?? "low")] ?? 20) * 0.35),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((item) => item.title);
+
+  return {
+    overallRiskScore,
+    weightedSeverity: Math.min(100, Math.round(weightedGapScore)),
+    confidence,
+    evidenceCoverage,
+    topDrivers,
+  };
+}
+
 export interface EvaluationReportResult {
   profile: NormalizedProfile;
   targets: NutrientTarget[];
@@ -113,6 +190,7 @@ export interface EvaluationReportResult {
   solutions: Solution[];
   culledUnsafeRemedies: SafetyCheckResult[];
   summaryNarrative: string;
+  statistics?: StatisticalSummary;
   safetyGateVerified: boolean;
   generatedAt: string;
   modelVersion: string;

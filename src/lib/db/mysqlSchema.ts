@@ -1,27 +1,42 @@
-import { randomUUID } from "node:crypto";
+/**
+ * PostgreSQL schema helpers — re-exported under legacy "pg-style" names
+ * so every schema file continues to compile unchanged.
+ */
 import {
   boolean,
   date,
-  decimal,
-  float,
-  int,
-  json,
-  mysqlTable,
+  doublePrecision,
+  integer,
+  jsonb,
+  numeric,
+  pgTable,
   primaryKey,
+  real,
   text,
   timestamp,
+  uuid,
   varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const pgTable = mysqlTable;
-export const uuid = (name: string) => {
-  const column = varchar(name, { length: 36 });
-  return Object.assign(column, {
-    defaultRandom: () => column.$defaultFn(() => randomUUID()),
-  }) as any;
+// Legacy aliases kept for backwards-compat with schema files
+export {
+  boolean,
+  date,
+  doublePrecision,
+  integer,
+  jsonb,
+  numeric,
+  pgTable,
+  primaryKey,
+  real,
+  text,
+  timestamp,
+  uuid,
+  varchar,
 };
-export const jsonb = json;
-export const numeric = decimal;
-export const integer = int;
-export const real = float;
-export { boolean, date, decimal, primaryKey, text, timestamp, varchar };
+
+// MySQL-compat aliases
+export { jsonb as json };
+export { doublePrecision as float };
+export { integer as int };
+export { numeric as decimal };

@@ -29,7 +29,17 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
     stage: record.stage,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
-    safety: { action: record.safety.action, priority: record.safety.priority, support: record.safety.support ?? null },
+    consent: record.consent,
+    auditTrail: record.auditTrail,
+    safety: {
+      action: record.safety.action,
+      priority: record.safety.priority,
+      reason: record.safety.reason ?? null,
+      reasonCode: record.safety.reasonCode ?? null,
+      confidence: record.safety.confidence ?? null,
+      evidence: record.safety.evidence ?? null,
+      support: record.safety.support ?? null,
+    },
     answers: record.answers,
     context: record.context,
     questions: record.stage === "intake" || record.stage === "referred" ? config.questions(record.answers) : [],
@@ -39,6 +49,7 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
           expert: record.stage === "awaiting_expert" ? null : expert,
           approvedAt: record.review?.approvedAt ?? null,
           notes: approved ? record.review?.notes ?? null : null,
+          checklist: record.review?.checklist ?? null,
         }
       : null,
     report:
@@ -48,6 +59,7 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
             summary: record.draft.summary,
             disclaimer: record.draft.disclaimer,
             aiAssisted: record.draft.aiAssisted,
+            recommendations: record.draft.recommendations ?? [],
             sections: record.draft.sections.map((section) => visibleSection(section, paid)),
             unlocked: paid,
           }
@@ -70,10 +82,12 @@ export function toExpertView(record: WorkflowCase, config: DomainConfig) {
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
     safety: record.safety,
+    consent: record.consent,
     answers: record.answers,
     context: record.context,
     draft: record.draft,
     review: record.review,
+    auditTrail: record.auditTrail,
     checklist: config.reviewChecklist,
   };
 }

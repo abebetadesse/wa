@@ -37,21 +37,28 @@ const FIDEL_FAMILIES = [
   ["ፐ", "ፑ", "ፒ", "ፓ", "ፔ", "ፕ", "ፖ"],
 ];
 
-const PRESETS = ["ሰላማዊት", "ፀሐይ", "አበበ", "ታደሰ", "ተስፋዬ", "አልማዝ", "ዮሐንስ"];
+const PRESETS_GENERAL = ["ሰላማዊት", "ፀሐይ", "አበበ", "ታደሰ", "ተስፋዬ", "አልማዝ", "ዮሐንስ"];
+const PRESETS_CAREER = [
+  "ሰሎሞን", "ማርያም", "ሄለን", "ዳዊት", "ሰናይት",
+  "ሚካኤል", "ሃብታሙ", "ብርቱካን", "አምሃ", "ዘሪቱ",
+];
 
 export function AmharicKeyboardModal({
   isOpen,
   onClose,
   onInsert,
+  context = "general",
 }: {
   isOpen: boolean;
   onClose: () => void;
   onInsert: (char: string) => void;
+  context?: "general" | "career";
 }) {
   const [activeFamilyIdx, setActiveFamilyIdx] = useState<number | null>(null);
 
   if (!isOpen) return null;
 
+  const PRESETS = context === "career" ? PRESETS_CAREER : PRESETS_GENERAL;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-stone-900 border border-amber-500/40 rounded-3xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl space-y-4">

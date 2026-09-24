@@ -3,9 +3,15 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Briefcase, Mic, MicOff, Keyboard } from "lucide-react";
 import type { CareerStage } from "@/lib/cultural/careerTimingEngine";
 import type { CareerQuestion } from "@/lib/case-workflow/careerQuestionEngine";
 import type { CareerSafetyAnswers } from "@/lib/case-workflow/careerSafetyScreen";
+import { useLiveGematria } from "@/hooks/useLiveGematria";
+import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
+import { useDynamicFollowUps } from "@/hooks/useDynamicFollowUps";
+import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaPreview";
+import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
 
 // ════════════════════════════════════════════════════════════
 // Types
@@ -93,14 +99,40 @@ export default function CareerCasePage() {
   const [geezName, setGeezName] = useState("");
   const [motherGeezName, setMotherGeezName] = useState("");
   const [activeNameInput, setActiveNameInput] = useState<"name" | "mother">("name");
-  const [gematriaLive, setGematriaLive] = useState<{ nameSum: number; motherSum: number; total: number } | null>(null);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+
+  // Real gematria via shared hook (replaces approximate char-code computation)
+  const gematriaLive = useLiveGematria(geezName, motherGeezName);
+
+  // Voice input for Ge'ez names
+  const { isListening, startListening, stopListening, error: voiceError } = useGeezVoiceInput((text) => {
+    const clean = text.trim();
+    if (!clean) return;
+    if (activeNameInput === "name") setGeezName(clean);
+    else setMotherGeezName(clean);
+  });
+
+  const handleKeyboardInsert = (val: string) => {
+    if (val === "__backspace__") {
+      if (activeNameInput === "name") setGeezName((p) => p.slice(0, -1));
+      else setMotherGeezName((p) => p.slice(0, -1));
+      return;
+    }
+    if (activeNameInput === "name") setGeezName((p) => p + val);
+    else setMotherGeezName((p) => p + val);
+  };
 
   // ── Questions ─────────────────────────────────────────────
   const [careerStage, setCareerStage] = useState<CareerStage>("exploring");
   const [questions, setQuestions] = useState<CareerQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [followUpQuestion, setFollowUpQuestion] = useState<CareerQuestion | null>(null);
+  const [isReportUnlocked, setIsReportUnlocked] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"telebirr" | "cbe_birr" | "chapa">("telebirr");
+  const [paymentPhone, setPaymentPhone] = useState("0911234567");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
   const [financialDisclaimer, setFinancialDisclaimer] = useState<string | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
@@ -122,18 +154,7 @@ export default function CareerCasePage() {
     stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [stage]);
 
-  // Live gematria calculation (debounced)
-  useEffect(() => {
-    if (!geezName && !motherGeezName) { setGematriaLive(null); return; }
-    const t = setTimeout(() => {
-      let ns = 0, ms = 0;
-      for (const ch of geezName) ns += (ch.codePointAt(0) ?? 0) % 100;
-      for (const ch of motherGeezName) ms += (ch.codePointAt(0) ?? 0) % 100;
-      ns = ns % 144; ms = ms % 144;
-      setGematriaLive({ nameSum: ns, motherSum: ms, total: ns + ms });
-    }, 300);
-    return () => clearTimeout(t);
-  }, [geezName, motherGeezName]);
+  // gematriaLive is now computed by useLiveGematria hook above (real engine, not approximate).
 
   // ════════════════════════════════════════════════════════════
   // Handlers
@@ -278,12 +299,45 @@ export default function CareerCasePage() {
     }
   }, [expertAssignment, selectedFormat, sessionId]);
 
+  const handleConfirmPayment = useCallback(async () => {
+    setIsProcessingPayment(true);
+    setPaymentError("");
+    try {
+      if (!paymentPhone.trim()) {
+        throw new Error("Please enter a valid mobile number or account.");
+      }
+      // Simulated instant payment settlement
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setIsReportUnlocked(true);
+      setShowPayment(false);
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Payment processing failed");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [paymentPhone]);
+
   // ════════════════════════════════════════════════════════════
   // Helpers
   // ════════════════════════════════════════════════════════════
 
   const currentQuestion = questions[currentQuestionIdx];
-  const isLastQuestion = currentQuestionIdx >= questions.length - 1 && !followUpQuestion;
+  const currentAnswerText = currentQuestion ? (answers[currentQuestion.id] ?? "") : "";
+
+  // Dynamic AI follow-ups grounded in user reflections & live gematria
+  const { followUps, isLoading: followUpLoading, crisisFlag } = useDynamicFollowUps(
+    currentQuestion?.id ?? "",
+    currentQuestion?.type === "textarea" ? currentAnswerText : "",
+    {
+      nameGeez: geezName,
+      zodiac: gematriaLive.zodiac,
+      awdeCircle: gematriaLive.awdeCircle,
+      talismanic: gematriaLive.talismanic,
+    },
+    answers
+  );
+
+  const isLastQuestion = currentQuestionIdx >= questions.length - 1;
   const progressPct = questions.length > 0 ? Math.round(((currentQuestionIdx + 1) / questions.length) * 100) : 0;
 
   const windowLabelColor = (label: string) => {
@@ -313,7 +367,7 @@ export default function CareerCasePage() {
             ← Case Domains
           </Link>
           <div className="flex items-center gap-2">
-            <span className="text-lg">↗</span>
+            <Briefcase className="w-4 h-4 text-blue-400" />
             <span className="text-sm font-semibold text-zinc-200 tracking-wide">Career &amp; Business</span>
           </div>
           <div className="text-xs text-zinc-500 font-mono hidden sm:block">
@@ -486,14 +540,47 @@ export default function CareerCasePage() {
           <div className="space-y-8">
             <div className="text-center space-y-3">
               <div className="text-4xl font-bold font-mono text-blue-400">
-                {gematriaLive ? `${gematriaLive.nameSum} + ${gematriaLive.motherSum} = ${gematriaLive.total}` : "· · ·"}
+                {gematriaLive.isValid
+                  ? `${gematriaLive.nameSubtotal} + ${gematriaLive.motherSubtotal} = ${gematriaLive.totalSum}`
+                  : "· · ·"}
               </div>
               <h2 className="text-2xl font-bold">Your Career Numerology</h2>
               <p className="text-zinc-400 text-sm">
-                Enter your Ge'ez name and your mother's name to calculate your career timing number (Abushakir gematria).
+                Enter your Ge'ez name and your mother&apos;s name to calculate your career timing number (Abushakir gematria).
                 The numbers update live as you type.
               </p>
             </div>
+
+            {/* Shared toolbar: keyboard + voice */}
+            <div className="flex items-center gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  if (isListening) stopListening();
+                  else startListening();
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all ${
+                  isListening
+                    ? "border-red-500/60 bg-red-950/30 text-red-300 animate-pulse"
+                    : "border-zinc-700 bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                {isListening ? "Stop" : "Voice"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsKeyboardOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-amber-500/40 bg-amber-950/20 text-amber-300 hover:bg-amber-900/40 transition-all"
+              >
+                <Keyboard className="w-3.5 h-3.5" />
+                Ge'ez Keyboard
+              </button>
+            </div>
+
+            {voiceError && (
+              <div className="text-xs text-amber-400 text-center">{voiceError}</div>
+            )}
 
             <div className="space-y-5 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
               <div>
@@ -513,7 +600,7 @@ export default function CareerCasePage() {
 
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Mother's Ge'ez Name <span className="text-zinc-500">(የእናትዎ ስም)</span>
+                  Mother&apos;s Ge'ez Name <span className="text-zinc-500">(የእናትዎ ስም)</span>
                 </label>
                 <input
                   type="text"
@@ -526,20 +613,10 @@ export default function CareerCasePage() {
                 />
               </div>
 
-              {gematriaLive && (
-                <div className="grid grid-cols-3 gap-3 pt-2">
-                  {[
-                    { label: "Name Sum", value: gematriaLive.nameSum },
-                    { label: "Mother Sum", value: gematriaLive.motherSum },
-                    { label: "Total", value: gematriaLive.total, highlight: true },
-                  ].map((item) => (
-                    <div key={item.label} className={`rounded-xl border p-3 text-center ${item.highlight ? "border-blue-500/50 bg-blue-950/30" : "border-zinc-700 bg-zinc-800/50"}`}>
-                      <div className={`text-2xl font-bold font-mono ${item.highlight ? "text-blue-300" : "text-zinc-200"}`}>{item.value}</div>
-                      <div className="text-xs text-zinc-500 mt-1">{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Live gematria preview (shared AnimatedGematriaPreview, same as spiritual step-1) */}
+              <div className="pt-2">
+                <AnimatedGematriaPreview state={gematriaLive} />
+              </div>
             </div>
 
             {error && <div className="text-sm text-red-400 text-center">{error}</div>}
@@ -551,6 +628,14 @@ export default function CareerCasePage() {
             >
               {loading ? "Loading questions…" : "Continue to Questions →"}
             </button>
+
+            {/* Amharic keyboard modal */}
+            <AmharicKeyboardModal
+              isOpen={isKeyboardOpen}
+              onClose={() => setIsKeyboardOpen(false)}
+              onInsert={handleKeyboardInsert}
+              context="career"
+            />
           </div>
         )}
 
@@ -579,6 +664,43 @@ export default function CareerCasePage() {
                 <span>⚠️</span>
                 <span>{financialDisclaimer}</span>
                 <button onClick={() => setShowDisclaimer(false)} className="ml-auto text-amber-400 hover:text-amber-200 text-xs">✕</button>
+              </div>
+            )}
+
+            {/* Crisis Alert Banner if distress signals are detected in reflections */}
+            {crisisFlag && (
+              <div className="rounded-xl border border-red-500/40 bg-red-950/30 p-4 space-y-2 text-sm text-red-200">
+                <div className="flex items-center gap-2 font-bold text-red-300">
+                  <span>🚨</span>
+                  <span>Distress or Acute Pressure Detected</span>
+                </div>
+                <p className="text-xs text-red-200 leading-relaxed">
+                  Your safety and wellbeing are paramount. If you are experiencing acute financial or emotional distress, confidential support is available 24/7.
+                </p>
+                <div className="flex items-center gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCrisisContent({
+                        title: "Support Resources Available",
+                        message: "We detected indications of acute distress or pressure in your response. Professional and confidential support is available.",
+                        hotlines: [
+                          { name: "Ethiopian Mental Health Hotline", number: "952" },
+                          { name: "National Emergency Helpline", number: "911" },
+                        ],
+                        safetyPlanSteps: [
+                          "Step away from high-stakes decisions and rest in a safe environment.",
+                          "Speak with a trusted family member, elder, or counselor.",
+                          "Contact a certified professional before committing financial resources.",
+                        ],
+                      });
+                      setStage("crisis_route");
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition-colors"
+                  >
+                    View Emergency Support Resources →
+                  </button>
+                </div>
               </div>
             )}
 
@@ -651,9 +773,6 @@ export default function CareerCasePage() {
                         onClick={() => {
                           handleAnswerChange(currentQuestion.id, val);
                           if (currentQuestion.financialDisclaimerRequired) setShowDisclaimer(true);
-                          // Check for follow-up
-                          const fu = null; // would be fetched
-                          setFollowUpQuestion(fu);
                         }}
                         className={`px-4 py-3 rounded-xl text-sm text-left border transition-all ${isSelected ? "border-blue-500 bg-blue-500/20 text-blue-200" : "border-zinc-700 hover:border-zinc-500 text-zinc-300"}`}
                       >
@@ -708,6 +827,43 @@ export default function CareerCasePage() {
                     <span className="text-blue-300 font-bold text-sm">{answers[currentQuestion.id] ?? "5"}</span>
                     <span>10 — Fully ready</span>
                   </div>
+                </div>
+              )}
+
+              {/* Dynamic Follow-Ups from Wisdom Engine */}
+              {followUpLoading && (
+                <div className="flex items-center gap-2 text-xs text-blue-400 py-2">
+                  <div className="w-3.5 h-3.5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                  <span>Synthesizing tailored follow-up based on your response...</span>
+                </div>
+              )}
+
+              {followUps.length > 0 && (
+                <div className="mt-4 p-4 rounded-xl border border-blue-500/30 bg-blue-950/20 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-blue-300 uppercase tracking-wider">
+                      Tailored Follow-Up Question
+                    </span>
+                    <span className="text-[11px] text-zinc-400">Contextual Reflection</span>
+                  </div>
+                  {followUps.map((fu) => (
+                    <div key={fu.id} className="space-y-2">
+                      <label className="text-sm font-medium text-zinc-200 block">
+                        {fu.text}
+                      </label>
+                      {fu.textAmharic && (
+                        <p className="text-xs text-zinc-400" dir="auto">{fu.textAmharic}</p>
+                      )}
+                      <textarea
+                        rows={3}
+                        value={answers[fu.id] ?? ""}
+                        onChange={(e) => handleAnswerChange(fu.id, e.target.value)}
+                        placeholder="Add deeper reflection..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-800/90 border border-zinc-700 text-sm text-zinc-200 focus:border-blue-400 outline-none resize-none"
+                        dir="auto"
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -917,11 +1073,11 @@ export default function CareerCasePage() {
             <div className="space-y-2">
               {[
                 { label: "Career Timing & Numerology", locked: false, icon: "🔢" },
-                { label: "Strategic Recommendations", locked: true, icon: "📊" },
-                { label: "Expert Narrative & Review", locked: true, icon: "👤" },
-                { label: "Blessing Ritual for Career Launch", locked: true, icon: "✨" },
+                { label: "Strategic Recommendations", locked: !isReportUnlocked, icon: "📊" },
+                { label: "Expert Narrative & Review", locked: !isReportUnlocked, icon: "👤" },
+                { label: "Blessing Ritual for Career Launch", locked: !isReportUnlocked, icon: "✨" },
                 { label: "Networking & Community Suggestions", locked: false, icon: "🌐" },
-                { label: "Sector Insights", locked: true, icon: "📈" },
+                { label: "Sector Insights", locked: !isReportUnlocked, icon: "📈" },
               ].map((section) => (
                 <div
                   key={section.label}
@@ -931,7 +1087,9 @@ export default function CareerCasePage() {
                     <span>{section.icon}</span>
                     <span className="text-sm font-medium text-zinc-200">{section.label}</span>
                   </div>
-                  <span className="text-xs text-zinc-500">{section.locked ? "🔒 Locked" : "✓ Available"}</span>
+                  <span className={`text-xs ${section.locked ? "text-zinc-500" : "text-emerald-400 font-medium"}`}>
+                    {section.locked ? "🔒 Locked" : "✓ Available"}
+                  </span>
                 </div>
               ))}
             </div>
@@ -943,23 +1101,126 @@ export default function CareerCasePage() {
               please consult a licensed professional.
             </div>
 
-            {/* Unlock CTA */}
-            <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-6 text-center space-y-4">
-              <p className="text-zinc-300 text-sm">
-                Unlock the full report including expert narrative, strategic recommendations, and your
-                personalised blessing ritual for <span className="font-bold text-blue-300">{expertAssignment?.consultationFeeETB ?? 500} ETB</span>.
-              </p>
-              <button className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-white transition-all">
-                Unlock Full Report
-              </button>
-              <p className="text-xs text-zinc-500">or</p>
-              <button
-                onClick={() => setStage("consult_book")}
-                className="w-full py-3 rounded-xl border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 transition-all text-sm"
-              >
-                Book a 30-minute consultation instead
-              </button>
-            </div>
+            {/* Unlocked Full Sections */}
+            {isReportUnlocked ? (
+              <div className="space-y-6 pt-2">
+                <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 flex items-center justify-between text-emerald-300 text-sm">
+                  <div className="flex items-center gap-2 font-semibold">
+                    <span>✓</span>
+                    <span>Full Analysis Unlocked</span>
+                  </div>
+                  <span className="text-xs font-mono text-emerald-400/80">Verified Access</span>
+                </div>
+
+                {/* Section 1: Strategic Recommendations */}
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📊</span>
+                    <h3 className="text-lg font-semibold text-zinc-100">Strategic Recommendations</h3>
+                  </div>
+                  <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
+                    <p>
+                      • <strong>Optimal Action Window:</strong> Synchronize critical contract signings, capital allocation, or product launches during the upcoming <span className="text-amber-300 font-semibold">{timingAnalysis?.currentWindow.label.replace(/_/g, " ")}</span> window ({timingAnalysis?.currentWindow.dateRange.start} – {timingAnalysis?.currentWindow.dateRange.end}).
+                    </p>
+                    <p>
+                      • <strong>Auspicious Days:</strong> Focus high-impact presentations and negotiations on {timingAnalysis?.numerology.luckyDays.join(" and ") || "favorable days"}.
+                    </p>
+                    <p>
+                      • <strong>Risk Mitigation:</strong> Avoid signing binding agreements on {timingAnalysis?.numerology.avoidDays.join(", ") || "challenging days"}.
+                    </p>
+                    <p>
+                      • <strong>Phase Blueprint:</strong> For your stage ({careerStage.replace(/_/g, " ")}), anchor your foundations in strong personal relationships and reliable cashflow before aggressive expansion.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Section 2: Expert Narrative & Review */}
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">👤</span>
+                    <div>
+                      <h3 className="text-lg font-semibold text-zinc-100">Expert Review &amp; Synthesis</h3>
+                      <p className="text-xs text-blue-400">By {expertAssignment?.advisorName} — {expertAssignment?.advisorTitle}</p>
+                    </div>
+                  </div>
+                  <blockquote className="text-sm italic text-zinc-300 border-l-2 border-blue-500/50 pl-4 py-1">
+                    &ldquo;Based on your Ge&apos;ez gematria ({gematriaLive.nameSubtotal} + {gematriaLive.motherSubtotal} = {gematriaLive.totalSum}) and elemental alignment with {timingAnalysis?.numerology.careerElement}, your career trajectory demonstrates strong resilience. Capitalize on collective synergy (Equb and peer syndicates) rather than isolated venture risks.&rdquo;
+                  </blockquote>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Your life path vibration ({timingAnalysis?.numerology.lifePathNumber}) reinforces leadership when grounded in ethical community commerce. Prioritize transparency and mutual benefit in all stakeholder agreements.
+                  </p>
+                </div>
+
+                {/* Section 3: Blessing Ritual for Career Launch */}
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    <h3 className="text-lg font-semibold text-zinc-100">Traditional Blessing Ritual (ምርቃት)</h3>
+                  </div>
+                  <div className="space-y-2 text-sm text-zinc-300">
+                    <div className="p-3 rounded-xl bg-zinc-800/60 border border-zinc-700/60">
+                      <p className="font-medium text-amber-200 text-xs uppercase tracking-wider mb-1">1. Morning Incense &amp; Intention (እጣን)</p>
+                      <p className="text-xs text-zinc-400">Burn white frankincense (ጣን) at sunrise before embarking on major business ventures, setting clear ethical intentions.</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-zinc-800/60 border border-zinc-700/60">
+                      <p className="font-medium text-amber-200 text-xs uppercase tracking-wider mb-1">2. Coffee Ceremony Blessing (የቡና ምርቃት)</p>
+                      <p className="text-xs text-zinc-400">Host a coffee ceremony with respected elders or colleagues to invoke communal peace, good fortune, and shared prosperity.</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-zinc-800/60 border border-zinc-700/60">
+                      <p className="font-medium text-amber-200 text-xs uppercase tracking-wider mb-1">3. Charitable Offering (ምጽዋት / ሰደቃ)</p>
+                      <p className="text-xs text-zinc-400">Share a small portion of your opening gains with community members in need to sanctify ongoing abundance.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: Sector Insights */}
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📈</span>
+                    <h3 className="text-lg font-semibold text-zinc-100">Sector &amp; Ecosystem Insights</h3>
+                  </div>
+                  <p className="text-sm text-zinc-300 leading-relaxed">
+                    Integration with modern digital rails (Telebirr SuperApp, CBE Birr payment gateway, and e-Trade registration) gives traditional commerce a 4x efficiency multiplier. Leverage cooperative mechanisms (Equb) for low-cost operational liquidity.
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => window.print()}
+                    className="flex-1 py-3 rounded-xl border border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:border-zinc-500 text-sm font-medium transition-all"
+                  >
+                    Print / Save Report (PDF)
+                  </button>
+                  <button
+                    onClick={() => setStage("consult_book")}
+                    className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-all"
+                  >
+                    Book Advisor Consultation →
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Unlock CTA */
+              <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-6 text-center space-y-4">
+                <p className="text-zinc-300 text-sm">
+                  Unlock the full report including expert narrative, strategic recommendations, and your
+                  personalised blessing ritual for <span className="font-bold text-blue-300">{expertAssignment?.consultationFeeETB ?? 500} ETB</span>.
+                </p>
+                <button
+                  onClick={() => setShowPayment(true)}
+                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-white transition-all shadow-lg shadow-blue-900/30"
+                >
+                  Unlock Full Report
+                </button>
+                <p className="text-xs text-zinc-500">or</p>
+                <button
+                  onClick={() => setStage("consult_book")}
+                  className="w-full py-3 rounded-xl border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 transition-all text-sm"
+                >
+                  Book a 30-minute consultation instead
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -1053,6 +1314,114 @@ export default function CareerCasePage() {
         )}
 
       </main>
+
+      {/* ── Payment Modal / Sheet ── */}
+      {showPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+              <div>
+                <h3 className="text-lg font-bold text-zinc-100">Unlock Career Report</h3>
+                <p className="text-xs text-zinc-400">Complete analysis &amp; expert strategy</p>
+              </div>
+              <button
+                onClick={() => setShowPayment(false)}
+                className="w-8 h-8 rounded-full border border-zinc-700 text-zinc-400 hover:text-zinc-100 flex items-center justify-center text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Fee summary */}
+            <div className="rounded-2xl bg-zinc-800/50 p-4 space-y-2 text-sm border border-zinc-700/50">
+              <div className="flex justify-between text-zinc-400 text-xs">
+                <span>Career Numerology &amp; Timing</span>
+                <span className="text-emerald-400">Included</span>
+              </div>
+              <div className="flex justify-between text-zinc-400 text-xs">
+                <span>Full Blueprint, Ritual &amp; Expert Review</span>
+                <span className="text-zinc-200">{expertAssignment?.consultationFeeETB ?? 500} ETB</span>
+              </div>
+              <div className="flex justify-between text-zinc-100 font-bold border-t border-zinc-700 pt-2 text-base">
+                <span>Total Due</span>
+                <span className="text-blue-400">{expertAssignment?.consultationFeeETB ?? 500} ETB</span>
+              </div>
+            </div>
+
+            {/* Payment method selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Choose Payment Method
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "telebirr", name: "Telebirr", icon: "📱" },
+                  { id: "cbe_birr", name: "CBE Birr", icon: "🏦" },
+                  { id: "chapa", name: "Chapa", icon: "💳" },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setPaymentMethod(m.id as "telebirr" | "cbe_birr" | "chapa")}
+                    className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1 ${
+                      paymentMethod === m.id
+                        ? "border-blue-500 bg-blue-500/20 text-blue-200 shadow-sm"
+                        : "border-zinc-800 bg-zinc-800/40 text-zinc-400 hover:border-zinc-700"
+                    }`}
+                  >
+                    <span className="text-lg">{m.icon}</span>
+                    <span className="text-xs font-medium">{m.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile / Account input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-300">
+                {paymentMethod === "telebirr" ? "Telebirr Mobile Number" : paymentMethod === "cbe_birr" ? "CBE Birr Mobile / Account" : "Phone or Card Identifier"}
+              </label>
+              <input
+                type="text"
+                value={paymentPhone}
+                onChange={(e) => setPaymentPhone(e.target.value)}
+                placeholder="0911234567"
+                className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm focus:border-blue-500 outline-none"
+              />
+            </div>
+
+            {paymentError && (
+              <div className="text-xs text-red-400 text-center">{paymentError}</div>
+            )}
+
+            {/* Action buttons */}
+            <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={handleConfirmPayment}
+                disabled={isProcessingPayment}
+                className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 font-semibold text-white transition-all shadow-lg shadow-blue-900/30 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Processing payment...</span>
+                  </>
+                ) : (
+                  <span>Pay {expertAssignment?.consultationFeeETB ?? 500} ETB &amp; Unlock</span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPayment(false)}
+                className="w-full py-2.5 rounded-xl text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,6 @@
 import type { RawArticle } from "../types";
+import { getNcbiRateLimiter } from "../tokenBucketRateLimiter";
 
-// Simple rate limiter: resolves after the given delay
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 /**
  * PubMed E-utilities source.
@@ -14,11 +11,11 @@ function sleep(ms: number): Promise<void> {
 export class PubMedSource {
   private readonly BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
   private readonly API_KEY = process.env.PUBMED_api || process.env.NCBI_API_KEY || "";
-  private readonly RATE_MS = this.API_KEY ? 100 : 350; // 10/s vs ~3/s
   private readonly BATCH_SIZE = 50; // efetch max
 
   private async get(url: string): Promise<Response> {
-    await sleep(this.RATE_MS);
+    // Pillar 3 P11: Token-bucket rate limiting instead of fixed sleep
+    await getNcbiRateLimiter().throttle();
     const sep = url.includes("?") ? "&" : "?";
     const keySuffix = this.API_KEY ? `${sep}api_key=${this.API_KEY}` : "";
     const response = await fetch(`${url}${keySuffix}`, {
@@ -78,7 +75,7 @@ export class PubMedSource {
       const xml = await fetchResp.text();
       const parsed = this.parseXmlArticles(xml);
       articles.push(...parsed);
-      await sleep(this.RATE_MS);
+      // Token-bucket handles inter-batch pacing automatically
     }
 
     return articles;

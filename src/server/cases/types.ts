@@ -29,11 +29,29 @@ export interface Contact {
   number: string;
 }
 
+export type EvidenceGrade = "strong" | "moderate" | "preliminary" | "traditional" | "reflective_only";
+
+export interface ConsentRecord {
+  dataUsage: boolean;
+  emergencySupport: boolean;
+  thirdPartySharing: boolean;
+  retention: "30_days" | "90_days" | "1_year" | "until_closed";
+  consentedAt: string | null;
+  consentTextVersion: string;
+}
+
 /** Normalised result of a domain's safety pre-screen. */
 export interface SafetyOutcome {
   action: "proceed" | "proceed_with_concern" | "crisis_route" | "referral_route";
   priority: "urgent" | "high" | "routine";
   reason?: string;
+  reasonCode?: string;
+  confidence?: number;
+  evidence?: {
+    sourceTypes: string[];
+    freshnessLabel?: string;
+    notes?: string;
+  };
   /** Free, always-visible support content (crisis lines, legal aid, safety plan). */
   support?: {
     title: string;
@@ -71,13 +89,36 @@ export interface ReportSection {
   locked: boolean;
   /** Domain B (cultural/reflective) content, displayed separately from Domain A findings. */
   cultural?: boolean;
+  evidence?: {
+    sources?: string[];
+    confidence?: number;
+    note?: string;
+  };
   data?: Record<string, unknown>;
+}
+
+export interface RecommendationEvidence {
+  grade: EvidenceGrade;
+  source: string;
+  confidence: number;
+  note: string;
+  professionalGate?: "none" | "medical_review_required" | "legal_review_required" | "specialist_review_required";
+}
+
+export interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
+  evidence: RecommendationEvidence;
+  domain: "scientific" | "cultural" | "social" | "legal" | "career" | "spiritual";
+  requiresReview?: boolean;
 }
 
 export interface DraftReport {
   title: string;
   summary: string;
   sections: ReportSection[];
+  recommendations?: Recommendation[];
   disclaimer: string;
   generatedAt: string;
   aiAssisted: boolean;
@@ -112,6 +153,18 @@ export interface ReviewRecord {
   checklist?: Record<string, boolean>;
 }
 
+export interface ReviewChecklistItem {
+  id: string;
+  label: string;
+}
+
+export interface ReviewAuditEvent {
+  type: "created" | "claimed" | "approved";
+  actorId: string;
+  at: string;
+  details?: Record<string, unknown>;
+}
+
 /** The persisted case. Stored as one row in `workflow_cases`. */
 export interface WorkflowCase {
   id: string;
@@ -120,11 +173,13 @@ export interface WorkflowCase {
   stage: WorkflowStage;
   safetyAnswers: Record<string, unknown>;
   safety: SafetyOutcome;
+  consent: ConsentRecord;
   answers: Record<string, unknown>;
   /** Domain-specific computed context (e.g. gematria for spiritual, timing for career). */
   context: Record<string, unknown>;
   draft: DraftReport | null;
   review: ReviewRecord | null;
+  auditTrail: ReviewAuditEvent[];
   payment: PaymentRecord | null;
   consultation: ConsultationRecord | null;
   createdAt: string;
@@ -143,8 +198,10 @@ export interface DomainConfig {
   description: string;
   pricing: DomainPricing;
   /** The review checklist an expert must complete before a report is released. */
-  reviewChecklist: { id: string; label: string }[];
+  reviewChecklist: ReviewChecklistItem[];
   safetyQuestions: WorkflowQuestion[];
+  /** Answers needed before the case can be created (e.g. names for the spiritual gematria). */
+  startQuestions?: WorkflowQuestion[];
   evaluateSafety(answers: Record<string, unknown>): SafetyOutcome;
   /** Questions for the intake. May depend on answers given so far. */
   questions(answers: Record<string, unknown>): WorkflowQuestion[];

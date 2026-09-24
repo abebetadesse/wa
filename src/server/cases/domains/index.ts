@@ -13,8 +13,13 @@ import { generateDynamicQuestions } from "@/lib/case-workflow/spiritualQuestionE
 import type { DomainConfig, SafetyOutcome, WorkflowDomain } from "../types";
 import { concern, crisisOutcome, proceed, REFERRALS, screenFreeText, CONTACTS } from "../support";
 import { CAREER_SAFETY, LEGAL_SAFETY, RELATIONSHIP_SAFETY, SOCIAL_SAFETY, SPIRITUAL_SAFETY } from "./safetyQuestions";
-import { aiSection, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
+import { aiSection, buildEvidenceBasedRecommendations, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
 import { buildSpiritualSections } from "./spiritualContent";
+
+const SPIRITUAL_NAME_QUESTIONS = [
+  { id: "nameGeez", text: "Your name in Ge'ez script", textAmharic: "ስምዎ በግዕዝ ፊደል", type: "name_geez", required: true, hint: "For example ሰላማዊት. The reading is calculated from the letters of your name." },
+  { id: "motherNameGeez", text: "Your mother's name in Ge'ez script", textAmharic: "የእናትዎ ስም በግዕዝ ፊደል", type: "name_geez", required: false },
+];
 
 const anyPreferNot = (answers: Record<string, unknown>) => Object.values(answers).includes("prefer_not");
 const incompleteScreen = () => concern("One or more safety questions were not answered; the reviewer should check in first.");
@@ -48,6 +53,7 @@ const career: DomainConfig = {
     const profile = buildCareerProfile(Object.fromEntries(Object.entries(answers).map(([key, value]) => [key, text(value)])));
     const timing = profile.geezName && profile.motherGeezName ? calculateTimingWindows(profile) : null;
     const ai = await aiSection("career", { profile, answers });
+    const recommendations = buildEvidenceBasedRecommendations("career", answers);
     return {
       title: "Career direction review",
       summary: profile.topGoal
@@ -76,6 +82,7 @@ const career: DomainConfig = {
         },
         { id: "financial_disclaimer", title: "About financial topics", body: FINANCIAL_DISCLAIMER, locked: false },
       ]),
+      recommendations,
       disclaimer: REPORT_DISCLAIMER,
       generatedAt: new Date().toISOString(),
       aiAssisted: Boolean(ai),
@@ -279,6 +286,7 @@ const spiritual: DomainConfig = {
     { id: "reflective_framing", label: "Divination content is framed as reflection, never as prediction or medical guidance." },
   ],
   safetyQuestions: SPIRITUAL_SAFETY,
+  startQuestions: normalizeQuestions(SPIRITUAL_NAME_QUESTIONS),
   evaluateSafety(answers) {
     if (answers.immediateRisk === "yes" || answers.self_harm === "occasionally" || answers.self_harm === "frequently") {
       return crisisOutcome("Self-harm or immediate risk reported", [
@@ -295,10 +303,7 @@ const spiritual: DomainConfig = {
   },
   questions(answers) {
     // The name questions come first; dynamic reflection questions follow once the gematria is known.
-    const nameQuestions = [
-      { id: "nameGeez", text: "Your name in Ge'ez script", textAmharic: "ስምዎ በግዕዝ ፊደል", type: "name_geez", required: true },
-      { id: "motherNameGeez", text: "Your mother's name in Ge'ez script", textAmharic: "የእናትዎ ስም በግዕዝ ፊደል", type: "name_geez", required: false },
-    ];
+    const nameQuestions = SPIRITUAL_NAME_QUESTIONS;
     const name = text(answers.nameGeez);
     if (!name) return normalizeQuestions(nameQuestions);
     const gematria = calculateFullDivination(name, text(answers.motherNameGeez));

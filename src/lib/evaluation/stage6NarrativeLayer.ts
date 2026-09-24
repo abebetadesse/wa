@@ -1,4 +1,4 @@
-import { NormalizedProfile, Gap, Cause, Solution, SafetyCheckResult } from "./types";
+import { NormalizedProfile, Gap, Cause, Solution, SafetyCheckResult, computeStatisticalSummary } from "./types";
 
 export interface GuardrailValidationResult {
   isValid: boolean;
@@ -52,6 +52,7 @@ export function stage6GenerateNarrative(
   }
 
   const paragraphs: string[] = [];
+  const statistics = computeStatisticalSummary(profile, gaps, causes, solutions);
 
   // Opening summary
   const deficiencyList = gaps
@@ -62,9 +63,17 @@ export function stage6GenerateNarrative(
   paragraphs.push(
     `Our biochemical nutritional evaluation for your profile in ${profile.region} (elevation ${profile.altitudeMeters}m) ` +
     `identified potential dietary intake gaps: ${deficiencyList || "none"}. ` +
+    `The weighted statistical model estimates an overall risk score of ${statistics.overallRiskScore}/100 with ${statistics.confidence.toFixed(2)} confidence and ${statistics.evidenceCoverage}% evidence coverage. ` +
     `These findings highlight nutritional patterns based on your reported intake and do not constitute a medical diagnosis. ` +
     `Reference standard: Ethiopian Food Composition Table (EFCT 2025).`
   );
+
+  if (statistics.topDrivers.length > 0) {
+    paragraphs.push(
+      `### Statistical Drivers\nPrimary drivers: ${statistics.topDrivers.join(", ")}. ` +
+      `This ordering reflects the interaction between deficiency severity, signal consistency, and the strength of the supporting evidence.`
+    );
+  }
 
   // Causal attribution narrative
   if (causes.length > 0) {

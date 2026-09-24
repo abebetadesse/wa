@@ -19,8 +19,41 @@ import {
   KeyRound,
   Users,
   RefreshCw,
+  Briefcase,
+  Sparkles,
+  Compass,
 } from "lucide-react";
 import { notifyAuthStateChanged } from "@/lib/auth/clientEvents";
+
+const DEMO_PRESETS = [
+  {
+    role: "Case Client / Filer",
+    name: "Almaz Bekele",
+    email: "almaz.bekele@ethio-wellness.org",
+    password: "Ethiowellbeing@2026!",
+    badge: "Case Filer",
+    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    desc: "Personal profile with active career and spiritual cases",
+  },
+  {
+    role: "Case Reviewer",
+    name: "Dr. Yemane Tesfaye",
+    email: "yemane.reviewer@ethio-wellness.org",
+    password: "Ethiowellbeing@2026!",
+    badge: "Reviewer",
+    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+    desc: "Verified practitioner with case review authority",
+  },
+  {
+    role: "Administrator",
+    name: "Mekonnen Birhanu",
+    email: "mekonnen.admin@ethio-wellness.org",
+    password: "Ethiowellbeing@2026!",
+    badge: "Admin",
+    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40",
+    desc: "System supervisor and case dispatcher",
+  },
+] as const;
 
 type AuthTab = "login" | "register" | "forgot";
 
@@ -33,6 +66,8 @@ function AuthPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedMode = normalizeAuthTab(searchParams.get("mode"));
+  const nextParam = searchParams.get("next");
+  const isCaseDestination = Boolean(nextParam?.startsWith("/case"));
 
   const [tab, setTab] = useState<AuthTab>(requestedMode);
   const [showPassword, setShowPassword] = useState(false);
@@ -73,6 +108,8 @@ function AuthPageInner() {
     setTab(nextTab);
     setError("");
     setSuccessMsg("");
+    const nextQuery = nextParam ? `&next=${encodeURIComponent(nextParam)}` : "";
+    router.replace(`/auth?mode=${nextTab}${nextQuery}`, { scroll: false });
   };
 
   // Password strength calculation
@@ -201,7 +238,13 @@ function AuthPageInner() {
         throw new Error(data.error || "Verification failed");
       }
 
-      router.push("/profile/onboarding");
+      notifyAuthStateChanged();
+      const nextPath = searchParams.get("next");
+      if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
+        router.push(nextPath);
+      } else {
+        router.push("/profile/onboarding");
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed.");
@@ -256,12 +299,16 @@ function AuthPageInner() {
   }
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="w-full max-w-xl">
+    <main className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+
+      <div className="w-full max-w-xl relative z-10">
         {/* Brand Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-amber-500 flex items-center justify-center font-bold text-2xl text-white shadow-xl shadow-emerald-950/50">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-amber-500 flex items-center justify-center font-bold text-2xl text-white shadow-xl shadow-emerald-950/50 group-hover:scale-105 transition-transform">
               <span>ጥ</span>
             </div>
             <div className="text-left">
@@ -272,16 +319,81 @@ function AuthPageInner() {
             </div>
           </Link>
           <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            {tab === "login" && "Sign In to Your Workspace"}
-            {tab === "register" && "Create Your Holistic Wellbeing Account"}
-            {tab === "forgot" && "Recover Your Account Password"}
+            {isCaseDestination
+              ? "Access Your Case Workspace"
+              : tab === "login"
+              ? "Sign In to Your Workspace"
+              : tab === "register"
+              ? "Create Your Holistic Wellbeing Account"
+              : "Recover Your Account Password"}
           </h1>
           <p className="mt-1.5 text-xs sm:text-sm text-slate-400">
-            {tab === "login" && "Access scientific evaluations, Awde Negest divination sessions, and traditional wellbeing records."}
-            {tab === "register" && "Join certified debteras, scientific nutritionists, and patients across all Ethiopian regions."}
-            {tab === "forgot" && "Enter your registered email to receive a password recovery verification token."}
+            {isCaseDestination
+              ? "Sign in to manage and review your confidential traditional & modern case inquiries."
+              : tab === "login"
+              ? "Access scientific evaluations, Awde Negest divination sessions, and traditional wellbeing records."
+              : tab === "register"
+              ? "Join certified debteras, scientific nutritionists, and patients across all Ethiopian regions."
+              : "Enter your registered email to receive a password recovery verification token."}
           </p>
         </div>
+
+        {/* Case Destination Awareness Banner */}
+        {isCaseDestination && (
+          <div className="mb-6 p-4 rounded-3xl bg-gradient-to-r from-emerald-950/70 via-zinc-900/90 to-amber-950/50 border border-emerald-500/40 shadow-xl shadow-emerald-950/30 backdrop-blur-xl">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 mt-0.5 text-emerald-300 shadow-inner">
+                <Briefcase className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="space-y-1.5 flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                      Destination: Case Workflow Gateway
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
+                      {nextParam}
+                    </span>
+                  </div>
+                  <Link
+                    href="/case"
+                    className="text-[11px] text-amber-300 hover:text-amber-200 underline flex items-center gap-0.5"
+                  >
+                    Browse Overview →
+                  </Link>
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed">
+                  Authentication is required to protect your private personal history, debtera healing scrolls, and cultural case records. Once signed in, you will be redirected straight to your workspace.
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1 text-[11px] text-slate-400">
+                  <span className="flex items-center gap-1 text-emerald-300">
+                    <CheckCircle2 size={12} /> Confidential &amp; Encrypted
+                  </span>
+                  <span className="text-slate-600">•</span>
+                  <span className="flex items-center gap-1 text-amber-300">
+                    <Shield size={12} /> 5 Care Domains
+                  </span>
+                  <span className="text-slate-600">•</span>
+                  <span className="flex items-center gap-1 text-blue-300">
+                    <Sparkles size={12} /> Direct Case Resume
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {nextParam && !isCaseDestination && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-zinc-900/80 border border-white/10 flex items-center justify-between gap-3 text-xs text-slate-300">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">🔒 Destination:</span>
+              <span className="font-mono text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                {nextParam}
+              </span>
+            </div>
+            <span className="text-slate-400 text-[11px]">Sign in to continue to your page</span>
+          </div>
+        )}
 
         {/* Auth Card */}
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl relative backdrop-blur-2xl">
@@ -400,7 +512,7 @@ function AuthPageInner() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 mt-2 shadow-lg shadow-emerald-950/50 transition-all"
+                  className="btn-primary w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 mt-2 shadow-lg shadow-emerald-950/50 transition-all text-sm"
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
@@ -408,12 +520,58 @@ function AuthPageInner() {
                     </span>
                   ) : (
                     <>
-                      <span>Sign In to Platform</span>
+                      <span>
+                        {isCaseDestination ? "Sign In & Open Case Workspace" : "Sign In to Platform"}
+                      </span>
                       <ArrowRight size={16} />
                     </>
                   )}
                 </button>
               </form>
+
+              {/* Quick Demo Access Bar */}
+              <div className="pt-4 border-t border-white/10 space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+                    <Sparkles size={14} className="text-amber-400" />
+                    Quick Demo Credentials / ፈጣን መግቢያ
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-mono">1-Click Fill</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {DEMO_PRESETS.map((p) => {
+                    const isSelected = loginEmail === p.email;
+                    return (
+                      <button
+                        key={p.email}
+                        type="button"
+                        onClick={() => {
+                          setLoginEmail(p.email);
+                          setLoginPassword(p.password);
+                          setError("");
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                          isSelected
+                            ? "bg-emerald-950/70 border-emerald-500/60 text-white ring-1 ring-emerald-500/50 shadow-md shadow-emerald-950/40"
+                            : "bg-black/30 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/5"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full mb-1">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${p.badgeColor}`}>
+                            {p.badge}
+                          </span>
+                          <span className="text-[10px] text-emerald-400 font-mono">
+                            {isSelected ? "Filled ✓" : "Fill"}
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold truncate text-white">{p.name}</p>
+                        <p className="text-[10px] text-slate-400 truncate font-mono">{p.email.split("@")[0]}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
 

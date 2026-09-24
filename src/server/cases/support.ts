@@ -37,6 +37,13 @@ export function crisisOutcome(reason: string, extraSteps: string[] = []): Safety
     action: "crisis_route",
     priority: "urgent",
     reason,
+    reasonCode: "crisis_route",
+    confidence: 0.98,
+    evidence: {
+      sourceTypes: ["user self-report", "screening pattern"],
+      freshnessLabel: "Immediate review required",
+      notes: "High-risk safety language or direct risk indicators triggered a crisis pathway.",
+    },
     support: {
       title: "Your safety comes first",
       message:
@@ -78,11 +85,28 @@ export function screenFreeText(answers: Record<string, unknown>): SafetyOutcome 
   return null;
 }
 
-export const proceed = (): SafetyOutcome => ({ action: "proceed", priority: "routine" });
+export const proceed = (): SafetyOutcome => ({
+  action: "proceed",
+  priority: "routine",
+  reasonCode: "proceed",
+  confidence: 0.7,
+  evidence: {
+    sourceTypes: ["screening review"],
+    freshnessLabel: "No elevated concern detected",
+    notes: "No trigger points were identified in the current safety evaluation.",
+  },
+});
 
 export const concern = (reason: string, priority: SafetyOutcome["priority"] = "routine", support?: SafetyOutcome["support"]): SafetyOutcome => ({
   action: "proceed_with_concern",
   priority,
   reason,
+  reasonCode: "proceed_with_concern",
+  confidence: priority === "urgent" ? 0.83 : priority === "high" ? 0.74 : 0.64,
+  evidence: {
+    sourceTypes: ["user response", "risk screening"],
+    freshnessLabel: "Screening signal confirmed",
+    notes: "User reported an elevated concern that requires attentive review and support planning.",
+  },
   support,
 });

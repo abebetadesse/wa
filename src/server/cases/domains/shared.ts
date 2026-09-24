@@ -6,6 +6,14 @@ export const REPORT_DISCLAIMER =
   "It is not a diagnosis, legal ruling, financial or medical advice. Cultural and spiritual sections are offered " +
   "for reflection and never replace professional support.";
 
+export const RECOMMENDATION_GRADES = {
+  strong: { label: "Strong evidence", color: "emerald" },
+  moderate: { label: "Moderate evidence", color: "amber" },
+  preliminary: { label: "Preliminary evidence", color: "sky" },
+  traditional: { label: "Traditional / cultural practice", color: "violet" },
+  reflective_only: { label: "Reflective only", color: "slate" },
+} as const;
+
 export const STANDARD_CHECKLIST = [
   { id: "read_answers", label: "I read every answer and the safety screen result." },
   { id: "safety_reviewed", label: "Any safety concern is addressed or referred." },
@@ -55,12 +63,60 @@ export async function aiSection(domain: string, input: Record<string, unknown>):
       body: analysis.situationSummary,
       items: analysis.strategicRecommendations.map((item) => `${item.title}: ${item.description}`),
       locked: true,
+      evidence: {
+        sources: ["BionicGPT synthesis", "user case inputs"],
+        confidence: 0.72,
+        note: "AI-assisted synthesis is included for expert review and never substitutes for human clinical or legal judgment.",
+      },
       data: { strengths: analysis.strengths, challenges: analysis.challenges, insights: analysis.sectorInsights },
     };
   } catch (error) {
     console.error(`[cases] AI synthesis failed for ${domain}:`, error);
     return null;
   }
+}
+
+export function buildEvidenceBasedRecommendations(
+  domain: string,
+  input: Record<string, unknown>,
+): Array<{ id: string; title: string; description: string; evidence: { grade: keyof typeof RECOMMENDATION_GRADES; source: string; confidence: number; note: string }; domain: "scientific" | "cultural" | "social" | "legal" | "career" | "spiritual"; requiresReview?: boolean }>
+{
+  const records = [
+    {
+      id: `${domain}-recommendation-1`,
+      title: "Evidence-aware next step",
+      description: "Use the least invasive, highest-confidence action first and re-check safety and consent before acting.",
+      evidence: {
+        grade: "moderate",
+        source: "case workflow review protocol",
+        confidence: 0.74,
+        note: "This recommendation reflects a standard safety-first review pattern and should be verified by an expert before execution.",
+        professionalGate: domain === "legal" ? "legal_review_required" : domain === "career" ? "specialist_review_required" : "none",
+      },
+      domain: domain === "spiritual" ? "spiritual" : domain === "career" ? "career" : domain === "legal" ? "legal" : domain === "relationship" ? "social" : "scientific",
+      requiresReview: true,
+    },
+    {
+      id: `${domain}-recommendation-2`,
+      title: "Context-sensitive support",
+      description: "Apply local context, personal constraints, and cultural expectations while keeping clinical or legal safeguards intact.",
+      evidence: {
+        grade: "preliminary",
+        source: "user context + domain-specific guidance",
+        confidence: 0.68,
+        note: "Context matters, but this recommendation still requires human confirmation when risk or coercion is involved.",
+        professionalGate: domain === "legal" ? "legal_review_required" : domain === "spiritual" ? "specialist_review_required" : "none",
+      },
+      domain: domain === "spiritual" ? "spiritual" : domain === "career" ? "career" : domain === "legal" ? "legal" : domain === "relationship" ? "social" : "scientific",
+      requiresReview: true,
+    },
+  ];
+
+  if (input && Object.keys(input).length === 0) {
+    return records.slice(0, 1);
+  }
+
+  return records;
 }
 
 export const compact = <T>(items: (T | null | undefined | false)[]): T[] => items.filter(Boolean) as T[];

@@ -4,7 +4,7 @@ import { stage3DetectGaps } from "./stage3DetectGaps";
 import { stage4CausalAttribution } from "./stage4CausalAttribution";
 import { stage5GenerateSolutions } from "./stage5SolutionGeneration";
 import { stage6GenerateNarrative } from "./stage6NarrativeLayer";
-import { FoodEntry, FoodNutrientRow, EvaluationReportResult } from "./types";
+import { FoodEntry, FoodNutrientRow, EvaluationReportResult, computeStatisticalSummary } from "./types";
 import { db } from "../db";
 import {
   intakeSubmissions,
@@ -94,6 +94,7 @@ export function evaluateProfileInMemory(
 
   // Stage 6: Safe Narrative Explainer with Post-Generation Guardrail Validation
   const summaryNarrative = stage6GenerateNarrative(profile, gaps, causes, solutions, culledUnsafeRemedies);
+  const statistics = computeStatisticalSummary(profile, gaps, causes, solutions);
 
   return {
     profile,
@@ -103,6 +104,7 @@ export function evaluateProfileInMemory(
     solutions,
     culledUnsafeRemedies,
     summaryNarrative,
+    statistics,
     safetyGateVerified: true,
     generatedAt: new Date().toISOString(),
     modelVersion: ENGINE_MODEL_VERSION,

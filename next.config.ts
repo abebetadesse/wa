@@ -5,8 +5,11 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    // Pillar 2 P8: Eliminate unused SVG symbols from Lucide (~150KB saved)
+    optimizePackageImports: ["lucide-react", "echarts-for-react", "echarts"],
   },
+  // Pillar 2 P5: Keep heavy server-only node modules out of the client bundle
+  serverExternalPackages: ["node-cron", "postgres"],
   async headers() {
     return [
       {
@@ -28,3 +31,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

@@ -5,6 +5,7 @@
 import { ApiError } from "@/lib/api/route";
 import type {
   ConsultationRecord,
+  ConsentRecord,
   DomainConfig,
   DraftReport,
   PaymentRecord,
@@ -40,6 +41,7 @@ export function createCase(input: {
   config: DomainConfig;
   safetyAnswers: Record<string, unknown>;
   answers: Record<string, unknown>;
+  consent?: Partial<ConsentRecord>;
 }): WorkflowCase {
   const safety = input.config.evaluateSafety(input.safetyAnswers);
   const stage = stageForSafety(safety);
@@ -52,10 +54,19 @@ export function createCase(input: {
     stage,
     safetyAnswers: input.safetyAnswers,
     safety,
+    consent: {
+      dataUsage: input.consent?.dataUsage ?? true,
+      emergencySupport: input.consent?.emergencySupport ?? true,
+      thirdPartySharing: input.consent?.thirdPartySharing ?? false,
+      retention: input.consent?.retention ?? "90_days",
+      consentedAt: input.consent?.consentedAt ?? timestamp,
+      consentTextVersion: input.consent?.consentTextVersion ?? "v1",
+    },
     answers: input.answers,
     context,
     draft: null,
     review: null,
+    auditTrail: [{ type: "created", actorId: input.userId, at: timestamp, details: { domain: input.config.domain, stage } }],
     payment: null,
     consultation: null,
     createdAt: timestamp,
@@ -106,7 +117,14 @@ export function routeToCrisis(record: WorkflowCase, safety: SafetyOutcome): Work
 
 export function claimCase(record: WorkflowCase, expertId: string): WorkflowCase {
   assertStage(record, ["awaiting_expert"], "claim");
-  return { ...record, stage: "in_review", review: { expertId, claimedAt: now() }, updatedAt: now() };
+  const nowTs = now();
+  return {
+    ...record,
+    stage: "in_review",
+    review: { expertId, claimedAt: nowTs },
+    auditTrail: [...record.auditTrail, { type: "claimed", actorId: expertId, at: nowTs, details: { stage: "in_review" } }],
+    updatedAt: nowTs,
+  };
 }
 
 export function releaseClaim(record: WorkflowCase, expertId: string): WorkflowCase {
@@ -125,12 +143,14 @@ export function approveCase(
   if (record.review?.expertId !== expertId) throw ApiError.forbidden("This case is assigned to another expert.");
   const incomplete = config.reviewChecklist.filter((item) => input.checklist[item.id] !== true).map((item) => item.id);
   if (incomplete.length) throw ApiError.badRequest("Complete the review checklist before approving.", { incomplete });
+  const approvedAt = now();
   return {
     ...record,
     draft: input.draft ?? record.draft,
     stage: "visible_to_user",
-    review: { ...record.review, approvedAt: now(), notes: input.notes, checklist: input.checklist },
-    updatedAt: now(),
+    review: { ...record.review, approvedAt, notes: input.notes, checklist: input.checklist },
+    auditTrail: [...record.auditTrail, { type: "approved", actorId: expertId, at: approvedAt, details: { checklist: input.checklist, notes: input.notes ?? null } }],
+    updatedAt: approvedAt,
   };
 }
 
