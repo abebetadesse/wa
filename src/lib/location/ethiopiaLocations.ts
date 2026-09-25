@@ -1,6 +1,34 @@
 import { buildDenseLocationData, type LocationObservation, type ProvenanceRecord, type DataQualitySummary, type SpatialUnit, type SourceComparison, type FoodConsumptionObservation, type NutritionSurvey } from "./denseLocationData";
 
 export type EthiopianAgroZone = "dega" | "weina_dega" | "kolla" | "bereha";
+
+export interface EthiopianRegionReference {
+  code: string;
+  name: string;
+  nameAmharic: string;
+  capital: string;
+  agroClimaticZones: EthiopianAgroZone[];
+  riftValleyExposure: boolean;
+  knownGeothermalFields: string[];
+  source: "user_provided_region_reference";
+}
+
+export const ETHIOPIAN_REGION_REFERENCE: EthiopianRegionReference[] = [
+  { code: "AA", name: "Addis Ababa", nameAmharic: "አዲስ አበባ", capital: "Addis Ababa", agroClimaticZones: ["dega", "weina_dega"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "AF", name: "Afar", nameAmharic: "አፋር", capital: "Semera", agroClimaticZones: ["bereha", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Tendaho", "Dofan", "Fantale", "Dallol", "Erta Ale"], source: "user_provided_region_reference" },
+  { code: "AM", name: "Amhara", nameAmharic: "አማራ", capital: "Bahir Dar", agroClimaticZones: ["dega", "weina_dega", "kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "BG", name: "Benishangul-Gumuz", nameAmharic: "ቤኒሻንጉል ጉሙዝ", capital: "Assosa", agroClimaticZones: ["kolla", "weina_dega"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "CE", name: "Central Ethiopia", nameAmharic: "ማዕከላዊ ኢትዮጵያ", capital: "Hosaena", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Corbetti", "Aluto", "Tulu Moye"], source: "user_provided_region_reference" },
+  { code: "DD", name: "Dire Dawa", nameAmharic: "ድሬ ዳዋ", capital: "Dire Dawa", agroClimaticZones: ["kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "GA", name: "Gambela", nameAmharic: "ጋምቤላ", capital: "Gambela", agroClimaticZones: ["kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "HA", name: "Harari", nameAmharic: "ሐረሪ", capital: "Harar", agroClimaticZones: ["weina_dega", "kolla"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "OR", name: "Oromia", nameAmharic: "ኦሮሚያ", capital: "Addis Ababa", agroClimaticZones: ["dega", "weina_dega", "kolla", "bereha"], riftValleyExposure: true, knownGeothermalFields: ["Aluto Langano", "Corbetti", "Tulu Moye", "Wonji", "Boset", "Gedemsa", "Fantale"], source: "user_provided_region_reference" },
+  { code: "SI", name: "Sidama", nameAmharic: "ሲዳማ", capital: "Hawassa", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Corbetti", "Aluto Langano"], source: "user_provided_region_reference" },
+  { code: "SO", name: "Somali", nameAmharic: "ሶማሊ", capital: "Jigjiga", agroClimaticZones: ["kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "SE", name: "South Ethiopia", nameAmharic: "ደቡብ ኢትዮጵያ", capital: "Arba Minch", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Abaya", "Chamo", "Chew Bahir"], source: "user_provided_region_reference" },
+  { code: "SW", name: "Southwest Ethiopia Peoples", nameAmharic: "ደቡብ ምዕራብ ኢትዮጵያ ህዝቦች", capital: "Bonga", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+  { code: "TI", name: "Tigray", nameAmharic: "ትግራይ", capital: "Mekelle", agroClimaticZones: ["dega", "weina_dega", "kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
+];
 export interface EthiopianLocationSystemsProfile {
   dataLabel: "indicative_planning_estimate";
   referenceYear: number;

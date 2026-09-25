@@ -20,6 +20,11 @@ import {
   getMineralSpringsDirectory,
   evaluateCoffeeTiming,
 } from "../lib/cultural/seasonalTraditionsEngine.ts";
+import { ETHIOPIAN_REGION_REFERENCE, getEthiopianLocationById } from "../lib/location/ethiopiaLocations.ts";
+import {
+  ETHIOPIAN_ADMINISTRATIVE_PLACES,
+  searchEthiopianAdministrativePlaces,
+} from "../lib/location/ethiopianAdministrativePlaces.ts";
 
 describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
   // Enhancement 1
@@ -45,6 +50,29 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     const gondarAssessment = evaluateRiftValleyFluoride("Gondar");
     assert.equal(gondarAssessment.isRiftValleyZone, false);
     assert.equal(gondarAssessment.fluorosisRiskTier, "low");
+  });
+
+  test("Region reference registry maps locations to regional ecology metadata", () => {
+    const sidama = ETHIOPIAN_REGION_REFERENCE.find((region) => region.name === "Sidama");
+    assert.ok(sidama);
+    assert.equal(sidama.nameAmharic, "ሲዳማ");
+    assert.equal(sidama.riftValleyExposure, true);
+    assert.ok(sidama.knownGeothermalFields.includes("Corbetti"));
+
+    const hawassa = getEthiopianLocationById("hawassa");
+    assert.ok(hawassa);
+    assert.equal(hawassa.region, sidama.name);
+    assert.equal(hawassa.riftValley, true);
+  });
+
+  test("ODT administrative registry supports region, zone, and town searches", () => {
+    assert.ok(ETHIOPIAN_ADMINISTRATIVE_PLACES.length > 1200);
+    const hawassa = searchEthiopianAdministrativePlaces("Hawassa Zuriya", "Sidama");
+    assert.ok(hawassa.some((place) => place.town === "Hawassa Zuriya"));
+    assert.ok(hawassa.every((place) => place.region === "Sidama"));
+    const wereda = searchEthiopianAdministrativePlaces("Wereda 01", "Addis Ababa", "Addis Ketema");
+    assert.ok(wereda.length > 0);
+    assert.ok(wereda.every((place) => place.zone === "Addis Ketema"));
   });
 
   // Enhancement 3
