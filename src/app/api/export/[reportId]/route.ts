@@ -10,6 +10,7 @@ import {
   wellbeingProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 /**
  * GET /api/export/[reportId]?format=json|csv
@@ -24,6 +25,11 @@ interface ReportPageProps {
 }
 
 export async function GET(request: NextRequest, { params }: ReportPageProps) {
+  const authenticatedUser = await getAuthenticatedUser();
+  if (!authenticatedUser) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+
   const { reportId } = await params;
   const format = request.nextUrl.searchParams.get("format") ?? "json";
 
@@ -36,6 +42,13 @@ export async function GET(request: NextRequest, { params }: ReportPageProps) {
 
   if (!report) {
     return NextResponse.json({ error: "Report not found" }, { status: 404 });
+  }
+  const canExport =
+    report.userId === authenticatedUser.id ||
+    authenticatedUser.role === "admin" ||
+    authenticatedUser.role === "super_admin";
+  if (!canExport) {
+    return NextResponse.json({ error: "You cannot export this report" }, { status: 403 });
   }
 
   // 2. Fetch user & profile

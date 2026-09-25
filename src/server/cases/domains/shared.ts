@@ -81,19 +81,27 @@ export function buildEvidenceBasedRecommendations(
   input: Record<string, unknown>,
 ): Array<{ id: string; title: string; description: string; evidence: { grade: keyof typeof RECOMMENDATION_GRADES; source: string; confidence: number; note: string }; domain: "scientific" | "cultural" | "social" | "legal" | "career" | "spiritual"; requiresReview?: boolean }>
 {
+  type RecommendationDomain = "scientific" | "cultural" | "social" | "legal" | "career" | "spiritual";
+  const targetDomain: RecommendationDomain =
+    domain === "spiritual" ? "spiritual"
+    : domain === "career" ? "career"
+    : domain === "legal" ? "legal"
+    : domain === "relationship" ? "social"
+    : "scientific";
+
   const records = [
     {
       id: `${domain}-recommendation-1`,
       title: "Evidence-aware next step",
       description: "Use the least invasive, highest-confidence action first and re-check safety and consent before acting.",
       evidence: {
-        grade: "moderate",
+        grade: "moderate" as const,
         source: "case workflow review protocol",
         confidence: 0.74,
         note: "This recommendation reflects a standard safety-first review pattern and should be verified by an expert before execution.",
         professionalGate: domain === "legal" ? "legal_review_required" : domain === "career" ? "specialist_review_required" : "none",
       },
-      domain: domain === "spiritual" ? "spiritual" : domain === "career" ? "career" : domain === "legal" ? "legal" : domain === "relationship" ? "social" : "scientific",
+      domain: targetDomain,
       requiresReview: true,
     },
     {
@@ -101,13 +109,13 @@ export function buildEvidenceBasedRecommendations(
       title: "Context-sensitive support",
       description: "Apply local context, personal constraints, and cultural expectations while keeping clinical or legal safeguards intact.",
       evidence: {
-        grade: "preliminary",
+        grade: "preliminary" as const,
         source: "user context + domain-specific guidance",
         confidence: 0.68,
         note: "Context matters, but this recommendation still requires human confirmation when risk or coercion is involved.",
         professionalGate: domain === "legal" ? "legal_review_required" : domain === "spiritual" ? "specialist_review_required" : "none",
       },
-      domain: domain === "spiritual" ? "spiritual" : domain === "career" ? "career" : domain === "legal" ? "legal" : domain === "relationship" ? "social" : "scientific",
+      domain: targetDomain,
       requiresReview: true,
     },
   ];

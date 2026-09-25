@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { testBionicConnection, getBionicConfigStatus } from "@/lib/ai/bionicGPT";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 /**
  * GET /api/ai/bionic/test
@@ -11,12 +12,19 @@ import { testBionicConnection, getBionicConfigStatus } from "@/lib/ai/bionicGPT"
  *   curl http://localhost:3000/api/ai/bionic/test
  */
 export async function GET() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+  }
+  if (!["admin", "super_admin"].includes(user.role)) {
+    return NextResponse.json({ success: false, error: "Administrator access required." }, { status: 403 });
+  }
+
   const configStatus = getBionicConfigStatus();
   const connectionResult = await testBionicConnection();
 
   return NextResponse.json({
     integration: "Bionic GPT",
-    account: "abebetadesse33@gmail.com",
     config: configStatus,
     connection: connectionResult,
     instructions: configStatus.configured

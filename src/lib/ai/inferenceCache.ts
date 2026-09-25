@@ -157,7 +157,9 @@ export async function withInferenceCache<T>(
   }
   const result = await producer();
   setCachedInference(key, result);
-  return result;
+  return (typeof result === "object" && result !== null
+    ? { ...(result as object), _cacheHit: false }
+    : result) as T & { _cacheHit?: boolean };
 }
 
 /** Inspect cache statistics for monitoring / health-check endpoints. */

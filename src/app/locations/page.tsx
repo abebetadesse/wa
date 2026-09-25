@@ -315,7 +315,7 @@ export default function LocationsPage() {
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: number }) {
+function MiniStat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
       <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{label}</p>

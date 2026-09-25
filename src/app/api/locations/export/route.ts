@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getEthiopianLocationById, getEthiopianLocationDataset } from "@/lib/location/ethiopiaLocations";
+import { getEthiopianLocationDataset, type EthiopianLocationDatasetEntry } from "@/lib/location/ethiopiaLocations";
 
 export async function GET(request: NextRequest) {
   try {
     const idsParam = request.nextUrl.searchParams.get("ids") ?? "";
     const regionParam = request.nextUrl.searchParams.get("region") ?? "";
 
+    const dataset = getEthiopianLocationDataset();
     const locations = idsParam
       ? idsParam
           .split(",")
           .map((id) => id.trim())
           .filter(Boolean)
-          .map((id) => getEthiopianLocationById(id))
-          .filter((location): location is NonNullable<typeof location> => Boolean(location))
+          .map((id) => dataset.find((loc) => loc.id === id))
+          .filter((location): location is EthiopianLocationDatasetEntry => Boolean(location))
       : regionParam
-        ? getEthiopianLocationDataset().filter((location) => location.region.toLowerCase() === regionParam.trim().toLowerCase())
-        : getEthiopianLocationDataset();
+        ? dataset.filter((location) => location.region.toLowerCase() === regionParam.trim().toLowerCase())
+        : dataset;
 
     const fields = [
       "id",
@@ -40,11 +41,11 @@ export async function GET(request: NextRequest) {
         location.nameAmharic,
         location.altitudeMeters,
         location.agroZone,
-        location.wellbeingProfile.demographics.estimatedPopulation,
-        location.wellbeingProfile.demographics.urbanPopulationPct,
-        location.wellbeingProfile.totalFertilityRate,
-        location.systemsProfile.foodAndNutrition.stapleFoods.join(" | "),
-        location.systemsProfile.culturalAndHeritage.traditionalMedicines.join(" | "),
+        location.population,
+        location.urbanPopulationPct,
+        location.totalFertilityRate,
+        location.stapleFoods.join(" | "),
+        location.traditionalMedicines.join(" | "),
       ].map((value) => `"${String(value).replace(/"/g, '""')}"`).join(",")),
     ];
 

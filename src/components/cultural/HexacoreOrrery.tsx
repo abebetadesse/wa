@@ -45,6 +45,19 @@ import {
   Play,
   Square,
   RefreshCw,
+  Compass,
+  Radio,
+  Orbit,
+  Maximize2,
+  Minimize2,
+  Zap,
+  Sun,
+  Moon,
+  Waves,
+  Feather,
+  Atom,
+  Gem,
+  ArrowRight,
 } from "lucide-react";
 
 const CORE_COLORS: Record<string, string> = {
@@ -65,14 +78,235 @@ const CORE_POSITIONS: Record<string, [number, number]> = {
   order: [150, 240],
 };
 
+interface CoreVisualMeta {
+  orbit: string;
+  glow: string;
+  detail: string;
+  texture: string;
+  glyph: string;
+  emojis: string[];
+  elementIcon: string;
+  element: string;
+  themeTitle: string;
+  amharicPronounce: string;
+  runeSigil: string;
+  platonicSymbol: string;
+  archetypeTitle: string;
+  accentRgb: string;
+  badgeBg: string;
+  cardGradient: string;
+  botanicalPreview: { name: string; localName: string; prep: string; safety: string };
+}
+
+const CORE_METADATA: Record<string, CoreVisualMeta> = {
+  spirit: {
+    orbit: "#8b5cf6",
+    glow: "rgba(168, 85, 247, 0.45)",
+    detail: "Spiritual resonance & Divine Mind",
+    texture: "radial-gradient(circle at 25% 25%, rgba(196,181,253,0.95), rgba(91,33,182,0.45) 24%, rgba(15,23,42,0.96) 60%)",
+    glyph: "✦",
+    emojis: ["✦", "🌌", "👑", "🪷", "👁️"],
+    elementIcon: "🌌",
+    element: "Cosmic Ether & Starlight",
+    themeTitle: "Transcendence, Unity & The Divine Singularity",
+    amharicPronounce: "Menfes (መንፈስ)",
+    runeSigil: "፯",
+    platonicSymbol: "✨ Star Tetrahedron / Merkaba",
+    archetypeTitle: "The Transcendent Sovereign",
+    accentRgb: "147, 112, 219",
+    badgeBg: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(88,28,135,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Frankincense / Lubanj", localName: "ዕጣን (Itan)", prep: "Aromatic Resin Fumigation", safety: "Safe" },
+  },
+  power: {
+    orbit: "#fb7185",
+    glow: "rgba(251, 113, 133, 0.45)",
+    detail: "Vital force & Sovereign Will",
+    texture: "radial-gradient(circle at 30% 30%, rgba(254,205,211,0.95), rgba(190,24,93,0.45) 26%, rgba(17,24,39,0.96) 62%)",
+    glyph: "⚡",
+    emojis: ["⚡", "🦁", "🌋", "🔥", "🛡️"],
+    elementIcon: "🔥",
+    element: "Primordial Fire & Dynamic Will",
+    themeTitle: "Courage, Sovereignty & Directing Force",
+    amharicPronounce: "Hayil (ኃይል)",
+    runeSigil: "፩",
+    platonicSymbol: "🔺 Sacred Tetrahedron",
+    archetypeTitle: "The Sovereign Lion of Judah",
+    accentRgb: "255, 99, 71",
+    badgeBg: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(159,18,57,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Kosso / Hagenia", localName: "ኮሶ (Kosso)", prep: "Traditional Infusion (Reflective)", safety: "Caution" },
+  },
+  humanity: {
+    orbit: "#60a5fa",
+    glow: "rgba(96, 165, 250, 0.45)",
+    detail: "Relational field & Empathic Web",
+    texture: "radial-gradient(circle at 30% 35%, rgba(191,219,254,0.95), rgba(37,99,235,0.45) 29%, rgba(15,23,42,0.96) 64%)",
+    glyph: "◎",
+    emojis: ["◎", "🌊", "🤝", "🌿", "🌍"],
+    elementIcon: "🌊",
+    element: "Living Waters & Relational Kinship",
+    themeTitle: "Compassion, Empathic Resonance & Community",
+    amharicPronounce: "Seb'awinet (ሰብዓዊነት)",
+    runeSigil: "፪",
+    platonicSymbol: "💧 Icosahedron of Flow",
+    archetypeTitle: "The Compassionate Guardian",
+    accentRgb: "65, 105, 225",
+    badgeBg: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(30,58,138,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Tenadam / Rue", localName: "ጤና አዳም (Tena Adam)", prep: "Fresh Leaf with Coffee / Tea", safety: "Safe" },
+  },
+  peace: {
+    orbit: "#fbbf24",
+    glow: "rgba(251, 191, 36, 0.45)",
+    detail: "Harmonic balance & Golden Rest",
+    texture: "radial-gradient(circle at 38% 30%, rgba(254,240,138,0.95), rgba(217,119,6,0.45) 24%, rgba(12,18,31,0.96) 62%)",
+    glyph: "☼",
+    emojis: ["☼", "🕊️", "⚖️", "🌾", "✨"],
+    elementIcon: "🕊️",
+    element: "Radiant Light & Golden Equinox",
+    themeTitle: "Harmonic Silence, Rest & Serenity",
+    amharicPronounce: "Selam (ሰላም)",
+    runeSigil: "፬",
+    platonicSymbol: "⚖️ Octahedron of Equilibrium",
+    archetypeTitle: "The Serene Peacemaker",
+    accentRgb: "218, 165, 32",
+    badgeBg: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(146,64,14,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Myrrh / Karbe", localName: "ከርቤ (Karbe)", prep: "Purifying Tincture & Inhalation", safety: "Safe" },
+  },
+  creation: {
+    orbit: "#4ade80",
+    glow: "rgba(74, 222, 128, 0.45)",
+    detail: "Generative flow & Genesis",
+    texture: "radial-gradient(circle at 35% 28%, rgba(187,247,208,0.95), rgba(34,197,94,0.43) 25%, rgba(15,23,42,0.96) 66%)",
+    glyph: "✧",
+    emojis: ["✧", "🌱", "🌀", "🧬", "🍯"],
+    elementIcon: "🌱",
+    element: "Generative Earth & Living Sprout",
+    themeTitle: "Boundless Flow, Artistry & Genesis",
+    amharicPronounce: "Fitret (ፍጥረት)",
+    runeSigil: "፫",
+    platonicSymbol: "🌀 Dodecahedron of Life",
+    archetypeTitle: "The Generative Weaver",
+    accentRgb: "50, 205, 50",
+    badgeBg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(6,95,70,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Damakese / Ocimum", localName: "ደማከሴ (Damakese)", prep: "Crushed Foliage Inhalation", safety: "Safe" },
+  },
+  order: {
+    orbit: "#22d3ee",
+    glow: "rgba(34, 211, 238, 0.45)",
+    detail: "Structure, timing & Precision",
+    texture: "radial-gradient(circle at 35% 30%, rgba(165,243,252,0.95), rgba(6,182,212,0.45) 24%, rgba(15,23,42,0.96) 64%)",
+    glyph: "◈",
+    emojis: ["◈", "🏛️", "📐", "💎", "⚖️"],
+    elementIcon: "📐",
+    element: "Sacred Matrix & Crystal Rhythm",
+    themeTitle: "Architecture, Right Timing & Truth",
+    amharicPronounce: "Sir'at (ሥርዓት)",
+    runeSigil: "፮",
+    platonicSymbol: "🧊 Crystalline Cube of Truth",
+    archetypeTitle: "The Cosmic Architect",
+    accentRgb: "0, 206, 209",
+    badgeBg: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+    cardGradient: "linear-gradient(135deg, rgba(21,94,117,0.4) 0%, rgba(15,23,42,0.85) 100%)",
+    botanicalPreview: { name: "Gesho / Rhamnus", localName: "ጌሾ (Gesho)", prep: "Fermentation Catalyst & Decoction", safety: "Safe" },
+  },
+};
+
+const COSMIC_PARTICLES = [
+  { x: 12, y: 18, size: 2, delay: "0s", duration: "4s", color: "#a855f7" },
+  { x: 28, y: 82, size: 3, delay: "1.2s", duration: "5.5s", color: "#38bdf8" },
+  { x: 45, y: 12, size: 2.5, delay: "0.7s", duration: "6s", color: "#fbbf24" },
+  { x: 68, y: 22, size: 1.5, delay: "2.1s", duration: "4.5s", color: "#4ade80" },
+  { x: 88, y: 40, size: 2, delay: "1.5s", duration: "7s", color: "#fb7185" },
+  { x: 82, y: 78, size: 3, delay: "0.3s", duration: "5s", color: "#818cf8" },
+  { x: 15, y: 65, size: 2, delay: "2.5s", duration: "6.2s", color: "#22d3ee" },
+  { x: 55, y: 90, size: 2.5, delay: "1.8s", duration: "4.8s", color: "#facc15" },
+  { x: 38, y: 48, size: 1.5, delay: "3.1s", duration: "5.8s", color: "#c084fc" },
+  { x: 74, y: 60, size: 2, delay: "0.9s", duration: "6.5s", color: "#f43f5e" },
+  { x: 92, y: 15, size: 1.5, delay: "2.8s", duration: "5.2s", color: "#34d399" },
+  { x: 8, y: 38, size: 2.5, delay: "1.1s", duration: "6.7s", color: "#60a5fa" },
+  { x: 48, y: 72, size: 2, delay: "2.3s", duration: "4.2s", color: "#e879f9" },
+  { x: 62, y: 35, size: 1.5, delay: "0.5s", duration: "5.5s", color: "#fde047" },
+  { x: 22, y: 28, size: 2, delay: "1.9s", duration: "7.2s", color: "#a78bfa" },
+  { x: 78, y: 92, size: 2.5, delay: "2.7s", duration: "6.1s", color: "#38bdf8" },
+  { x: 32, y: 62, size: 1.5, delay: "0.8s", duration: "5.9s", color: "#4ade80" },
+  { x: 85, y: 55, size: 2, delay: "1.4s", duration: "4.6s", color: "#fb7185" },
+  { x: 5, y: 88, size: 2, delay: "2.0s", duration: "6.8s", color: "#fbbf24" },
+  { x: 50, y: 25, size: 2.5, delay: "0.2s", duration: "5.1s", color: "#818cf8" },
+];
+
+const CINEMATIC_METRICS: Record<string, Array<{ icon: string; label: string; value: string; hint: string }>> = {
+  spirit: [
+    { icon: "✦", label: "Resonance", value: "963 Hz Singularity", hint: "Crown Sahasrara" },
+    { icon: "🌌", label: "Realm", value: "Celestial Temple", hint: "Ether & Pure Starlight" },
+    { icon: "👑", label: "Virtue", value: "Transcendent Grace", hint: "Universal Unity" },
+    { icon: "👁️", label: "Archetype", value: "The Mystic Sovereign", hint: "Awakened Witness" },
+  ],
+  power: [
+    { icon: "⚡", label: "Resonance", value: "396 Hz Liberation", hint: "Solar Plexus Manipura" },
+    { icon: "🦁", label: "Realm", value: "Royal Throne", hint: "Primordial Fire" },
+    { icon: "🛡️", label: "Virtue", value: "Righteous Courage", hint: "Sovereign Will" },
+    { icon: "🌋", label: "Archetype", value: "The Lion Guardian", hint: "Transmuting Force" },
+  ],
+  humanity: [
+    { icon: "◎", label: "Resonance", value: "639 Hz Connection", hint: "Heart Anahata" },
+    { icon: "🌊", label: "Realm", value: "Communal Hearth", hint: "Living Ocean" },
+    { icon: "🤝", label: "Virtue", value: "Empathic Kinship", hint: "Unconditional Love" },
+    { icon: "🌿", label: "Archetype", value: "The Compassionate Weaver", hint: "Relational Harmony" },
+  ],
+  peace: [
+    { icon: "☼", label: "Resonance", value: "528 Hz Transformation", hint: "Solar Core / Ajna" },
+    { icon: "🕊️", label: "Realm", value: "Sacred Garden", hint: "Golden Equinox" },
+    { icon: "⚖️", label: "Virtue", value: "Harmonic Serenity", hint: "Still Point in Motion" },
+    { icon: "✨", label: "Archetype", value: "The Luminous Peacemaker", hint: "Restorative Silence" },
+  ],
+  creation: [
+    { icon: "✧", label: "Resonance", value: "417 Hz Genesis", hint: "Sacral Svadhisthana" },
+    { icon: "🌱", label: "Realm", value: "Living Workshop", hint: "Fertile Earth" },
+    { icon: "🌀", label: "Virtue", value: "Generative Genius", hint: "Boundless Spontaneity" },
+    { icon: "🧬", label: "Archetype", value: "The Cosmic Originator", hint: "Artisan of Life" },
+  ],
+  order: [
+    { icon: "◈", label: "Resonance", value: "741 Hz Awakening", hint: "Throat / Third Eye" },
+    { icon: "🏛️", label: "Realm", value: "Crystal Hall of Truth", hint: "Sacred Geometry" },
+    { icon: "📐", label: "Virtue", value: "Divine Architecture", hint: "Precision & Alignment" },
+    { icon: "💎", label: "Archetype", value: "The Master Geometer", hint: "Cosmic Matrix" },
+  ],
+};
+
+const VIBRATIONAL_OCTAVES = [
+  { state: "Dormant", emoji: "💤", title: "Latent Seed", desc: "Unmanifest potential resting in the subconscious root.", octaveHzMult: 0.5 },
+  { state: "Awakening", emoji: "🌱", title: "Stirring Dawn", desc: "First movement of awareness breaking through inertia.", octaveHzMult: 0.75 },
+  { state: "Active", emoji: "⚡", title: "Kinetic Pulse", desc: "Direct energetic manifestation in conscious action.", octaveHzMult: 1.0 },
+  { state: "Radiant", emoji: "🌟", title: "Luminous Emission", desc: "Effortless illumination bathing surrounding fields.", octaveHzMult: 1.25 },
+  { state: "Transcendent", emoji: "🌌", title: "Meta-Conscious", desc: "Integration beyond dualistic subject-object bounds.", octaveHzMult: 1.5 },
+  { state: "Eternal", emoji: "♾️", title: "Singularity", desc: "Timeless resonance merged in the Still Point of origin.", octaveHzMult: 2.0 },
+] as const;
+
+const SACRED_HEXAGRAM_LINES: Array<[string, string]> = [
+  ["spirit", "humanity"],
+  ["humanity", "creation"],
+  ["creation", "spirit"],
+  ["power", "peace"],
+  ["peace", "order"],
+  ["order", "power"],
+  ["spirit", "peace"],
+  ["power", "creation"],
+  ["humanity", "order"],
+];
+
 function coreById(id: string) {
   return HEXACORE_CORES.find((core) => core.id === id) ?? HEXACORE_CORES[0];
 }
 
-// Simple Web Audio Solfeggio Synthesizer
+// Celestial Harmonic Web Audio Solfeggio Synthesizer
 class SolfeggioSynth {
   private ctx: AudioContext | null = null;
   private osc: OscillatorNode | null = null;
+  private oscHarmonic: OscillatorNode | null = null;
   private gain: GainNode | null = null;
 
   play(freq: number) {
@@ -82,17 +316,28 @@ class SolfeggioSynth {
       if (!AudioCtx) return;
       this.ctx = new AudioCtx();
       this.osc = this.ctx.createOscillator();
+      this.oscHarmonic = this.ctx.createOscillator();
       this.gain = this.ctx.createGain();
 
       this.osc.type = "sine";
       this.osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
+      this.oscHarmonic.type = "sine";
+      this.oscHarmonic.frequency.setValueAtTime(freq * 1.5, this.ctx.currentTime);
+
+      const harmonicGain = this.ctx.createGain();
+      harmonicGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+
       this.gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
-      this.gain.gain.exponentialRampToValueAtTime(0.2, this.ctx.currentTime + 0.3);
+      this.gain.gain.exponentialRampToValueAtTime(0.18, this.ctx.currentTime + 0.4);
 
       this.osc.connect(this.gain);
+      this.oscHarmonic.connect(harmonicGain);
+      harmonicGain.connect(this.gain);
       this.gain.connect(this.ctx.destination);
+
       this.osc.start();
+      this.oscHarmonic.start();
     } catch {
       // Audio policy or not supported
     }
@@ -102,17 +347,21 @@ class SolfeggioSynth {
     if (this.gain && this.ctx) {
       try {
         this.gain.gain.setValueAtTime(this.gain.gain.value, this.ctx.currentTime);
-        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.2);
+        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.25);
         setTimeout(() => {
           this.osc?.stop();
+          this.oscHarmonic?.stop();
           this.osc?.disconnect();
+          this.oscHarmonic?.disconnect();
           this.ctx?.close();
           this.osc = null;
+          this.oscHarmonic = null;
           this.gain = null;
           this.ctx = null;
-        }, 250);
+        }, 300);
       } catch {
         this.osc = null;
+        this.oscHarmonic = null;
         this.gain = null;
         this.ctx = null;
       }
@@ -125,6 +374,9 @@ const synth = typeof window !== "undefined" ? new SolfeggioSynth() : null;
 export default function HexacoreOrrery() {
   const [activeTab, setActiveTab] = useState<"orrery" | "layers" | "journal" | "bodysigns" | "calculator">("orrery");
   const [selectedCoreId, setSelectedCoreId] = useState<HexacoreCore["id"]>("spirit");
+  const [orreryViewMode, setOrreryViewMode] = useState<"system" | "theatrical">("system");
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  const [activeOctave, setActiveOctave] = useState<string>("Active");
   const [activeLayer, setActiveLayer] = useState<number>(1);
   const [activeDay, setActiveDay] = useState<number>(1);
   const [bodySignTab, setBodySignTab] = useState<"tongue" | "palm" | "face">("tongue");
@@ -142,8 +394,11 @@ export default function HexacoreOrrery() {
   // Journal Entry persistence
   const [journalText, setJournalText] = useState("");
   const [savedEntries, setSavedEntries] = useState<Record<number, string>>({});
+  const [journalStatus, setJournalStatus] = useState<"idle" | "loading" | "saving" | "saved" | "local" | "error">("idle");
 
   useEffect(() => {
+    let cancelled = false;
+
     try {
       const saved = localStorage.getItem("hexacore_journal_entries");
       if (saved) {
@@ -152,17 +407,122 @@ export default function HexacoreOrrery() {
         if (parsed[activeDay]) setJournalText(parsed[activeDay]);
       }
     } catch {
-      // LocalStorage access may be restricted
+      setJournalStatus("local");
     }
-  }, [activeDay]);
 
-  const handleSaveJournal = () => {
+    const loadJournal = async () => {
+      setJournalStatus("loading");
+      try {
+        const response = await fetch("/api/hexacore/journal");
+        if (!response.ok) {
+          if (response.status === 401) {
+            setJournalStatus("local");
+            return;
+          }
+          throw new Error("Unable to load saved reflections.");
+        }
+        const payload = await response.json() as {
+          success?: boolean;
+          data?: Array<{ response?: string | null; selectedCore?: string | null; selectedAspect?: string | null }>;
+        };
+        if (!payload.success || !Array.isArray(payload.data)) throw new Error("Invalid journal response.");
+
+        const serverEntries: Record<number, string> = {};
+        for (const entry of payload.data) {
+          if (!entry.response || !entry.selectedCore || !entry.selectedAspect) continue;
+          for (let day = 1; day <= 30; day += 1) {
+            const prompt = getJournalPromptForDay(day);
+            const core = HEXACORE_CORES.find(
+              (candidate) => candidate.id.slice(0, 1).toUpperCase() === entry.selectedCore,
+            )?.name;
+            const aspect = HEXACORE_ASPECTS.find(
+              (candidate) => candidate.coreName === prompt.core && candidate.name === prompt.aspect,
+            );
+            const aspectMatches =
+              entry.selectedAspect === aspect?.id ||
+              entry.selectedAspect === prompt.aspect;
+            if (prompt.core === core && aspectMatches) {
+              serverEntries[day] = entry.response;
+              break;
+            }
+          }
+        }
+        if (cancelled) return;
+        setSavedEntries((current) => ({ ...current, ...serverEntries }));
+        if (serverEntries[activeDay]) setJournalText(serverEntries[activeDay]);
+        setJournalStatus("saved");
+      } catch (error) {
+        if (cancelled) return;
+        console.error("Hexacore journal load failed:", error);
+        setJournalStatus("local");
+      }
+    };
+
+    void loadJournal();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (savedEntries[activeDay] !== undefined) setJournalText(savedEntries[activeDay]);
+  }, [activeDay, savedEntries]);
+
+  useEffect(() => {
+    if (!isFocusMode) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsFocusMode(false);
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isFocusMode]);
+
+  const handleSaveJournal = async () => {
+    const response = journalText.trim();
+    if (response.length < 3) {
+      setJournalStatus("error");
+      return;
+    }
     const updated = { ...savedEntries, [activeDay]: journalText };
     setSavedEntries(updated);
     try {
       localStorage.setItem("hexacore_journal_entries", JSON.stringify(updated));
     } catch {
-      // ignore
+      setJournalStatus("local");
+    }
+
+    setJournalStatus("saving");
+    const prompt = getJournalPromptForDay(activeDay);
+    const selectedCore = HEXACORE_CORES.find((core) => core.name === prompt.core);
+    const selectedAspect = HEXACORE_ASPECTS.find(
+      (aspect) => aspect.coreName === prompt.core && aspect.name === prompt.aspect,
+    );
+
+    try {
+      const serverResponse = await fetch("/api/hexacore/journal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selectedCore: selectedCore?.id.slice(0, 1).toUpperCase(),
+          selectedAspect: selectedAspect?.id,
+          prompt: prompt.middayReflection,
+          response,
+          practiceCompleted: [],
+        }),
+      });
+      if (!serverResponse.ok) {
+        if (serverResponse.status === 401) {
+          setJournalStatus("local");
+          return;
+        }
+        throw new Error("Unable to save reflection.");
+      }
+      setJournalStatus("saved");
+    } catch (error) {
+      console.error("Hexacore journal save failed:", error);
+      setJournalStatus("local");
     }
   };
 
@@ -189,6 +549,7 @@ export default function HexacoreOrrery() {
   };
 
   const selectedCore = coreById(selectedCoreId);
+  const selectedMeta = CORE_METADATA[selectedCoreId];
   const selectedAspects = useMemo(
     () => HEXACORE_ASPECTS.filter((aspect) => aspect.coreId === selectedCoreId),
     [selectedCoreId]
@@ -196,9 +557,54 @@ export default function HexacoreOrrery() {
   const currentJournalPrompt = useMemo(() => getJournalPromptForDay(activeDay), [activeDay]);
   const dayMapping = CREATION_DAY_MAPPINGS.find((m) => m.day === selectedCore.creationDay);
   const pairs = HEXACORE_PAIRS.filter((p) => p.left === selectedCore.name || p.right === selectedCore.name);
+  const currentBotanical = ETHIOPIAN_HERBAL_INTEGRATION.find((h) => h.core === selectedCore.name);
+
+  const selectedOctaveMeta = VIBRATIONAL_OCTAVES.find((o) => o.state === activeOctave) ?? VIBRATIONAL_OCTAVES[2];
+  const calculatedOctaveHz = Math.round(selectedCore.soundHz * selectedOctaveMeta.octaveHzMult);
 
   return (
-    <div className="space-y-8">
+    <div className="relative space-y-8">
+      {/* Scoped Keyframes for Cosmic Dashboard Motions */}
+      <style jsx>{`
+        @keyframes cosmicSpinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes cosmicSpinReverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        @keyframes particleFloat {
+          0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+          50% { transform: translateY(-12px) translateX(8px); opacity: 0.85; }
+        }
+        @keyframes soundwaveAnim {
+          0%, 100% { height: 6px; }
+          50% { height: 26px; }
+        }
+        @keyframes pulseGlowRing {
+          0% { transform: scale(0.96); opacity: 0.4; }
+          50% { transform: scale(1.04); opacity: 0.85; }
+          100% { transform: scale(0.96); opacity: 0.4; }
+        }
+        @keyframes rippleSvg {
+          0% { r: 42; opacity: 0.9; stroke-width: 2.5; }
+          100% { r: 76; opacity: 0; stroke-width: 0.5; }
+        }
+        @keyframes spotlightBreathe {
+          0%, 100% { transform: scale(0.96); opacity: 0.45; }
+          50% { transform: scale(1.04); opacity: 0.9; }
+        }
+        @keyframes orbitSweep {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes telemetryRise {
+          from { transform: translateY(8px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
+
       {/* Navigation Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
         {[
@@ -215,7 +621,7 @@ export default function HexacoreOrrery() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${isActive
-                  ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-200 border border-indigo-500/40 shadow-lg shadow-indigo-950/40"
+                  ? "bg-gradient-to-r from-indigo-500/25 to-purple-500/25 text-indigo-200 border border-indigo-500/40 shadow-lg shadow-indigo-950/40 scale-[1.02]"
                   : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white border border-white/5"
                 }`}
             >
@@ -228,164 +634,875 @@ export default function HexacoreOrrery() {
 
       {/* TAB 1: GRAND ORRERY */}
       {activeTab === "orrery" && (
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] items-start">
-          <div className="rounded-3xl border border-indigo-400/20 bg-[#080817] p-4 md:p-6 shadow-2xl shadow-indigo-950/30">
-            <div className="flex items-center justify-between px-2 pb-4">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-indigo-300/80 font-bold">14-Layer Hexacore Wheel</p>
-                <h2 className="text-xl font-bold text-white tracking-tight">Six Cores · 36 Aspects · 216 Frequencies</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full border border-amber-300/30 bg-amber-500/10 px-3 py-1 text-[10px] font-medium text-amber-200">
-                  46,656 States
-                </span>
-                {playingFreq && (
-                  <button
-                    onClick={() => handlePlaySound(playingFreq)}
-                    className="flex items-center gap-1.5 rounded-full bg-rose-500/20 border border-rose-500/40 px-3 py-1 text-[10px] text-rose-300 animate-pulse"
-                  >
-                    <VolumeX className="h-3 w-3" /> Stop {playingFreq} Hz
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#1d1838_0%,#090918_45%,#030308_100%)]">
-              <svg viewBox="0 0 600 600" role="img" aria-labelledby="hexacore-title hexacore-desc" className="h-full w-full">
-                <title id="hexacore-title">The Hexacore Grand Orrery</title>
-                <desc id="hexacore-desc">Interactive 14-layer wheel with 6 fundamental cores radiating around the Still Point.</desc>
-                <defs>
-                  <radialGradient id="hexacore-glow">
-                    <stop offset="0%" stopColor="#facc15" stopOpacity="0.8" />
-                    <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-                  </radialGradient>
-                  <filter id="core-glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="6" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-
-                {/* Concentric 14-Layer Orbital Rings */}
-                {[260, 240, 220, 200, 180, 160, 140, 120, 100, 80, 60].map((radius, index) => (
-                  <circle
-                    key={radius}
-                    cx="300"
-                    cy="300"
-                    r={radius}
-                    fill="none"
-                    stroke={index % 2 === 0 ? "#4338ca" : "#1e1e38"}
-                    strokeOpacity={0.25}
-                    strokeWidth={index === 0 ? 1.5 : 1}
-                    strokeDasharray={index % 2 ? "3 6" : undefined}
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px] items-start">
+          <div className="space-y-6">
+            {/* Main Interactive Cosmic Arena */}
+            <div
+              className={`relative overflow-hidden rounded-3xl border border-indigo-400/20 bg-[#060614] p-4 md:p-6 shadow-2xl shadow-indigo-950/40 transition-all duration-700 ${
+                isFocusMode
+                  ? "fixed inset-3 z-[60] overflow-y-auto md:inset-6 lg:inset-10"
+                  : ""
+              }`}
+            >
+              {isFocusMode && (
+                <div
+                  className="pointer-events-none fixed inset-0 -z-10 bg-slate-950/80 backdrop-blur-md"
+                  aria-hidden="true"
+                />
+              )}
+              {/* Background Ambient Cosmic Particle Constellation */}
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                {COSMIC_PARTICLES.map((p, idx) => (
+                  <span
+                    key={idx}
+                    className="absolute rounded-full"
+                    style={{
+                      left: `${p.x}%`,
+                      top: `${p.y}%`,
+                      width: `${p.size}px`,
+                      height: `${p.size}px`,
+                      backgroundColor: p.color,
+                      boxShadow: `0 0 10px ${p.color}`,
+                      animation: `particleFloat ${p.duration} ease-in-out infinite`,
+                      animationDelay: p.delay,
+                    }}
                   />
                 ))}
+                <div
+                  className="absolute -right-32 -top-32 h-96 w-96 rounded-full opacity-20 blur-3xl transition-all duration-1000"
+                  style={{ background: CORE_COLORS[selectedCoreId] }}
+                />
+                <div
+                  className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full opacity-20 blur-3xl transition-all duration-1000"
+                  style={{ background: selectedMeta.orbit }}
+                />
+              </div>
 
-                {/* Spokes Connecting Cores to Still Point */}
-                {HEXACORE_CORES.map((core) => {
-                  const [x, y] = CORE_POSITIONS[core.id];
-                  const color = CORE_COLORS[core.id];
-                  const isSelected = selectedCoreId === core.id;
-                  return (
-                    <line
-                      key={`spoke-${core.id}`}
-                      x1="300"
-                      y1="300"
-                      x2={x}
-                      y2={y}
-                      stroke={color}
-                      strokeOpacity={isSelected ? 0.9 : 0.25}
-                      strokeWidth={isSelected ? 2.5 : 1}
-                      strokeDasharray={isSelected ? undefined : "2 4"}
-                    />
-                  );
-                })}
+              {/* Header Bar with View Mode Toggle & Audio Trigger */}
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-2 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-indigo-300/90">
+                      14-Layer Cosmic Orrery
+                    </span>
+                    <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[9px] font-mono text-indigo-200">
+                      {selectedMeta.runeSigil} · Core {selectedCore.number}
+                    </span>
+                  </div>
+                  <h2 className="mt-0.5 text-xl md:text-2xl font-black text-white tracking-tight">
+                    {selectedCore.name} · {selectedMeta.amharicPronounce}
+                  </h2>
+                </div>
 
-                {/* Center Still Point */}
-                <circle cx="300" cy="300" r="54" fill="url(#hexacore-glow)" />
-                <circle cx="300" cy="300" r="8" fill="#fef08a" />
-                <text x="300" y="325" fill="#fde68a" fontSize="11" fontWeight="700" textAnchor="middle" letterSpacing="1">
-                  STILL POINT
-                </text>
-                <text x="300" y="338" fill="#fde68a" fillOpacity="0.7" fontSize="8" textAnchor="middle">
-                  0 Hz · Singularity
-                </text>
-
-                {/* 36 Aspects orbiting around the outer rim */}
-                {HEXACORE_ASPECTS.map((aspect, index) => {
-                  const angle = (index / 36) * Math.PI * 2 - Math.PI / 2;
-                  const x = 300 + Math.cos(angle) * 228;
-                  const y = 300 + Math.sin(angle) * 228;
-                  const isSelectedCoreAspect = aspect.coreId === selectedCoreId;
-                  return (
-                    <g key={aspect.id}>
-                      <circle
-                        cx={x}
-                        cy={y}
-                        r={isSelectedCoreAspect ? 4.5 : 2.5}
-                        fill={isSelectedCoreAspect ? CORE_COLORS[selectedCoreId] : "#475569"}
-                        fillOpacity={isSelectedCoreAspect ? 1 : 0.6}
-                      />
-                    </g>
-                  );
-                })}
-
-                {/* The Six Cores */}
-                {HEXACORE_CORES.map((core) => {
-                  const [x, y] = CORE_POSITIONS[core.id];
-                  const color = CORE_COLORS[core.id];
-                  const selected = selectedCoreId === core.id;
-                  return (
-                    <g
-                      key={core.id}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Select ${core.name} core`}
-                      onClick={() => setSelectedCoreId(core.id)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") setSelectedCoreId(core.id);
-                      }}
-                      className="cursor-pointer transition-transform hover:scale-105"
+                <div className="flex items-center gap-2">
+                  {/* View Mode Switcher */}
+                  <div className="flex rounded-xl border border-white/10 bg-black/40 p-1">
+                    <button
+                      type="button"
+                      onClick={() => setOrreryViewMode("system")}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                        orreryViewMode === "system"
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/40"
+                          : "text-slate-400 hover:text-white"
+                      }`}
                     >
+                      <Orbit className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Orrery System</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrreryViewMode("theatrical")}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                        orreryViewMode === "theatrical"
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-950/40"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Theatrical Focus</span>
+                    </button>
+                  </div>
+
+                  {playingFreq ? (
+                    <button
+                      onClick={() => handlePlaySound(playingFreq)}
+                      className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3 py-1.5 text-xs text-rose-200 animate-pulse transition-all shadow-lg shadow-rose-950/30"
+                    >
+                      <VolumeX className="h-3.5 w-3.5" />
+                      <span>Stop {playingFreq} Hz</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handlePlaySound(selectedCore.soundHz)}
+                      className="flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/20 transition-all"
+                    >
+                      <Volume2 className="h-3.5 w-3.5" />
+                      <span>{selectedCore.soundHz} Hz</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsFocusMode((current) => !current)}
+                    aria-pressed={isFocusMode}
+                    aria-label={isFocusMode ? "Exit Hexacore focus mode" : "Enter Hexacore focus mode"}
+                    className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
+                      isFocusMode
+                        ? "border-amber-300/50 bg-amber-300/15 text-amber-100 shadow-lg shadow-amber-950/30"
+                        : "border-white/10 bg-black/30 text-slate-300 hover:border-indigo-400/40 hover:text-white"
+                    }`}
+                  >
+                    {isFocusMode ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                    <span className="hidden sm:inline">{isFocusMode ? "Exit focus" : "Focus mode"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* VIEW 1: GRAND ORRERY SYSTEM WHEEL */}
+              {orreryViewMode === "system" && (
+                <div className="relative z-10 pt-4">
+                  <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,#1a1538_0%,#090918_45%,#020208_100%)] shadow-inner">
+                    <svg viewBox="0 0 600 600" role="img" aria-labelledby="hexacore-title hexacore-desc" className="h-full w-full">
+                      <title id="hexacore-title">The Hexacore Grand Orrery</title>
+                      <desc id="hexacore-desc">Interactive 14-layer wheel with 6 fundamental cores radiating around the Still Point.</desc>
+                      <defs>
+                        <radialGradient id="hexacore-glow">
+                          <stop offset="0%" stopColor="#fef08a" stopOpacity="0.95" />
+                          <stop offset="35%" stopColor="#f59e0b" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#b45309" stopOpacity="0" />
+                        </radialGradient>
+                        <filter id="core-glow-filter" x="-30%" y="-30%" width="160%" height="160%">
+                          <feGaussianBlur stdDeviation="8" result="blur" />
+                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                      </defs>
+
+                      {/* Concentric Alignment Orbit Rings */}
+                      {[270, 245, 220, 195, 170, 145, 120, 95, 70].map((radius, index) => (
+                        <circle
+                          key={radius}
+                          cx="300"
+                          cy="300"
+                          r={radius}
+                          fill="none"
+                          stroke={index % 2 === 0 ? "#6366f1" : "#312e81"}
+                          strokeOpacity={index === 0 ? 0.35 : 0.18}
+                          strokeWidth={index === 0 ? 1.5 : 1}
+                          strokeDasharray={index % 2 ? "4 8" : undefined}
+                          style={
+                            index === 0
+                              ? { animation: "cosmicSpinSlow 90s linear infinite", transformOrigin: "300px 300px" }
+                              : index === 2
+                              ? { animation: "cosmicSpinReverse 60s linear infinite", transformOrigin: "300px 300px" }
+                              : undefined
+                          }
+                        />
+                      ))}
+
+                      {/* Sacred Hexagram Geometric Chord Mesh */}
+                      {SACRED_HEXAGRAM_LINES.map(([fromId, toId], idx) => {
+                        const [x1, y1] = CORE_POSITIONS[fromId];
+                        const [x2, y2] = CORE_POSITIONS[toId];
+                        const isConnectedToSelected = fromId === selectedCoreId || toId === selectedCoreId;
+                        return (
+                          <line
+                            key={`chord-${idx}`}
+                            x1={x1}
+                            y1={y1}
+                            x2={x2}
+                            y2={y2}
+                            stroke={isConnectedToSelected ? CORE_COLORS[selectedCoreId] : "#475569"}
+                            strokeOpacity={isConnectedToSelected ? 0.7 : 0.14}
+                            strokeWidth={isConnectedToSelected ? 1.8 : 0.8}
+                            strokeDasharray={isConnectedToSelected ? undefined : "3 6"}
+                          />
+                        );
+                      })}
+
+                      {/* Central Still Point Spokes */}
+                      {HEXACORE_CORES.map((core) => {
+                        const [x, y] = CORE_POSITIONS[core.id];
+                        const color = CORE_COLORS[core.id];
+                        const isSelected = selectedCoreId === core.id;
+                        return (
+                          <line
+                            key={`spoke-${core.id}`}
+                            x1="300"
+                            y1="300"
+                            x2={x}
+                            y2={y}
+                            stroke={color}
+                            strokeOpacity={isSelected ? 0.95 : 0.25}
+                            strokeWidth={isSelected ? 2.5 : 1}
+                            strokeDasharray={isSelected ? undefined : "2 5"}
+                          />
+                        );
+                      })}
+
+                      {/* The Central Still Point (0 Hz Singularity) */}
+                      <circle cx="300" cy="300" r="62" fill="url(#hexacore-glow)" />
                       <circle
-                        cx={x}
-                        cy={y}
-                        r={selected ? 48 : 40}
-                        fill={color}
-                        fillOpacity={selected ? 0.9 : 0.55}
-                        stroke={selected ? "#ffffff" : color}
-                        strokeWidth={selected ? 3 : 1.5}
-                        filter={selected ? "url(#core-glow)" : undefined}
+                        cx="300"
+                        cy="300"
+                        r="76"
+                        fill="none"
+                        stroke="#facc15"
+                        strokeOpacity="0.3"
+                        strokeWidth="1"
+                        strokeDasharray="4 6"
+                        style={{ animation: "cosmicSpinReverse 40s linear infinite", transformOrigin: "300px 300px" }}
                       />
-                      <text x={x} y={y - 8} fill="#fff" fontSize="12" fontWeight="800" textAnchor="middle">
-                        {core.name.toUpperCase()}
+                      <circle cx="300" cy="300" r="10" fill="#fef08a" filter="url(#core-glow-filter)" />
+                      <text x="300" y="326" fill="#fde68a" fontSize="10.5" fontWeight="800" textAnchor="middle" letterSpacing="1.2">
+                        STILL POINT
                       </text>
-                      <text x={x} y={y + 6} fill="#f1f5f9" fillOpacity="0.9" fontSize="10" fontWeight="600" textAnchor="middle">
-                        {core.soundHz} Hz
+                      <text x="300" y="339" fill="#fde68a" fillOpacity="0.8" fontSize="8" textAnchor="middle">
+                        0 Hz · Singularity
                       </text>
-                      <text x={x} y={y + 19} fill="#cbd5e1" fillOpacity="0.8" fontSize="8.5" textAnchor="middle">
-                        {core.amharic}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
+
+                      {/* 36 Aspects Outer Constellation Points */}
+                      {HEXACORE_ASPECTS.map((aspect, index) => {
+                        const angle = (index / 36) * Math.PI * 2 - Math.PI / 2;
+                        const x = 300 + Math.cos(angle) * 230;
+                        const y = 300 + Math.sin(angle) * 230;
+                        const isSelectedCoreAspect = aspect.coreId === selectedCoreId;
+                        return (
+                          <g key={aspect.id}>
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r={isSelectedCoreAspect ? 4.5 : 2.5}
+                              fill={isSelectedCoreAspect ? CORE_COLORS[selectedCoreId] : "#64748b"}
+                              fillOpacity={isSelectedCoreAspect ? 1 : 0.55}
+                              filter={isSelectedCoreAspect ? "url(#core-glow-filter)" : undefined}
+                            />
+                          </g>
+                        );
+                      })}
+
+                      {/* Active Core Expanding Pulse Waves */}
+                      {(() => {
+                        const [selX, selY] = CORE_POSITIONS[selectedCoreId];
+                        return (
+                          <g>
+                            <circle
+                              cx={selX}
+                              cy={selY}
+                              r="56"
+                              fill="none"
+                              stroke={CORE_COLORS[selectedCoreId]}
+                              strokeWidth="1.5"
+                              strokeOpacity="0.4"
+                              strokeDasharray="4 4"
+                              style={{ animation: "cosmicSpinSlow 16s linear infinite", transformOrigin: `${selX}px ${selY}px` }}
+                            />
+                            <circle
+                              cx={selX}
+                              cy={selY}
+                              r="64"
+                              fill="none"
+                              stroke={CORE_COLORS[selectedCoreId]}
+                              strokeWidth="1"
+                              strokeOpacity="0.25"
+                            />
+                          </g>
+                        );
+                      })()}
+
+                      {/* The Six Fundamental Cores */}
+                      {HEXACORE_CORES.map((core) => {
+                        const [x, y] = CORE_POSITIONS[core.id];
+                        const color = CORE_COLORS[core.id];
+                        const selected = selectedCoreId === core.id;
+                        const meta = CORE_METADATA[core.id];
+                        return (
+                          <g
+                            key={core.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Select ${core.name} core`}
+                            onClick={() => setSelectedCoreId(core.id)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") setSelectedCoreId(core.id);
+                            }}
+                            className="cursor-pointer transition-transform duration-300 hover:scale-110"
+                          >
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r={selected ? 48 : 39}
+                              fill={color}
+                              fillOpacity={selected ? 0.95 : 0.6}
+                              stroke={selected ? "#ffffff" : color}
+                              strokeWidth={selected ? 3 : 1.5}
+                              filter={selected ? "url(#core-glow-filter)" : undefined}
+                            />
+                            <text x={x} y={y - 9} fill="#fff" fontSize="12" fontWeight="900" textAnchor="middle" letterSpacing="0.5">
+                              {core.name.toUpperCase()}
+                            </text>
+                            <text x={x} y={y + 6} fill="#f8fafc" fillOpacity="0.95" fontSize="10" fontWeight="700" textAnchor="middle">
+                              {core.soundHz} Hz
+                            </text>
+                            <text x={x} y={y + 20} fill="#fde047" fillOpacity="0.95" fontSize="8.5" fontWeight="700" textAnchor="middle">
+                              {core.amharic}
+                            </text>
+                            {/* Glyph Icon */}
+                            <text x={x + (selected ? 30 : 25)} y={y - (selected ? 28 : 22)} fontSize="14" fill="#ffffff">
+                              {meta.glyph}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW 2: THEATRICAL FOCUS CHAMBER (DEEP DIVE PORTAL) */}
+              {orreryViewMode === "theatrical" && (
+                <div className="relative z-10 pt-4 space-y-6 animate-fade-in">
+                  <div
+                    className="relative overflow-hidden rounded-2xl border border-white/10 p-6 md:p-8"
+                    style={{ background: selectedMeta.texture }}
+                  >
+                    {/* Rotating Astrolabe Rings & Central Cosmic Sigil */}
+                    <div className="relative flex flex-col items-center justify-center py-6 text-center">
+                      <div className="relative flex h-64 w-64 md:h-72 md:w-72 items-center justify-center">
+                        {/* Outer Celestial Astrolabe Ring */}
+                        <div
+                          className="absolute inset-0 rounded-full border-2 border-dashed"
+                          style={{
+                            borderColor: `${CORE_COLORS[selectedCoreId]}77`,
+                            animation: "cosmicSpinSlow 45s linear infinite",
+                          }}
+                        />
+                        {/* Middle Counter-Rotating Astrolabe Ring */}
+                        <div
+                          className="absolute inset-4 rounded-full border border-dotted"
+                          style={{
+                            borderColor: `${CORE_COLORS[selectedCoreId]}99`,
+                            animation: "cosmicSpinReverse 35s linear infinite",
+                          }}
+                        />
+                        {/* Inner Halo Ring */}
+                        <div
+                          className="absolute inset-8 rounded-full border border-white/20"
+                          style={{
+                            boxShadow: `0 0 45px ${selectedMeta.glow}`,
+                          }}
+                        />
+
+                        {/* Central Luminous Core Orb */}
+                        <div
+                          className="relative flex h-36 w-36 md:h-40 md:w-40 flex-col items-center justify-center rounded-full border-2 border-white/90 shadow-2xl transition-all duration-700"
+                          style={{
+                            background: `radial-gradient(circle at 30% 30%, ${CORE_COLORS[selectedCoreId]}, #050510)`,
+                            boxShadow: `0 0 50px ${selectedMeta.glow}`,
+                          }}
+                        >
+                          <span className="text-3xl md:text-4xl drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">
+                            {selectedMeta.emojis[0]}
+                          </span>
+                          <span className="mt-1 text-base font-black tracking-widest text-white">
+                            {selectedCore.name.toUpperCase()}
+                          </span>
+                          <span className="text-xs font-bold text-amber-200">
+                            {selectedCore.amharic}
+                          </span>
+                          <span className="mt-0.5 font-mono text-[10px] text-white/80">
+                            {selectedCore.soundHz} Hz
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 max-w-lg">
+                        <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                          {selectedMeta.archetypeTitle}
+                        </span>
+                        <h3 className="mt-2 text-2xl font-black text-white">
+                          {selectedMeta.themeTitle}
+                        </h3>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-200">
+                          {selectedCore.essence}
+                        </p>
+                      </div>
+
+                      {/* Live Harmonic Soundwave Visualizer */}
+                      <div className="mt-6 flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-black/50 px-6 py-3.5 backdrop-blur-md">
+                        <div className="flex items-center gap-2 text-xs text-slate-300">
+                          <Radio className="h-4 w-4 text-indigo-400" />
+                          <span className="font-semibold">Harmonic Oscillation Analyzer:</span>
+                          <span className="font-mono text-amber-300">{selectedCore.soundHz} Hz</span>
+                        </div>
+                        <div className="flex items-end gap-1.5 h-8 px-2">
+                          {Array.from({ length: 18 }).map((_, barIdx) => (
+                            <div
+                              key={barIdx}
+                              className="w-1.5 rounded-full transition-all duration-300"
+                              style={{
+                                height: playingFreq ? `${10 + Math.sin(barIdx * 0.7) * 16}px` : "6px",
+                                backgroundColor: CORE_COLORS[selectedCoreId],
+                                opacity: playingFreq ? 0.9 : 0.35,
+                                animation: playingFreq ? `soundwaveAnim 0.7s ease-in-out infinite alternate` : undefined,
+                                animationDelay: `${barIdx * 45}ms`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => handlePlaySound(selectedCore.soundHz)}
+                          className="mt-1 flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-all"
+                        >
+                          {playingFreq === selectedCore.soundHz ? (
+                            <>
+                              <VolumeX className="h-3.5 w-3.5 text-rose-300" /> Stop Soundwave
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="h-3.5 w-3.5 text-emerald-300" /> Resonate {selectedCore.soundHz} Hz Solfeggio
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Quad-Pillar Alchemical Cards */}
+                    <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                          <span>{selectedMeta.elementIcon}</span>
+                          <span>Elemental Realm</span>
+                        </div>
+                        <p className="mt-1.5 font-bold text-white text-sm">{selectedMeta.element}</p>
+                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.direction} · {selectedCore.season}</p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                          <span>🌿</span>
+                          <span>Botanical Ally</span>
+                        </div>
+                        <p className="mt-1.5 font-bold text-amber-200 text-sm">{selectedMeta.botanicalPreview.name}</p>
+                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedMeta.botanicalPreview.localName}</p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                          <span>📐</span>
+                          <span>Sacred Geometry</span>
+                        </div>
+                        <p className="mt-1.5 font-bold text-cyan-200 text-sm">{selectedCore.geometry}</p>
+                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.platonicSolid}</p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                          <span>☀️</span>
+                          <span>Creation Day</span>
+                        </div>
+                        <p className="mt-1.5 font-bold text-emerald-200 text-sm">{selectedCore.creationDay}</p>
+                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.planet} · {selectedCore.metal}</p>
+                      </div>
+                    </div>
+
+                    {/* Virtue ↔ Shadow Transmutation Bridge */}
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4 backdrop-blur-md">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                        <span>Alchemical Transmutation Path</span>
+                        <span className="text-amber-300">Ge'ez Core {selectedMeta.runeSigil}</span>
+                      </div>
+                      <div className="mt-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3.5 py-2 text-rose-300">
+                          <span className="text-base">🔴</span>
+                          <div>
+                            <span className="block text-[9px] uppercase tracking-wider text-rose-400/80">Wounded Shadow</span>
+                            <span className="font-bold">{selectedCore.shadow}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold">
+                          <ArrowRight className="h-4 w-4 text-amber-400" />
+                          <span>Spiritual Transmutation</span>
+                          <ArrowRight className="h-4 w-4 text-amber-400" />
+                        </div>
+
+                        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-2 text-emerald-300">
+                          <span className="text-base">🟢</span>
+                          <div>
+                            <span className="block text-[9px] uppercase tracking-wider text-emerald-400/80">Empowered Gift</span>
+                            <span className="font-bold">{selectedCore.gift}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick-Switch Orbital Dock */}
+                    <div className="mt-6 pt-4 border-t border-white/10">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 text-center">
+                        Select Core Focus Chamber
+                      </p>
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                        {HEXACORE_CORES.map((core) => {
+                          const isCur = core.id === selectedCoreId;
+                          const m = CORE_METADATA[core.id];
+                          return (
+                            <button
+                              key={core.id}
+                              type="button"
+                              onClick={() => setSelectedCoreId(core.id)}
+                              className={`flex flex-col items-center justify-center rounded-xl p-2.5 transition-all ${
+                                isCur
+                                  ? "border-2 border-white bg-white/15 shadow-lg scale-105"
+                                  : "border border-white/5 bg-black/40 hover:bg-white/5 hover:border-white/20"
+                              }`}
+                              style={{
+                                borderColor: isCur ? CORE_COLORS[core.id] : undefined,
+                                boxShadow: isCur ? `0 0 16px ${m.glow}` : undefined,
+                              }}
+                            >
+                              <span className="text-xl">{m.emojis[0]}</span>
+                              <span className="mt-1 text-xs font-bold text-white">{core.name}</span>
+                              <span className="text-[10px] text-slate-400">{core.soundHz} Hz</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-2 text-xs text-slate-400">
-              <span>Select any core to reveal its 14-layer correspondences.</span>
-              <button
-                onClick={() => handlePlaySound(selectedCore.soundHz)}
-                className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-indigo-300 hover:bg-indigo-500/20"
-              >
-                <Volume2 className="h-3.5 w-3.5" />
-                <span>Play {selectedCore.soundHz} Hz Solfeggio</span>
-              </button>
+            {/* ILLUSTRATION PANELS & COSMIC STATE MATRIX */}
+            <div className="space-y-6">
+              {/* Dynamic 4-Metric Zoom Cascade */}
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.28em] text-indigo-300 font-bold">
+                      Harmonic Resonance Cascade
+                    </p>
+                    <h3 className="mt-0.5 text-lg font-bold text-white">
+                      {selectedCore.name} · Multidimensional Signals
+                    </h3>
+                  </div>
+                  <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-indigo-200">
+                    {selectedMeta.runeSigil} Active Field
+                  </span>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {(CINEMATIC_METRICS[selectedCoreId] || []).map((item, index) => (
+                    <div
+                      key={item.label}
+                      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-3.5 shadow-lg shadow-indigo-950/20 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/40"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-2xl drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+                          {item.icon}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] uppercase tracking-[0.2em] text-slate-300">
+                          {item.label}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
+                      <p className="mt-0.5 text-[10px] text-slate-400">{item.hint}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION: HEXACORE ARCHETYPAL PANTHEON (6 LARGE ILLUSTRATIVE PANELS) */}
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-300">
+                      Iconographic Pantheon
+                    </span>
+                    <h3 className="text-xl font-black text-white mt-0.5">
+                      The Six Fundamental Cores of Creation
+                    </h3>
+                  </div>
+                  <span className="text-xs text-slate-400">
+                    Click any archetype card to activate its cosmic field
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {HEXACORE_CORES.map((core) => {
+                    const meta = CORE_METADATA[core.id];
+                    const isSelected = core.id === selectedCoreId;
+                    return (
+                      <div
+                        key={core.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedCoreId(core.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setSelectedCoreId(core.id);
+                        }}
+                        className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 cursor-pointer ${
+                          isSelected
+                            ? "border-white/40 bg-white/[0.08] shadow-2xl scale-[1.02]"
+                            : "border-white/10 bg-black/40 hover:border-white/20 hover:bg-white/[0.04]"
+                        }`}
+                        style={{
+                          boxShadow: isSelected ? `0 0 30px ${meta.glow}` : undefined,
+                        }}
+                      >
+                        <div
+                          className="absolute inset-0 opacity-20 transition-opacity duration-500 group-hover:opacity-30"
+                          style={{ background: meta.cardGradient }}
+                        />
+
+                        <div className="relative z-10 flex items-start justify-between">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-mono font-bold text-white">
+                                {meta.runeSigil}
+                              </span>
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                                Core {core.number}
+                              </span>
+                            </div>
+                            <h4 className="text-lg font-black text-white mt-1">{core.name}</h4>
+                            <p className="text-xs font-semibold text-amber-300">{core.amharic}</p>
+                          </div>
+
+                          {/* Large Emoji Crest */}
+                          <div className="flex flex-col items-end">
+                            <span className="text-3xl transition-transform duration-300 group-hover:scale-125 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">
+                              {meta.emojis[0]}
+                            </span>
+                            <span className="mt-1 text-[10px] font-mono text-indigo-300">
+                              {core.soundHz} Hz
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="relative z-10 mt-3 text-xs leading-relaxed text-slate-300 line-clamp-2">
+                          {core.essence}
+                        </p>
+
+                        <div className="relative z-10 mt-3 flex flex-wrap items-center gap-1.5 text-[10px]">
+                          <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-semibold text-emerald-300">
+                            Gift: {core.gift}
+                          </span>
+                          <span className="rounded bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 font-semibold text-rose-300">
+                            Shadow: {core.shadow}
+                          </span>
+                        </div>
+
+                        <div className="relative z-10 mt-4 flex items-center justify-between pt-3 border-t border-white/10 text-xs">
+                          <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                            <span>🌿</span> {meta.botanicalPreview.name.split("/")[0].trim()}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePlaySound(core.soundHz);
+                            }}
+                            className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] text-white hover:bg-white/20 transition-colors"
+                          >
+                            <Volume2 className="h-3 w-3 text-amber-300" />
+                            <span>{core.soundHz}Hz</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SECTION: VIBRATIONAL OCTAVE LADDER */}
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-cyan-300">
+                      Energetic Frequency Ladder
+                    </span>
+                    <h3 className="text-xl font-black text-white mt-0.5">
+                      Six Stages of Vibrational Manifestation
+                    </h3>
+                  </div>
+                  <span className="text-xs text-slate-400">
+                    Active Core: <strong className="text-white">{selectedCore.name}</strong> ({selectedCore.soundHz} Hz)
+                  </span>
+                </div>
+
+                {/* Octave Stage Selector */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                  {VIBRATIONAL_OCTAVES.map((oct) => {
+                    const isCur = oct.state === activeOctave;
+                    return (
+                      <button
+                        key={oct.state}
+                        type="button"
+                        onClick={() => setActiveOctave(oct.state)}
+                        className={`flex flex-col items-center justify-center rounded-2xl p-3 text-center transition-all ${
+                          isCur
+                            ? "border-2 border-indigo-400 bg-indigo-600/30 text-white shadow-lg shadow-indigo-950/40 scale-105"
+                            : "border border-white/10 bg-black/40 text-slate-400 hover:text-white hover:bg-white/5"
+                        }`}
+                      >
+                        <span className="text-2xl">{oct.emoji}</span>
+                        <span className="mt-1 text-xs font-bold">{oct.state}</span>
+                        <span className="text-[9px] uppercase tracking-wider text-slate-400">
+                          {oct.title}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Selected Octave Details & Instant Audition */}
+                <div className="mt-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.06] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{selectedOctaveMeta.emoji}</span>
+                      <h4 className="text-sm font-bold text-white">
+                        {selectedOctaveMeta.state} Octave: {selectedOctaveMeta.title}
+                      </h4>
+                      <span className="rounded-full border border-indigo-400/30 bg-indigo-400/10 px-2 py-0.5 text-[10px] font-mono text-indigo-300">
+                        {calculatedOctaveHz} Hz
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-300 max-w-xl">
+                      {selectedOctaveMeta.desc} In {selectedCore.name}, this represents the transition from{" "}
+                      <span className="text-rose-300">{selectedCore.shadow}</span> to{" "}
+                      <span className="text-emerald-300">{selectedCore.gift}</span>.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handlePlaySound(calculatedOctaveHz)}
+                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-500 hover:to-purple-500 transition-all"
+                  >
+                    <Volume2 className="h-3.5 w-3.5" />
+                    <span>Audition {calculatedOctaveHz} Hz</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Core Deep-Dive Panel */}
+          {/* Core Deep-Dive Panel (Aside) */}
           <aside className="space-y-4">
+            <div
+              className="relative isolate overflow-hidden rounded-3xl border p-5 shadow-2xl backdrop-blur-xl transition-all duration-700"
+              style={{
+                borderColor: `${selectedMeta.orbit}66`,
+                background: `linear-gradient(145deg, rgba(${selectedMeta.accentRgb}, 0.22), rgba(2, 6, 23, 0.92) 68%)`,
+                boxShadow: `0 0 42px ${selectedMeta.glow}`,
+              }}
+            >
+              <div
+                className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
+                style={{
+                  background: selectedMeta.orbit,
+                  opacity: 0.3,
+                  animation: "spotlightBreathe 4s ease-in-out infinite",
+                }}
+              />
+              <div
+                className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full border opacity-30"
+                style={{
+                  borderColor: selectedMeta.orbit,
+                  animation: "spotlightBreathe 5s ease-in-out infinite reverse",
+                }}
+              />
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-white/50">Core spotlight</p>
+                  <div className="mt-2 flex items-center gap-3">
+                    <span
+                      className="flex h-14 w-14 items-center justify-center rounded-2xl border text-3xl shadow-lg"
+                      style={{
+                        color: selectedMeta.orbit,
+                        borderColor: `${selectedMeta.orbit}88`,
+                        background: `${selectedMeta.orbit}22`,
+                        boxShadow: `0 0 24px ${selectedMeta.glow}`,
+                      }}
+                    >
+                      {selectedMeta.glyph}
+                    </span>
+                    <div>
+                      <p className="text-2xl font-black text-white">{selectedCore.name}</p>
+                      <p className="text-xs text-white/60">{selectedMeta.themeTitle}</p>
+                    </div>
+                  </div>
+                </div>
+                <span className="rounded-full border border-white/15 bg-black/20 px-2.5 py-1 text-[9px] uppercase tracking-[0.2em] text-white/60">
+                  Focused
+                </span>
+              </div>
+
+              <div className="relative mt-5 grid grid-cols-3 gap-2">
+                {[
+                  { label: "Resonance", value: `${selectedCore.soundHz} Hz` },
+                  { label: "Octave", value: selectedOctaveMeta.state },
+                  { label: "Signal", value: selectedMeta.elementIcon },
+                ].map((metric, index) => (
+                  <div
+                    key={metric.label}
+                    className="rounded-xl border border-white/10 bg-black/20 p-2.5"
+                    style={{ animation: `telemetryRise 500ms ease-out ${index * 90}ms both` }}
+                  >
+                    <p className="text-[9px] uppercase tracking-[0.18em] text-white/45">{metric.label}</p>
+                    <p className="mt-1 truncate text-sm font-bold text-white">{metric.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="relative mt-4">
+                <div className="mb-1 flex items-center justify-between text-[9px] uppercase tracking-[0.18em] text-white/45">
+                  <span>Signal coherence</span>
+                  <span>{Math.round(selectedOctaveMeta.octaveHzMult * 50)}%</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${Math.round(selectedOctaveMeta.octaveHzMult * 50)}%`,
+                      background: `linear-gradient(90deg, ${selectedMeta.orbit}, #fef08a)`,
+                      boxShadow: `0 0 14px ${selectedMeta.glow}`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="relative mt-4 flex items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <span
+                  className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm"
+                  style={{ borderColor: `${selectedMeta.orbit}88`, color: selectedMeta.orbit }}
+                >
+                  {selectedMeta.emojis[1]}
+                  <span
+                    className="absolute inset-[-5px] rounded-full border border-dashed opacity-50"
+                    style={{ borderColor: selectedMeta.orbit, animation: "orbitSweep 5s linear infinite" }}
+                  />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[9px] uppercase tracking-[0.2em] text-white/45">Current transmission</p>
+                  <p className="truncate text-xs font-semibold text-white">{selectedMeta.detail}</p>
+                </div>
+                <span className="ml-auto flex gap-0.5" aria-label="Signal activity">
+                  {[0, 1, 2, 3, 4].map((bar) => (
+                    <span
+                      key={bar}
+                      className="w-1 rounded-full bg-white/60"
+                      style={{
+                        height: `${8 + ((bar + selectedCore.number) % 4) * 4}px`,
+                        animation: `soundwaveAnim ${900 + bar * 120}ms ease-in-out infinite`,
+                        animationDelay: `${bar * 80}ms`,
+                      }}
+                    />
+                  ))}
+                </span>
+              </div>
+            </div>
+
             <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <span
@@ -968,7 +2085,25 @@ export default function HexacoreOrrery() {
 
             {/* Interactive Reflection Note */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 block">Personal Journal Reflection (Saved Locally)</label>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="text-xs font-semibold text-slate-300">Personal Journal Reflection</label>
+                <span className={`text-[11px] ${
+                  journalStatus === "error"
+                    ? "text-rose-300"
+                    : journalStatus === "local"
+                      ? "text-amber-300"
+                      : journalStatus === "saving" || journalStatus === "loading"
+                        ? "text-slate-400"
+                        : "text-emerald-300"
+                }`}>
+                  {journalStatus === "loading" && "Loading saved entries…"}
+                  {journalStatus === "saving" && "Saving securely…"}
+                  {journalStatus === "saved" && "Synced to your account"}
+                  {journalStatus === "local" && "Saved on this device only"}
+                  {journalStatus === "error" && "Write at least 3 characters to save"}
+                  {journalStatus === "idle" && "Private reflection"}
+                </span>
+              </div>
               <textarea
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
@@ -979,9 +2114,10 @@ export default function HexacoreOrrery() {
               <div className="flex justify-end">
                 <button
                   onClick={handleSaveJournal}
-                  className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+                  disabled={journalStatus === "saving"}
+                  className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Save Day {activeDay} Entry
+                  {journalStatus === "saving" ? "Saving…" : `Save Day ${activeDay} Entry`}
                 </button>
               </div>
             </div>

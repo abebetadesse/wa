@@ -51,7 +51,7 @@ export default async function CompareLocationsPage({
     },
     {
       label: "Fertility range",
-      value: `${Math.max(...selected.map((location) => location.wellbeingProfile.totalFertilityRate)) - Math.min(...selected.map((location) => location.wellbeingProfile.totalFertilityRate)).toFixed(1)}`,
+      value: `${(Math.max(...selected.map((location) => location.wellbeingProfile.totalFertilityRate)) - Math.min(...selected.map((location) => location.wellbeingProfile.totalFertilityRate))).toFixed(1)}`,
       note: "range across the selected set",
     },
   ];

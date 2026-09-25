@@ -51,6 +51,9 @@ export interface TalismanicCharacter {
   dayOfWeek: string;
 }
 
+import type { TelsemSeal } from "./telsemData.ts";
+import { getTelsemForArchetype, getTelsemForAwdeCircle } from "./telsemData.ts";
+
 export interface FullDivinationResult {
   nameGeez: string;
   motherNameGeez: string;
@@ -66,6 +69,8 @@ export interface FullDivinationResult {
   awdeCircle: AwdeCircle;
   awdeSegment: AwdeSegment;
   talismanic: TalismanicCharacter;
+  telsem: TelsemSeal;
+  guardianTelsem?: TelsemSeal;
   scriptDetected: boolean;
 }
 
@@ -479,6 +484,10 @@ export function calculateFullDivination(nameGeez: string, motherNameGeez: string
   // Talismanic character (1 to 12)
   const talismanic = TALISMANIC_CHARACTERS.find((t) => t.number === finalNumber) || TALISMANIC_CHARACTERS[9]; // 10 is The Visionary
 
+  // Sacred Telsem (ጠልሰም) seal from classical scroll and manuscript tradition
+  const telsem = getTelsemForArchetype(finalNumber);
+  const guardianTelsem = getTelsemForAwdeCircle(circleNumber);
+
   return {
     nameGeez: cleanName,
     motherNameGeez: cleanMother,
@@ -494,6 +503,8 @@ export function calculateFullDivination(nameGeez: string, motherNameGeez: string
     awdeCircle,
     awdeSegment,
     talismanic,
+    telsem,
+    guardianTelsem,
     scriptDetected,
   };
 }

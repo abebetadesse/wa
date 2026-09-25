@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { literatureFindings, literatureSyncLog } from "@/lib/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import type { KnowledgeStrandType } from "@/lib/knowledge/types";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 // ─── POST /api/literature/sync — Manual trigger ───────────────────────────────
 export async function POST(req: NextRequest) {
@@ -41,6 +42,14 @@ export async function POST(req: NextRequest) {
 
 // ─── GET /api/literature/sync — Status & latest findings ─────────────────────
 export async function GET(req: NextRequest) {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+  if (!["admin", "super_admin", "analyst"].includes(user.role)) {
+    return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(req.url);
   const strand = searchParams.get("strand") as KnowledgeStrandType | null;
   const page = parseInt(searchParams.get("page") ?? "1", 10);
@@ -112,11 +121,11 @@ export async function GET(req: NextRequest) {
       pagination: { page, limit, strand },
     });
   } catch (err) {
-    const error = err as Error;
+    console.error("[API] Literature status query failed:", err);
     return NextResponse.json(
       {
         status: "error",
-        error: error.message,
+        error: "Unable to load literature sync status.",
         hint: "Run `npm run db:push` to create the literature_findings table",
       },
       { status: 500 }

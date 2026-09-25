@@ -20,9 +20,9 @@ export default function LibraryPage() {
         </p>
       </header>
 
-      <section className="grid gap-6 xl:grid-cols-2">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href="/library/awde-negast" className="group block overflow-hidden rounded-[28px] border border-amber-500/20 bg-stone-900/80 shadow-[0_15px_60px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-amber-400/40">
-          <div className="flex flex-col gap-6 p-6 md:p-8">
+          <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Primary text</p>
@@ -37,7 +37,7 @@ export default function LibraryPage() {
               <img
                 src="https://archive.org/services/img/awede-negest"
                 alt="Awde Negest manuscript cover"
-                className="h-60 w-full rounded-xl object-cover object-center"
+                className="h-52 w-full rounded-xl object-cover object-center"
               />
             </div>
 
@@ -60,8 +60,96 @@ export default function LibraryPage() {
           </div>
         </Link>
 
+        <Link href="/library/telsem" className="group block overflow-hidden rounded-[28px] border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-stone-900 to-black shadow-[0_15px_60px_rgba(217,119,6,0.15)] transition hover:-translate-y-1 hover:border-amber-400">
+          <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Parchment scrolls</p>
+                <h2 className="mt-3 text-2xl font-bold text-white">Sacred Telsem (ጠልሰም)</h2>
+              </div>
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-amber-300">
+                <Sparkles size={28} />
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-amber-500/30 bg-stone-950/90 p-3 relative flex items-center justify-center">
+              <img
+                src="/telsem/telsem_p13_1.png"
+                alt="Ethiopian Telsem Talisman"
+                className="h-52 w-full rounded-xl object-contain filter sepia-[0.3] contrast-125"
+              />
+              <span className="absolute top-5 right-5 px-2.5 py-1 rounded-full bg-black/80 border border-amber-500/40 text-[10px] text-amber-300 font-mono">
+                መጽሐፈ አስማት
+              </span>
+            </div>
+
+            <div className="space-y-3 text-sm text-stone-300">
+              <p>
+                Authentic talismanic seals (ጠልሰም), geometric eye shields, and protective prayers extracted directly
+                from Mets&apos;hafe Asmat, Awde Negest, and debtera parchment scrolls.
+              </p>
+              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-stone-400">
+                <span className="rounded-full border border-stone-700 px-2 py-1 text-amber-300">22 seals</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">High-res plates</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">Interactive vector</span>
+              </div>
+            </div>
+
+            <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-amber-300">
+              Explore Telsem archive
+              <ArrowRight size={16} />
+            </div>
+          </div>
+        </Link>
+
+        {/* Card 3: ሃተታ መናፍስት ወ አውደ ነገስት ከነትርጉሙ */}
+        <Link href="/library/hatata" className="group block overflow-hidden rounded-[28px] border border-yellow-500/30 bg-gradient-to-br from-yellow-950/25 via-stone-900 to-black shadow-[0_15px_60px_rgba(234,179,8,0.12)] transition hover:-translate-y-1 hover:border-yellow-400">
+          <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-yellow-400">Trilingual commentary</p>
+                <h2 className="mt-3 text-2xl font-bold text-white font-serif">ሃተታ መናፍስት</h2>
+                <p className="text-xs text-stone-400 mt-0.5">ወ አውደ ነገስት ከነትርጉሙ</p>
+              </div>
+              <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-yellow-300">
+                <Sparkles size={28} />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-yellow-500/20 bg-stone-950/90 p-4 space-y-2">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-yellow-400/80 font-mono">
+                <span>Entity Classification</span>
+                <span>Ge&apos;ez • Amharic</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-stone-200">
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-yellow-200">⚡ ሊቃነ መላእክት</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-red-300">🔴 አጋንንት ዘመሸምሸሞ</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-purple-300">👁️ ዓይነ ጥላ ወ ቡዳ</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-emerald-300">🌿 ዘር ወ አያና</div>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-sm text-stone-300">
+              <p>
+                Exegesis and traditional taxonomy of spiritual entities, angels, adversarial forces, and Awde Negest circle
+                translations complete with protective prayers and outcome prophecies.
+              </p>
+              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-stone-400">
+                <span className="rounded-full border border-stone-700 px-2 py-1 text-yellow-300">9 Entities</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">6 Chapters</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">Trilingual</span>
+              </div>
+            </div>
+
+            <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-yellow-300">
+              Read Spirit Commentary
+              <ArrowRight size={16} />
+            </div>
+          </div>
+        </Link>
+
         <Link href="/library/medicinal-plants" className="group block overflow-hidden rounded-[28px] border border-emerald-500/20 bg-stone-900/80 shadow-[0_15px_60px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-emerald-400/40">
-          <div className="flex flex-col gap-6 p-6 md:p-8">
+          <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-300">Evidence-linked atlas</p>

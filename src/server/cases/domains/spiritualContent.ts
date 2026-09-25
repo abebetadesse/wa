@@ -25,6 +25,8 @@ export function buildSpiritualSections(gematria: FullDivinationResult, category:
         awdeCircle: circle,
         awdeSegment: gematria.awdeSegment,
         talismanic: gematria.talismanic,
+        telsem: gematria.telsem,
+        guardianTelsem: gematria.guardianTelsem,
       },
     },
     {
@@ -57,6 +59,25 @@ export function buildSpiritualSections(gematria: FullDivinationResult, category:
       cultural: true,
     },
     {
+      id: "sacred_telsem",
+      title: `Sacred Telsem (ጠልሰም): ${gematria.telsem?.nameAm ?? "የበረከት ጠልሰም"}`,
+      body:
+        `Inscribed under the lineage of ${gematria.telsem?.nameEn ?? "Sacred Talisman"}. ` +
+        `Preserved from ${gematria.telsem?.sourceManuscript ?? "historical parchment scroll tradition"}. ` +
+        `${gematria.telsem?.spiritualMeaning ?? ""}`,
+      items: [
+        `ቅርጸ ጠልሰም (Geometry): ${gematria.telsem?.sacredGeometryDescription ?? ""}`,
+        `የጸሎት ቃል (Formula): ${gematria.telsem?.traditionalFormulaGe ?? ""}`,
+        `ባህላዊ ገቢር (Practice Elements): ${gematria.telsem?.ritualMaterials?.join(", ") ?? ""}`,
+      ],
+      locked: true,
+      cultural: true,
+      data: {
+        telsem: gematria.telsem,
+        guardianTelsem: gematria.guardianTelsem,
+      },
+    },
+    {
       id: "healing_scroll",
       title: `Blessing scroll for ${name}`,
       items: [
@@ -66,7 +87,10 @@ export function buildSpiritualSections(gematria: FullDivinationResult, category:
       ],
       locked: true,
       cultural: true,
-      data: { patron },
+      data: {
+        patron,
+        telsem: gematria.telsem,
+      },
     },
   ];
 }

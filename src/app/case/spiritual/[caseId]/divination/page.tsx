@@ -4,6 +4,9 @@ import React, { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AwdeCircleVisualizer } from "@/components/cultural/AwdeCircleVisualizer";
+import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
+import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
+import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 
 export default function SpiritualDivinationPage({
   params,
@@ -134,39 +137,78 @@ export default function SpiritualDivinationPage({
           <AwdeCircleVisualizer circle={gem?.awdeCircle} segment={gem?.awdeSegment} />
         </div>
 
-        {/* Step 3: Talismanic Character Reveal */}
-        <div
-          className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-950/40 via-stone-900 to-black border border-purple-500/30 shadow-2xl transition-all duration-700 ${revealStep >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-        >
-          <div className="flex items-center justify-between border-b border-purple-500/20 pb-3 mb-4">
-            <span className="text-xs uppercase tracking-wider text-purple-300 font-mono font-bold">
-              2. Talismanic Lineage: {gem?.talismanic?.name || "The Visionary"} ({gem?.talismanic?.nameAmharic || "ራዕይ"})
-            </span>
-            <span className="text-2xl">🌟</span>
-          </div>
+        {/* Step 3: Sacred Telsem (ጠልሰም) & Talismanic Lineage Reveal */}
+        {(() => {
+          const activeTelsem = gem?.telsem || getTelsemForArchetype(gem?.finalNumber || 10);
+          return (
+            <div
+              className={`space-y-6 transition-all duration-700 ${
+                revealStep >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
+            >
+              <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+                <div>
+                  <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold">
+                    3. Consecrated Talisman & Telsem (የተጠቃሚው ጠልሰም)
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-bold font-serif text-white">
+                    {activeTelsem.nameAm}
+                  </h3>
+                </div>
+                <Link
+                  href="/library/telsem"
+                  target="_blank"
+                  className="px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono transition-colors"
+                >
+                  View Telsem Archive (22 Seals) ↗
+                </Link>
+              </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-              <span className="text-purple-300 font-bold block">Sacred Colors</span>
-              <span className="text-stone-300">{gem?.talismanic?.colors?.join(", ") || "Purple, Gold, Indigo"}</span>
+              {/* Interactive Sacred Seal Component */}
+              <TelsemSacredSeal seal={activeTelsem} size="xl" />
+
+              {/* Complete Parchment Healing Scroll */}
+              <TelsemScrollCanvas
+                seekerNameGeez={gem?.nameGeez || "ተጠቃሚ"}
+                motherNameGeez={gem?.motherNameGeez}
+                seal={activeTelsem}
+                zodiacName={gem?.zodiac?.name}
+                circleName={gem?.awdeCircle?.nameAmharic}
+              />
+
+              {/* Talismanic Attributes */}
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-950/30 via-stone-900 to-black border border-purple-500/30 shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                  <span className="text-xs uppercase tracking-wider text-purple-300 font-mono font-bold">
+                    Talismanic Lineage: {gem?.talismanic?.name || "The Visionary"} ({gem?.talismanic?.nameAmharic || "ራዕይ"})
+                  </span>
+                  <span className="text-2xl">🌟</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
+                    <span className="text-purple-300 font-bold block">Sacred Colors</span>
+                    <span className="text-stone-300">{gem?.talismanic?.colors?.join(", ") || "Purple, Gold, Indigo"}</span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
+                    <span className="text-purple-300 font-bold block">Gemstones</span>
+                    <span className="text-stone-300">{gem?.talismanic?.gemstones?.join(", ") || "Amethyst, Lapis Lazuli"}</span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
+                    <span className="text-purple-300 font-bold block">Traditional Herbs</span>
+                    <span className="text-stone-300">{gem?.talismanic?.herbs?.join(", ") || "Sage, Frankincense, Star Anise"}</span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
+                    <span className="text-purple-300 font-bold block">Ruling Day & Element</span>
+                    <span className="text-stone-300">
+                      {gem?.talismanic?.dayOfWeek || "Thursday"} · {gem?.talismanic?.element || "Air"}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-              <span className="text-purple-300 font-bold block">Gemstones</span>
-              <span className="text-stone-300">{gem?.talismanic?.gemstones?.join(", ") || "Amethyst, Lapis Lazuli"}</span>
-            </div>
-            <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-              <span className="text-purple-300 font-bold block">Traditional Herbs</span>
-              <span className="text-stone-300">{gem?.talismanic?.herbs?.join(", ") || "Sage, Frankincense, Star Anise"}</span>
-            </div>
-            <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-              <span className="text-purple-300 font-bold block">Ruling Day & Element</span>
-              <span className="text-stone-300">
-                {gem?.talismanic?.dayOfWeek || "Thursday"} · {gem?.talismanic?.element || "Air"}
-              </span>
-            </div>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Step 4: Cultural Disclaimer */}
         <div

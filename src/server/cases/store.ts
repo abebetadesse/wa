@@ -16,6 +16,7 @@ type Row = typeof workflowCases.$inferSelect;
 const iso = (value: Date | string) => (value instanceof Date ? value.toISOString() : new Date(value).toISOString());
 
 function fromRow(row: Row): WorkflowCase {
+  const ctx = (row.context ?? {}) as Record<string, unknown>;
   return {
     id: row.id,
     userId: row.userId,
@@ -23,10 +24,19 @@ function fromRow(row: Row): WorkflowCase {
     stage: row.stage as WorkflowStage,
     safetyAnswers: (row.safetyAnswers ?? {}) as WorkflowCase["safetyAnswers"],
     safety: row.safety as WorkflowCase["safety"],
+    consent: (ctx._consent as WorkflowCase["consent"]) ?? {
+      dataUsage: true,
+      emergencySupport: true,
+      thirdPartySharing: false,
+      retention: "1_year",
+      consentedAt: iso(row.createdAt),
+      consentTextVersion: "1.0",
+    },
     answers: (row.answers ?? {}) as WorkflowCase["answers"],
     context: (row.context ?? {}) as WorkflowCase["context"],
     draft: (row.draft ?? null) as WorkflowCase["draft"],
     review: (row.review ?? null) as WorkflowCase["review"],
+    auditTrail: (ctx._auditTrail as WorkflowCase["auditTrail"]) ?? [],
     payment: (row.payment ?? null) as WorkflowCase["payment"],
     consultation: (row.consultation ?? null) as WorkflowCase["consultation"],
     createdAt: iso(row.createdAt),
@@ -44,7 +54,11 @@ function toRow(record: WorkflowCase) {
     safetyAnswers: record.safetyAnswers,
     safety: record.safety,
     answers: record.answers,
-    context: record.context,
+    context: {
+      ...record.context,
+      _consent: record.consent,
+      _auditTrail: record.auditTrail,
+    },
     draft: record.draft,
     review: record.review,
     payment: record.payment,

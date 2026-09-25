@@ -40,7 +40,8 @@ export async function migrateAndSeedAuth() {
         permissions: DEFAULT_ROLE_PERMISSIONS[role.name],
         isSystemRole: true,
         isActive: true,
-      }).onDuplicateKeyUpdate({
+      }).onConflictDoUpdate({
+        target: roles.name,
         set: { description: role.description, permissions: DEFAULT_ROLE_PERMISSIONS[role.name], isActive: true },
       });
     }
@@ -55,11 +56,12 @@ export async function migrateAndSeedAuth() {
         role,
         roleId: roleIds.get(role),
         preferredLanguage: language,
-        dateOfBirth: new Date(dateOfBirth),
+        dateOfBirth,
         isVerified: true,
         isActive: true,
         loginCount: 0,
-      }).onDuplicateKeyUpdate({
+      }).onConflictDoUpdate({
+        target: users.email,
         set: { name, role, roleId: roleIds.get(role), preferredLanguage: language, isVerified: true, isActive: true, updatedAt: new Date() },
       });
     }

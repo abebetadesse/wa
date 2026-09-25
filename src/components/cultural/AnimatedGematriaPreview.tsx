@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { LiveGematriaState } from "@/hooks/useLiveGematria";
+import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 
 function AnimatedCounter({ value, className = "" }: { value: number; className?: string }) {
   const [displayValue, setDisplayValue] = useState(value);
@@ -141,19 +143,38 @@ export function AnimatedGematriaPreview({ state }: { state: LiveGematriaState })
             </div>
           </div>
 
-          {/* Talismanic card */}
-          <div className="p-4 rounded-xl bg-stone-900/80 border border-amber-500/30 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs uppercase tracking-wider text-stone-400">Talismanic Lineage</span>
-              <span className="text-xl">🌟</span>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-amber-200">{state.talismanic?.name}</div>
-              <div className="text-xs text-amber-400/80">
-                {state.talismanic?.rulingPlanet} · {state.talismanic?.dayOfWeek}
+          {/* Talismanic & Telsem card */}
+          {(() => {
+            const activeTelsem = state.talismanic
+              ? getTelsemForArchetype(state.talismanic.number)
+              : null;
+            return (
+              <div className="p-4 rounded-xl bg-stone-900/80 border border-amber-500/30 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs uppercase tracking-wider text-stone-400">Talismanic Lineage</span>
+                  <Link
+                    href="/library/telsem"
+                    target="_blank"
+                    className="text-[10px] text-amber-400 underline hover:text-amber-300"
+                  >
+                    ጠልሰም (Archive) ↗
+                  </Link>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-amber-200">{state.talismanic?.name}</div>
+                  <div className="text-xs text-amber-400/80">
+                    {state.talismanic?.rulingPlanet} · {state.talismanic?.dayOfWeek}
+                  </div>
+                  {activeTelsem && (
+                    <div className="mt-2 pt-2 border-t border-stone-800 text-[11px] text-stone-300 flex items-center justify-between">
+                      <span className="text-amber-300 font-serif">{activeTelsem.nameAm}</span>
+                      <span className="text-[10px] text-stone-500 font-mono">Seal #{state.talismanic?.number}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       )}
     </div>

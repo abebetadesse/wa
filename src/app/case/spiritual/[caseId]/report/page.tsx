@@ -4,6 +4,10 @@ import React, { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AwdeCircleVisualizer } from "@/components/cultural/AwdeCircleVisualizer";
+import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
+import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
+import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
+import { getAwdeChapter, getAllSpiritCommentary } from "@/lib/cultural/hatataMenafsest";
 
 export default function SpiritualReportPage({
   params,
@@ -13,7 +17,7 @@ export default function SpiritualReportPage({
   const router = useRouter();
   const { caseId } = use(params);
 
-  const [activeTab, setActiveTab] = useState<"report" | "scroll" | "context">("report");
+  const [activeTab, setActiveTab] = useState<"report" | "scroll" | "context" | "hatata">("report");
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -77,17 +81,18 @@ export default function SpiritualReportPage({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-stone-800 gap-2 text-sm font-medium">
+        <div className="flex border-b border-stone-800 gap-2 text-sm font-medium overflow-x-auto pb-1">
           {[
             { id: "report", label: "Full Report (ሙሉ ሪፖርት)", icon: "📖" },
             { id: "scroll", label: "Personalized Healing Scroll (ክታብ)", icon: "📜" },
             { id: "context", label: "Divination Context (አውደ ነገሥት)", icon: "🔮" },
+            { id: "hatata", label: "Spirit Commentary (ሃተታ መናፍስት)", icon: "⚡" },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-3 px-4 flex items-center gap-2 transition-all border-b-2 ${
+              className={`pb-3 px-4 flex items-center gap-2 transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
                   ? "border-amber-400 text-amber-300 font-bold"
                   : "border-transparent text-stone-400 hover:text-stone-200"
@@ -253,6 +258,30 @@ export default function SpiritualReportPage({
                 ))}
               </div>
 
+              {/* Consecrated Telsem Seal & Sacred Art */}
+              {(() => {
+                const activeTelsem =
+                  gematria?.telsem ||
+                  getTelsemForArchetype(gematria?.finalNumber || 10);
+                return (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#8c6d3b]/40 pb-2">
+                      <span className="font-bold text-[#d1b078] text-sm block">
+                        Consecrated Telsem (የተቀደሰ ጠልሰም): {activeTelsem.nameAm}
+                      </span>
+                      <Link
+                        href="/library/telsem"
+                        target="_blank"
+                        className="text-xs text-[#d1b078] underline hover:text-[#f7e0b5]"
+                      >
+                        Explore 22 Manuscript Seals ↗
+                      </Link>
+                    </div>
+                    <TelsemSacredSeal seal={activeTelsem} size="md" />
+                  </div>
+                );
+              })()}
+
               {/* Celestial Imagery Description */}
               <div className="p-4 rounded-2xl bg-black/40 border border-[#8c6d3b]/40 text-xs space-y-2">
                 <span className="font-bold text-[#d1b078] block">Inscribed Talismanic Imagery:</span>
@@ -304,7 +333,12 @@ export default function SpiritualReportPage({
               </div>
 
               <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 space-y-2">
-                <h4 className="text-sm font-bold text-amber-200">Talismanic Character</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-amber-200">Talismanic Character & Telsem</h4>
+                  <Link href="/library/telsem" className="text-[10px] text-amber-400 underline">
+                    Archive ↗
+                  </Link>
+                </div>
                 <div className="text-lg font-bold text-white">{gematria?.talismanic?.name}</div>
                 <p className="text-xs text-stone-400">
                   Ruling Day: {gematria?.talismanic?.dayOfWeek} · Planet: {gematria?.talismanic?.rulingPlanet}
@@ -312,10 +346,220 @@ export default function SpiritualReportPage({
                 <div className="text-xs text-stone-300 pt-1">
                   Gemstones: {gematria?.talismanic?.gemstones?.join(", ")}
                 </div>
+                {(() => {
+                  const activeTelsem =
+                    gematria?.telsem ||
+                    getTelsemForArchetype(gematria?.finalNumber || 10);
+                  return (
+                    <div className="mt-3 p-3 rounded-xl bg-black/50 border border-amber-500/20 text-xs">
+                      <span className="text-[10px] uppercase text-amber-400 font-bold block">
+                        Aligned Telsem Seal (የተመደበ ጠልሰም)
+                      </span>
+                      <span className="font-serif font-bold text-white block mt-0.5">
+                        {activeTelsem.nameAm}
+                      </span>
+                      <span className="text-[11px] text-stone-400 italic block">
+                        {activeTelsem.nameEn}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
         )}
+
+        {/* TAB 4: SPIRIT COMMENTARY & AWDE NEGEST CHAPTER GUIDANCE */}
+        {activeTab === "hatata" && (() => {
+          const circleNumber = gematria?.awdeCircle || 1;
+          const chapter = getAwdeChapter(circleNumber) || getAwdeChapter(1);
+          const allSpirits = getAllSpiritCommentary();
+          const holyArchangel = allSpirits.find((s) => s.spiritClass === "melaek_tsadag");
+          const adversaryNote = allSpirits.find((s) => s.spiritClass === "melaek_gana");
+          const eyeShield = allSpirits.find((s) => s.spiritClass === "buda_ayne");
+
+          return (
+            <div className="space-y-6">
+              {/* Awde Negest Chapter Card */}
+              <div className="p-6 sm:p-8 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-800 pb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        ምዕራፍ {chapter?.circleNumber} • Circle Chapter
+                      </span>
+                      <span className="text-xs text-stone-400 font-mono">
+                        ጠባቂ መልአክ: {chapter?.guardianAngelAm} ({chapter?.guardianAngel})
+                      </span>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-bold font-serif text-white mt-1">
+                      {chapter?.circleNameAm}
+                    </h3>
+                    <p className="text-xs text-stone-400 font-mono italic">
+                      {chapter?.circleNameGe} • {chapter?.circleNameEn}
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/library/hatata"
+                    className="self-start sm:self-center px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-mono text-amber-300 hover:bg-amber-500/20 transition-colors"
+                  >
+                    View in Full Library ↗
+                  </Link>
+                </div>
+
+                {/* Trilingual Exegesis Box */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-amber-300 block">
+                      የአውደ ነገሥት ምዕራፍ ትርጓሜ (Amharic Exegesis)
+                    </span>
+                    <p className="text-sm text-stone-200 leading-relaxed font-serif">
+                      {chapter?.chapterTextAm}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 space-y-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 block">
+                      English Interpretation & Wisdom
+                    </span>
+                    <p className="text-xs text-stone-300 leading-relaxed font-sans">
+                      {chapter?.chapterTextEn}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Classical Ge'ez Scripture */}
+                <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 block">
+                    የጥንቱ ግዕዝ ንባብ (Classical Ge&apos;ez Inscription)
+                  </span>
+                  <p className="text-sm font-serif text-amber-100/90 leading-relaxed">
+                    « {chapter?.chapterTextGe} »
+                  </p>
+                </div>
+
+                {/* Prophecy Categories Table */}
+                {chapter?.prophesyForCategories && chapter.prophesyForCategories.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300 block">
+                      ክፍለ ትንቢት (Divination Outcomes by Life Domain)
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {chapter.prophesyForCategories.map((p, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3.5 rounded-xl bg-stone-950/70 border border-stone-800 space-y-1"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-amber-200">{p.categoryAm}</span>
+                            <span className="text-[10px] font-mono text-stone-400 uppercase">{p.categoryEn}</span>
+                          </div>
+                          <p className="text-xs text-stone-200 font-serif">{p.outcomeAm}</p>
+                          <p className="text-[11px] text-stone-400 italic">{p.outcomeEn}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Timings and Ruling Affinity */}
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-stone-800 text-xs font-mono">
+                  <span className="px-3 py-1 rounded-full bg-stone-950 border border-stone-800 text-stone-300">
+                    ወገን: {chapter?.seasonalAffinityAm} ({chapter?.seasonalAffinityEn})
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-stone-950 border border-stone-800 text-amber-300">
+                    የቀን ገዥ: {chapter?.dayRulingAm}
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-stone-950 border border-stone-800 text-sky-300">
+                    የሌሊት ገዥ: {chapter?.nightRulingAm}
+                  </span>
+                </div>
+              </div>
+
+              {/* Spirit Commentary & Traditional Protection Protocols */}
+              <div className="p-6 sm:p-8 rounded-3xl bg-stone-900/90 border border-stone-800 shadow-2xl space-y-5">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+                  <div>
+                    <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold block">
+                      ሃተታ መናፍስት (Traditional Spirit Exegesis & Countermeasures)
+                    </span>
+                    <h4 className="text-lg font-bold text-white font-serif mt-0.5">
+                      Spiritual Guardian & Shielding Guidance
+                    </h4>
+                  </div>
+                  <Link
+                    href="/library/telsem"
+                    className="text-xs font-mono text-amber-300 underline hover:text-amber-200"
+                  >
+                    22 Talisman Seals ↗
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Guardian Archangel */}
+                  {holyArchangel && (
+                    <div className="p-4 rounded-2xl bg-yellow-950/15 border border-yellow-500/30 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-yellow-300">
+                        <span>⚡</span>
+                        <span>{holyArchangel.nameAm} ({holyArchangel.nameEn})</span>
+                      </div>
+                      <p className="text-xs text-stone-200 leading-relaxed font-serif">
+                        {holyArchangel.hatatDefinitionAm}
+                      </p>
+                      <div className="p-2.5 rounded-lg bg-black/40 border border-yellow-500/20 text-[11px] text-yellow-200/90 font-serif">
+                        « {holyArchangel.protectiveFormulaGe} »
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Adversarial Neutralization */}
+                  {(adversaryNote || eyeShield) && (() => {
+                    const adv = adversaryNote || eyeShield!;
+                    return (
+                      <div className="p-4 rounded-2xl bg-red-950/15 border border-red-500/30 space-y-3">
+                        <div className="flex items-center gap-2 text-xs font-bold text-red-300">
+                          <span>👁️</span>
+                          <span>{adv.nameAm} ({adv.nameEn})</span>
+                        </div>
+                        <p className="text-xs text-stone-200 leading-relaxed font-serif">
+                          {adv.hatatDefinitionAm}
+                        </p>
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-red-400/90 block">
+                            ባህላዊ መከላከያዎች (Traditional Countermeasures):
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {adv.counterMeasures.map((cm, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 rounded-md bg-stone-900 border border-red-500/20 text-[10px] text-stone-300"
+                              >
+                                {cm}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div className="p-4 rounded-2xl bg-black/40 border border-stone-800 text-xs text-stone-400 flex items-center justify-between gap-4">
+                  <p>
+                    Heritage Note: Traditional debtera commentaries provide ethical reflection and liturgical prayer formulas. They are preserved for cultural study.
+                  </p>
+                  <Link
+                    href="/library/hatata"
+                    className="shrink-0 px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-700 text-amber-300 hover:border-amber-400 text-xs font-mono transition-colors"
+                  >
+                    Open Full Exegesis →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Book Consultation Banner */}
         <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950/60 border border-amber-500/40 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
