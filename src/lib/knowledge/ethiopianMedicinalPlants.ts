@@ -22,6 +22,9 @@ export type MedicinalPlant = {
   modeOfAction?: string;
   modeOfPreparation?: string;
   dosage?: string;
+  biochemicalComposition?: string[];
+  activeIngredients?: string[];
+  safetyNotes?: string;
   diseasesTreated: string[];
   source: string;
   sourceUrl?: string;
@@ -753,22 +756,23 @@ export const MEDICINAL_PLANT_DISEASES = [
   "Boils",
 ];
 
-export function filterMedicinalPlants(query: string, disease?: string) {
+export function filterMedicinalPlants(query: string, disease?: string, plants?: MedicinalPlant[]) {
+  const searchSpace = plants ?? ETHIOPIAN_MEDICINAL_PLANTS;
   const normalizedQuery = query.trim().toLowerCase();
-  return ETHIOPIAN_MEDICINAL_PLANTS.filter((plant) => {
-    const matchesDisease = !disease || disease === "all" || plant.diseasesTreated.some((entry) => entry.toLowerCase().includes(disease.toLowerCase()));
+  return searchSpace.filter((plant) => {
+    const matchesDisease = !disease || disease === "all" || (plant.diseasesTreated || []).some((entry) => entry.toLowerCase().includes(disease.toLowerCase()));
     const matchesQuery =
       !normalizedQuery ||
       [
         plant.scientificName,
         plant.vernacularName,
         plant.amharicName ?? "",
-        plant.habitat,
-        plant.location ?? plant.habitat,
-        plant.traditionalUse,
-        plant.action ?? plant.traditionalUse,
+        plant.habitat ?? "",
+        plant.location ?? plant.habitat ?? "",
+        plant.traditionalUse ?? "",
+        plant.action ?? plant.traditionalUse ?? "",
         plant.modeOfPreparation ?? "",
-        plant.diseasesTreated.join(" "),
+        (plant.diseasesTreated || []).join(" "),
         plant.sourceUrl ?? "",
       ].some((value) => (value ?? "").toLowerCase().includes(normalizedQuery));
     return matchesDisease && matchesQuery;

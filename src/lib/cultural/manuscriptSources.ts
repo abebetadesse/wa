@@ -6,12 +6,14 @@ export interface ManuscriptSource {
   titleAmharic: string;
   sourceFileName: string;
   sourceSha256: string;
-  pageCount: number;
+  pageCount?: number;
   extractionStatus: ManuscriptExtractionStatus;
   ocrLanguage?: string;
   detectedTitleFromOcr?: string;
   filenameContentNote?: string;
-  sourceType: "user_supplied_local_pdf";
+  sourceType: "user_supplied_local_pdf" | "user_supplied_local_docx";
+  mediaStatus?: "embedded_images_found" | "no_embedded_images_found" | "external_images_unresolved";
+  componentCount?: number;
   themes: string[];
   safeIntegration: string[];
   restrictedUses: string[];
@@ -19,6 +21,23 @@ export interface ManuscriptSource {
 }
 
 export const ETHIOPIAN_MANUSCRIPT_SOURCES: ManuscriptSource[] = [
+  {
+    id: "metsehafe-fews-docx",
+    title: "Metsehafe Fews",
+    titleAmharic: "መጽሐፈ ፈውስ",
+    sourceFileName: "Metsehafe Fews.docx",
+    sourceSha256: "3E732122EEAC4170F0A7C5A791EA8FF5599202D359FF80F4D8A8551D42F16F3",
+    extractionStatus: "text_extracted",
+    detectedTitleFromOcr: "መጽሐፈ ፈውስ",
+    filenameContentNote: "The supplied DOCX identifies itself as a 2000 E.C. work attributed to መሪራስ አማን በላይ. This is a source fingerprint and not an authorship or authenticity determination.",
+    sourceType: "user_supplied_local_docx",
+    mediaStatus: "no_embedded_images_found",
+    componentCount: 38,
+    themes: ["Ethiopian traditional plant knowledge", "religious and cultural healing history", "Ge'ez and Amharic manuscript terminology"],
+    safeIntegration: ["Rights-aware table-of-contents navigation", "Cultural and historical source comparison", "Search and review metadata without publishing full text"],
+    restrictedUses: ["No diagnosis, dosage, preparation, or treatment instructions", "No unsupervised use of plants or substances", "No reproduction of the full work without rights-holder permission"],
+    reviewStatus: "needs_cultural_review",
+  },
   {
     id: "metsehafe-fewus",
     title: "Mets'hafe Fewus",

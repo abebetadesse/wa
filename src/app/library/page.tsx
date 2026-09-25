@@ -219,9 +219,11 @@ export default function LibraryPage() {
               <p className="text-lg font-semibold text-white">{source.titleAmharic}</p>
               <p className="mt-1 text-xs text-violet-300">{source.title}</p>
               <div className="mt-3 space-y-1 text-[11px] text-stone-400">
-                <p>{source.pageCount} pages</p>
+                <p>{source.pageCount ? `${source.pageCount} pages` : "DOCX source; page count not verified"}</p>
                 <p>{source.extractionStatus === "text_extracted" ? "Text extracted for review" : source.extractionStatus === "ocr_completed_needs_review" ? "OCR completed; review required" : "Scanned images; OCR required"}</p>
                 <p>{source.reviewStatus.replaceAll("_", " ")}</p>
+                {source.mediaStatus === "no_embedded_images_found" && <p className="text-stone-500">No embedded images found</p>}
+                {source.componentCount && <p>{source.componentCount} indexed components</p>}
                 {source.detectedTitleFromOcr && <p className="text-amber-300">OCR title: {source.detectedTitleFromOcr}</p>}
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -261,6 +263,14 @@ export default function LibraryPage() {
                 </div>
                 <p className="mt-3 text-xs leading-relaxed text-stone-300">{entry.summary}</p>
                 <p className="mt-3 text-[11px] leading-relaxed text-emerald-300">{entry.safeUse}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
+                  <span className="rounded-full border border-sky-500/20 bg-sky-500/5 px-2 py-1 text-sky-300">
+                    Evidence: {(entry.evidenceLevel || "source_summary").replaceAll("_", " ")}
+                  </span>
+                  <span className="rounded-full border border-stone-700 px-2 py-1 text-stone-400">
+                    Media: {(entry.mediaEvaluation || "image_requires_review").replaceAll("_", " ")}
+                  </span>
+                </div>
                 <p className="mt-3 text-[10px] text-stone-500">{source?.titleAmharic} · {entry.reviewStatus.replaceAll("_", " ")}</p>
               </article>
             );

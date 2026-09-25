@@ -14,6 +14,11 @@ export default function SpiritualStep1Page() {
   const router = useRouter();
   const [nameGeez, setNameGeez] = useState("");
   const [motherNameGeez, setMotherNameGeez] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [birthLocationName, setBirthLocationName] = useState("");
+  const [birthLatitude, setBirthLatitude] = useState<number | null>(null);
+  const [birthLongitude, setBirthLongitude] = useState<number | null>(null);
+  const [locationStatus, setLocationStatus] = useState("");
   const [activeInput, setActiveInput] = useState<"name" | "mother">("name");
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +41,14 @@ export default function SpiritualStep1Page() {
     try {
       const storedName = sessionStorage.getItem("spiritual_name_geez") || "";
       const storedMother = sessionStorage.getItem("spiritual_mother_geez") || "";
+      setBirthDate(sessionStorage.getItem("spiritual_birth_date") || "");
+      setBirthLocationName(sessionStorage.getItem("spiritual_birth_location") || "");
+      const storedCoordinates = sessionStorage.getItem("spiritual_birth_coordinates");
+      if (storedCoordinates) {
+        const coordinates = JSON.parse(storedCoordinates) as { latitude?: number; longitude?: number };
+        setBirthLatitude(typeof coordinates.latitude === "number" ? coordinates.latitude : null);
+        setBirthLongitude(typeof coordinates.longitude === "number" ? coordinates.longitude : null);
+      }
       if (storedName) {
         setNameGeez(storedName);
       }
@@ -66,6 +79,29 @@ export default function SpiritualStep1Page() {
       }
     }
   }, [motherNameGeez]);
+
+  const autofetchLocation = async () => {
+    if (!birthLocationName.trim()) {
+      setLocationStatus("Enter a birth location name first.");
+      return;
+    }
+    setLocationStatus("Finding a matching Ethiopian location...");
+    try {
+      const response = await fetch(`/api/locations?id=${encodeURIComponent(birthLocationName.trim())}`, { cache: "no-store" });
+      const payload = await response.json() as { selectedLocation?: { name?: string; latitude?: number; longitude?: number } | null };
+      const location = payload.selectedLocation;
+      if (!location || typeof location.latitude !== "number" || typeof location.longitude !== "number") {
+        setLocationStatus("No exact local match found. Coordinates were not guessed.");
+        return;
+      }
+      setBirthLocationName(location.name || birthLocationName.trim());
+      setBirthLatitude(location.latitude);
+      setBirthLongitude(location.longitude);
+      setLocationStatus(`Coordinates found: ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`);
+    } catch {
+      setLocationStatus("Location lookup failed. You can continue without coordinates.");
+    }
+  };
 
   const handleKeyboardInsert = (val: string) => {
     if (val === "__backspace__") {
@@ -118,7 +154,14 @@ export default function SpiritualStep1Page() {
       const res = await fetch("/api/case/spiritual/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nameGeez, motherNameGeez }),
+        body: JSON.stringify({
+          nameGeez,
+          motherNameGeez,
+          birthDate: birthDate || undefined,
+          birthLocationName: birthLocationName || undefined,
+          birthLatitude: birthLatitude ?? undefined,
+          birthLongitude: birthLongitude ?? undefined,
+        }),
       });
 
       const payload = await res.json();
@@ -127,6 +170,11 @@ export default function SpiritualStep1Page() {
         sessionStorage.setItem("spiritual_case_id", caseId);
         sessionStorage.setItem("spiritual_name_geez", nameGeez);
         sessionStorage.setItem("spiritual_mother_geez", motherNameGeez);
+        sessionStorage.setItem("spiritual_birth_date", birthDate);
+        sessionStorage.setItem("spiritual_birth_location", birthLocationName);
+        if (birthLatitude !== null && birthLongitude !== null) {
+          sessionStorage.setItem("spiritual_birth_coordinates", JSON.stringify({ latitude: birthLatitude, longitude: birthLongitude }));
+        }
         router.push(`/case/spiritual/intake/step-2?caseId=${caseId}`);
       } else {
         throw new Error(payload.error || "Failed to start case");
@@ -188,6 +236,25 @@ export default function SpiritualStep1Page() {
               )}
 
               <div className="mt-7 space-y-6">
+                <section className="rounded-2xl border border-sky-500/20 bg-sky-950/10 p-5">
+                  <h2 className="text-sm font-bold text-sky-200">Birth context for cultural calculations</h2>
+                  <p className="mt-1 text-xs leading-5 text-stone-400">Optional. Used to label the reading context only; it does not determine medical, legal, or psychological outcomes.</p>
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <label className="space-y-2 text-sm text-stone-300">
+                      Birth year, month and day
+                      <input type="date" value={birthDate} onChange={(event) => setBirthDate(event.target.value)} className="input-warm w-full" />
+                    </label>
+                    <label className="space-y-2 text-sm text-stone-300">
+                      Birth location name
+                      <div className="flex gap-2">
+                        <input value={birthLocationName} onChange={(event) => { setBirthLocationName(event.target.value); setBirthLatitude(null); setBirthLongitude(null); }} placeholder="Addis Ababa" className="input-warm min-w-0 flex-1" />
+                        <button type="button" onClick={autofetchLocation} className="rounded-xl border border-sky-500/40 px-3 text-xs font-semibold text-sky-200 hover:bg-sky-500/10">Autofetch</button>
+                      </div>
+                    </label>
+                  </div>
+                  {locationStatus && <p role="status" className="mt-3 text-xs text-sky-300">{locationStatus}</p>}
+                  {birthLatitude !== null && birthLongitude !== null && <p className="mt-2 font-mono text-[11px] text-emerald-300">Verified local coordinates: {birthLatitude.toFixed(5)}, {birthLongitude.toFixed(5)}</p>}
+                </section>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <label htmlFor="name-geez" className="text-sm font-bold text-amber-200">

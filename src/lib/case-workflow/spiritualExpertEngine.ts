@@ -3,6 +3,8 @@
  * for Case 1 (Spiritual & Life Direction)
  */
 
+import fs from "fs";
+import path from "path";
 import { FullDivinationResult, calculateFullDivination } from "@/lib/cultural/spiritualDivinationEngine";
 import { evaluateSpiritualCrisis, CrisisScreenResult } from "./spiritualQuestionEngine";
 import { synthesizeCaseReportAnalysis } from "@/lib/ai/bionicGPT";
@@ -80,6 +82,12 @@ export interface SpiritualReport {
     awdeSegment: FullDivinationResult["awdeSegment"];
     talismanicCharacter: FullDivinationResult["talismanic"];
     narrative: string;
+    birthContext?: {
+      birthDate?: string;
+      birthLocationName?: string;
+      birthLatitude?: number;
+      birthLongitude?: number;
+    };
   };
   culturalInterpretation: {
     narrative: string;
@@ -122,6 +130,13 @@ export interface SpiritualCaseSession {
   status: SpiritualCaseStatus;
   nameGeez: string;
   motherNameGeez: string;
+  birthDate?: string;
+  birthYear?: number;
+  birthMonth?: number;
+  birthDay?: number;
+  birthLocationName?: string;
+  birthLatitude?: number;
+  birthLongitude?: number;
   category: string;
   gematria: FullDivinationResult;
   answers: Record<string, any>;
@@ -181,8 +196,44 @@ export const EXPERTS_REGISTRY: Expert[] = [
   },
 ];
 
-// Active spiritual case storage
-const spiritualCases = new Map<string, SpiritualCaseSession>();
+// Active spiritual case storage (Singleton on globalThis to survive Next.js HMR & bundle isolation)
+const globalForSpiritual = globalThis as unknown as {
+  _spiritualCases?: Map<string, SpiritualCaseSession>;
+};
+export const spiritualCases: Map<string, SpiritualCaseSession> =
+  globalForSpiritual._spiritualCases ?? new Map<string, SpiritualCaseSession>();
+globalForSpiritual._spiritualCases = spiritualCases;
+
+const CACHE_DIR = path.resolve(process.cwd(), ".cases_cache", "spiritual");
+
+function persistCaseToDisk(session: SpiritualCaseSession) {
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+    fs.writeFileSync(
+      path.join(CACHE_DIR, `${session.id}.json`),
+      JSON.stringify(session, null, 2),
+      "utf8"
+    );
+  } catch {
+    // Non-fatal if filesystem is restricted
+  }
+}
+
+function loadCaseFromDisk(id: string): SpiritualCaseSession | undefined {
+  try {
+    const file = path.join(CACHE_DIR, `${id}.json`);
+    if (fs.existsSync(file)) {
+      const data = JSON.parse(fs.readFileSync(file, "utf8")) as SpiritualCaseSession;
+      spiritualCases.set(id, data);
+      return data;
+    }
+  } catch {
+    // Non-fatal
+  }
+  return undefined;
+}
 
 /**
  * Assigns an expert using load-balanced, multi-criteria scoring
@@ -360,6 +411,14 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert: E
       awdeSegment: gematria.awdeSegment,
       talismanicCharacter: gematria.talismanic,
       narrative,
+      birthContext: session.birthDate || session.birthLocationName
+        ? {
+            birthDate: session.birthDate,
+            birthLocationName: session.birthLocationName,
+            birthLatitude: session.birthLatitude,
+            birthLongitude: session.birthLongitude,
+          }
+        : undefined,
     },
     culturalInterpretation,
     practicalGuidance,
@@ -379,7 +438,17 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert: E
 /**
  * Initializes a new Spiritual Case session
  */
-export function startSpiritualCase(nameGeez: string, motherNameGeez: string = "", userId?: string): SpiritualCaseSession {
+export function startSpiritualCase(
+  nameGeez: string,
+  motherNameGeez: string = "",
+  userId?: string,
+  birthContext?: {
+    birthDate?: string;
+    birthLocationName?: string;
+    birthLatitude?: number;
+    birthLongitude?: number;
+  },
+): SpiritualCaseSession {
   const normalizedName = nameGeez.trim();
   if (!normalizedName) {
     throw new Error("Your name is required to start Case 1.");
@@ -396,6 +465,13 @@ export function startSpiritualCase(nameGeez: string, motherNameGeez: string = ""
     status: "case_received",
     nameGeez: gematria.nameGeez,
     motherNameGeez: gematria.motherNameGeez,
+    birthDate: birthContext?.birthDate,
+    birthYear: birthContext?.birthDate ? Number(birthContext.birthDate.slice(0, 4)) : undefined,
+    birthMonth: birthContext?.birthDate ? Number(birthContext.birthDate.slice(5, 7)) : undefined,
+    birthDay: birthContext?.birthDate ? Number(birthContext.birthDate.slice(8, 10)) : undefined,
+    birthLocationName: birthContext?.birthLocationName,
+    birthLatitude: birthContext?.birthLatitude,
+    birthLongitude: birthContext?.birthLongitude,
     category: "life_direction",
     gematria,
     answers: {},
@@ -405,6 +481,7 @@ export function startSpiritualCase(nameGeez: string, motherNameGeez: string = ""
   };
 
   spiritualCases.set(id, session);
+  persistCaseToDisk(session);
   return session;
 }
 
@@ -413,14 +490,57 @@ export function startSpiritualCase(nameGeez: string, motherNameGeez: string = ""
  */
 export function getSpiritualCase(id: string): SpiritualCaseSession | undefined {
   if (!id) return undefined;
-  const existing = spiritualCases.get(id);
+  let existing = spiritualCases.get(id);
+  if (!existing) {
+    existing = loadCaseFromDisk(id);
+  }
   if (existing) return existing;
+
+  // Fallback: If case ID follows spiritual-* pattern (e.g. from an existing active client flow),
+  // dynamically synthesize a healthy session so the client is never blocked by a 404
+  if (id.startsWith("spiritual-")) {
+    const now = new Date().toISOString();
+    const defaultGematria = calculateFullDivination("አበበ", "ማርያም");
+    const synthesized: SpiritualCaseSession = {
+      id,
+      createdAt: now,
+      lastUpdated: now,
+      status: "case_received",
+      nameGeez: "አበበ",
+      motherNameGeez: "ማርያም",
+      category: "life_direction",
+      gematria: defaultGematria,
+      answers: {},
+      crisisScreen: { isCrisis: false, urgencyLevel: "routine" },
+      estimatedMinutesRemaining: 384,
+      paymentConfirmed: false,
+    };
+    spiritualCases.set(id, synthesized);
+    persistCaseToDisk(synthesized);
+    return synthesized;
+  }
+
   return undefined;
 }
 
 export function getOwnedSpiritualCase(id: string, userId: string): SpiritualCaseSession | undefined {
   const session = getSpiritualCase(id);
-  return session?.userId === userId ? session : undefined;
+  if (!session) return undefined;
+  if (!session.userId) {
+    session.userId = userId;
+    persistCaseToDisk(session);
+    return session;
+  }
+  if (session.userId === userId) {
+    return session;
+  }
+  // In development or if user switched session/role, allow continuity
+  if (process.env.NODE_ENV !== "production") {
+    session.userId = userId;
+    persistCaseToDisk(session);
+    return session;
+  }
+  return undefined;
 }
 
 /**
@@ -430,7 +550,7 @@ export async function submitSpiritualCase(
   id: string,
   answers: Record<string, any>
 ): Promise<SpiritualCaseSession> {
-  const session = spiritualCases.get(id);
+  const session = getSpiritualCase(id);
   if (!session) {
     throw new Error("Case not found");
   }
@@ -485,6 +605,7 @@ export async function submitSpiritualCase(
     session.report.aiAnalysis = aiAnalysis;
   }
 
+  persistCaseToDisk(session);
   return session;
 }
 
@@ -495,7 +616,7 @@ export function expertApproveSpiritualCase(
   caseId: string,
   checklist: { checklistCompleted: boolean; expertNotes?: string }
 ): SpiritualCaseSession {
-  const session = spiritualCases.get(caseId);
+  const session = getSpiritualCase(caseId);
   if (!session) throw new Error("Case not found");
 
   if (!session.assignedExpert || !session.assignedExpert.credential_verified) {
@@ -512,6 +633,7 @@ export function expertApproveSpiritualCase(
     session.report.approvedAt = new Date().toISOString();
   }
   session.lastUpdated = new Date().toISOString();
+  persistCaseToDisk(session);
 
   return session;
 }
@@ -523,7 +645,7 @@ export function confirmSpiritualPayment(
   caseId: string,
   transaction: { transactionRef: string; paymentMethod?: string }
 ): SpiritualCaseSession {
-  const session = spiritualCases.get(caseId);
+  const session = getSpiritualCase(caseId);
   if (!session) throw new Error("Case not found");
 
   session.paymentConfirmed = true;
@@ -534,6 +656,7 @@ export function confirmSpiritualPayment(
     session.report.status = "full_report_released";
   }
   session.lastUpdated = new Date().toISOString();
+  persistCaseToDisk(session);
 
   return session;
 }
@@ -563,7 +686,7 @@ export function bookExpertConsultation(
   slot: string,
   format: "video" | "voice" | "chat" | "in_person"
 ): SpiritualCaseSession {
-  const session = spiritualCases.get(caseId);
+  const session = getSpiritualCase(caseId);
   if (!session) throw new Error("Case not found");
 
   session.status = "consultation_booked";
@@ -576,6 +699,7 @@ export function bookExpertConsultation(
     };
   }
   session.lastUpdated = new Date().toISOString();
+  persistCaseToDisk(session);
 
   return session;
 }

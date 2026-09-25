@@ -3,22 +3,35 @@
 import { useMemo, useState } from "react";
 import { Search, MapPinned, Leaf, ShieldAlert, ArrowLeft, MapPin, BookOpen, FlaskConical, Factory } from "lucide-react";
 import { ETHIOPIAN_MEDICINAL_PLANTS, MEDICINAL_PLANT_DISEASES, filterMedicinalPlants } from "@/lib/knowledge/ethiopianMedicinalPlants";
+import { ETHIOPIAN_MEDICINAL_PLANTS_CUSTOM } from "@/lib/knowledge/ethiopianMedicinalPlants.custom";
 
 export default function MedicinalPlantsPage() {
   const [query, setQuery] = useState("");
   const [selectedDisease, setSelectedDisease] = useState("all");
-  const [selectedPlantId, setSelectedPlantId] = useState(ETHIOPIAN_MEDICINAL_PLANTS[0]?.id ?? "");
+  const allPlants = useMemo(()=>[...ETHIOPIAN_MEDICINAL_PLANTS, ...ETHIOPIAN_MEDICINAL_PLANTS_CUSTOM],[]);
+  const [selectedPlantId, setSelectedPlantId] = useState(allPlants[0]?.id ?? "");
 
-  const diseaseOptions = useMemo(() => ["all", ...MEDICINAL_PLANT_DISEASES], []);
+  const diseaseOptions = useMemo(
+    () => [
+      "all",
+      ...Array.from(
+        new Set([
+          ...MEDICINAL_PLANT_DISEASES,
+          ...allPlants.flatMap((plant) => plant.diseasesTreated),
+        ]),
+      ).sort(),
+    ],
+    [allPlants],
+  );
 
   const plants = useMemo(
-    () => filterMedicinalPlants(query, selectedDisease),
-    [query, selectedDisease]
+    () => filterMedicinalPlants(query, selectedDisease, allPlants),
+    [query, selectedDisease, allPlants]
   );
 
   const selectedPlant = useMemo(
-    () => ETHIOPIAN_MEDICINAL_PLANTS.find((plant) => plant.id === selectedPlantId) ?? ETHIOPIAN_MEDICINAL_PLANTS[0],
-    [selectedPlantId]
+    () => allPlants.find((plant) => plant.id === selectedPlantId) ?? allPlants[0],
+    [selectedPlantId, allPlants]
   );
 
   return (
@@ -67,7 +80,7 @@ export default function MedicinalPlantsPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-[24px] border border-stone-800 bg-stone-900/70 p-5">
           <div className="text-[10px] uppercase tracking-[0.2em] text-stone-500">Extracted records</div>
-          <div className="mt-3 text-3xl font-black text-white">{ETHIOPIAN_MEDICINAL_PLANTS.length}</div>
+          <div className="mt-3 text-3xl font-black text-white">{allPlants.length}</div>
         </div>
         <div className="rounded-[24px] border border-stone-800 bg-stone-900/70 p-5">
           <div className="text-[10px] uppercase tracking-[0.2em] text-stone-500">Visible results</div>
@@ -192,6 +205,18 @@ export default function MedicinalPlantsPage() {
             <p className="mt-2 text-sm leading-relaxed text-stone-300">{selectedPlant.modeOfPreparation ?? selectedPlant.traditionalUse}</p>
           </div>
 
+          {selectedPlant.biochemicalComposition?.length ? (
+            <div className="mt-4 rounded-[22px] border border-stone-700 bg-stone-900/50 p-4">
+              <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-500">Reported composition</div>
+              <p className="text-sm leading-relaxed text-stone-300">{selectedPlant.biochemicalComposition.join(", ")}</p>
+              {selectedPlant.activeIngredients?.length ? (
+                <p className="mt-2 text-sm leading-relaxed text-stone-400">
+                  Active constituents reported: {selectedPlant.activeIngredients.join(", ")}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
           <div className="mt-4 rounded-[22px] border border-stone-700 bg-stone-900/50 p-4">
             <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-stone-500">
               <Leaf size={12} />
@@ -230,7 +255,7 @@ export default function MedicinalPlantsPage() {
 
           <div className="mt-4 border-t border-stone-800 pt-4 text-[10px] uppercase tracking-[0.12em] text-stone-500">
             <div className="mb-2 flex items-center gap-2"><ShieldAlert size={12} /> Safety note</div>
-            <p className="leading-relaxed text-stone-400">Documented source entry from chapter 66996. Review with ETM-DB safety gates before scientific use.</p>
+            <p className="leading-relaxed text-stone-400">{selectedPlant.safetyNotes ?? "Review with ETM-DB safety gates before scientific use."}</p>
           </div>
 
           <div className="mt-4 text-[10px] uppercase tracking-[0.12em] text-stone-600">

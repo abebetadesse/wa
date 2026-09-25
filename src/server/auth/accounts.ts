@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gt, isNull, or } from "drizzle-orm";
+import { and, count, desc, eq, gt, isNull, or, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { emailVerifications, passwordResets, roles, users, wellbeingGapReports, wellbeingProfiles } from "@/lib/db/schema";
 import {
@@ -335,12 +335,40 @@ export interface OwnAccountInput {
 
 export async function updateOwnAccount(user: AuthenticatedUser, input: OwnAccountInput) {
   const changes: Record<string, unknown> = Object.fromEntries(Object.entries(input).filter(([, value]) => value !== undefined));
-  if ("phone" in changes) changes.phone = normalizePhone(input.phone);
+  if ("phone" in changes) {
+    const normalized = normalizePhone(input.phone);
+    changes.phone = normalized;
+    if (normalized) {
+      const [existingPhoneUser] = await db
+        .select({ id: users.id, isVerified: users.isVerified })
+        .from(users)
+        .where(and(eq(users.phone, normalized), ne(users.id, user.id)))
+        .limit(1);
+
+      if (existingPhoneUser) {
+        if (!existingPhoneUser.isVerified || process.env.NODE_ENV !== "production") {
+          await db
+            .update(users)
+            .set({ phone: null, updatedAt: new Date() })
+            .where(eq(users.id, existingPhoneUser.id));
+        } else {
+          throw ApiError.conflict("An account with this phone number already exists.");
+        }
+      }
+    }
+  }
   if ("dateOfBirth" in changes) {
     assertMinimumAge(input.dateOfBirth);
     changes.dateOfBirth = input.dateOfBirth || null;
   }
-  await db.update(users).set({ ...changes, updatedAt: new Date() }).where(eq(users.id, user.id));
+  try {
+    await db.update(users).set({ ...changes, updatedAt: new Date() }).where(eq(users.id, user.id));
+  } catch (err: any) {
+    if (err.code === "23505" || err.message?.includes("users_phone_unique")) {
+      throw ApiError.conflict("An account with this phone number already exists.");
+    }
+    throw err;
+  }
   await logUserActivity({ userId: user.id, activityType: "profile", description: "Updated personal account details" });
 
   const [updated] = await db

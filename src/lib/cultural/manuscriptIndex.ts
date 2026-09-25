@@ -10,10 +10,53 @@ export interface ManuscriptIndexEntry {
   kind: "contents" | "historical_context" | "calendar" | "healing_topic" | "ritual_topic";
   summary: string;
   safeUse: string;
+  evidenceLevel?: "source_structure" | "source_summary" | "externally_verified";
+  mediaEvaluation?: "not_applicable_no_embedded_image" | "image_requires_review" | "image_reviewed";
   reviewStatus: "needs_cultural_review";
 }
 
 export const ETHIOPIAN_MANUSCRIPT_INDEX: ManuscriptIndexEntry[] = [
+  {
+    id: "fews-docx-contents",
+    sourceId: "metsehafe-fews-docx",
+    pageStart: 1,
+    pageEnd: 3,
+    title: "Book structure and research scope",
+    titleAmharic: "የመጽሐፉ አወቃቀር እና የጥናት ወሰን",
+    kind: "contents",
+    summary: "The supplied DOCX contains a 38-part contents structure spanning letter-based knowledge, prayer and religious context, condition labels, plant references, and a Ge'ez–Amharic plant-name index.",
+    safeUse: "Use as a navigation and source-review aid only. The app does not publish the document's full text.",
+    evidenceLevel: "source_structure",
+    mediaEvaluation: "not_applicable_no_embedded_image",
+    reviewStatus: "needs_cultural_review",
+  },
+  {
+    id: "fews-docx-plant-index",
+    sourceId: "metsehafe-fews-docx",
+    pageStart: 185,
+    title: "Ge'ez and Amharic plant-name index",
+    titleAmharic: "በግእዝና በአማርኛ የእፀዋት ስም ዝርዝር",
+    kind: "healing_topic",
+    summary: "The contents identify a late plant-name and action index. Individual plant identities, translation, toxicity, preparation, and claims remain unverified and are not surfaced as recommendations.",
+    safeUse: "Candidate-name discovery for qualified botanical and cultural review only; never use this index to self-prescribe.",
+    evidenceLevel: "source_summary",
+    mediaEvaluation: "not_applicable_no_embedded_image",
+    reviewStatus: "needs_cultural_review",
+  },
+  {
+    id: "fews-docx-faith-context",
+    sourceId: "metsehafe-fews-docx",
+    pageStart: 114,
+    pageEnd: 120,
+    title: "Prayer, divine names, and angelic references",
+    titleAmharic: "ጸሎት፣ ቅዱሳን ስሞች እና የመላእክት ማጣቀሻዎች",
+    kind: "historical_context",
+    summary: "The contents identify sections devoted to praise, prayer, angelic names, and religious interpretation alongside the plant-knowledge material.",
+    safeUse: "Present as faith-sensitive historical context, not as compulsory belief, clinical care, or operational ritual instruction.",
+    evidenceLevel: "source_summary",
+    mediaEvaluation: "not_applicable_no_embedded_image",
+    reviewStatus: "needs_cultural_review",
+  },
   {
     id: "fewus-contents-healing-topics",
     sourceId: "metsehafe-fewus",

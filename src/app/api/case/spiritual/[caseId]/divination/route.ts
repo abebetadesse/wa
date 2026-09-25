@@ -21,6 +21,15 @@ export async function GET(
         gematria: session.gematria,
         category: session.category,
         status: session.status,
+        birthContext: {
+          birthDate: session.birthDate ?? null,
+          birthYear: session.birthYear ?? null,
+          birthMonth: session.birthMonth ?? null,
+          birthDay: session.birthDay ?? null,
+          birthLocationName: session.birthLocationName ?? null,
+          birthLatitude: session.birthLatitude ?? null,
+          birthLongitude: session.birthLongitude ?? null,
+        },
       },
     });
   } catch (error: any) {

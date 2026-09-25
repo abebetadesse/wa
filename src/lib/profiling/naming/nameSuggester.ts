@@ -1,5 +1,6 @@
 import { HumoralElement, NameSuggestionResult } from "../types";
 import { ETHIOPIAN_NAMES_DATABASE } from "./nameDatabase";
+import { CHRISTIAN_NAME_CATALOG } from "@/lib/christian/christianNameCatalog";
 
 export interface SuggestionCriteria {
   targetElement?: HumoralElement;
@@ -197,6 +198,41 @@ export function suggestAlternativeNames(criteria: SuggestionCriteria): NameSugge
         alignmentReason: `Cultural meaning aligns with ${candidate.sourceTradition} naming tradition and the selected reflection criteria.`,
         wellbeingHarmonizationBenefit: "Reflective identity alignment only; this name does not predict wellbeing or personality.",
         recommendation: buildProfileRecommendation(criteria, candidate.element, candidate.name),
+      });
+    }
+  }
+
+  // Add the user-provided biblical catalog as transparent cultural suggestions.
+  // The catalog has no gender metadata, so these records remain unisex.
+  if (!criteria.languagePreference) {
+    for (const record of CHRISTIAN_NAME_CATALOG) {
+      if (results.length >= maxSuggestions) break;
+      const key = record.name.toLowerCase().replace(/\s+/g, "-");
+      if (seen.has(key)) continue;
+
+      const characterTotal = [...record.name.toLowerCase()].reduce(
+        (sum, character) => sum + character.charCodeAt(0),
+        0,
+      );
+      const destinyNumber = reduceNumber(characterTotal);
+      const element: HumoralElement = ["may", "afere", "esat", "nifas"][destinyNumber % 4] as HumoralElement;
+      const destinyMatch = targetDestinyNumber === destinyNumber ? 30 : 0;
+      const meaningAlignment = criteria.targetElement === element ? 25 : criteria.targetElement ? 5 : 15;
+
+      seen.add(key);
+      results.push({
+        suggestedName: record.name,
+        geezFidel: "",
+        language: "Biblical",
+        meaning: record.meaning,
+        sourceTradition: "Biblical",
+        score: destinyMatch + 8 + meaningAlignment,
+        scoreBreakdown: { destinyMatch, genderMatch: 8, languageMatch: 8, meaningAlignment },
+        primaryElement: element,
+        destinyNumber,
+        alignmentReason: "Meaning sourced from the user-provided biblical name reference and matched only to the selected reflection criteria.",
+        wellbeingHarmonizationBenefit: "Reflective identity alignment only; this name does not predict wellbeing or personality.",
+        recommendation: buildProfileRecommendation(criteria, element, record.name),
       });
     }
   }

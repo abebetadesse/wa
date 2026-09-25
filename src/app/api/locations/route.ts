@@ -13,7 +13,11 @@ export async function GET(request: NextRequest) {
         ? dataset.filter((location) => location.id === id || location.name.toLowerCase() === id.toLowerCase())
         : dataset;
 
-    const selected = id ? getEthiopianLocationById(id) : undefined;
+    const selected = id
+      ? getEthiopianLocationById(id) || dataset.find((location) =>
+        [location.name, ...location.aliases].some((value) => value.toLowerCase() === id.toLowerCase()),
+      )
+      : undefined;
 
     return NextResponse.json({
       success: true,

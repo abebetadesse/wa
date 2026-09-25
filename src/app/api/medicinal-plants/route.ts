@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ETHIOPIAN_MEDICINAL_PLANTS, filterMedicinalPlants, type MedicinalPlant, type PubMedEvidence } from "@/lib/knowledge/ethiopianMedicinalPlants";
+import { ETHIOPIAN_MEDICINAL_PLANTS_CUSTOM } from "@/lib/knowledge/ethiopianMedicinalPlants.custom";
 import { PubMedSource } from "@/lib/literature/sources/pubmedSource";
 
 function deriveModeOfActionFromEvidence(text: string): string {
@@ -59,7 +60,8 @@ export async function GET(request: NextRequest) {
   const disease = searchParams.get("disease") ?? "all";
   const enrich = searchParams.get("enrich") === "1" || searchParams.get("enrich") === "true";
 
-  const data = filterMedicinalPlants(query, disease);
+  const allPlants = [...ETHIOPIAN_MEDICINAL_PLANTS, ...ETHIOPIAN_MEDICINAL_PLANTS_CUSTOM];
+  const data = filterMedicinalPlants(query, disease, allPlants);
   const enriched = enrich
     ? await Promise.all(data.slice(0, 80).map((plant) => enrichPlantWithPubMed(plant)))
     : data.slice(0, 80);
@@ -67,7 +69,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     success: true,
     count: enriched.length,
-    total: ETHIOPIAN_MEDICINAL_PLANTS.length,
+    total: allPlants.length,
     data: enriched,
     source: "EPHI Etnobotanical Study by Wereda + optional PubMed enrichment",
   });

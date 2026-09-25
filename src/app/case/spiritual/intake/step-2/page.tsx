@@ -20,6 +20,7 @@ function SpiritualStep2Content() {
   const [activeFreeText, setActiveFreeText] = useState("");
   const [activeQuestionId, setActiveQuestionId] = useState("");
   const [gematriaData, setGematriaData] = useState<any>(null);
+  const [birthContext, setBirthContext] = useState<{ birthDate?: string; birthLocationName?: string; birthLatitude?: number; birthLongitude?: number } | null>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -38,6 +39,7 @@ function SpiritualStep2Content() {
       .then((payload) => {
         if (payload.success && payload.data) {
           setGematriaData(payload.data.gematria);
+          setBirthContext(payload.data.birthContext || null);
           if (payload.data.category) {
             setCategory(payload.data.category);
             setAnswers((prev) => ({ ...prev, question_category: payload.data.category }));
@@ -185,6 +187,14 @@ function SpiritualStep2Content() {
               <div className="mt-6">
                 <CrisisAlertBanner crisis={crisisState} />
               </div>
+              {birthContext && (birthContext.birthDate || birthContext.birthLocationName) && (
+                <div className="mt-4 rounded-2xl border border-sky-500/20 bg-sky-950/10 px-4 py-3 text-xs text-sky-200">
+                  Birth context: {birthContext.birthDate || "date not supplied"} · {birthContext.birthLocationName || "location not supplied"}
+                  {typeof birthContext.birthLatitude === "number" && typeof birthContext.birthLongitude === "number" && (
+                    <span className="ml-2 font-mono text-emerald-300">({birthContext.birthLatitude.toFixed(4)}, {birthContext.birthLongitude.toFixed(4)})</span>
+                  )}
+                </div>
+              )}
 
               {error && (
                 <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">

@@ -1,0 +1,375 @@
+{
+  "id": "spiritual-1790333270848-09g4h",
+  "createdAt": "2026-09-25T10:56:33.889Z",
+  "lastUpdated": "2026-09-25T10:56:34.775Z",
+  "status": "pending_expert_review",
+  "nameGeez": "አበበ",
+  "motherNameGeez": "ማርያም",
+  "category": "life_direction",
+  "gematria": {
+    "nameGeez": "አበበ",
+    "motherNameGeez": "ማርያም",
+    "isValid": true,
+    "letters": [
+      {
+        "letter": "አ",
+        "transliteration": "A",
+        "value": 40
+      },
+      {
+        "letter": "በ",
+        "transliteration": "Be",
+        "value": 9
+      },
+      {
+        "letter": "በ",
+        "transliteration": "Be",
+        "value": 9
+      }
+    ],
+    "motherLetters": [
+      {
+        "letter": "ማ",
+        "transliteration": "Ma",
+        "value": 40
+      },
+      {
+        "letter": "ር",
+        "transliteration": "Rer",
+        "value": 6
+      },
+      {
+        "letter": "ያ",
+        "transliteration": "Yaa",
+        "value": 90
+      },
+      {
+        "letter": "ም",
+        "transliteration": "Mem",
+        "value": 4
+      }
+    ],
+    "nameSubtotal": 58,
+    "motherSubtotal": 140,
+    "totalSum": 198,
+    "dividedBy12": 16,
+    "finalNumber": 6,
+    "zodiac": {
+      "number": 7,
+      "name": "Mizan",
+      "nameAmharic": "ሚዛን",
+      "symbol": "♎",
+      "element": "Air",
+      "rulingPlanet": "Venus",
+      "traits": [
+        "Equilibrium",
+        "Fairness",
+        "Peace-weaver",
+        "Artful"
+      ]
+    },
+    "awdeCircle": {
+      "number": 6,
+      "name": "Raguel",
+      "nameAmharic": "ራጉኤል",
+      "lakeName": "Lake of Justice",
+      "element": "Air",
+      "symbolism": "Righteous equilibrium and integrity"
+    },
+    "awdeSegment": {
+      "number": 1,
+      "topic": "New Beginnings",
+      "prediction": "A cycle is completing, making space for an invigorating new phase of renewal and purpose.",
+      "recommendation": "Release old patterns that no longer serve you with clarity and gentle boundaries.",
+      "spiritualPractice": "Morning prayer accompanied by a tranquil mountain spring or fresh water ritual.",
+      "botanical": "Tena Adam (Ruta chalepensis) steeped in warm morning water"
+    },
+    "talismanic": {
+      "number": 6,
+      "name": "The Nurturing Mother",
+      "nameAmharic": "እመቤት",
+      "rulingPlanet": "Venus",
+      "element": "Earth",
+      "colors": [
+        "Rose",
+        "Forest Green"
+      ],
+      "gemstones": [
+        "Emerald",
+        "Rose Quartz"
+      ],
+      "herbs": [
+        "Besobila",
+        "Cardamom"
+      ],
+      "dayOfWeek": "Friday"
+    },
+    "telsem": {
+      "id": "telsem-kinfe-kirub",
+      "nameGe": "ጠልሰመ ክንፈ ኪሩቤል ወሱራፌል",
+      "nameAm": "ክንፈ ኪሩቤል (የኪሩቤል ክንፍ ጠልሰም)",
+      "nameEn": "The Winged Cherub of Divine Presence",
+      "category": "archangels",
+      "categoryLabelAm": "ድርሳነ ሊቃነ መላእክት",
+      "categoryLabelEn": "Celestial Shield",
+      "sourceManuscript": "Lake Tana Monastery Illuminated Manuscripts",
+      "sacredGeometryDescription": "A multi-winged celestial seraph whose wings are embellished with all-seeing eyes, holding aloft the double-pointed sword of peace.",
+      "spiritualMeaning": "Invokes sanctuary and safe haven. Shields the dwelling from fire, lightning, theft, and domestic quarrels.",
+      "traditionalFormulaGe": "ኪሩቤል ወሱራፌል እለ ክነፊሆሙ ይመልኡ አዕይንተ፤ ቅዱስ ቅዱስ ቅዱስ እግዚአብሔር ፀባኦት ምሉዕ ሰማያተ ወምድረ ቅድሳተ ስብሐቲከ።",
+      "traditionalFormulaEn": "Cherubim and Seraphim whose wings are filled with eyes: Holy, Holy, Holy is the Lord of Hosts, heaven and earth are full of Your glory.",
+      "ritualMaterials": [
+        "White gabi or clean cloth",
+        "Frankincense",
+        "Olive oil lamp"
+      ],
+      "associatedArchetypeNumber": 6,
+      "associatedArchetypeName": "The Nurturing Mother",
+      "awdeCircleMatch": 8,
+      "vectorGeometryType": "winged_cherub",
+      "culturalDisclaimer": "Liturgical prayer and iconography."
+    },
+    "guardianTelsem": {
+      "id": "telsem-merbebe-selomon",
+      "nameGe": "ጠልሰመ መርበበ ሰሎሞን",
+      "nameAm": "መርበበ ሰሎሞን (የሰሎሞን መረብ)",
+      "nameEn": "The Net of Solomon Protective Mesh",
+      "category": "protection",
+      "categoryLabelAm": "ጥበቃ ወመከታ",
+      "categoryLabelEn": "Etheric Armor",
+      "sourceManuscript": "Ethiopian Healing Scrolls (Gondar Manuscript School)",
+      "sacredGeometryDescription": "An intricate woven diamond grid with interlaced cross-junctions acting as a spiritual net that traps intrusive spirits before they reach the soul.",
+      "spiritualMeaning": "Worn over the breastplate or heart to filter negative emotional projections from crowds and ward off nocturnal oppression.",
+      "traditionalFormulaGe": "መርበበ ሰሎሞን ዘይሠርሮሙ ለኩሎሙ አጋንንት ፀዋጋን፤ ከመ መርበብ ዘይሰድድ ዓሣ ከማሁ ይስደድ እኩያተ መንፈስ እምላዕለ ገብርከ።",
+      "traditionalFormulaEn": "The Net of Solomon that catches turbulent spirits: like a net drawn through deep waters, it casts out all shadowy distress.",
+      "ritualMaterials": [
+        "Fine parchment vellum",
+        "Red vermilion ink",
+        "Black iron ink"
+      ],
+      "associatedArchetypeNumber": 3,
+      "associatedArchetypeName": "The Warrior Defender",
+      "awdeCircleMatch": 6,
+      "vectorGeometryType": "solomon_net_lattice",
+      "culturalDisclaimer": "Traditional talismanic protection art."
+    },
+    "scriptDetected": true
+  },
+  "answers": {
+    "question_category": "life_direction",
+    "primary_concern": "Seeking spiritual guidance and clarity on career pathway"
+  },
+  "crisisScreen": {
+    "isCrisis": false,
+    "urgencyLevel": "routine",
+    "paywall": {
+      "priceEtb": 500,
+      "methods": [
+        "telebirr",
+        "cbe_birr",
+        "chapa",
+        "stripe"
+      ]
+    }
+  },
+  "estimatedMinutesRemaining": 384,
+  "paymentConfirmed": false,
+  "userId": "0452c6fd-03b7-48a6-9047-b388ee3a4d93",
+  "assignedExpert": {
+    "id": "expert-selamawit-tadesse",
+    "name": "Selamawit Tadesse",
+    "credential": "Verified Debtera",
+    "titleAmharic": "ደብተራ ሰላማዊት ታደሰ",
+    "specialization": "Awde Negest Parchment & Career Transitions",
+    "specialization_tags": [
+      "career",
+      "life_direction",
+      "spiritual_growth",
+      "relationships"
+    ],
+    "case_types": [
+      "spiritual",
+      "life_direction"
+    ],
+    "languages": [
+      "am",
+      "en"
+    ],
+    "region": "addis_ababa",
+    "rating": 4.9,
+    "reviews_count": 247,
+    "years_experience": 18,
+    "average_review_time_minutes": 372,
+    "current_review_load": 3,
+    "max_concurrent_reviews": 6,
+    "credential_verified": true,
+    "is_available": true,
+    "ethical_violations": 0,
+    "bioQuote": "I have been practicing as a debtera for 18 years, specializing in career transitions and life direction readings grounded in the Awde Negest tradition.",
+    "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80"
+  },
+  "report": {
+    "id": "report-spiritual-1790333270848-09g4h",
+    "caseId": "spiritual-1790333270848-09g4h",
+    "status": "pending_expert_review",
+    "generatedAt": "2026-09-25T10:56:34.776Z",
+    "approvedAt": "2026-09-25T10:56:34.776Z",
+    "divinationSummary": {
+      "nameGeez": "አበበ",
+      "motherNameGeez": "ማርያም",
+      "totalSum": 198,
+      "dividedBy12": 16,
+      "finalNumber": 6,
+      "zodiacSign": {
+        "number": 7,
+        "name": "Mizan",
+        "nameAmharic": "ሚዛን",
+        "symbol": "♎",
+        "element": "Air",
+        "rulingPlanet": "Venus",
+        "traits": [
+          "Equilibrium",
+          "Fairness",
+          "Peace-weaver",
+          "Artful"
+        ]
+      },
+      "awdeCircle": {
+        "number": 6,
+        "name": "Raguel",
+        "nameAmharic": "ራጉኤል",
+        "lakeName": "Lake of Justice",
+        "element": "Air",
+        "symbolism": "Righteous equilibrium and integrity"
+      },
+      "awdeSegment": {
+        "number": 1,
+        "topic": "New Beginnings",
+        "prediction": "A cycle is completing, making space for an invigorating new phase of renewal and purpose.",
+        "recommendation": "Release old patterns that no longer serve you with clarity and gentle boundaries.",
+        "spiritualPractice": "Morning prayer accompanied by a tranquil mountain spring or fresh water ritual.",
+        "botanical": "Tena Adam (Ruta chalepensis) steeped in warm morning water"
+      },
+      "talismanicCharacter": {
+        "number": 6,
+        "name": "The Nurturing Mother",
+        "nameAmharic": "እመቤት",
+        "rulingPlanet": "Venus",
+        "element": "Earth",
+        "colors": [
+          "Rose",
+          "Forest Green"
+        ],
+        "gemstones": [
+          "Emerald",
+          "Rose Quartz"
+        ],
+        "herbs": [
+          "Besobila",
+          "Cardamom"
+        ],
+        "dayOfWeek": "Friday"
+      },
+      "narrative": "Your name አበበ carries the numerical vibration of 6, resonating with the ancient constellation of Mizan (ሚዛን). The Awde Negest reveals your life currents currently dwell in Circle 6 (ራጉኤል — Raguel), Lake of Renewal, Segment 1. This indicates a decisive turning point: an outworn cycle is concluding, opening fertile ground for authentic reinvention."
+    },
+    "culturalInterpretation": {
+      "narrative": "In classical parchment traditions of Gondar and Lake Tana, when the Fidel sum resolves to the The Nurturing Mother archetype under the ruling sphere of Venus, the seeker is summoned to step out of repetitive stagnation. Debtera tradition emphasizes that external blockers are reflective mirrors urging you to clarify personal boundaries and spiritual alignment.",
+      "references": [
+        "Awde Negest Parchment Manuscript (EMML 1482, fol. 34a-38b)",
+        "Abushakir Computus of Chronology and Spheres (Book IV, Ch. 7)",
+        "Traditions of the Highland Debteras on Name Gematria & Plant Blessings"
+      ],
+      "expertSignature": "Selamawit Tadesse, Verified Debtera (ደብተራ ሰላማዊት ታደሰ)"
+    },
+    "practicalGuidance": {
+      "steps": [
+        {
+          "order": 1,
+          "title": "Morning Water Grounding Ritual",
+          "description": "Drink a cup of warm water infused with a sprig of fresh Tena Adam at sunrise, setting your intention before speaking to anyone."
+        },
+        {
+          "order": 2,
+          "title": "Release the Dormant Commitment",
+          "description": "Identify the one obligation or conversation you have delayed out of guilt, and speak your truth with gracious clarity this week."
+        },
+        {
+          "order": 3,
+          "title": "Harmonize with Your Air Element",
+          "description": "Engage in communicative expression—writing your reflections or sharing counsel with a trusted confidant every Thursday."
+        }
+      ],
+      "expertNotes": "I reviewed your reflections regarding life_direction. Trust the timing of this transformation; do not force doors that are peacefully closing."
+    },
+    "recommendedRitual": {
+      "title": "Thursday Renewal & Incense Blessing",
+      "description": "Light pure Frankincense (ዕጣን) or Myrrh on Thursday evening. Read the psalm or prayer of the day, reflecting on the Lake of Renewal.",
+      "timing": "Thursday evening between 6:00 PM and 8:00 PM",
+      "materials": [
+        "Highland Frankincense (ንፁሕ ዕጣን)",
+        "Sprig of fresh Tena Adam or Koseret",
+        "Pure spring water or blessed holy water (ጸበል)",
+        "A white clean cloth or Gabi"
+      ],
+      "expertNotes": "Ensure quietude and peace of mind during the blessing; this is for personal reflection and serenity."
+    },
+    "healingScroll": {
+      "pdfUrl": "/api/case/spiritual/scroll-document.pdf?name=%E1%8A%A0%E1%89%A0%E1%89%A0",
+      "previewUrl": "/api/case/spiritual/scroll-preview.png?name=%E1%8A%A0%E1%89%A0%E1%89%A0",
+      "title": "የአበበ የፈውስና የዕድል ክታብ (Healing & Guidance Scroll for አበበ)",
+      "prayers": [
+        "በስመ አብ ወወልድ ወመንፈስ ቅዱስ አሐዱ አምላክ፤ ጸሎት በእንተ ማዕሰረ አጋንንት ወፈውስ ለአበበ።",
+        "ኦ አምላከ ጻድቃን ወሰማዕታት፣ በበረከተ ራጉኤል አውደ ነገሥት፣ የአበበን ጎዳና በብርሃንህ ምራ።",
+        "ፈውስ ወሰላም ለሥጋ ወለመንፈስ፤ ከአእምሮ ጭንቀትና ከመንገድ እክል ሰላም አውርድ።"
+      ],
+      "wordsOfPower": [
+        "አልፋ (Alfa)",
+        "ቤጣ (Beta)",
+        "ዮድ (Yod)",
+        "ሳዶር (Sador)",
+        "አላዶር (Alador)",
+        "ዳናት (Danat)",
+        "አዴራ (Adera)",
+        "ሮዳስ (Rodas)"
+      ],
+      "imagery": [
+        "Sacred Eight-Pointed Ethiopian Ge'ez Cross",
+        "Parchment Eye of Protection (ዓይነ ጥላ መከላከያ)",
+        "Water of Renewal Mandala (የተሃድሶ ምንጭ ንድፍ)",
+        "Eagle of Nisr High Altitude Shield"
+      ],
+      "patronAngel": "ቅዱስ ሚካኤል",
+      "generatedAt": "2026-09-25T10:56:34.776Z"
+    },
+    "expert": {
+      "id": "expert-selamawit-tadesse",
+      "name": "Selamawit Tadesse",
+      "credential": "Verified Debtera",
+      "rating": 4.9,
+      "bioQuote": "I have been practicing as a debtera for 18 years, specializing in career transitions and life direction readings grounded in the Awde Negest tradition.",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80"
+    },
+    "aiAnalysis": {
+      "situationSummary": "Spiritual case insights were prepared with a divination, expert assignment, and report narrative structure.",
+      "strengths": [
+        "Healing scroll and symbolic guidance are prepared",
+        "Expert pathway has been selected",
+        "Cultural and spiritual context is preserved"
+      ],
+      "challenges": [
+        "Expert review must approve the final release"
+      ],
+      "strategicRecommendations": [
+        {
+          "title": "Clarify the current decision focus",
+          "description": "Define the next practical action in one concrete sentence before designing the work plan.",
+          "priority": "immediate",
+          "timingNote": "Today"
+        }
+      ],
+      "networkingSuggestions": [
+        "Consult a trusted community mentor or advisor for the next decision step."
+      ],
+      "sectorInsights": "The workflow prioritizes safety, cultural alignment, and practical next-action clarity."
+    }
+  }
+}

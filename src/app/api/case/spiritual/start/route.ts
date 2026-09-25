@@ -8,8 +8,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const nameGeez = typeof body.nameGeez === "string" ? body.nameGeez : "";
     const motherNameGeez = typeof body.motherNameGeez === "string" ? body.motherNameGeez : "";
+    const birthDate = typeof body.birthDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(body.birthDate) ? body.birthDate : undefined;
+    const birthLocationName = typeof body.birthLocationName === "string" ? body.birthLocationName.trim().slice(0, 120) : undefined;
+    const birthLatitude = typeof body.birthLatitude === "number" && Number.isFinite(body.birthLatitude) && body.birthLatitude >= -90 && body.birthLatitude <= 90 ? body.birthLatitude : undefined;
+    const birthLongitude = typeof body.birthLongitude === "number" && Number.isFinite(body.birthLongitude) && body.birthLongitude >= -180 && body.birthLongitude <= 180 ? body.birthLongitude : undefined;
 
-    const session = startSpiritualCase(nameGeez, motherNameGeez, user.id);
+    const session = startSpiritualCase(nameGeez, motherNameGeez, user.id, {
+      birthDate,
+      birthLocationName,
+      birthLatitude,
+      birthLongitude,
+    });
 
     return NextResponse.json({
       success: true,
