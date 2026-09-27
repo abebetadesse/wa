@@ -1,0 +1,179 @@
+{
+  "id": "spiritual-1790496913748-wvhug",
+  "createdAt": "2026-09-27T08:15:13.748Z",
+  "lastUpdated": "2026-09-27T08:15:13.748Z",
+  "status": "case_received",
+  "nameGeez": "ሰላማዊት",
+  "motherNameGeez": "ፀሐይ",
+  "category": "life_direction",
+  "gematria": {
+    "nameGeez": "ሰላማዊት",
+    "motherNameGeez": "ፀሐይ",
+    "isValid": true,
+    "letters": [
+      {
+        "letter": "ሰ",
+        "transliteration": "Se",
+        "value": 7
+      },
+      {
+        "letter": "ላ",
+        "transliteration": "La",
+        "value": 30
+      },
+      {
+        "letter": "ማ",
+        "transliteration": "Ma",
+        "value": 40
+      },
+      {
+        "letter": "ዊ",
+        "transliteration": "Wi",
+        "value": 60
+      },
+      {
+        "letter": "ት",
+        "transliteration": "Te",
+        "value": 10
+      }
+    ],
+    "motherLetters": [
+      {
+        "letter": "ፀ",
+        "transliteration": "Tse",
+        "value": 600
+      },
+      {
+        "letter": "ሐ",
+        "transliteration": "Hhe",
+        "value": 3
+      },
+      {
+        "letter": "ይ",
+        "transliteration": "Ye",
+        "value": 90
+      }
+    ],
+    "nameSubtotal": 147,
+    "motherSubtotal": 693,
+    "totalSum": 840,
+    "dividedBy12": 70,
+    "finalNumber": 10,
+    "zodiac": {
+      "number": 6,
+      "name": "Nisr",
+      "nameAmharic": "ንስር",
+      "symbol": "🦅",
+      "element": "Air",
+      "rulingPlanet": "Jupiter",
+      "traits": [
+        "Visionary",
+        "Noble",
+        "Spiritual",
+        "Soaring"
+      ]
+    },
+    "awdeCircle": {
+      "number": 8,
+      "name": "Transformation",
+      "nameAmharic": "ቅድስት",
+      "lakeName": "Lake of Renewal",
+      "element": "Water",
+      "symbolism": "Transformation, death, rebirth, and healing"
+    },
+    "awdeSegment": {
+      "number": 1,
+      "topic": "New Beginnings",
+      "prediction": "A cycle is completing, making space for an invigorating new phase of renewal and purpose.",
+      "recommendation": "Release old patterns that no longer serve you with clarity and gentle boundaries.",
+      "spiritualPractice": "Morning prayer accompanied by a tranquil mountain spring or fresh water ritual.",
+      "botanical": "Tena Adam (Ruta chalepensis) steeped in warm morning water"
+    },
+    "talismanic": {
+      "number": 10,
+      "name": "The Visionary",
+      "nameAmharic": "ራዕይ",
+      "rulingPlanet": "Jupiter",
+      "element": "Air",
+      "colors": [
+        "Purple",
+        "Gold",
+        "Indigo"
+      ],
+      "gemstones": [
+        "Amethyst",
+        "Lapis Lazuli"
+      ],
+      "herbs": [
+        "Sage",
+        "Frankincense",
+        "Star Anise"
+      ],
+      "dayOfWeek": "Thursday"
+    },
+    "telsem": {
+      "id": "telsem-aqabe-rees",
+      "nameGe": "ጠልሰመ አቃቤ ርዕስ ወዘውደ ጥበቃ",
+      "nameAm": "የአቃቤ ርዕስ ጠልሰም",
+      "nameEn": "Guardian of the Crown & Cognitive Sanctuary",
+      "category": "healing",
+      "categoryLabelAm": "ፈውስ ወመፍትሔ",
+      "categoryLabelEn": "Mental Clarity & Peace",
+      "sourceManuscript": "መጽሐፈ አስማት (Mets'hafe Asmat)",
+      "sourcePage": 17,
+      "sourceImage": "/telsem/telsem_p17_1.png",
+      "manuscriptPageImage": "/telsem/pages/asmat_page_17.png",
+      "sacredGeometryDescription": "Horizontal panoramic band of nine protective guardian eyes and protective nodes designed to crown the forehead and shield cognitive faculties from nightmares.",
+      "spiritualMeaning": "Dedicated to individuals burdened with migraine-like psychic fatigue, intrusive rumination, and troubled dreams. Guards the gate of the mind.",
+      "traditionalFormulaGe": "በስመ አብ ወወልድ ወመንፈስ ቅዱስ ፩ አምላክ ጸሎት በእንተ አቃቤ ርዕስ ቂጁን መቂጁን መጁን መጅመጁን... አጥናዮስ ጰፐርኤል... አድህነኒ ወተአቅበኒ እምኩል እርኩሳን አጋንንት ወእኩያነ ሰብእ።",
+      "traditionalFormulaEn": "Prayer for the Guardian of the Crown: by these secret holy names, preserve my mind and shield me from every distressing thought and malevolence.",
+      "ritualMaterials": [
+        "Lishalish seeds (የሊሻሊሽ ፍሬ)",
+        "Sewn leather amulet pouch (ቆዳ ክታብ)",
+        "Morning water blessing"
+      ],
+      "associatedArchetypeNumber": 10,
+      "associatedArchetypeName": "The Visionary",
+      "awdeCircleMatch": 10,
+      "vectorGeometryType": "panoramic_crown_eyes",
+      "culturalDisclaimer": "Neurological, psychiatric, or physical symptoms must be evaluated by licensed medical doctors."
+    },
+    "guardianTelsem": {
+      "id": "telsem-buda-ayne-tila",
+      "nameGe": "ጠልሰመ መስጥመ ቡዳ ወአይነ ጥላ (ሳዶር አላዶር)",
+      "nameAm": "የቡዳና የአይነ ጥላ መፍትሔ ጠልሰም",
+      "nameEn": "The Sador Alador Evil Eye & Buda Neutralizer",
+      "category": "healing",
+      "categoryLabelAm": "ፈውስ ወመፍትሔ",
+      "categoryLabelEn": "Spiritual Healing",
+      "sourceManuscript": "መጽሐፈ አስማት (Mets'hafe Asmat)",
+      "sourcePage": 16,
+      "sourceImage": "/telsem/telsem_p16_1.png",
+      "manuscriptPageImage": "/telsem/pages/asmat_page_16.png",
+      "sacredGeometryDescription": "The sacred cruciform pentagram invoking the 5 wounds of Christ (ሳዶር፣ አላዶር፣ ዳናት፣ አዴራ፣ ሮዳስ) framed by concentric radiating eyes to break the evil eye (ዓይነ ሰብእ).",
+      "spiritualMeaning": "The classical remedy for 'shadow eye' (ዓይነ ጥላ) — feelings of sudden exhaustion, panic when looking into crowds, or persistent dread.",
+      "traditionalFormulaGe": "በስመ አብ ወወልድ ወመንፈስ ቅዱስ ፩ አምላክ ጸሎት በእንተ መስጥመ ቡዳ... ሳዶር አላዶር ዳናት አዴራ ሮዳስ አማኑኤል ብርስባሔል... አድህነኒ እምማዕሠረ ሰይጣን።",
+      "traditionalFormulaEn": "In the name of the Trinity, prayer against the ocular affliction... Sador, Alador, Danat, Adera, Rodas, Emmanuel: deliver me from the snares of discord.",
+      "ritualMaterials": [
+        "White garlic (ነጭ ሽንኩርት)",
+        "Tena Adam (ጤና አዳም)",
+        "Hareg Resa (ያረግሬሳ)",
+        "Lemon (ሎሚ)",
+        "Embuay leaf"
+      ],
+      "associatedArchetypeNumber": 8,
+      "associatedArchetypeName": "The Renovator",
+      "awdeCircleMatch": 8,
+      "vectorGeometryType": "sador_cross_eye_shield",
+      "culturalDisclaimer": "Do not inhale dangerous fumes or substitute botanical rituals for licensed medical diagnosis."
+    },
+    "scriptDetected": true
+  },
+  "answers": {},
+  "crisisScreen": {
+    "isCrisis": false,
+    "urgencyLevel": "routine"
+  },
+  "estimatedMinutesRemaining": 384,
+  "paymentConfirmed": false
+}
