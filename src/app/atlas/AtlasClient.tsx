@@ -2,9 +2,12 @@
 
 import { useState, useCallback } from "react";
 import type { RegionData } from "@/app/api/atlas/route";
+import type { EthiopianAdministrativeRegion } from "@/lib/location/ethiopianAdministrativePlaces";
+import AdministrativeExplorer from "./AdministrativeExplorer";
 
 interface AtlasClientProps {
   regions: RegionData[];
+  administrativeRegions: EthiopianAdministrativeRegion[];
 }
 
 const RISK_CONFIG = {
@@ -36,10 +39,60 @@ const REGION_PATHS: Record<string, string> = {
   gambella: "M80,270 L140,270 L150,310 L130,360 L90,370 L70,340 L70,300 Z",
 };
 
-export default function AtlasClient({ regions }: AtlasClientProps) {
+const ADMIN_REGION_ALIASES: Record<string, string[]> = {
+  "addis-ababa": ["addis ababa"],
+  afar: ["afar"],
+  amhara: ["amhara"],
+  oromia: ["oromia"],
+  tigray: ["tigray"],
+  sidama: ["sidama"],
+  somali: ["ethiopia somali"],
+  "benishangul": ["benishangul gumuz"],
+  gambella: ["gambela"],
+  harari: ["hareri"],
+  "dire-dawa": ["dire dawa astedadar"],
+};
+
+function normalizeLocationName(value: string) {
+  return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function findDataRegion(
+  administrativeRegion: EthiopianAdministrativeRegion,
+  regions: RegionData[],
+) {
+  const regionName = normalizeLocationName(administrativeRegion.name);
+  const match = regions.find((region) => {
+    const aliases = ADMIN_REGION_ALIASES[region.id] ?? [region.name];
+    return aliases.some((alias) => normalizeLocationName(alias) === regionName);
+  });
+  return match ?? null;
+}
+
+function findAdministrativeRegion(region: RegionData, administrativeRegions: EthiopianAdministrativeRegion[]) {
+  const aliases = ADMIN_REGION_ALIASES[region.id] ?? [region.name];
+  const normalizedAliases = aliases.map(normalizeLocationName);
+  return administrativeRegions.find((candidate) =>
+    normalizedAliases.includes(normalizeLocationName(candidate.name)),
+  ) ?? null;
+}
+
+export default function AtlasClient({ regions, administrativeRegions }: AtlasClientProps) {
   const [selected, setSelected] = useState<RegionData | null>(null);
+  const [selectedAdministrativeRegion, setSelectedAdministrativeRegion] =
+    useState<EthiopianAdministrativeRegion | null>(null);
   const [activeFilter, setActiveFilter] = useState<"stunting" | "anemia" | "iron" | "vitaminA">("anemia");
   const [hovered, setHovered] = useState<string | null>(null);
+
+  const selectRegion = (region: RegionData) => {
+    setSelected(region);
+    setSelectedAdministrativeRegion(findAdministrativeRegion(region, administrativeRegions));
+  };
+
+  const selectAdministrativeRegion = (administrativeRegion: EthiopianAdministrativeRegion) => {
+    setSelectedAdministrativeRegion(administrativeRegion);
+    setSelected(findDataRegion(administrativeRegion, regions));
+  };
 
   const getRegionById = useCallback(
     (id: string) => regions.find((r) => r.id === id) ?? null,
@@ -130,7 +183,14 @@ export default function AtlasClient({ regions }: AtlasClientProps) {
                           opacity: isSelected ? 1 : isHovered ? 0.9 : 0.75,
                           filter: isSelected ? "brightness(1.3)" : isHovered ? "brightness(1.15)" : "none",
                         }}
-                        onClick={() => setSelected(isSelected ? null : region)}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelected(null);
+                            setSelectedAdministrativeRegion(null);
+                          } else {
+                            selectRegion(region);
+                          }
+                        }}
                         onMouseEnter={() => setHovered(regionId)}
                         onMouseLeave={() => setHovered(null)}
                       />
@@ -184,9 +244,28 @@ export default function AtlasClient({ regions }: AtlasClientProps) {
           {/* Sidebar Panel */}
           <div className="space-y-4">
             {selected ? (
-              <RegionDetailPanel region={selected} onClose={() => setSelected(null)} />
+              <RegionDetailPanel
+                key={selected.id}
+                region={selected}
+                administrativeRegion={selectedAdministrativeRegion}
+                onClose={() => {
+                  setSelected(null);
+                  setSelectedAdministrativeRegion(null);
+                }}
+              />
+            ) : selectedAdministrativeRegion ? (
+              <AdministrativeRegionPanel
+                key={selectedAdministrativeRegion.name}
+                region={selectedAdministrativeRegion}
+                onClose={() => setSelectedAdministrativeRegion(null)}
+              />
             ) : (
-              <RegionListPanel regions={regions} onSelect={setSelected} />
+              <RegionListPanel
+                regions={regions}
+                administrativeRegions={administrativeRegions}
+                onSelectRegion={selectRegion}
+                onSelectAdministrativeRegion={selectAdministrativeRegion}
+              />
             )}
           </div>
         </div>
@@ -214,11 +293,36 @@ export default function AtlasClient({ regions }: AtlasClientProps) {
   );
 }
 
-function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: () => void }) {
+function RegionDetailPanel({
+  region,
+  administrativeRegion,
+  onClose,
+}: {
+  region: RegionData;
+  administrativeRegion: EthiopianAdministrativeRegion | null;
+  onClose: () => void;
+}) {
   const risk = RISK_CONFIG[region.riskLevel];
+  const [activeAspect, setActiveAspect] = useState("nutrition");
+  const aspects = [
+    { id: "nutrition", label: "Nutrition & risk", available: true },
+    { id: "ecology", label: "Ecology & geography", available: Boolean(region.locationSystemsProfile) },
+    { id: "agriculture", label: "Agriculture & resources", available: Boolean(region.locationSystemsProfile) },
+    { id: "food-systems", label: "Industry & food systems", available: Boolean(region.locationSystemsProfile) },
+    { id: "heritage", label: "Cultural heritage", available: Boolean(region.locationSystemsProfile) },
+    { id: "sacred-places", label: "Sacred places & landscapes", available: Boolean(region.locationSystemsProfile) },
+    { id: "location-foods", label: "Local foods & composition", available: Boolean(region.locationSystemsProfile) },
+    { id: "food-safety", label: "Agricultural chemical records", available: Boolean(region.locationSystemsProfile) },
+    { id: "demographics", label: "Demographic profile", available: Boolean(region.locationWellbeingProfile) },
+    { id: "anthropometrics", label: "Anthropometric profile", available: Boolean(region.locationWellbeingProfile) },
+    { id: "family-birth", label: "Family & birth indicators", available: Boolean(region.locationWellbeingProfile) },
+    { id: "inherited-conditions", label: "Inherited conditions", available: Boolean(region.locationWellbeingProfile) },
+    { id: "communicable-disease", label: "Communicable disease", available: Boolean(region.locationWellbeingProfile) },
+    { id: "non-communicable-disease", label: "Non-communicable disease", available: Boolean(region.locationWellbeingProfile) },
+  ].filter((aspect) => aspect.available);
 
   return (
-    <div className="glass-panel p-5 space-y-4 animate-fade-in">
+    <div className="glass-panel p-5 space-y-4 animate-fade-in max-h-[80vh] overflow-y-auto">
       <div className="flex items-start justify-between">
         <div>
           <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${risk.badge} mb-1`}>
@@ -235,6 +339,15 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
           ✕ Close
         </button>
       </div>
+
+      {administrativeRegion ? (
+        <AdministrativeExplorer region={administrativeRegion} />
+      ) : (
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[10px] leading-relaxed text-amber-200/80">
+          The supplied administrative index does not contain a matching hierarchy for this statistical grouping.
+          Its health and nutrition figures below remain at the displayed region-wide scope.
+        </div>
+      )}
 
       {/* Key stats */}
       <div className="grid grid-cols-2 gap-2">
@@ -253,34 +366,65 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
         ))}
       </div>
 
-      {/* Common deficiencies */}
-      <div>
-        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Common Deficiencies</div>
-        <div className="flex flex-wrap gap-1.5">
-          {region.commonDeficiencies.map((d) => (
-            <span key={d} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-950/50 border border-amber-500/30 text-amber-300">
-              {d}
-            </span>
+      <nav aria-label={`${region.name} atlas topics`}>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Location HUD · Explore an aspect</h3>
+          <span className="text-[9px] text-slate-600">{aspects.length} topics</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          {aspects.map((aspect, index) => (
+            <a
+              key={aspect.id}
+              href={`#${region.id}-${aspect.id}`}
+              onClick={() => setActiveAspect(aspect.id)}
+              aria-current={activeAspect === aspect.id ? "location" : undefined}
+              className={`rounded-lg border px-2 py-2 text-left text-[10px] transition-colors ${
+                activeAspect === aspect.id
+                  ? "border-teal-400/50 bg-teal-500/10 text-teal-200"
+                  : "border-white/5 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-white"
+              }`}
+            >
+              <span className="mr-1.5 font-mono text-[9px] text-slate-600">{String(index + 1).padStart(2, "0")}</span>
+              {aspect.label}
+            </a>
           ))}
         </div>
-      </div>
+      </nav>
 
-      {/* Staple foods */}
-      <div>
-        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Staple Foods</div>
-        <div className="flex flex-wrap gap-1.5">
-          {region.stapleFoods.map((f) => (
-            <span key={f} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950/50 border border-emerald-500/30 text-emerald-300">
-              {f}
-            </span>
-          ))}
+      <AspectSection
+        id={`${region.id}-nutrition`}
+        title="Nutrition, common deficiencies & staple foods"
+        active={activeAspect === "nutrition"}
+        onToggle={() => setActiveAspect(activeAspect === "nutrition" ? "" : "nutrition")}
+      >
+        <div className="space-y-3">
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Common deficiencies</div>
+            <div className="flex flex-wrap gap-1.5">
+              {region.commonDeficiencies.map((d) => (
+                <span key={d} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-950/50 border border-amber-500/30 text-amber-300">{d}</span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Staple foods</div>
+            <div className="flex flex-wrap gap-1.5">
+              {region.stapleFoods.map((food) => (
+                <span key={food} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950/50 border border-emerald-500/30 text-emerald-300">{food}</span>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </AspectSection>
 
       {region.locationSystemsProfile && (
         <>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Ecology and geography</div>
+          <AspectSection
+            id={`${region.id}-ecology`}
+            title="Ecology and geography"
+            active={activeAspect === "ecology"}
+            onToggle={() => setActiveAspect(activeAspect === "ecology" ? "" : "ecology")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p>{region.locationSystemsProfile.ecology.ecosystem}</p>
               <p className="text-slate-400">{region.locationSystemsProfile.ecology.geography}</p>
@@ -291,18 +435,26 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
               <p className="text-cyan-300">Water: {region.locationSystemsProfile.ecology.riversAndWaterBodies.join(", ")}</p>
               <p className="text-slate-400">Soils: {region.locationSystemsProfile.ecology.soilTypes.join(", ")}</p>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Agriculture and natural resources</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-agriculture`}
+            title="Agriculture and natural resources"
+            active={activeAspect === "agriculture"}
+            onToggle={() => setActiveAspect(activeAspect === "agriculture" ? "" : "agriculture")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p><span className="text-emerald-300">Crops:</span> {region.locationSystemsProfile.agriculture.crops.join(", ")}</p>
               <p><span className="text-amber-300">Livestock:</span> {region.locationSystemsProfile.agriculture.livestock.join(", ")}</p>
               <p><span className="text-cyan-300">Fisheries:</span> {region.locationSystemsProfile.agriculture.fisheries.join(", ")}</p>
               <p><span className="text-slate-400">Forest products:</span> {region.locationSystemsProfile.agriculture.forestProducts.join(", ")}</p>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Industry and food systems</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-food-systems`}
+            title="Industry and food systems"
+            active={activeAspect === "food-systems"}
+            onToggle={() => setActiveAspect(activeAspect === "food-systems" ? "" : "food-systems")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p>Urbanization: <span className="text-violet-300">{region.locationSystemsProfile.industryAndUrbanization.urbanizationLevel}</span> · Built-up area: {region.locationSystemsProfile.industryAndUrbanization.builtUpAreaPct}%</p>
               <p><span className="text-violet-300">Industries:</span> {region.locationSystemsProfile.industryAndUrbanization.leadingIndustries.join(", ")}</p>
@@ -310,17 +462,25 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
               <p><span className="text-amber-300">Preparation:</span> {region.locationSystemsProfile.foodAndNutrition.preparationMethods.join(", ")}</p>
               <p><span className="text-slate-400">Preservation:</span> {region.locationSystemsProfile.foodAndNutrition.preservationMethods.join(", ")}</p>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cultural heritage and common names</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-heritage`}
+            title="Cultural heritage and common names"
+            active={activeAspect === "heritage"}
+            onToggle={() => setActiveAspect(activeAspect === "heritage" ? "" : "heritage")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p><span className="text-amber-300">Common names:</span> {region.locationSystemsProfile.culturalAndHeritage.commonNames.join(", ")}</p>
               <p><span className="text-emerald-300">Practices:</span> {region.locationSystemsProfile.culturalAndHeritage.culturalPractices.join(", ")}</p>
               <p><span className="text-violet-300">Traditional medicines:</span> {region.locationSystemsProfile.culturalAndHeritage.traditionalMedicines.join(", ")}</p>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Sacred places and landscapes</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-sacred-places`}
+            title="Sacred places and landscapes"
+            active={activeAspect === "sacred-places"}
+            onToggle={() => setActiveAspect(activeAspect === "sacred-places" ? "" : "sacred-places")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p><span className="text-slate-200">Churches/monasteries:</span> {region.locationSystemsProfile.culturalAndHeritage.churchesAndMonasteries.join(", ")}</p>
               <p><span className="text-slate-200">Mosques:</span> {region.locationSystemsProfile.culturalAndHeritage.mosques.join(", ")}</p>
@@ -328,9 +488,13 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
               <p><span className="text-cyan-300">Rivers:</span> {region.locationSystemsProfile.culturalAndHeritage.rivers.join(", ")}</p>
               <p><span className="text-cyan-300">Lakes:</span> {region.locationSystemsProfile.culturalAndHeritage.lakes.join(", ")}</p>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Location foods and composition</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-location-foods`}
+            title="Location foods and composition"
+            active={activeAspect === "location-foods"}
+            onToggle={() => setActiveAspect(activeAspect === "location-foods" ? "" : "location-foods")}
+          >
             <div className="space-y-2 text-[11px] text-slate-300">
               {region.locationSystemsProfile.foodSystem.locationFoods.map((food) => (
                 <div key={food.food} className="rounded-lg border border-white/5 bg-white/[0.03] p-2">
@@ -351,22 +515,30 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Agricultural chemical records</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-food-safety`}
+            title="Agricultural chemical records"
+            active={activeAspect === "food-safety"}
+            onToggle={() => setActiveAspect(activeAspect === "food-safety" ? "" : "food-safety")}
+          >
             <div className="space-y-1.5 text-[11px] text-slate-300">
               <p>Pesticides: {region.locationSystemsProfile.foodSystem.pesticideUse.map((record) => record.activeIngredient).join(", ")}</p>
               <p>Insecticides: {region.locationSystemsProfile.foodSystem.insecticideUse.map((record) => record.activeIngredient).join(", ")}</p>
               <p className="text-rose-300">Product, residue, application-rate, and pre-harvest records require local verification.</p>
             </div>
-          </div>
+          </AspectSection>
         </>
       )}
 
       {region.locationWellbeingProfile && (
         <>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Demographic profile</div>
+          <AspectSection
+            id={`${region.id}-demographics`}
+            title="Demographic profile"
+            active={activeAspect === "demographics"}
+            onToggle={() => setActiveAspect(activeAspect === "demographics" ? "" : "demographics")}
+          >
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
               <span>Urban: {region.locationWellbeingProfile.demographics.urbanPopulationPct}%</span>
               <span>Median age: {region.locationWellbeingProfile.demographics.medianAgeYears}</span>
@@ -375,18 +547,26 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
               <span>Female: {region.locationWellbeingProfile.demographics.anthropometrics.genderDistributionPct.female}%</span>
               <span>Births: {region.locationWellbeingProfile.birthRatePer1000}/1k</span>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Anthropometric profile</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-anthropometrics`}
+            title="Anthropometric profile"
+            active={activeAspect === "anthropometrics"}
+            onToggle={() => setActiveAspect(activeAspect === "anthropometrics" ? "" : "anthropometrics")}
+          >
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
               <span>Average BMI: {region.locationWellbeingProfile.demographics.anthropometrics.averageBmi}</span>
               <span>Fertility: {region.locationWellbeingProfile.totalFertilityRate}</span>
               <span>Height F/M: {region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.female}/{region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.male} cm</span>
               <span>Weight F/M: {region.locationWellbeingProfile.demographics.anthropometrics.averageWeightKg.female}/{region.locationWellbeingProfile.demographics.anthropometrics.averageWeightKg.male} kg</span>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Family and birth indicators</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-family-birth`}
+            title="Family and birth indicators"
+            active={activeAspect === "family-birth"}
+            onToggle={() => setActiveAspect(activeAspect === "family-birth" ? "" : "family-birth")}
+          >
             <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
               <span>Polygamous unions: {region.locationWellbeingProfile.marriageAndInheritance.polygamousUnionPct}%</span>
               <span>Scope: married unions</span>
@@ -399,9 +579,13 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Inherited-condition indicators</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-inherited-conditions`}
+            title="Inherited-condition indicators"
+            active={activeAspect === "inherited-conditions"}
+            onToggle={() => setActiveAspect(activeAspect === "inherited-conditions" ? "" : "inherited-conditions")}
+          >
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.marriageAndInheritance.geneticDisorders.map((indicator) => (
                 <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
@@ -412,9 +596,13 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Communicable disease indicators</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-communicable-disease`}
+            title="Communicable disease indicators"
+            active={activeAspect === "communicable-disease"}
+            onToggle={() => setActiveAspect(activeAspect === "communicable-disease" ? "" : "communicable-disease")}
+          >
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.communicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
@@ -423,9 +611,13 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Non-communicable disease indicators</div>
+          </AspectSection>
+          <AspectSection
+            id={`${region.id}-non-communicable-disease`}
+            title="Non-communicable disease indicators"
+            active={activeAspect === "non-communicable-disease"}
+            onToggle={() => setActiveAspect(activeAspect === "non-communicable-disease" ? "" : "non-communicable-disease")}
+          >
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.nonCommunicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
@@ -434,7 +626,7 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
                 </div>
               ))}
             </div>
-          </div>
+          </AspectSection>
         </>
       )}
 
@@ -448,45 +640,132 @@ function RegionDetailPanel({ region, onClose }: { region: RegionData; onClose: (
   );
 }
 
-function RegionListPanel({ regions, onSelect }: { regions: RegionData[]; onSelect: (r: RegionData) => void }) {
+function AspectSection({
+  id,
+  title,
+  active,
+  onToggle,
+  children,
+}: {
+  id: string;
+  title: string;
+  active: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="glass-panel p-4 space-y-2">
-      <h3 className="text-sm font-bold text-white mb-3">Select a Region</h3>
-      <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
-        {[...regions]
-          .sort((a, b) => b.anemiaChildrenPct - a.anemiaChildrenPct)
+    <section id={id} className="scroll-mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={active}
+        className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+      >
+        <span className="text-[11px] font-semibold text-slate-200">{title}</span>
+        <span className="font-mono text-xs text-teal-300" aria-hidden="true">{active ? "−" : "+"}</span>
+      </button>
+      {active && <div className="border-t border-white/5 px-3 py-3">{children}</div>}
+    </section>
+  );
+}
+
+function AdministrativeRegionPanel({
+  region,
+  onClose,
+}: {
+  region: EthiopianAdministrativeRegion;
+  onClose: () => void;
+}) {
+  return (
+    <div className="glass-panel max-h-[80vh] space-y-4 overflow-y-auto p-5 animate-fade-in">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Administrative location explorer</span>
+          <h2 className="mt-1 text-lg font-bold text-white">{region.name}</h2>
+          <p className="mt-1 text-[10px] text-slate-500">
+            {region.zones.length} zones · {region.townCount} towns / districts in the supplied index
+          </p>
+        </div>
+        <button onClick={onClose} className="text-xs text-slate-500 hover:text-white">✕ Close</button>
+      </div>
+      <AdministrativeExplorer region={region} />
+      <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[10px] leading-relaxed text-amber-100/80">
+        This administrative record provides names and parent relationships only. No matching regional nutrition,
+        health, ecology, food-system, or coordinate profile is linked to this entry yet; the atlas does not infer
+        town-level measurements from a neighboring region.
+      </div>
+    </div>
+  );
+}
+
+function RegionListPanel({
+  regions,
+  administrativeRegions,
+  onSelectRegion,
+  onSelectAdministrativeRegion,
+}: {
+  regions: RegionData[];
+  administrativeRegions: EthiopianAdministrativeRegion[];
+  onSelectRegion: (region: RegionData) => void;
+  onSelectAdministrativeRegion: (region: EthiopianAdministrativeRegion) => void;
+}) {
+  const unmatchedDataRegions = regions.filter(
+    (region) => !findAdministrativeRegion(region, administrativeRegions),
+  );
+
+  return (
+    <div className="glass-panel max-h-[80vh] space-y-4 overflow-y-auto p-4">
+      <div>
+        <h3 className="text-sm font-bold text-white">Region → Zone → Town</h3>
+        <p className="mt-1 text-[10px] text-slate-500">Choose a location to open its zone index and town list.</p>
+      </div>
+      <div className="space-y-1.5">
+        {administrativeRegions
           .map((region) => {
-            const risk = RISK_CONFIG[region.riskLevel];
+            const dataRegion = findDataRegion(region, regions);
             return (
               <button
-                key={region.id}
-                onClick={() => onSelect(region)}
-                className="w-full text-left px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/5 hover:border-white/15 hover:bg-white/[0.06] transition-all group"
+                key={region.name}
+                onClick={() => onSelectAdministrativeRegion(region)}
+                className="w-full rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2.5 text-left transition-all hover:border-teal-400/30 hover:bg-white/[0.06]"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
-                    {region.name}
-                  </span>
-                  <span className={`text-xs font-bold ${risk.badge.split(" ").find(c => c.startsWith("text-")) ?? "text-slate-400"}`}>
-                    {region.anemiaChildrenPct}%
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium text-slate-200">{region.name}</span>
+                  <span className={`text-[10px] ${dataRegion ? "text-teal-300" : "text-slate-500"}`}>
+                    {dataRegion ? `${dataRegion.anemiaChildrenPct}% child anaemia*` : "location index"}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${region.riskLevel === "very-high" ? "bg-rose-500" :
-                        region.riskLevel === "high" ? "bg-orange-500" :
-                          region.riskLevel === "moderate" ? "bg-amber-500" : "bg-emerald-500"
-                        }`}
-                      style={{ width: `${region.anemiaChildrenPct}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-slate-600 whitespace-nowrap">Child anaemia</span>
+                <div className="mt-1 text-[10px] text-slate-600">
+                  {region.zones.length} zones · {region.townCount} towns / districts
                 </div>
               </button>
             );
           })}
       </div>
+      {unmatchedDataRegions.length > 0 && (
+        <div className="border-t border-white/10 pt-3">
+          <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-300">Legacy statistical groupings</h4>
+          {unmatchedDataRegions.map((region) => {
+            const risk = RISK_CONFIG[region.riskLevel];
+            return (
+              <button
+                key={region.id}
+                onClick={() => onSelectRegion(region)}
+                className="w-full rounded-lg border border-amber-500/10 bg-amber-500/[0.03] px-3 py-2 text-left hover:border-amber-400/30"
+              >
+                <span className="text-sm text-slate-200">{region.name}</span>
+                <span className={`float-right text-xs font-semibold ${risk.badge.split(" ").find((item) => item.startsWith("text-"))}`}>
+                  {region.anemiaChildrenPct}% child anaemia*
+                </span>
+                <span className="mt-1 block text-[10px] text-slate-600">Nutrition data only · no matching hierarchy row</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+      <p className="text-[9px] leading-relaxed text-slate-600">
+        *Regional statistical estimates only. Administrative names are taken from the supplied Region, Zone, Town list.
+      </p>
     </div>
   );
 }

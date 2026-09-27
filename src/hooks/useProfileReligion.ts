@@ -2,13 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { matchReligion, type ChristianTradition } from "@/lib/christian/religionMatch";
+import { getClientUser } from "@/lib/auth/clientState";
 
 export function useProfileReligion() {
   const [state, setState] = useState({ loading: true, error: false, rawReligion: "", isChristian: false, tradition: "unspecified" as ChristianTradition });
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/profile", { credentials: "include", cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
+    getClientUser()
+      .then(async (user) => {
+        if (controller.signal.aborted) return;
+        if (!user) {
+          setState({ loading: false, error: false, rawReligion: "", isChristian: false, tradition: "unspecified" });
+          return;
+        }
+
+        const response = await fetch("/api/profile", {
+          credentials: "include",
+          cache: "no-store",
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error("Profile request failed");
         const payload = await response.json() as { data?: Record<string, unknown> };
         const data = payload.data ?? {};

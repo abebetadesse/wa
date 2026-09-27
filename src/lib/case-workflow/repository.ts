@@ -27,9 +27,11 @@ export async function persistCaseSession(session: CaseSession) {
     },
   };
 
+  const isUuid = typeof session.userId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(session.userId);
+
   await db.insert(caseSessions).values({
     id: session.id,
-    userId: session.userId || null,
+    userId: isUuid ? session.userId : null,
     caseId: session.caseId,
     answers,
     activeSpecializedPath: session.activeSpecializedPath || null,
@@ -73,12 +75,26 @@ export async function persistCaseSession(session: CaseSession) {
 export async function loadCaseSession(sessionId: string, userId: string) {
   const [stored] = await db.select().from(caseSessions).where(and(eq(caseSessions.id, sessionId), eq(caseSessions.userId, userId))).limit(1);
   if (!stored) return undefined;
+  return _hydrateSession(stored);
+}
+
+/**
+ * Load a session by ID only — used for guest sessions where no persistent user
+ * account exists. The session's own userId field identifies the transient guest.
+ */
+export async function loadGuestCaseSession(sessionId: string) {
+  const [stored] = await db.select().from(caseSessions).where(eq(caseSessions.id, sessionId)).limit(1);
+  if (!stored) return undefined;
+  return _hydrateSession(stored);
+}
+
+async function _hydrateSession(stored: { id: string; caseId: string; userId: string | null; activeSpecializedPath: string | null; currentStep: string; answers: unknown; createdAt: Date; lastUpdated: Date }) {
   const storedAnswers = (stored.answers || {}) as StoredAnswers;
   const workflow = storedAnswers[WORKFLOW_KEY];
   const { [WORKFLOW_KEY]: _ignored, ...answers } = storedAnswers;
   const [storedCauses, storedSolutions] = await Promise.all([
-    db.select().from(caseCauses).where(eq(caseCauses.sessionId, sessionId)),
-    db.select().from(caseSolutions).where(eq(caseSolutions.sessionId, sessionId)),
+    db.select().from(caseCauses).where(eq(caseCauses.sessionId, stored.id)),
+    db.select().from(caseSolutions).where(eq(caseSolutions.sessionId, stored.id)),
   ]);
   const session: CaseSession = {
     id: stored.id,
@@ -97,3 +113,4 @@ export async function loadCaseSession(sessionId: string, userId: string) {
   };
   return session;
 }
+

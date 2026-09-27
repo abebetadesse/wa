@@ -23,6 +23,7 @@ import {
 import { ETHIOPIAN_REGION_REFERENCE, getEthiopianLocationById } from "../lib/location/ethiopiaLocations.ts";
 import {
   ETHIOPIAN_ADMINISTRATIVE_PLACES,
+  getEthiopianAdministrativeHierarchy,
   searchEthiopianAdministrativePlaces,
 } from "../lib/location/ethiopianAdministrativePlaces.ts";
 
@@ -73,6 +74,17 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     const wereda = searchEthiopianAdministrativePlaces("Wereda 01", "Addis Ababa", "Addis Ketema");
     assert.ok(wereda.length > 0);
     assert.ok(wereda.every((place) => place.zone === "Addis Ketema"));
+  });
+
+  test("ODT administrative hierarchy aggregates every region, zone, and town", () => {
+    const hierarchy = getEthiopianAdministrativeHierarchy();
+    assert.equal(hierarchy.length, 15);
+    assert.equal(hierarchy.reduce((count, region) => count + region.zones.length, 0), 133);
+    assert.equal(hierarchy.reduce((count, region) => count + region.townCount, 0), 1217);
+
+    const oromia = hierarchy.find((region) => region.name === "Oromia");
+    const sheger = oromia?.zones.find((zone) => zone.name === "Sheger");
+    assert.ok(sheger?.towns.includes("Sida Awash"));
   });
 
   // Enhancement 3

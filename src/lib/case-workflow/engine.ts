@@ -185,197 +185,91 @@ export function getNextQuestions(sessionId: string) {
   return { step: session.currentStep, questions: visibleQuestions(setId, session.answers) };
 }
 function buildDetailedFallbackCauses(session: CaseSession, selectedCase: CaseDefinition, challenge: string, interest: string, reflection: boolean): Cause[] {
-  const baseContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: reflection ? "included" : "firewalled",
-    strands: ["cultural", "astrological", "socioeconomic"],
-    interpretation: "Cultural and community context is available as a reflective layer. Strengths: Reliability, Patience, Discipline, Persistence. Weaknesses: Rigidity, Pessimism, Isolation, Stubbornness. wellbeing focus: Bone wellbeing, Joint mobility, Digestive regularity, Skin moisture.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from scientific reasoning.",
-    disclaimer: "Domain B remains educational and reflective only. It never changes urgency, diagnosis, medication safety, or emergency decisions.",
-  };
+  const detail = String(session.answers.detail || "").trim();
+  const barrier = String(session.answers.barrier || "").trim();
+  const focus = detail ? `Reported concern: ${detail}` : `Selected challenge: ${challenge}`;
+  const findings: Cause[] = [{
+    id: `${selectedCase.id}-reported-concern`,
+    description: focus,
+    confidence: 0.25,
+    evidence: [
+      `Case area: ${selectedCase.name}`,
+      `Selected goal: ${interest}`,
+      detail ? `User-provided detail: ${detail}` : "No further detail was supplied.",
+    ],
+    category: selectedCase.id,
+    isSelected: true,
+    relatedCauses: [],
+  }];
 
-  const dhebtaContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: reflection ? "included" : "firewalled",
-    strands: ["cultural", "astrological"],
-    interpretation: "Däbtära healing scrolls and celestial botanical inscriptions are best read as a reflective tradition for emotional steadiness, ritual timing, and psychosomatic support, not as a substitute for evidence-based scientific care.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from scientific reasoning.",
-    disclaimer: "This layer supports meaning-making and self-regulation; it does not replace medical evaluation or safe treatment decisions.",
-  };
+  if (barrier) {
+    findings.push({
+      id: `${selectedCase.id}-reported-barrier`,
+      description: `Barrier identified by the user: ${barrier}`,
+      confidence: 0.25,
+      evidence: ["Reported directly during case intake."],
+      category: "access",
+      isSelected: true,
+      relatedCauses: [],
+    });
+  }
 
-  const incomeContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: reflection ? "included" : "firewalled",
-    strands: ["socioeconomic", "community"],
-    interpretation: "Income inequality and wealth distribution materially affect food security, healthcare access, social stress, and long-term recovery. Uneven resource distribution often magnifies fatigue, delayed care, and household instability.",
-    practice: "Use community, household, and economic context as a practical support lens rather than a financial plan. Consider resource mapping, support networks, and affordable care pathways.",
-    disclaimer: "This is contextual guidance for planning and support, not legal, financial, or investment advice.",
-  };
-
-  return [
-    {
-      id: `${selectedCase.id}-afere-finding`,
-      description: "AFERE (አፈሬ - EARTH / MELANCHOLIC)",
-      confidence: 0.88,
-      evidence: [
-        "Grounded, stable, and slow-moving temperamental profile with a strong tendency toward structure, endurance, and practical persistence.",
-        "The pattern suggests careful pacing, disciplined routines, and attention to bone wellbeing, joint mobility, digestive regularity, and skin moisture.",
-        "It may reflect emotional heaviness, rigidity, and isolation when stress is prolonged or unresolved.",
-      ],
-      category: "cultural",
-      isSelected: true,
-      relatedCauses: [],
-      culturalContext: baseContext,
-    },
-    {
-      id: `${selectedCase.id}-dabtara-finding`,
-      description: "DÄBTÄRA HEALING SCROLL & CELESTIAL BOTANICAL INSCRIPTION",
-      confidence: 0.82,
-      evidence: [
-        "This reflective layer points to ritual timing, botanicals, and symbolic healing practices that support calm, emotional regulation, and a steadier daily rhythm.",
-        "In traditional Ethiopian practice, this is interpreted as a way to restore inner balance, reduce stress, and re-center bodily and spiritual steadiness.",
-        "The note should be used as a contextual perspective rather than a diagnostic substitute.",
-      ],
-      category: "cultural",
-      isSelected: true,
-      relatedCauses: [],
-      culturalContext: dhebtaContext,
-    },
-    {
-      id: `${selectedCase.id}-income-inequality-finding`,
-      description: "INCOME INEQUALITY & WEALTH DISTRIBUTION",
-      confidence: 0.8,
-      evidence: [
-        "This pattern points to a meaningful pressure from uneven access to money, food, transportation, and healthcare services.",
-        "When resources are limited, stress rises, routines break down, and people may delay care or struggle to maintain prevention-focused habits.",
-        "It is important to treat this as a contextual risk factor rather than a personal failure or diagnosis.",
-      ],
-      category: "socioeconomic",
-      isSelected: true,
-      relatedCauses: [],
-      culturalContext: incomeContext,
-    },
-    {
-      id: `${selectedCase.id}-selected-challenge`,
-      description: `${challenge} is the primary pattern selected for this case.`,
-      confidence: 0.88,
-      evidence: ["Selected common challenge", String(session.answers.detail || "Specific case details")],
-      category: selectedCase.id,
-      isSelected: true,
-      relatedCauses: [],
-    },
-    {
-      id: `${selectedCase.id}-context`,
-      description: `Your stated goal of ${interest} shapes which next steps are most useful.`,
-      confidence: 0.82,
-      evidence: ["Selected interest", String(session.answers.barrier || session.answers.support || session.answers.horizon || "Personal context")],
+  if (reflection) {
+    findings.push({
+      id: `${selectedCase.id}-reflection-preference`,
+      description: "You opted in to a separate cultural reflection layer.",
+      confidence: 1,
+      evidence: ["Selected cultural reflection during case intake."],
       category: "preference",
       isSelected: true,
       relatedCauses: [],
-    },
-  ];
+      culturalContext: {
+        layer: "Domain B",
+        status: "included",
+        strands: ["cultural"],
+        interpretation: "Cultural context was requested by the user; no specific tradition or belief has been inferred.",
+        practice: "Invite the user to name any practices or values they want considered.",
+        disclaimer: "This layer is reflective only and does not affect diagnosis, medication safety, or urgency.",
+      },
+    });
+  }
+
+  return findings;
 }
 
 function buildDetailedFallbackSolutions(session: CaseSession, selectedCase: CaseDefinition, interest: string): Solution[] {
-  const groundingContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: "included",
-    strands: ["cultural", "astrological"],
-    interpretation: "The grounded pattern suggests a stronger need for steadiness, lower chaos, and practical rhythm than for rapid change.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from scientific reasoning.",
-    disclaimer: "Reflective guidance should not override tested medical advice or urgent safety needs.",
-  };
-
-  const ritualContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: "included",
-    strands: ["cultural", "astrological"],
-    interpretation: "This tradition offers emotional grounding and meaning, especially when stress feels heavy or isolating.",
-    practice: "Use cultural and astrological findings only as an optional reflective perspective, separate from scientific reasoning.",
-    disclaimer: "The ritual layer is not a scientific treatment plan and must remain separate from urgent care decisions.",
-  };
-
-  const resourceContext: ReportCulturalContext = {
-    layer: "Domain B",
-    status: "included",
-    strands: ["socioeconomic", "community"],
-    interpretation: "Economic context can shape access, stress, choices, and resilience. Support planning is more effective when it is concrete and community-aware.",
-    practice: "Use community, household, and economic context as a practical support lens rather than a financial plan.",
-    disclaimer: "This is contextual guidance, not legal, financial, or investment advice.",
-  };
-
-  return [
-    {
-      id: `${selectedCase.id}-grounding-plan`,
-      title: "Grounding and physiological support",
-      section: "immediate",
-      description: "Reduce overload and restore rhythm with a simple daily plan focused on hydration, movement, and predictable meals or rest windows.",
-      steps: [
-        "Set a consistent wake, meal, and sleep pattern for the next 7 days.",
-        "Prioritize gentle movement, hydration, and regular digestion to support bone, joint, and skin resilience.",
-        "Track triggers that worsen stress, fatigue, or stiffness so patterns become clearer.",
-      ],
-      confidence: 0.86,
-      basedOnCauses: [`${selectedCase.id}-afere-finding`],
-      knowledgeReferences: ["earth-constitution", "cultural-wellbeing-context"],
-      interestMatch: interest,
-      culturalContext: groundingContext,
-    },
-    {
-      id: `${selectedCase.id}-cultural-reflection-plan`,
-      title: "Reflective cultural support",
-      section: "shortTerm",
-      description: "Use ritual, community support, and self-reflection as a separate layer to reduce emotional strain without substituting scientific care.",
-      steps: [
-        "Create a quiet morning or evening routine with prayer, breathing, or a short reflective practice.",
-        "Limit reliance on symbolic practices as a substitute for medical evaluation if symptoms worsen or remain unexplained.",
-        "Invite a trusted family member, elder, or counselor into the process for accountability and support.",
-      ],
-      confidence: 0.81,
-      basedOnCauses: [`${selectedCase.id}-dabtara-finding`],
-      knowledgeReferences: ["dabtara-scroll", "community-reflection"],
-      interestMatch: interest,
-      culturalContext: ritualContext,
-    },
-    {
-      id: `${selectedCase.id}-resource-plan`,
-      title: "Resource and support planning",
-      section: "holistic",
-      description: "Address the practical stressors connected to income pressure, access gaps, and household stability before expecting lasting change.",
-      steps: [
-        "Map immediate essentials: food, transport, medication access, and basic household support.",
-        "Prioritize one affordable step that reduces strain this week rather than a large overhaul.",
-        "Use community support, local programs, or trusted networks to reduce isolation and improve continuity of care.",
-      ],
-      confidence: 0.8,
-      basedOnCauses: [`${selectedCase.id}-income-inequality-finding`],
-      knowledgeReferences: ["socioeconomic-context", "care-access"],
-      interestMatch: interest,
-      culturalContext: resourceContext,
-    },
-  ];
+  return buildSolutions(session).map((solution) => ({
+    ...solution,
+    confidence: 0.25,
+    knowledgeReferences: [],
+  }));
 }
 
 function buildProfileSynthesisFromSession(session: CaseSession): CaseProfileSynthesis | undefined {
+  if (!String(session.answers.reflectionLens || "").toLowerCase().includes("yes")) return undefined;
   const rawName = String(session.answers.fullName || session.answers.name || session.answers.clientName || "").trim();
   const rawMotherName = String(session.answers.motherName || session.answers.mother || "").trim();
   const rawBirthDate = String(session.answers.birthDate || session.answers.dateOfBirth || "").trim();
-  const rawBirthPlace = String(session.answers.birthPlace || session.answers.location || session.answers.region || "Addis Ababa").trim();
-  const rawBirthTime = String(session.answers.birthTime || "12:00").trim();
-  const latitude = Number(session.answers.latitude ?? 9.03);
-  const longitude = Number(session.answers.longitude ?? 38.74);
-  const altitudeMeters = Number(session.answers.altitudeMeters ?? 2400);
+  const rawBirthPlace = String(session.answers.birthPlace || "").trim();
+  const rawBirthTime = String(session.answers.birthTime || "").trim();
+  if (!rawName || /^(case client|client|user|unknown)$/i.test(rawName) || !rawBirthDate || !rawBirthPlace || !rawBirthTime) return undefined;
 
-  if (!rawName && !rawBirthDate && !rawBirthPlace) return undefined;
+  const parsedBirthDate = new Date(`${rawBirthDate}T00:00:00.000Z`);
+  if (Number.isNaN(parsedBirthDate.getTime()) || parsedBirthDate.toISOString().slice(0, 10) !== rawBirthDate) return undefined;
 
-  const fallbackName = rawName || "Case Client";
-  const fallbackBirthDate = rawBirthDate || "1990-01-15";
-  const fallbackBirthPlace = rawBirthPlace || "Addis Ababa";
+  const numberFromAnswer = (value: unknown) => {
+    if (typeof value !== "number" && (typeof value !== "string" || !value.trim())) return undefined;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : undefined;
+  };
+  const latitude = numberFromAnswer(session.answers.latitude);
+  const longitude = numberFromAnswer(session.answers.longitude);
+  const altitudeMeters = numberFromAnswer(session.answers.altitudeMeters);
   const profile = buildPersonalProfile({
-    fullName: fallbackName,
-    birthDate: fallbackBirthDate,
-    birthTime: rawBirthTime || "12:00",
-    birthPlace: fallbackBirthPlace,
+    fullName: rawName,
+    birthDate: rawBirthDate,
+    birthTime: rawBirthTime,
+    birthPlace: rawBirthPlace,
     preferredLanguage: "en",
   });
 
@@ -384,43 +278,43 @@ function buildProfileSynthesisFromSession(session: CaseSession): CaseProfileSynt
       key: "vitality",
       label: "Vitality",
       value: profile.synthesis.vitalityScore,
-      description: `Vitality index across the astrologic, numerologic, and seasonal layers for ${fallbackName}.`,
+      description: "A traditional astrological and numerological reflection; not a clinical measure of health or vitality.",
     },
     {
       key: "lifePath",
       label: "Life path",
       value: profile.numerology.lifePath.number,
-      description: `Life Path ${profile.numerology.lifePath.number} summary: ${profile.numerology.lifePath.archetype}.`,
+      description: `Traditional numerology reflection: ${profile.numerology.lifePath.archetype}.`,
     },
     {
       key: "dominantHumor",
       label: "Humoral dominance",
       value: { esat: 1, afere: 2, nifas: 3, may: 4 }[profile.synthesis.humoralDominance] ?? 1,
-      description: `Humoral balance resolves to ${profile.synthesis.humoralDominance}.`,
+      description: `Traditional humoral interpretation: ${profile.synthesis.humoralDominance}.`,
     },
     {
       key: "sunSign",
       label: "Sun sign",
       value: profile.astrology.planetaryPositions.find((planet) => planet.planet === "Sun")?.house ?? 1,
-      description: `${profile.astrology.sunSign} sun sign based on natal placement.`,
+      description: `${profile.astrology.sunSign} sun sign based on the birth details provided; cultural reflection only.`,
     },
   ];
 
-  const summary = `${fallbackName}${rawMotherName ? `, child of ${rawMotherName}` : ""}, born ${fallbackBirthDate}${fallbackBirthPlace ? ` in ${fallbackBirthPlace}` : ""}, shows a ${profile.synthesis.humoralDominance} dominant balancing pattern with a life path ${profile.numerology.lifePath.number} orientation and a vitality score of ${profile.synthesis.vitalityScore}.`;
+  const summary = `Optional cultural reflection based on the birth details provided for ${rawName}${rawMotherName ? `, child of ${rawMotherName}` : ""}: ${profile.astrology.sunSign} and Life Path ${profile.numerology.lifePath.number}. These traditions are not scientific assessment or medical advice.`;
 
   return {
     identity: {
-      name: fallbackName,
+      name: rawName,
       motherName: rawMotherName || undefined,
-      birthDate: fallbackBirthDate,
-      birthTime: rawBirthTime || "12:00",
+      birthDate: rawBirthDate,
+      birthTime: rawBirthTime,
     },
     geography: {
-      city: fallbackBirthPlace,
-      region: profile.astrology.birthLocation || fallbackBirthPlace,
-      latitude: Number.isFinite(latitude) ? latitude : (profile.astrology.coordinates.latitude ?? 9.03),
-      longitude: Number.isFinite(longitude) ? longitude : (profile.astrology.coordinates.longitude ?? 38.74),
-      altitudeMeters: Number.isFinite(altitudeMeters) ? altitudeMeters : 2400,
+      city: rawBirthPlace,
+      region: profile.astrology.birthLocation || rawBirthPlace,
+      latitude,
+      longitude,
+      altitudeMeters,
     },
     chart,
     summary,
@@ -441,7 +335,11 @@ export function processSession(sessionId: string) {
     solutions?: Array<{ id: string; title: string; description: string; priority?: string; sourceRef?: string; culturalContext?: ReportCulturalContext }>;
   } | undefined;
   if (diagnosticAssessment?.causes?.length) {
-    session.causes = diagnosticAssessment.causes.map((cause, index) => ({
+    const evidenceBasedCauses = diagnosticAssessment.causes.filter((cause) =>
+      !/^(cultural|astrological|domain b)$/i.test(cause.domain) &&
+      !/^(afere\b|.*d[äa]bt[äa]ra.*healing scroll)/i.test(cause.name),
+    );
+    session.causes = evidenceBasedCauses.map((cause, index) => ({
       id: `${selectedCase.id}-diagnostic-cause-${index + 1}`,
       description: cause.name,
       confidence: cause.probability / 100,
@@ -451,6 +349,9 @@ export function processSession(sessionId: string) {
       relatedCauses: [],
       culturalContext: cause.culturalContext,
     }));
+    if (session.causes.length === 0) {
+      session.causes = buildDetailedFallbackCauses(session, selectedCase, challenge, interest, reflection);
+    }
   } else {
     session.causes = buildDetailedFallbackCauses(session, selectedCase, challenge, interest, reflection);
     if (session.workflowContext.safety.level === "critical") {
@@ -466,7 +367,7 @@ export function processSession(sessionId: string) {
       steps: [solution.sourceRef || "Review with a qualified professional"],
       confidence: 0.8,
       basedOnCauses: session.causes.map((cause) => cause.id),
-      knowledgeReferences: ["11-strand diagnostic synthesis"],
+      knowledgeReferences: ["11-strand diagnostic synthesis", ...(solution.sourceRef ? [solution.sourceRef] : [])],
       culturalContext: solution.culturalContext,
     }));
   } else {
@@ -484,16 +385,28 @@ function buildSolutions(session: CaseSession): Solution[] {
   const detail = String(session.answers.detail || "your stated situation");
   const reflection = (session.workflowContext?.domainB.length || 0) > 0;
   const layer = reflection ? " Include the requested Domain B reflection as a separate values and cultural perspective." : "";
-  const refs = session.workflowContext?.queried || selectedCase.knowledgeStrandFilters;
   return [
-    { id: `${selectedCase.id}-immediate`, title: `First move for ${interest}`, section: "immediate", description: `Start with one small, observable action connected to ${detail}.${layer}`, steps: ["Choose one action you can complete within 24 hours", "Write down what changed and what support you need"], confidence: 0.86, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: refs, interestMatch: interest },
-    { id: `${selectedCase.id}-short-term`, title: `Build a ${interest} plan`, section: "shortTerm", description: `Use a seven-day experiment to test the most practical path for ${interest}.`, steps: ["Set one measurable weekly target", "Review the result with a trusted person or qualified professional where appropriate"], confidence: 0.8, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: refs, interestMatch: interest },
-    { id: `${selectedCase.id}-holistic`, title: "Holistic reflection and support", section: "holistic", description: `Connect the plan to your relationships, environment, routines, and values.${layer}`, steps: ["Name the people, place, or practice that supports this goal", "Revisit the plan after new information or changing circumstances"], confidence: 0.74, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [...refs, "cultural"], interestMatch: interest },
+    { id: `${selectedCase.id}-immediate`, title: `First move for ${interest}`, section: "immediate", description: `Start with one small, observable action connected to ${detail}.${layer}`, steps: ["Choose one action you can complete within 24 hours", "Write down what changed and what support you need"], confidence: 0.25, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [], interestMatch: interest },
+    { id: `${selectedCase.id}-short-term`, title: `Build a ${interest} plan`, section: "shortTerm", description: `Use a seven-day experiment to test the most practical path for ${interest}.`, steps: ["Set one measurable weekly target", "Review the result with a trusted person or qualified professional where appropriate"], confidence: 0.25, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [], interestMatch: interest },
+    { id: `${selectedCase.id}-holistic`, title: "Holistic reflection and support", section: "holistic", description: `Connect the plan to your relationships, environment, routines, and values.${layer}`, steps: ["Name the people, place, or practice that supports this goal", "Revisit the plan after new information or changing circumstances"], confidence: 0.25, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [], interestMatch: interest },
   ];
 }
 export function refineCauses(sessionId: string, selectedCauseIds: string[]) {
   const session = sessions.get(sessionId); if (!session) return undefined;
-  session.causes = session.causes.map((cause) => ({ ...cause, isSelected: selectedCauseIds.includes(cause.id) })); session.currentStep = "solution"; session.solutions = buildSolutions(session); session.lastUpdated = new Date().toISOString(); return session;
+  const selected = new Set(selectedCauseIds);
+  session.causes = session.causes.map((cause) => ({ ...cause, isSelected: selected.has(cause.id) }));
+  const assessment = session.answers.diagnosticAssessment as { solutions?: unknown[] } | undefined;
+  session.currentStep = "solution";
+  session.solutions = assessment?.solutions?.length
+    ? session.solutions
+      .filter((solution) => solution.basedOnCauses.some((causeId) => selected.has(causeId)))
+      .map((solution) => ({
+        ...solution,
+        basedOnCauses: solution.basedOnCauses.filter((causeId) => selected.has(causeId)),
+      }))
+    : buildSolutions(session);
+  session.lastUpdated = new Date().toISOString();
+  return session;
 }
 export function decideSolutions(sessionId: string, selectedSolutionIds: string[]) {
   const session = sessions.get(sessionId); if (!session) return undefined;
@@ -520,9 +433,9 @@ export type CaseProfileSynthesis = {
   geography: {
     city: string;
     region?: string;
-    latitude: number;
-    longitude: number;
-    altitudeMeters: number;
+    latitude?: number;
+    longitude?: number;
+    altitudeMeters?: number;
   };
   chart: CaseProfileChartPoint[];
   summary: string;

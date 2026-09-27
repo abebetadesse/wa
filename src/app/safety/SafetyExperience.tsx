@@ -27,6 +27,15 @@ export default function SafetyExperience() {
 
   const medsToPass = selectedMed.drugClass === "None" ? [] : [selectedMed];
   const safetyResult = checkHerbDrugSafety(selectedHerb.name, medsToPass);
+  const selectedInteraction = KNOWN_HERB_DRUG_RULES.find(
+    (rule) => rule.herbName === selectedHerb.name && rule.targetDrugClass === selectedMed.drugClass,
+  );
+  const isFlagged = safetyResult.status === "flagged";
+  const isCaution = !isFlagged && selectedInteraction !== undefined;
+  const herbProfiles = HERB_OPTIONS.map((herb) => ({
+    ...herb,
+    interactions: KNOWN_HERB_DRUG_RULES.filter((rule) => rule.herbName === herb.name),
+  }));
 
   return (
     <div className="py-10">
@@ -92,9 +101,11 @@ export default function SafetyExperience() {
 
           <div className="md:col-span-4 flex flex-col">
             <div
-              className={`glass-panel p-6 flex-grow flex flex-col justify-between border-2 ${safetyResult.status === "flagged"
+              className={`glass-panel p-6 flex-grow flex flex-col justify-between border-2 ${isFlagged
                 ? "border-rose-500/60 bg-rose-950/15"
-                : "border-emerald-500/60 bg-emerald-950/15"
+                : isCaution
+                  ? "border-amber-500/60 bg-amber-950/15"
+                  : "border-white/20 bg-slate-950/15"
                 }`}
             >
               <div>
@@ -103,39 +114,43 @@ export default function SafetyExperience() {
                     Safety Gate Decision
                   </span>
                   <span
-                    className={`badge ${safetyResult.status === "flagged" ? "badge-flagged" : "badge-safe"
+                    className={`badge ${isFlagged ? "badge-flagged" : isCaution ? "bg-amber-950/40 text-amber-200 border border-amber-500/30" : "bg-slate-800 text-slate-300 border border-slate-600"
                       }`}
                   >
-                    {safetyResult.status === "flagged" ? "BLOCKED / CULLED" : "PASSED SAFETY GATE"}
+                    {isFlagged ? "BLOCKED / CULLED" : isCaution ? "CAUTION: REVIEW" : "NO RULE MATCHED"}
                   </span>
                 </div>
 
                 <h3 className="text-xl font-black text-white mb-2">
-                  {safetyResult.status === "flagged"
+                  {isFlagged
                     ? "⛔ Strict Contraindication Detected"
-                    : "✅ Zero Interacting Conflict"}
+                    : isCaution
+                      ? "A moderate interaction is listed"
+                      : "No interaction is listed for this combination"}
                 </h3>
 
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-                  {safetyResult.status === "flagged"
+                  {isFlagged
                     ? `The algorithm flags ${selectedHerb.name} due to adverse pharmacological interaction with ${selectedMed.name} (${selectedMed.drugClass}). This remedy is NEVER shown to the client.`
-                    : `No documented high-severity scientific contraindication exists between ${selectedHerb.name} and ${selectedMed.name}. The remedy is safe to surface.`}
+                    : isCaution
+                      ? `The current reference lists a moderate interaction between ${selectedHerb.name} and ${selectedMed.name} (${selectedMed.drugClass}). Discuss this combination with a qualified clinician or pharmacist.`
+                      : `The current reference contains no matching rule for ${selectedHerb.name} and ${selectedMed.name}. This limited check cannot establish that the combination is safe.`}
                 </p>
 
-                {safetyResult.status === "flagged" && (
-                  <div className="space-y-3 pt-3 border-t border-rose-500/20 text-xs">
+                {selectedInteraction && (
+                  <div className={`space-y-3 pt-3 border-t text-xs ${isFlagged ? "border-rose-500/20" : "border-amber-500/20"}`}>
                     <div>
-                      <span className="text-rose-400 font-semibold block mb-0.5">Biochemical Mechanism:</span>
-                      <p className="text-slate-300">{safetyResult.mechanism}</p>
+                      <span className={`font-semibold block mb-0.5 ${isFlagged ? "text-rose-400" : "text-amber-300"}`}>Biochemical Mechanism:</span>
+                      <p className="text-slate-300">{selectedInteraction.mechanism}</p>
                     </div>
 
                     <div>
-                      <span className="text-rose-400 font-semibold block mb-0.5">scientific Adverse Effect:</span>
-                      <p className="text-slate-300">{safetyResult.physiologicalEffect}</p>
+                      <span className={`font-semibold block mb-0.5 ${isFlagged ? "text-rose-400" : "text-amber-300"}`}>Potential adverse effect:</span>
+                      <p className="text-slate-300">{selectedInteraction.physiologicalEffect}</p>
                     </div>
 
-                    <div className="pt-2 border-t border-rose-500/20 text-[10px] font-mono text-slate-400">
-                      Lineage Evidence: {safetyResult.sourceRef}
+                    <div className={`pt-2 border-t text-[10px] font-mono text-slate-400 ${isFlagged ? "border-rose-500/20" : "border-amber-500/20"}`}>
+                      Reference: {selectedInteraction.sourceRef}
                     </div>
                   </div>
                 )}
@@ -148,12 +163,83 @@ export default function SafetyExperience() {
           </div>
         </div>
 
+        <section className="mb-16" aria-labelledby="herb-profiles-heading">
+          <div className="mb-6 max-w-3xl">
+            <h2 id="herb-profiles-heading" className="text-xl font-bold text-white">
+              Herb-by-herb safety details
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-slate-400">
+              Expand a profile to review its plant identity, traditional context, and every interaction currently recorded in this reference. A profile with no listed interaction has not been proven safe.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {herbProfiles.map((herb) => (
+              <details
+                key={herb.name}
+                open={selectedHerb.name === herb.name}
+                className="glass-panel p-5"
+              >
+                <summary className="cursor-pointer list-none">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold text-white">{herb.name}</h3>
+                      <p className="mt-1 text-xs text-amber-300">{herb.amh}</p>
+                      <p className="mt-1 text-xs italic text-slate-400">{herb.sci}</p>
+                    </div>
+                    <span className="badge border border-slate-600 bg-slate-800 text-[10px] text-slate-300">
+                      {herb.interactions.length} listed {herb.interactions.length === 1 ? "interaction" : "interactions"}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-300">{herb.desc}</p>
+                  <span className="mt-3 inline-block text-[11px] font-semibold text-emerald-300">
+                    Expand safety details
+                  </span>
+                </summary>
+
+                <div className="mt-4 space-y-4 border-t border-white/10 pt-4">
+                  {herb.interactions.length > 0 ? (
+                    herb.interactions.map((rule) => (
+                      <article key={rule.sourceRef} className="rounded-xl border border-white/10 bg-black/20 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <h4 className="text-sm font-semibold text-white">{rule.targetDrugClass}</h4>
+                          <span className={`badge ${rule.interactionSeverity === "high" ? "badge-high" : "badge-moderate"}`}>
+                            {rule.interactionSeverity} severity
+                          </span>
+                        </div>
+                        <dl className="mt-3 space-y-3 text-xs leading-relaxed">
+                          <div>
+                            <dt className="font-semibold text-slate-200">Mechanism recorded</dt>
+                            <dd className="mt-1 text-slate-400">{rule.mechanism}</dd>
+                          </div>
+                          <div>
+                            <dt className="font-semibold text-slate-200">Potential effect recorded</dt>
+                            <dd className="mt-1 text-slate-400">{rule.physiologicalEffect}</dd>
+                          </div>
+                        </dl>
+                        <p className="mt-3 font-mono text-[10px] text-emerald-300">
+                          Reference: {rule.sourceRef}
+                          {rule.contraindicated ? " · Contraindicated by this rule" : ""}
+                        </p>
+                      </article>
+                    ))
+                  ) : (
+                    <p className="text-xs leading-relaxed text-slate-400">
+                      No herb-drug interaction is currently recorded for this plant in the displayed reference. This is a data gap, not a safety clearance; consult a qualified clinician or pharmacist before combining traditional remedies with medicines.
+                    </p>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
         <div className="glass-panel p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-bold text-white">Full ETM-DB Safety Interaction Matrix</h2>
               <p className="text-xs text-slate-400">
-                Official reference dataset maintained and signed off by the Medical Advisory Board
+                Interaction rules currently included in this app reference. Absence of a rule does not establish safety.
               </p>
             </div>
           </div>
@@ -167,6 +253,7 @@ export default function SafetyExperience() {
                   <th className="p-3">Target Drug Class</th>
                   <th className="p-3">Severity</th>
                   <th className="p-3">Biochemical Mechanism</th>
+                  <th className="p-3">Potential Effect</th>
                   <th className="p-3">Source Ref</th>
                 </tr>
               </thead>
@@ -182,6 +269,7 @@ export default function SafetyExperience() {
                       </span>
                     </td>
                     <td className="p-3 max-w-md leading-relaxed">{rule.mechanism}</td>
+                    <td className="p-3 max-w-md leading-relaxed">{rule.physiologicalEffect}</td>
                     <td className="p-3 font-mono text-[10px] text-emerald-400">{rule.sourceRef}</td>
                   </tr>
                 ))}

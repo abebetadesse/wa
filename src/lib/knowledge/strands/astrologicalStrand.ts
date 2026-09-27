@@ -1169,15 +1169,21 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
   async query(query: string, userProfile: UserProfile): Promise<StrandFinding[]> {
     const results: StrandFinding[] = [];
     const normalized = this.normalizeQuery(query);
+    const explicitlyRequested = /\b(awude|awde|negast|dabtara|debtera|healing scroll|kitabe|astrolog\w*|zodiac|horoscope|humou?r|earth|afere|melancholic|water|maye|phlegmatic|air|nawaye|sanguine|fire|isete|choleric|season|kiremt|bega|belg|lunar|moon|phase|house|ge'ez|amharic name|name meaning|circle)\b|አውደ|ነገሥት|ደብተራ|ጥበብ|አፈሬ|መሬት|ማዬ|ውሃ|ነፋዬ|ንፋስ|እሳቴ|እሳት|ወቅት|ጨረቃ|ወርህ/u.test(normalized);
+    if (!explicitlyRequested) return results;
     const terms = normalized.split(/\s+/).filter((t) => t.length > 2);
     const birthDate = this.getBirthDate(userProfile);
     const birthPlace = this.getBirthPlace(userProfile);
     const fullName = this.getFullName(userProfile);
     const amharicName = this.getAmharicName(userProfile);
+    const wantsBirthChart = /\b(astrolog\w*|zodiac|horoscope|birth chart|natal chart)\b/u.test(normalized) ||
+      Object.keys(this.westernZodiac).some((sign) => this.hasAlias(normalized, sign as keyof typeof this.queryAliases));
+    const wantsNameReading = /\b(name|ge'ez|amharic name|name meaning)\b/u.test(normalized) ||
+      /የስም|ትርጉም/u.test(normalized);
 
     // ---- 1. Determine user's zodiac sign from birth date (if available) ----
     let userZodiacSign: string | null = null;
-    if (birthDate) {
+    if (birthDate && wantsBirthChart) {
       const month = birthDate.getMonth() + 1; // 1-12
       const day = birthDate.getDate();
       if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) userZodiacSign = "aries";
@@ -1195,7 +1201,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
     }
 
     // ---- 2. Determine element from query or user's zodiac ----
-    let targetElement: keyof typeof this.humoralElements = "afere";
+    let targetElement: keyof typeof this.humoralElements | null = null;
     const elementMap: Record<string, keyof typeof this.humoralElements> = {
       earth: "afere", afere: "afere", melancholic: "afere",
       taurus: "afere", virgo: "afere", capricorn: "afere",
@@ -1222,7 +1228,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
         gemini: "nawaye", libra: "nawaye", aquarius: "nawaye",
         cancer: "maye", scorpio: "maye", pisces: "maye",
       };
-      targetElement = signElementMap[userZodiacSign] || "afere";
+      targetElement = signElementMap[userZodiacSign] || null;
     }
 
     // ---- 3. AwudeNegest Circle determination from name (if available) ----
@@ -1230,7 +1236,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
     let awudeCircleName: string | null = null;
     let awudeCircleDescription: string | null = null;
 
-    if (amharicName) {
+    if (amharicName && wantsNameReading) {
       // Simple mapping: use first letter of Amharic name to determine circle (simplified)
       const firstLetter = amharicName.charAt(0);
       const geEzMap: Record<string, number> = {
@@ -1274,7 +1280,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
       }
 
       // General AwudeNegest knowledge
-      if (normalized.includes("awude") || normalized.includes("አውደ") || normalized.includes("ነገሥት")) {
+      if (this.hasAlias(normalized, "awude") || normalized.includes("አውደ") || normalized.includes("ነገሥት")) {
         const circles = Object.values(this.awudeNegestCircles);
         const sampleCircles = circles.slice(0, 4);
         results.push({
@@ -1349,7 +1355,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
     }
 
     // ---- 6. Humoral Elements ----
-    const humoralItem = this.humoralElements[targetElement];
+    const humoralItem = targetElement ? this.humoralElements[targetElement] : undefined;
     if (humoralItem) {
       results.push({
         type: "humoral_element",
@@ -1364,7 +1370,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
         ],
         relevanceScore: 0.88,
         confidence: 0.88,
-        matches: ["humoral_element", targetElement],
+        matches: ["humoral_element", humoralItem.element.toLowerCase()],
         recommendations: [...humoralItem.traditional_balancing_guidance, ...humoralItem.nutritional_advice, ...humoralItem.lifestyle_advice],
         management: [...humoralItem.traditional_balancing_guidance, ...humoralItem.nutritional_advice, ...humoralItem.lifestyle_advice],
         sources: ["Awude Negest Ge'ez Classical Manuscripts"],
@@ -1498,7 +1504,7 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
     }
 
     // ---- 12. Name Analysis (if user has name) ----
-    if (fullName || amharicName) {
+    if ((fullName || amharicName) && wantsNameReading) {
       let nameFinding: { name: string; meaning: string; wellbeing_insight: string; circle_affinity: number } | null = null;
 
       // Check if we have a meaning for the Amharic name
@@ -1536,30 +1542,6 @@ export class AstrologicalKnowledgeStrand implements KnowledgeStrand {
         });
       }
     }
-
-    // ---- 13. Däbtära Healing Scroll Recommendation (always included as cultural context) ----
-    results.push({
-      type: "dabtara_healing_scroll_prescription",
-      strand: this.strandName,
-      domain: "cultural",
-      name: "DÄBTÄRA HEALING SCROLL & CELESTIAL BOTANICAL INSCRIPTION",
-      description: "Traditional parchment medical prescription aligning planetary hours with medicinal botanical teas and sacred thermal spring timing.",
-      evidence: "Recorded in classical Ge'ez medicinal codices (መጽሐፈ ፈውስ). Botanical affinities: Damakesse (Ocimum lamiifolium), Tikur Azmud (Nigella sativa), Tena Adam (Ruta chalepensis).",
-      ethiopian_context: [
-        "Däbtära healing scrolls traditionally provide spiritual and psychosomatic solace to ease internal anxiety and restore constitutional harmony.",
-        "Holy Water (Tsebel) pilgrimage timing is traditionally calculated based on seasonal lunar and solar transitions.",
-      ],
-      relevanceScore: 0.82,
-      confidence: 0.90,
-      matches: ["dabtara_scroll", "cultural_healing"],
-      recommendations: [
-        "Sip calming Damakesse and Koseret infusions during evening reflection windows.",
-        "Perform grounding foot massages with warm sesame oil before sleep to calm autonomic nervous excitement.",
-      ],
-      sources: ["Ethiopic Medical Manuscripts (Wellcome Trust & Debre Markos Collections)"],
-      category: "Domain B",
-      severity: "low",
-    });
 
     // Astrological findings are always Domain B (reflective, cultural context);
     // mark this explicitly so downstream firewall checks can rely on it.

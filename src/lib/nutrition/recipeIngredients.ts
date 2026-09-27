@@ -1,0 +1,47 @@
+export interface RecipeIngredientCue {
+  name: string;
+  catalogFoodId?: string;
+  rawCerealId?: string;
+}
+
+export const RECIPE_INGREDIENT_CUES: Record<string, RecipeIngredientCue[]> = {
+  "efct-0101": [{ name: "Brown teff flour", rawCerealId: "raw-teff" }, { name: "Water" }, { name: "Ersho starter" }],
+  "efct-0102": [{ name: "White teff flour", rawCerealId: "raw-teff" }, { name: "Water" }, { name: "Ersho starter" }],
+  "efct-0103": [{ name: "Red teff flour", rawCerealId: "raw-teff" }, { name: "Water" }, { name: "Ersho starter" }],
+  "efct-0104": [{ name: "Barley flour", rawCerealId: "raw-barley" }, { name: "Water" }, { name: "Honey or salt (optional)" }],
+  "efct-0105": [{ name: "Cracked whole wheat", rawCerealId: "raw-wheat" }, { name: "Water" }, { name: "Niter kibbeh or oil (optional)", catalogFoodId: "efct-0703" }],
+  "efct-0106": [{ name: "Roasted barley", rawCerealId: "raw-barley" }, { name: "Emmer wheat" }, { name: "Water" }, { name: "Niter kibbeh", catalogFoodId: "efct-0703" }, { name: "Berbere", catalogFoodId: "efct-0701" }],
+  "efct-0107": [{ name: "Sorghum flour", rawCerealId: "raw-sorghum" }, { name: "Water" }, { name: "Fermentation starter" }],
+  "efct-0108": [{ name: "Finger millet flour", rawCerealId: "raw-finger-millet" }, { name: "Water" }, { name: "Ersho starter" }],
+  "efct-0109": [{ name: "Roasted barley", rawCerealId: "raw-barley" }, { name: "Chickpeas" }, { name: "Peanuts" }, { name: "Safflower seed" }],
+  "efct-0201": [{ name: "Chickpea flour" }, { name: "Field pea flour" }, { name: "Red onion" }, { name: "Garlic" }, { name: "Berbere", catalogFoodId: "efct-0701" }],
+  "efct-0202": [{ name: "Red lentils" }, { name: "Berbere", catalogFoodId: "efct-0701" }, { name: "Red onion" }, { name: "Ginger" }, { name: "Garlic" }],
+  "efct-0203": [{ name: "Yellow split peas" }, { name: "Turmeric" }, { name: "Garlic" }, { name: "Ginger" }, { name: "Red onion" }],
+  "efct-0204": [{ name: "Fava beans" }, { name: "Onion" }, { name: "Ginger" }, { name: "Cardamom" }],
+  "efct-0205": [{ name: "Chickpea dough" }, { name: "Berbere sauce", catalogFoodId: "efct-0701" }],
+  "efct-0206": [{ name: "Green lentils" }, { name: "Ethiopian brown mustard" }, { name: "Lime juice" }, { name: "Red onion" }, { name: "Green chili" }],
+  "efct-0207": [{ name: "Chickpeas" }, { name: "Wheat kernels", rawCerealId: "raw-wheat" }, { name: "Fava beans" }, { name: "Salt" }],
+  "efct-0208": [{ name: "Green beans" }, { name: "Carrots" }, { name: "Red onion" }, { name: "Garlic" }, { name: "Turmeric" }],
+  "efct-0209": [{ name: "Fava bean flour" }, { name: "Safflower seed" }, { name: "Mustard seed" }, { name: "Garlic" }, { name: "Rue" }],
+  "efct-0301": [{ name: "Fermented enset (false banana) pulp" }],
+  "efct-0302": [{ name: "Enset starch (bulla)" }, { name: "Water" }],
+  "efct-0303": [{ name: "Taro (godere)" }, { name: "Water" }],
+  "efct-0304": [{ name: "Sweet potato" }, { name: "Water" }],
+  "efct-0305": [{ name: "Oromo potato" }, { name: "Water" }],
+  "efct-0401": [{ name: "Ethiopian collard greens" }, { name: "Onion" }, { name: "Garlic" }, { name: "Cooking oil or niter kibbeh", catalogFoodId: "efct-0703" }],
+  "efct-0402": [{ name: "Moringa stenopetala leaves" }],
+  "efct-0403": [{ name: "Pumpkin or squash" }, { name: "Berbere", catalogFoodId: "efct-0701" }, { name: "Turmeric" }, { name: "Garlic" }, { name: "Red onion" }],
+  "efct-0404": [{ name: "Tomato" }, { name: "Red onion" }, { name: "Green chili" }, { name: "Lemon juice" }, { name: "Fermented teff injera" }],
+  "efct-0501": [{ name: "Flaxseed" }, { name: "Water" }, { name: "Honey (optional)" }],
+  "efct-0502": [{ name: "Safflower seed" }, { name: "Water" }, { name: "Chili" }, { name: "Injera" }],
+  "efct-0503": [{ name: "Niger seed" }],
+  "efct-0601": [{ name: "Chicken" }, { name: "Hardboiled egg" }, { name: "Red onion" }, { name: "Niter kibbeh", catalogFoodId: "efct-0703" }, { name: "Berbere", catalogFoodId: "efct-0701" }, { name: "Ginger" }, { name: "Garlic" }],
+  "efct-0602": [{ name: "Beef" }, { name: "Red onion" }, { name: "Garlic" }, { name: "Berbere", catalogFoodId: "efct-0701" }, { name: "Niter kibbeh", catalogFoodId: "efct-0703" }],
+  "efct-0603": [{ name: "Beef" }, { name: "Niter kibbeh", catalogFoodId: "efct-0703" }, { name: "Mitmita", catalogFoodId: "efct-0702" }],
+  "efct-0604": [{ name: "Fermented whole buttermilk" }],
+  "efct-0605": [{ name: "Whole cow's milk" }, { name: "Traditional starter culture" }],
+  "efct-0606": [{ name: "Tilapia" }, { name: "Berbere", catalogFoodId: "efct-0701" }, { name: "Garlic" }, { name: "Korerima" }, { name: "Tomato paste" }],
+  "efct-0701": [{ name: "Sun-dried red peppers" }, { name: "Korerima" }, { name: "Fenugreek" }, { name: "Cloves" }, { name: "Ginger" }, { name: "Garlic" }, { name: "Rue" }, { name: "Holy basil" }],
+  "efct-0702": [{ name: "Hot peppers" }, { name: "Spices" }],
+  "efct-0703": [{ name: "Clarified butter" }, { name: "Koseret" }, { name: "Black cumin" }],
+};

@@ -175,6 +175,17 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(cultFindings[0].details?.isDomainB, "Cultural strand must be Domain B");
 
     const astroStrand = new AstrologicalKnowledgeStrand();
+    const unrelatedAstroFindings = await astroStrand.query(
+      "I have been tired for several days",
+      { ...mockProfile, birthDate: "1985-04-15", fullName: "Abebe Bekele" }
+    );
+    assert.deepEqual(unrelatedAstroFindings, [], "Astrological findings must not be inferred for an unrelated case");
+    const requestedScrollFindings = await astroStrand.query("Tell me about Däbtära healing scrolls", mockProfile);
+    assert.equal(
+      requestedScrollFindings.some((finding) => finding.type === "dabtara_healing_scroll_prescription"),
+      false,
+      "The strand must not emit a fabricated personalized scroll prescription"
+    );
     const astroFindings = await astroStrand.query("awde negest star humor element", mockProfile);
     assert.ok(astroFindings.length > 0, "Astrological strand should return findings");
     assert.ok(astroFindings[0].details?.isDomainB, "Astrological strand must be Domain B");
@@ -218,6 +229,8 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     const mockProfile = {
       location: { region: "Addis Ababa", altitude: 2400 },
       medications: ["warfarin"],
+      birthDate: "1985-04-15",
+      fullName: "Abebe Bekele",
     };
     const query = "severe throbbing headache and fever for 3 days";
     const intentResult = intentClassifier.classify(query);
@@ -246,6 +259,26 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     // Check Domain B Firewall
     assert.equal(solution.cultural_context.isDomainB, true, "Cultural context must be flagged as Domain B");
     assert.equal(solution.astrological_context.isDomainB, true, "Astrological context must be flagged as Domain B");
+    assert.equal(
+      solution.causes.some((cause) => ["cultural", "astrological"].includes(cause.domain)),
+      false,
+      "Domain B reflections must not be listed as scientific causes"
+    );
+    assert.equal(solution.culturalLayers[0].status, "firewalled", "Cultural reflection must remain off unless requested");
+    const optedIn = await orchestrator.retrieveAll(
+      `${query}\nreflectionLens: Yes`,
+      "text",
+      "en",
+      mockProfile,
+      intentResult.intent,
+      urgency
+    );
+    assert.equal(optedIn.solution.culturalLayers[0].status, "included", "Explicit opt-in should permit a separate reflection layer");
+    assert.equal(
+      optedIn.solution.causes.some((cause) => ["cultural", "astrological"].includes(cause.domain)),
+      false,
+      "Opt-in reflection must still stay out of scientific causes"
+    );
     assert.match(solution.cultural_context.disclaimer, /Domain B/i);
     assert.match(solution.astrological_context.disclaimer, /Domain B/i);
 

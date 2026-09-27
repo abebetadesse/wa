@@ -34,16 +34,18 @@ export class AIReasoningEngine {
   synthesizeSolution(input: ReasoningInput): DiagnosticSolution {
     const { query, mode, language, userProfile, strandResults, intersections, intent, urgency } = input;
     const allFindings = Object.values(strandResults).flat();
-    const domainBAllowed = urgency.level !== "critical";
-    const culturalFinding = (strandResults.cultural || [])[0];
-    const astrologicalFinding = (strandResults.astrological || [])[0];
+    const evidenceFindings = allFindings.filter((finding) => finding.strand !== "cultural" && finding.strand !== "astrological");
+    const reflectionRequested = /\breflectionlens\s*:\s*(yes|true)\b|\binclude(?: a)? cultural reflection\b|\bcultural reflection\b|\bastrological reflection\b/i.test(query);
+    const domainBAllowed = urgency.level !== "critical" && reflectionRequested;
     const culturalContext: CulturalReportContext = {
       layer: "Domain B",
       status: domainBAllowed ? "included" : "firewalled",
       strands: ["cultural", "astrological"],
       interpretation: domainBAllowed
-        ? `${culturalFinding?.description || "Cultural and community context is available as a reflective layer."} ${astrologicalFinding?.evidence || "Seasonal and constitutional themes remain separate from scientific scoring."}`
-        : "Cultural and astrological material is withheld from this critical report until urgent scientific care is addressed.",
+        ? "No tradition-specific interpretation is inferred unless the user explicitly requests one. Cultural reflection remains separate from evidence-based findings."
+        : urgency.level === "critical"
+          ? "Cultural and astrological material is withheld from this critical report until urgent scientific care is addressed."
+          : "No cultural or astrological reflection was requested for this report.",
       practice: domainBAllowed
         ? "Use cultural and astrological findings only as an optional reflective perspective, separate from scientific reasoning."
         : "No elective cultural practice is recommended while an emergency signal is active.",
@@ -63,16 +65,12 @@ export class AIReasoningEngine {
 
     // 2. Identify Potential Causes
     const causes: Array<{ name: string; probability: number; evidence: string; domain: string }> = [];
-    const topFindings = [...allFindings]
+    const topFindings = [...evidenceFindings]
       .filter((f) => f.relevanceScore >= 0.6)
       .sort((a, b) => b.relevanceScore - a.relevanceScore);
 
     for (const f of topFindings.slice(0, 4)) {
       causes.push({ name: f.name, probability: Math.round(f.relevanceScore * 100), evidence: f.evidence || f.description, domain: f.strand });
-    }
-
-    if (causes.length === 0) {
-      causes.push({ name: "General Physiological Fatigue or Nutritional Imbalance", probability: 65, evidence: "Reported symptoms match mild systemic strain or dietary mineral deficit", domain: "biochemical" });
     }
 
     // 3. Synthesize Solutions
@@ -234,7 +232,7 @@ export class AIReasoningEngine {
     ];
 
     // 5. Causal Pathways
-    const causalPathways = this.causalEngine.buildCausalPathways(query, allFindings, userProfile);
+    const causalPathways = this.causalEngine.buildCausalPathways(query, evidenceFindings, userProfile);
 
     // 6. Safety Warnings & Herb-Drug Flags
     const warnings: string[] = [];
@@ -256,7 +254,7 @@ export class AIReasoningEngine {
     }
 
     // 7. Assemble Full Diagnostic Solution
-    const enrichedCauses = causes.map((cause) => ({ ...cause, culturalContext }));
+    const enrichedCauses = causes;
     const enrichedSolutions = solutions.map((solution) => ({ ...solution, culturalContext }));
     return {
       query,
@@ -267,7 +265,7 @@ export class AIReasoningEngine {
         problem: query.length > 90 ? `${query.slice(0, 87)}...` : query,
         urgency: urgency.level,
         urgencyScore: urgency.score,
-        confidence: Math.round(topFindings.length > 0 ? (topFindings[0].confidence || 0.88) * 100 : 85),
+        confidence: Math.round(topFindings.length > 0 ? (topFindings[0].confidence ?? 0) * 100 : 0),
         intent,
         matchedSignals: urgency.matchedSignals,
       },
@@ -313,17 +311,17 @@ export class AIReasoningEngine {
       },
       cultural_context: {
         isDomainB: true,
-        title: culturalFinding?.name || "Ethiopian Cultural Healing Heritage",
-        traditionalHealing: culturalFinding?.description || "Holistic unity of physical vitality, family solidarity, and ancestral land connection.",
-        culturalSignificance: "Wax & Gold (Sem-enna-Werq) metaphorical wisdom and the communal coffee ceremony (Buna) provide daily emotional debriefing and resilience.",
+        title: "Optional cultural reflection",
+        traditionalHealing: "No tradition-specific practice is inferred or recommended by this analysis.",
+        culturalSignificance: "Cultural perspectives are reflective context, not medical evidence.",
         disclaimer: "Domain B Cultural Heritage Layer: Provided for personal reflection only and structurally firewalled from scientific triage and drug safety contraindications.",
       },
       astrological_context: {
         isDomainB: true,
-        title: astrologicalFinding?.name || "Awde Negest Humoral Balance",
-        humoralElement: astrologicalFinding?.name || "Afere (Earth / Melancholic)",
-        seasonalAdvice: astrologicalFinding?.evidence || "Balance warming spices with seasonal rest to maintain constitutional equilibrium.",
-        lunarGuidance: "Align seasonal dietary transitions with traditional Ge'ez calendar cycles for harmonious moderation.",
+        title: "Optional astrological reflection",
+        humoralElement: "No astrological profile was inferred for this case.",
+        seasonalAdvice: "No astrological health advice is generated unless specifically requested.",
+        lunarGuidance: "Astrological and lunar traditions are not evidence of health effects.",
         disclaimer: "Domain B Awde Negest Heritage Layer: For personal contemplation only. Does not alter scientific diagnostic findings or lab metrics.",
       },
       culturalLayers: [culturalContext],

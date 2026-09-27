@@ -17,12 +17,14 @@ import {
   getPagumeStatus,
   getMineralSpringsDirectory,
 } from "@/lib/cultural/seasonalTraditionsEngine";
+import { toEthiopianDate } from "@/lib/profiling/astrology/ethiopianTraditions";
 import ChristianBibleReading from "@/components/cultural/ChristianBibleReading";
 
 interface EthiopianCalendarInfo {
   year: string;
   month: string;
   day: number;
+  gregorianDate: string;
   holiday: string | null;
   fastingPeriod: string | null;
 }
@@ -33,11 +35,6 @@ interface CoffeeCeremonyStage {
   wellbeingEffect: string;
   timing: string;
 }
-
-const ETHIOPIAN_MONTHS = [
-  "Meskerem", "Tikimt", "Hidar", "Tahsas", "Tir", "Yekatit",
-  "Megabit", "Miyazya", "Genbot", "Sene", "Hamle", "Nehase", "Pagume"
-];
 
 const FASTING_PERIODS = [
   { name: "Abiy Tsom (Lent)", duration: "55 days", season: "Feb-Apr", wellbeingNote: "Vegan, requires B12 & iron monitoring" },
@@ -92,20 +89,26 @@ export default function CulturalExperience() {
 
   const ethiopianCalendar = useMemo((): EthiopianCalendarInfo => {
     const now = new Date();
-    const ethiopianYear = now.getFullYear() - 8;
-    const monthIndex = now.getMonth() % 13;
-    const day = now.getDate();
-    const month = ETHIOPIAN_MONTHS[monthIndex] || "Meskerem";
+    const localDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    const ethiopianDate = toEthiopianDate(localDate);
+    const month = ethiopianDate.monthName;
+    const day = ethiopianDate.day;
     let holiday = null;
-    if (month === "Meskerem" && day === 11) holiday = "Enkutatash (Ethiopian New Year)";
-    if (month === "Tir" && day === 19) holiday = "Timkat (Epiphany)";
-    if (month === "Megabit" && day === 12) holiday = "Meskel (Finding of the True Cross)";
-    if (month === "Sene" && day === 28) holiday = "Gena (Christmas) – Ethiopian";
+    if (month === "Meskerem" && day === 1) holiday = "Enkutatash (Ethiopian New Year)";
+    if (month === "Tir" && day === 11) holiday = "Timkat (Epiphany)";
+    if (month === "Meskerem" && day === 17) holiday = "Meskel (Finding of the True Cross)";
+    if (month === "Tahsas" && day === 29) holiday = "Gena (Ethiopian Christmas)";
     let fastingPeriod = null;
-    if (month === "Tir" || month === "Yekatit" || month === "Megabit") {
-      fastingPeriod = "Abiy Tsom (Lent) - ongoing";
-    }
-    return { year: String(ethiopianYear), month, day, holiday, fastingPeriod };
+    if (now.getDay() === 3) fastingPeriod = "Weekly Wednesday fast";
+    if (now.getDay() === 5) fastingPeriod = "Weekly Friday fast";
+    return {
+      year: String(ethiopianDate.year),
+      month,
+      day,
+      gregorianDate: now.toLocaleDateString("en", { month: "long", day: "numeric", year: "numeric" }),
+      holiday,
+      fastingPeriod,
+    };
   }, []);
 
   const toggleSpringDetails = (springId: string) => {
@@ -119,21 +122,13 @@ export default function CulturalExperience() {
   };
 
   return (
-    <div className="app-container py-10 space-y-14">
+    <div className="space-y-14">
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
           <span>Domain B: Sacred Heritage & Parchment Humanities Layer</span>
           <span>•</span>
           <span className="text-emerald-400">Enhancements 13–22</span>
         </div>
-        <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-          Awde Negest, Fidel Gematria & Sacred Traditions
-        </h1>
-        <p className="text-slate-400 text-sm md:text-base max-w-3xl mt-2">
-          Ancient parchment astromancy, classical Abushakir letter numerology, sacred baptismal lineages,
-          lunar harvesting potency, and geothermal balneotherapeutic waters of the Ethiopian plateau.
-        </p>
-
         <div className="mt-4 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed max-w-3xl">
           <strong>Architectural Firewall Guarantee:</strong> Under the enterprise architecture rules, Domain B is structurally
           firewalled from Domain A (Scientific Evaluation). No astrological constellation, baptismal record, or gematria score ever
@@ -141,9 +136,27 @@ export default function CulturalExperience() {
         </div>
       </div>
 
+      <nav aria-label="Cultural topics" className="flex gap-2 overflow-x-auto pb-1">
+        {[
+          ["traditions-signs", "Signs"],
+          ["ethiopian-calendar", "Calendar"],
+          ["cultural-names", "Names"],
+          ["coffee-rituals", "Coffee ritual"],
+          ["mineral-springs", "Springs"],
+        ].map(([id, label]) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className="shrink-0 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-amber-400/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
       <ChristianBibleReading />
 
-      <div className="glass-panel p-6 md:p-8 space-y-6">
+      <div id="traditions-signs" className="glass-panel scroll-mt-24 p-6 md:p-8 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/10 pb-4">
           <div>
             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Enhancement 13</span>
@@ -164,6 +177,7 @@ export default function CulturalExperience() {
               <button
                 key={sign.id}
                 onClick={() => setSelectedZodiacId(sign.id)}
+                aria-pressed={isSelected}
                 className={`p-3 rounded-xl text-center border transition-all ${isSelected
                   ? "bg-amber-500/20 border-amber-500 text-white shadow-lg shadow-amber-950/50"
                   : "bg-black/30 border-white/5 text-slate-400 hover:text-white hover:bg-white/5"
@@ -255,6 +269,7 @@ export default function CulturalExperience() {
                 <button
                   key={el}
                   onClick={() => setSelectedHumor(el)}
+                  aria-pressed={isSelected}
                   className={`p-2.5 rounded-xl text-center border transition-all ${isSelected
                     ? "bg-amber-500/20 border-amber-500 text-white"
                     : "bg-black/30 border-white/5 text-slate-400 hover:text-white"
@@ -292,7 +307,7 @@ export default function CulturalExperience() {
           </div>
         </div>
 
-        <div className="glass-panel p-6 space-y-6">
+        <div id="ethiopian-calendar" className="glass-panel scroll-mt-24 p-6 space-y-6">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Enhancement 15</span>
@@ -357,6 +372,7 @@ export default function CulturalExperience() {
           <div className="flex gap-2">
             <button
               onClick={() => setCalendarView("current")}
+              aria-pressed={calendarView === "current"}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${calendarView === "current" ? "bg-emerald-600 text-white" : "bg-white/5 text-slate-400 hover:text-white"
                 }`}
             >
@@ -364,6 +380,7 @@ export default function CulturalExperience() {
             </button>
             <button
               onClick={() => setCalendarView("fasting")}
+              aria-pressed={calendarView === "fasting"}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${calendarView === "fasting" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400 hover:text-white"
                 }`}
             >
@@ -371,6 +388,7 @@ export default function CulturalExperience() {
             </button>
             <button
               onClick={() => setCalendarView("holidays")}
+              aria-pressed={calendarView === "holidays"}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${calendarView === "holidays" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400 hover:text-white"
                 }`}
             >
@@ -388,11 +406,13 @@ export default function CulturalExperience() {
             <div className="text-center p-3 bg-white/5 rounded-lg">
               <span className="text-slate-400 block">Month & Day</span>
               <span className="text-2xl font-bold text-white">{ethiopianCalendar.month} {ethiopianCalendar.day}</span>
+              <span className="mt-1 block text-slate-400">Gregorian: {ethiopianCalendar.gregorianDate}</span>
             </div>
             <div className="text-center p-3 bg-white/5 rounded-lg">
-              <span className="text-slate-400 block">Holiday / Fast</span>
-              <span className="text-sm font-bold text-emerald-300">{ethiopianCalendar.holiday || "No holiday"}</span>
-              <span className="block text-amber-300 text-[11px]">{ethiopianCalendar.fastingPeriod || "No major fast"}</span>
+              <span className="text-slate-400 block">Feast / Fast</span>
+              <span className="text-sm font-bold text-emerald-300">{ethiopianCalendar.holiday || "No fixed feast today"}</span>
+              <span className="block text-amber-300 text-[11px]">{ethiopianCalendar.fastingPeriod || "No weekly fast today"}</span>
+              <span className="mt-1 block text-slate-400">Major fast dates vary by year.</span>
             </div>
           </div>
         )}
@@ -419,26 +439,26 @@ export default function CulturalExperience() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">
                 <span className="block text-amber-300 font-bold">Enkutatash</span>
-                <span className="text-slate-300">Sept 11 – Ethiopian New Year</span>
+                <span className="text-slate-300">Meskerem 1 – Ethiopian New Year</span>
               </div>
               <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">
                 <span className="block text-amber-300 font-bold">Timkat</span>
-                <span className="text-slate-300">Jan 19 – Epiphany</span>
+                <span className="text-slate-300">Tir 11 – Epiphany</span>
               </div>
               <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">
                 <span className="block text-amber-300 font-bold">Meskel</span>
-                <span className="text-slate-300">Sept 27 – Finding of the True Cross</span>
+                <span className="text-slate-300">Meskerem 17 – Finding of the True Cross</span>
               </div>
               <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">
                 <span className="block text-amber-300 font-bold">Gena (Ethiopian Christmas)</span>
-                <span className="text-slate-300">Jan 7 – Christmas</span>
+                <span className="text-slate-300">Tahsas 29 – Ethiopian Christmas</span>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div id="cultural-names" className="grid scroll-mt-24 grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="glass-panel p-6 space-y-6">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
@@ -451,8 +471,9 @@ export default function CulturalExperience() {
           </div>
 
           <div>
-            <label className="text-xs text-slate-300 block mb-1.5">Enter Name in Ge&apos;ez / Amharic Fidel:</label>
+            <label htmlFor="gematria-name" className="text-xs text-slate-300 block mb-1.5">Enter Name in Ge&apos;ez / Amharic Fidel:</label>
             <input
+              id="gematria-name"
               type="text"
               value={inputName}
               onChange={(e) => setInputName(e.target.value)}
@@ -506,8 +527,9 @@ export default function CulturalExperience() {
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="text-slate-300 block mb-1">Secular Name:</label>
+              <label htmlFor="secular-name" className="text-slate-300 block mb-1">Secular Name:</label>
               <input
+                id="secular-name"
                 type="text"
                 value={secularNameInput}
                 onChange={(e) => setSecularNameInput(e.target.value)}
@@ -515,8 +537,9 @@ export default function CulturalExperience() {
               />
             </div>
             <div>
-              <label className="text-slate-300 block mb-1">Baptismal Name:</label>
+              <label htmlFor="baptismal-name" className="text-slate-300 block mb-1">Baptismal Name:</label>
               <input
+                id="baptismal-name"
                 type="text"
                 value={baptismalNameInput}
                 onChange={(e) => setBaptismalNameInput(e.target.value)}
@@ -544,7 +567,7 @@ export default function CulturalExperience() {
         </div>
       </div>
 
-      <div className="glass-panel p-6 space-y-6">
+      <div id="coffee-rituals" className="glass-panel scroll-mt-24 p-6 space-y-6">
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
             <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Enhancement 21</span>
@@ -629,7 +652,7 @@ export default function CulturalExperience() {
       </div>
 
       <div className="space-y-6">
-        <div className="border-b border-white/10 pb-4">
+        <div id="mineral-springs" className="scroll-mt-24 border-b border-white/10 pb-4">
           <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Enhancement 19</span>
           <h2 className="text-2xl font-bold text-white">Sacred Mineral Springs (ፍልውኃና ጸበል) Balneotherapy Directory</h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -669,13 +692,15 @@ export default function CulturalExperience() {
 
                 <button
                   onClick={() => toggleSpringDetails(spring.id)}
+                  aria-expanded={isExpanded}
+                  aria-controls={`spring-details-${spring.id}`}
                   className="mt-3 text-[10px] text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
                 >
                   {isExpanded ? "Hide details" : "View more"}
                 </button>
 
                 {isExpanded && (
-                  <div className="p-3 rounded-lg bg-black/40 border border-white/10 text-xs space-y-2">
+                  <div id={`spring-details-${spring.id}`} className="p-3 rounded-lg bg-black/40 border border-white/10 text-xs space-y-2">
                     <p><strong className="text-white">Cultural significance:</strong> {spring.culturalSignificance ?? "Documented local significance varies by community."}</p>
                     <p><strong className="text-white">Seasonal access:</strong> {spring.seasonalAccess ?? "Access may vary with weather and local guidance."}</p>
                     <p><strong className="text-white">Associated rituals:</strong> {spring.associatedRituals ?? "Follow local customs and safety guidance."}</p>

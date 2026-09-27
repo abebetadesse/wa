@@ -25,7 +25,7 @@ test("guided workflow supports the expanded case taxonomy and interest refinemen
 
   const report = processSession(session.id);
   assert.equal(report?.currentStep, "reportReview");
-  assert.equal(report?.causes.some((cause) => cause.category === "cultural"), true);
+  assert.equal(report?.causes.some((cause) => cause.category === "preference"), true);
   assert.equal(report?.answers.selectedInterest, "skill building");
   assert.ok(report?.workflowContext?.domainA.includes("psychological"));
   assert.ok(report?.workflowContext?.domainB.includes("astrological"));
@@ -57,6 +57,7 @@ test("case synthesis incorporates full identity, birth data, and geographic cont
     fullName: "Selam Bekele",
     motherName: "Mariam",
     birthDate: "1992-02-14",
+    birthTime: "08:30",
     birthPlace: "Addis Ababa",
     altitudeMeters: 2400,
     longitude: 38.74,
@@ -74,6 +75,83 @@ test("case synthesis incorporates full identity, birth data, and geographic cont
   assert.equal(report.profileSynthesis.geography.altitudeMeters, 2400);
   assert.ok(report.profileSynthesis.chart.some((point) => point.key === "vitality"));
   assert.ok(report.profileSynthesis.summary.toLowerCase().includes("selam") || report.profileSynthesis.summary.length > 0);
+});
+
+test("case synthesis does not invent birth data when personal details are missing", () => {
+  const session = startSession("wellbeing");
+  saveAnswers(session.id, {
+    challenge: "Symptoms or a new concern",
+    location: "Hawassa",
+    region: "Sidama",
+    detail: "I have been feeling tired for a few days.",
+  });
+
+  const report = processSession(session.id);
+  assert.equal(report?.profileSynthesis, undefined);
+  assert.equal(report?.causes.some((cause) => cause.description.includes("AFERE")), false);
+  assert.equal(report?.causes.some((cause) => cause.description.includes("INCOME INEQUALITY")), false);
+  assert.ok(report?.causes.some((cause) => cause.description.includes("feeling tired")));
+});
+
+test("case synthesis requires explicit reflection and a real client name", () => {
+  const session = startSession("wellbeing");
+  saveAnswers(session.id, {
+    challenge: "Symptoms or a new concern",
+    fullName: "Case Client",
+    birthDate: "1990-01-15",
+    birthTime: "12:00",
+    birthPlace: "Addis Ababa",
+    reflectionLens: "Yes",
+  });
+
+  assert.equal(processSession(session.id)?.profileSynthesis, undefined);
+});
+
+test("refining findings preserves the intake-specific diagnostic recommendations", () => {
+  const session = startSession("wellbeing");
+  saveAnswers(session.id, {
+    challenge: "Symptoms or a new concern",
+    detail: "Headaches become worse after long periods without water.",
+    selectedInterest: "symptom understanding",
+    diagnosticAssessment: {
+      causes: [
+        { name: "Possible dehydration pattern", probability: 62, evidence: "User reported thirst-linked symptoms.", domain: "biochemical" },
+        { name: "Possible sleep contribution", probability: 31, evidence: "Sleep schedule needs clarification.", domain: "psychological" },
+      ],
+      solutions: [
+        { id: "hydration-review", title: "Review hydration and headache timing", description: "Track fluid intake alongside symptoms.", priority: "medium", sourceRef: "User symptom history" },
+      ],
+    },
+  });
+
+  const report = processSession(session.id);
+  const chosenCause = report?.causes[0];
+  assert.ok(chosenCause);
+  const refined = refineCauses(session.id, [chosenCause.id]);
+  assert.equal(refined?.solutions.length, 1);
+  assert.equal(refined?.solutions[0].title, "Review hydration and headache timing");
+  assert.deepEqual(refined?.solutions[0].basedOnCauses, [chosenCause.id]);
+  assert.equal(refined?.solutions[0].knowledgeReferences.includes("User symptom history"), true);
+});
+
+test("report processing keeps cultural astrology separate from case findings", () => {
+  const session = startSession("wellbeing");
+  saveAnswers(session.id, {
+    challenge: "Symptoms or a new concern",
+    detail: "I have been tired for several days.",
+    selectedInterest: "symptom understanding",
+    diagnosticAssessment: {
+      causes: [
+        { name: "AFERE (Earth / melancholic)", probability: 88, evidence: "Generic constitutional profile", domain: "astrological" },
+        { name: "Däbtära healing scroll & celestial botanical inscription", probability: 82, evidence: "Generic tradition text", domain: "astrological" },
+        { name: "Possible sleep contribution", probability: 54, evidence: "Sleep schedule needs clarification.", domain: "psychological" },
+      ],
+      solutions: [],
+    },
+  });
+
+  const report = processSession(session.id);
+  assert.deepEqual(report?.causes.map((cause) => cause.description), ["Possible sleep contribution"]);
 });
 
 test("critical wellbeing signals gate Domain B recommendations", () => {

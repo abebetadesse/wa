@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { diagnosticSessions, wellbeingProfiles } from "@/lib/db/schema";
 import { decryptRestrictedField } from "@/lib/security/encryption";
 import { desc, eq } from "drizzle-orm";
+import { requireAuthenticatedUser } from "@/lib/auth";
 
 const intentClassifier = new IntentClassifier();
 const entityExtractor = new EntityExtractor();
@@ -54,6 +55,15 @@ async function loadPersistedProfile(userId?: string): Promise<UserProfile> {
 
 export async function POST(request: NextRequest) {
   try {
+    let authenticatedUser;
+    try {
+      authenticatedUser = await requireAuthenticatedUser();
+    } catch {
+      // Guest access allowed — persisted profile is skipped but core diagnostic
+      // analysis still runs using the userProfile supplied in the request body.
+      authenticatedUser = null;
+    }
+
     const body = await request.json();
     const originalQuery = typeof body.query === "string" ? body.query.trim() : "";
     let query = originalQuery;
@@ -98,19 +108,22 @@ export async function POST(request: NextRequest) {
     const extractedSubs = entities.filter((e) => e.category === "substance").map((e) => e.value);
 
     let persistedProfile: UserProfile = {};
-    try {
-      persistedProfile = await loadPersistedProfile(requestProfile.userId);
-    } catch (profileError) {
-      console.warn("Could not load persisted wellbeing profile for diagnostic:", profileError);
+    if (authenticatedUser?.id) {
+      try {
+        persistedProfile = await loadPersistedProfile(authenticatedUser.id);
+      } catch (profileError) {
+        console.warn("Could not load persisted wellbeing profile for diagnostic:", profileError);
+      }
     }
     const userProfile: UserProfile = {
       ...persistedProfile,
       ...requestProfile,
+      userId: authenticatedUser?.id,
       demographics: { ...persistedProfile.demographics, ...requestProfile.demographics },
       wellbeing: { ...persistedProfile.wellbeing, ...requestProfile.wellbeing },
       lifestyle: { ...persistedProfile.lifestyle, ...requestProfile.lifestyle },
       location: {
-        region: requestProfile.location?.region || persistedProfile.location?.region || "Addis Ababa",
+        region: requestProfile.location?.region || persistedProfile.location?.region || "Unspecified",
         ...persistedProfile.location,
         ...requestProfile.location,
       },
@@ -120,9 +133,7 @@ export async function POST(request: NextRequest) {
       medications: Array.from(new Set([...(userProfile.medications || []), ...extractedMeds])),
       substanceUse: Array.from(new Set([...(userProfile.substanceUse || []), ...extractedSubs])),
       location: userProfile.location || {
-        region: "Addis Ababa",
-        altitude: 2400,
-        type: "urban",
+        region: "Unspecified",
       },
     };
 
@@ -143,8 +154,9 @@ export async function POST(request: NextRequest) {
     // 3. Persist session to database if connected
     try {
       if (db) {
+        const isUuid = typeof userProfile.userId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userProfile.userId);
         const [saved] = await db.insert(diagnosticSessions).values({
-          userId: userProfile.userId || null,
+          userId: isUuid ? userProfile.userId : null,
           query,
           mode,
           language: solution.language,

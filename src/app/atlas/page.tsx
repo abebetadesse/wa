@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { RegionData } from "@/app/api/atlas/route";
+import { getEthiopianAdministrativeHierarchy } from "@/lib/location/ethiopianAdministrativePlaces";
 import AtlasClient from "./AtlasClient";
 
 export const metadata: Metadata = {
@@ -9,18 +10,17 @@ export const metadata: Metadata = {
 };
 
 async function getAtlasData(): Promise<{ regions: RegionData[] }> {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5500"}/api/atlas`, {
-      next: { revalidate: 86400 },
-    });
-    if (res.ok) return res.json();
-  } catch {
-    // Fallback handled in client
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5500"}/api/atlas`, {
+    next: { revalidate: 86400 },
+  });
+  if (!res.ok) {
+    throw new Error(`Atlas data request failed with status ${res.status}`);
   }
-  return { regions: [] };
+  return res.json();
 }
 
 export default async function AtlasPage() {
   const { regions } = await getAtlasData();
-  return <AtlasClient regions={regions} />;
+  const administrativeRegions = getEthiopianAdministrativeHierarchy();
+  return <AtlasClient regions={regions} administrativeRegions={administrativeRegions} />;
 }

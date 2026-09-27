@@ -5,10 +5,16 @@ const PUBLIC_API_PATHS = [
   "/api/auth/",
   "/api/case/",
   "/api/cases",
+  "/api/case-workflows",
   "/api/safety-check",
-  "/api/diagnostic/assist",
+  "/api/diagnostic/",
+  "/api/session/",
+  "/api/intake",
+  "/api/locations",
+  "/api/experts/",
   "/api/ai/bionic/test",
   "/api/nutrition/overview",
+  "/api/atlas",
 ];
 
 const PUBLIC_PAGE_PATHS = [
@@ -26,6 +32,7 @@ const PUBLIC_PAGE_PATHS = [
   "/zoonotic",
   "/foods",
   "/atlas",
+  "/case",
 ];
 
 function isPublicPage(pathname: string) {

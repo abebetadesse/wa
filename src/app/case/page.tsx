@@ -5,8 +5,14 @@ import Link from "next/link";
 import type { CaseDefinition, CaseSession, Question } from "@/lib/case-workflow/engine";
 import type { DiagnosticSolution } from "@/lib/knowledge/types";
 import AwudeHeritageContext from "@/components/cultural/AwudeHeritageContext";
+import { HatataMenafsestViewer } from "@/components/cultural/HatataMenafsestViewer";
+import { TelsemLibraryViewer } from "@/components/cultural/TelsemLibraryViewer";
+import { AwdeCircleVisualizer } from "@/components/cultural/AwdeCircleVisualizer";
+import { AWDE_NEGEST_CIRCLES } from "@/lib/cultural/spiritualDivinationEngine";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
+import { estimateAgroEcology } from "@/lib/location/ethiopianPlacesSearch";
 
-type Answers = Record<string, string | number | Record<string, unknown>>;
+type Answers = Record<string, unknown>;
 type Phase = "domain" | "challenge" | "specific" | "report" | "causes" | "solutions" | "complete";
 type VoiceRecognition = {
   start: () => void;
@@ -17,6 +23,61 @@ type VoiceRecognition = {
 };
 
 const CASE_DRAFT_KEY = "Debtera-active-case-draft";
+
+function asText(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value).trim();
+  }
+  if (Array.isArray(value)) return value.map(asText).filter(Boolean).join(", ");
+  if (value && typeof value === "object") {
+    return Object.entries(value)
+      .map(([key, nestedValue]) => {
+        const text = asText(nestedValue);
+        return text ? `${key}: ${text}` : "";
+      })
+      .filter(Boolean)
+      .join("; ");
+  }
+  return "";
+}
+
+function isDomainBCaseCause(cause: { category?: string; description?: string }): boolean {
+  return /^(cultural|astrological|domain b)$/i.test(cause.category || "") ||
+    /^(afere\b|.*d[äa]bt[äa]ra.*healing scroll)/i.test(cause.description || "");
+}
+
+function asStringList(value: unknown): string[] {
+  const values = Array.isArray(value) ? value : typeof value === "string" ? value.split(/[,\n;]/) : [];
+  return values
+    .map((item) => String(item).trim())
+    .filter((item) => item && !/^(none|none known|no known|n\/a|not applicable|prefer not to say)$/i.test(item));
+}
+
+function ageFromBirthDate(value: unknown): number | undefined {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const birthDate = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(birthDate.getTime())) return undefined;
+  const now = new Date();
+  let age = now.getFullYear() - birthDate.getFullYear();
+  if (now.getMonth() < birthDate.getMonth() ||
+    (now.getMonth() === birthDate.getMonth() && now.getDate() < birthDate.getDate())) age--;
+  return age >= 0 && age <= 120 ? age : undefined;
+}
+
+function buildCaseAnalysisQuery(caseDefinition: CaseDefinition | null, answers: Answers): string {
+  const internalFields = new Set(["diagnosticAssessment", "clientIntakeAssessment"]);
+  const preferredFields = [
+    "challenge", "detail", "selectedInterest", "age", "location", "region",
+    "medications", "allergies", "medicalHistory", "barrier", "support",
+  ];
+  const fields = [...new Set([...preferredFields, ...Object.keys(answers)])]
+    .filter((field) => !internalFields.has(field) && answers[field] !== undefined && answers[field] !== "");
+  const lines = [
+    `Case domain: ${caseDefinition?.name ?? "Wellbeing"}`,
+    ...fields.map((field) => `${field}: ${asText(answers[field])}`).filter((line) => !line.endsWith(": ")),
+  ];
+  return lines.join("\n").slice(0, 3000);
+}
 
 const PHASE_LABELS: Record<Phase, string> = {
   domain: "Choose care path",
@@ -61,14 +122,24 @@ export default function CasePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [answerSync, setAnswerSync] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [profileContext, setProfileContext] = useState<Record<string, unknown>>({});
-  const [diagnosticQuery, setDiagnosticQuery] = useState("");
+  const [profileContextLoaded, setProfileContextLoaded] = useState(false);
+  const [profileContextError, setProfileContextError] = useState("");
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticSolution | null>(null);
   const [diagnosticLoading, setDiagnosticLoading] = useState(false);
   const [intakeLoading, setIntakeLoading] = useState(false);
   const [intakeResult, setIntakeResult] = useState<{ reportId?: string; message?: string } | null>(null);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [draftAvailable, setDraftAvailable] = useState(false);
+  const [draftNeedsReanalysis, setDraftNeedsReanalysis] = useState(false);
+  const [activeHubView, setActiveHubView] = useState<"intake" | "hatata" | "telsem" | "awde">("intake");
+  const [domainFilter, setDomainFilter] = useState<"all" | "flagship" | "health" | "purpose" | "legal_social">("all");
   const recognitionRef = useRef<VoiceRecognition | null>(null);
+
+  const isCrisisNarrative = useMemo(() => {
+    const text = `${String(answers.detail || "")} ${String(answers.challenge || "")}`.toLowerCase();
+    const triggers = ["suicide", "kill myself", "end my life", "harm myself", "severe abuse", "assault", "violence", "threatened to kill", "domestic violence", "immediate danger"];
+    return triggers.some((t) => text.includes(t));
+  }, [answers.detail, answers.challenge]);
 
   // ── Effects ──────────────────────────────────────────────────────────────
   async function loadCases() {
@@ -103,15 +174,42 @@ export default function CasePage() {
           phase?: Phase;
           selectedCauseIds?: string[];
           selectedSolutionIds?: string[];
+          requiresReanalysis?: boolean;
         };
         if (draft.selectedCase && draft.session && draft.phase && draft.phase !== "complete") {
+          const diagnosticAssessment = draft.session.answers.diagnosticAssessment as {
+            causes?: Array<{ name?: string; domain?: string }>;
+          } | undefined;
+          const hasLegacyCulturalFindings = draft.session.causes.some(isDomainBCaseCause) ||
+            diagnosticAssessment?.causes?.some((cause) => isDomainBCaseCause({
+              category: cause.domain,
+              description: cause.name,
+            })) === true;
+          const restoredSession = hasLegacyCulturalFindings
+            ? {
+                ...draft.session,
+                answers: { ...draft.session.answers },
+                causes: [],
+                solutions: [],
+                reportConfirmed: false,
+                selectedSolutionIds: [],
+                currentStep: "specialized" as const,
+                profileSynthesis: undefined,
+              }
+            : draft.session;
+          const restoredAnswers = { ...(draft.answers || {}) };
+          if (hasLegacyCulturalFindings) {
+            delete restoredAnswers.diagnosticAssessment;
+            delete restoredSession.answers.diagnosticAssessment;
+          }
           setSelectedCase(draft.selectedCase);
-          setSession(draft.session);
+          setSession(restoredSession);
           setQuestions(draft.questions || []);
-          setAnswers(draft.answers || {});
-          setPhase(draft.phase);
-          setSelectedCauseIds(draft.selectedCauseIds || []);
-          setSelectedSolutionIds(draft.selectedSolutionIds || []);
+          setAnswers(restoredAnswers);
+          setPhase(hasLegacyCulturalFindings ? "specific" : draft.phase);
+          setSelectedCauseIds(hasLegacyCulturalFindings ? [] : draft.selectedCauseIds || []);
+          setSelectedSolutionIds(hasLegacyCulturalFindings ? [] : draft.selectedSolutionIds || []);
+          setDraftNeedsReanalysis(hasLegacyCulturalFindings || draft.requiresReanalysis === true);
           setDraftAvailable(true);
         }
       }
@@ -126,9 +224,9 @@ export default function CasePage() {
     if (!draftLoaded || !selectedCase || !session) return;
     window.localStorage.setItem(
       CASE_DRAFT_KEY,
-      JSON.stringify({ selectedCase, session, questions, answers, phase, selectedCauseIds, selectedSolutionIds }),
+      JSON.stringify({ selectedCase, session, questions, answers, phase, selectedCauseIds, selectedSolutionIds, requiresReanalysis: draftNeedsReanalysis }),
     );
-  }, [draftLoaded, selectedCase, session, questions, answers, phase, selectedCauseIds, selectedSolutionIds]);
+  }, [draftLoaded, selectedCase, session, questions, answers, phase, selectedCauseIds, selectedSolutionIds, draftNeedsReanalysis]);
 
   useEffect(() => {
     Promise.all([
@@ -140,7 +238,10 @@ export default function CasePage() {
         auth: authResponse.ok ? await authResponse.json() : null,
       }))
       .then(({ profile, auth }) => {
-        if (!profile?.success) return;
+        if (!profile?.success) {
+          setProfileContextError("Your saved profile could not be loaded. Analysis will use the answers in this case intake.");
+          return;
+        }
         const values = profile.data || {};
         const labeled = (profile.fields || []).reduce((context: Record<string, unknown>, field: { id: string; label: string }) => {
           if (values[field.id] !== undefined) context[field.label] = values[field.id];
@@ -148,7 +249,10 @@ export default function CasePage() {
         }, {});
         setProfileContext({ ...labeled, ...values, ...auth?.data });
       })
-      .catch(() => undefined);
+      .catch(() => {
+        setProfileContextError("Your saved profile could not be loaded. Analysis will use the answers in this case intake.");
+      })
+      .finally(() => setProfileContextLoaded(true));
   }, []);
 
   // Persist each field shortly after it changes so progress survives navigation or refresh.
@@ -228,15 +332,29 @@ export default function CasePage() {
     return meta[level] ?? meta.low;
   }, [session]);
 
-  const activeFindings = useMemo(
-    () => session?.causes.filter((cause) => cause.isSelected).slice(0, 3) ?? [],
+  const reportCauses = useMemo(
+    () => session?.causes.filter((cause) => !isDomainBCaseCause(cause)) ?? [],
     [session],
+  );
+  const activeFindings = useMemo(
+    () => reportCauses.filter((cause) => cause.isSelected).slice(0, 3),
+    [reportCauses],
   );
 
   const activeSolutions = useMemo(
     () => session?.solutions.filter((solution) => selectedSolutionIds.includes(solution.id) || phase === "solutions" || phase === "complete").slice(0, 3) ?? [],
     [phase, selectedSolutionIds, session],
   );
+  const reportDiagnostic = session?.answers.diagnosticAssessment as DiagnosticSolution | undefined;
+  const diagnosticActionGroups = reportDiagnostic?.action_plan
+    ? [
+        { key: "immediate_actions", label: "Now · 0–24 hours" },
+        { key: "short_term", label: "Short term · 3–7 days" },
+        { key: "medium_term", label: "Medium term · 1–4 weeks" },
+        { key: "long_term", label: "Long term · 1–6 months" },
+        { key: "ongoing", label: "Ongoing" },
+      ] as const
+    : [];
 
   async function readJson(url: string, options?: RequestInit) {
     const response = await fetch(url, options);
@@ -262,9 +380,9 @@ export default function CasePage() {
       setPhase("challenge");
       // Pre‑fill challenge options if the user has already answered? No, start fresh.
       setAnswers({});
-      setDiagnosticQuery("");
       setDiagnosticResult(null);
       setIntakeResult(null);
+      setDraftNeedsReanalysis(false);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to start this case.");
     } finally {
@@ -272,7 +390,8 @@ export default function CasePage() {
     }
   }
 
-  function updateAnswer(fieldId: string, value: string | number | Record<string, unknown>) {
+  function updateAnswer(fieldId: string, value: unknown) {
+    if (fieldId !== "diagnosticAssessment") setDiagnosticResult(null);
     setAnswers((current) => ({ ...current, [fieldId]: value }));
   }
 
@@ -287,11 +406,29 @@ export default function CasePage() {
         query,
         mode: "text",
         userProfile: {
-          userId: session?.userId,
-          demographics: { age: profileContext["Date of birth"] || answers.age, gender: profileContext["Gender identity"] },
-          medications: profileContext["Current medications"] || answers.medications || [],
-          wellbeing: { allergies: profileContext["Known allergies"] || [], conditions: profileContext["Relevant medical history"] || [] },
-          location: { region: profileContext["Region or state"] || answers.region || "Addis Ababa" },
+          demographics: {
+            age: Number(answers.age) || ageFromBirthDate(profileContext["Date of birth"] || profileContext.birthDate),
+            gender: asText(profileContext["Gender identity"]),
+            region: asText(answers.region || profileContext["Region or state"]) || undefined,
+          },
+          medications: [...new Set([
+            ...asStringList(profileContext["Current medications"]),
+            ...asStringList(answers.medications),
+          ])],
+          wellbeing: {
+            allergies: asStringList(profileContext["Known allergies"] || answers.allergies),
+            conditions: asStringList(profileContext["Relevant medical history"] || answers.medicalHistory),
+            pregnant: /^(yes|pregnant|lactating|breastfeeding)/i.test(asText(profileContext["Pregnancy or lactation status"])),
+          },
+          location: {
+            region: asText(answers.region || profileContext["Region or state"]) || "Unspecified",
+            city: asText(answers.location) || undefined,
+            altitude: Number(answers.altitudeMeters) || undefined,
+          },
+          lifestyle: {
+            diet: asText(profileContext["Dietary pattern"] || profileContext["Diet"]),
+            activity: asText(profileContext["Physical activity level"]),
+          },
           name: profileContext["Full name"] || profileContext.name,
           fullName: profileContext["Full name"] || profileContext.fullName,
           birthDate: profileContext["Date of birth"] || profileContext.birthDate,
@@ -310,9 +447,9 @@ export default function CasePage() {
     setDiagnosticLoading(true);
     setError("");
     try {
-      const result = await requestEmbeddedDiagnostic(diagnosticQuery.trim() || String(answers.detail || "").trim());
+      const result = await requestEmbeddedDiagnostic(buildCaseAnalysisQuery(selectedCase, answers));
       setDiagnosticResult(result);
-      updateAnswer("diagnosticAssessment", result as unknown as Record<string, unknown>);
+      updateAnswer("diagnosticAssessment", result);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Diagnostic assessment failed.");
     } finally {
@@ -324,25 +461,57 @@ export default function CasePage() {
     setIntakeLoading(true);
     setError("");
     try {
+      const email = asText(profileContext.email);
+      if (!email) {
+        throw new Error("Your account email is unavailable. Reload your profile before creating a saved intake assessment.");
+      }
+      const pregnancyContext = asText(profileContext["Pregnancy or lactation status"]).toLowerCase();
+      const pregnancyOrLactation = pregnancyContext.includes("lactat") || pregnancyContext.includes("breastfeed")
+        ? "lactating"
+        : pregnancyContext.includes("pregnant")
+          ? pregnancyContext.includes("third") || pregnancyContext.includes("trimester 3") || pregnancyContext.includes("t3")
+            ? "pregnant_t3"
+            : pregnancyContext.includes("second") || pregnancyContext.includes("trimester 2") || pregnancyContext.includes("t2")
+              ? "pregnant_t2"
+              : "pregnant_t1"
+          : pregnancyContext === "none"
+            ? "none"
+            : undefined;
+      const genderValue = asText(profileContext["Gender identity"]).toLowerCase();
+      const activityValue = asText(profileContext["Physical activity level"]).toLowerCase();
+      const culturalOptIn = String(answers.reflectionLens || "").toLowerCase().includes("yes");
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: profileContext["Full name"] || "Case client",
-          email: profileContext.email || `case-${session?.id}@ethio-wellness.local`,
-          age: Number(answers.age || 0) || undefined,
-          gender: profileContext["Gender identity"] || "prefer_not_to_say",
+          name: asText(profileContext["Full name"] || profileContext.name) || undefined,
+          email,
+          age: Number(answers.age) || ageFromBirthDate(profileContext["Date of birth"] || profileContext.birthDate),
+          gender: genderValue === "male" || genderValue === "female" ? genderValue : undefined,
+          city: asText(answers.location) || undefined,
           weightKg: Number(profileContext["Weight (kg)"] || 0) || undefined,
-          region: profileContext["Region or state"] || answers.region || "Addis Ababa",
-          altitudeMeters: 2400,
-          activityLevel: profileContext["Physical activity level"] || "moderate",
-          pregnancyOrLactation: profileContext["Pregnancy or lactation status"] || "none",
-          medications: profileContext["Current medications"] || answers.medications || [],
-          medicalHistory: profileContext["Relevant medical history"] || [],
-          allergies: profileContext["Known allergies"] || [],
-          lifestyleHabits: { profileContext, caseAnswers: answers },
-          includeCultural: String(answers.reflectionLens || "").toLowerCase().includes("yes"),
-          cultural: { ...profileContext },
+          region: asText(answers.region || profileContext["Region or state"]) || undefined,
+          altitudeMeters: Number(answers.altitudeMeters) || undefined,
+          activityLevel: ["sedentary", "moderate", "active", "very_active"].includes(activityValue) ? activityValue : undefined,
+          pregnancyOrLactation,
+          medications: [...new Set([...asStringList(profileContext["Current medications"]), ...asStringList(answers.medications)])],
+          medicalHistory: asStringList(profileContext["Relevant medical history"] || answers.medicalHistory),
+          allergies: asStringList(profileContext["Known allergies"] || answers.allergies),
+          lifestyleHabits: {
+            activity: activityValue || undefined,
+            diet: asText(profileContext["Dietary pattern"] || profileContext["Diet"]) || undefined,
+            caseAnswers: answers,
+          },
+          includeCultural: culturalOptIn,
+          cultural: culturalOptIn
+            ? {
+                fullName: asText(profileContext["Full name"] || profileContext.name) || undefined,
+                birthDate: asText(profileContext["Date of birth"] || profileContext.birthDate) || undefined,
+                birthTime: asText(profileContext["Birth time"] || profileContext.birthTime) || undefined,
+                birthLocation: asText(profileContext["Birth place"] || profileContext.birthPlace) || undefined,
+                culturalCalendarPreference: asText(profileContext["Preferred cultural calendar"]) || undefined,
+              }
+            : undefined,
         }),
       });
       const payload = await response.json();
@@ -416,8 +585,6 @@ export default function CasePage() {
     setIsSubmitting(true);
     setError("");
     try {
-      const caseQuery = diagnosticQuery.trim() || [answers.challenge, answers.detail, answers.medications, answers.barrier, answers.support].filter(Boolean).join(" ").trim();
-      const mergedAnswers = diagnosticResult ? answers : { ...answers, diagnosticAssessment: await requestEmbeddedDiagnostic(caseQuery) };
       const updated = await readJson(`/api/session/${session.id}/answers`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -455,10 +622,9 @@ export default function CasePage() {
     setIsSubmitting(true);
     setError("");
     try {
-      const caseQuery = diagnosticQuery.trim() || [answers.challenge, answers.detail, answers.medications, answers.barrier, answers.support].filter(Boolean).join(" ").trim();
-      const mergedAnswers = diagnosticResult
-        ? answers
-        : { ...answers, diagnosticAssessment: await requestEmbeddedDiagnostic(caseQuery) as unknown as Record<string, unknown> };
+      const latestDiagnostic = await requestEmbeddedDiagnostic(buildCaseAnalysisQuery(selectedCase, answers));
+      setDiagnosticResult(latestDiagnostic);
+      const mergedAnswers = { ...answers, diagnosticAssessment: latestDiagnostic };
       const updated = await readJson(`/api/session/${session.id}/answers`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -468,6 +634,7 @@ export default function CasePage() {
       setSession(report);
       setSelectedCauseIds(report.causes.map((cause) => cause.id));
       setPhase("report");
+      setDraftNeedsReanalysis(false);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to prepare the report.");
     } finally {
@@ -579,6 +746,7 @@ export default function CasePage() {
     setPhase("domain");
     setSelectedCauseIds([]);
     setSelectedSolutionIds([]);
+    setDraftNeedsReanalysis(false);
     setError("");
     setAssist({ suggestions: [], urgencyHint: "", safetyFlags: [] });
     window.localStorage.removeItem(CASE_DRAFT_KEY);
@@ -588,6 +756,7 @@ export default function CasePage() {
   function discardDraft() {
     window.localStorage.removeItem(CASE_DRAFT_KEY);
     setDraftAvailable(false);
+    setDraftNeedsReanalysis(false);
   }
 
   function renderQuestions() {
@@ -643,13 +812,13 @@ export default function CasePage() {
         tone: workflowStatus.tone,
       },
       {
-        label: "Confidence",
-        value: `${Math.round((session.causes.reduce((sum, cause) => sum + cause.confidence, 0) / Math.max(session.causes.length, 1)) * 100)}%`,
+        label: "Signal match",
+        value: `${Math.round((reportCauses.reduce((sum, cause) => sum + cause.confidence, 0) / Math.max(reportCauses.length, 1)) * 100)}%`,
         tone: "border-sky-500/30 bg-sky-950/15 text-sky-100",
       },
       {
         label: "Findings",
-        value: `${session.causes.filter((cause) => cause.isSelected).length}`,
+        value: `${reportCauses.filter((cause) => cause.isSelected).length}`,
         tone: "border-violet-500/30 bg-violet-950/15 text-violet-100",
       },
       {
@@ -730,7 +899,7 @@ export default function CasePage() {
           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Care Readiness</div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
-              {wellbeingContextLoaded ? "Context" : "Context pending"}
+              {!profileContextLoaded ? "Loading profile" : wellbeingContextLoaded ? "Profile loaded" : "Intake only"}
             </span>
             <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
               {hasDiagnostic ? "Diagnostic" : "No diagnostic"}
@@ -742,7 +911,9 @@ export default function CasePage() {
           <div className="rounded-2xl border border-sky-500/30 bg-sky-950/15 p-4">
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-300">Scientific Fit</div>
             <div className="mt-2 text-sm font-bold text-white">
-              Confidence {Math.round(diagnosticResult.summary.confidence)}%
+              {diagnosticResult.summary.confidence > 0
+                ? `Signal strength ${Math.round(diagnosticResult.summary.confidence)}%`
+                : "Not enough relevant evidence for a match"}
             </div>
             <div className="mt-2 text-[11px] text-sky-100">
               {diagnosticResult.summary.intent || "Scientific reasoning loaded"}
@@ -798,6 +969,168 @@ export default function CasePage() {
           </div>
         </header>
 
+        {/* Hub View Switcher & Companion Heritage Tools */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 p-2 rounded-2xl bg-zinc-900/60 border border-white/10 backdrop-blur-md">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveHubView("intake")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
+                activeHubView === "intake"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-950/30"
+                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
+            >
+              <span>🏛️</span>
+              <span>Case Intake Hub</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveHubView("hatata")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
+                activeHubView === "hatata"
+                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-950/30"
+                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
+            >
+              <span>📜</span>
+              <span>ሃተታ መናፍስት ወ አውደ ነገሥት</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveHubView("telsem")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
+                activeHubView === "telsem"
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-950/30"
+                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
+            >
+              <span>🛡️</span>
+              <span>የጠልሰም ቤተ-መጻሕፍት (Telsem)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveHubView("awde")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
+                activeHubView === "awde"
+                  ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-lg shadow-sky-950/30"
+                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              }`}
+            >
+              <span>🧭</span>
+              <span>አውደ ነገሥት (16 Circles)</span>
+            </button>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 text-[11px] text-amber-300/80 px-3 font-mono">
+            <span>✨ ዓውደ መድረክ · Planetary Sanctuary</span>
+          </div>
+        </div>
+
+        {/* Companion Tab View Overlays */}
+        {activeHubView === "hatata" && (
+          <div className="space-y-4 mb-10">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h2 className="text-xl font-bold text-amber-200">ሃተታ መናፍስት ወ አውደ ነገሥት ከነትርጉሙ</h2>
+              <button
+                type="button"
+                onClick={() => setActiveHubView("intake")}
+                className="btn-secondary text-xs"
+              >
+                ← Return to Case Intake
+              </button>
+            </div>
+            <HatataMenafsestViewer />
+          </div>
+        )}
+
+        {activeHubView === "telsem" && (
+          <div className="space-y-4 mb-10">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h2 className="text-xl font-bold text-amber-200">የጠልሰም ቤተ-መጻሕፍት (Sacred Telsem Manuscript Library)</h2>
+              <button
+                type="button"
+                onClick={() => setActiveHubView("intake")}
+                className="btn-secondary text-xs"
+              >
+                ← Return to Case Intake
+              </button>
+            </div>
+            <TelsemLibraryViewer />
+          </div>
+        )}
+
+        {activeHubView === "awde" && (
+          <div className="space-y-6 mb-10">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h2 className="text-xl font-bold text-amber-200">Awde Negest 16 Circles & Celestial Divination</h2>
+              <button
+                type="button"
+                onClick={() => setActiveHubView("intake")}
+                className="btn-secondary text-xs"
+              >
+                ← Return to Case Intake
+              </button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AwudeHeritageContext />
+              <AwdeCircleVisualizer circle={AWDE_NEGEST_CIRCLES[7]} />
+            </div>
+          </div>
+        )}
+
+        {/* Crisis Emergency Banner */}
+        {isCrisisNarrative && (
+          <div className="mb-8 p-6 rounded-3xl bg-rose-950/80 border-2 border-rose-500/80 shadow-2xl backdrop-blur-md text-white animate-fade-in">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-lg">
+                🛡️
+              </div>
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-block px-3 py-1 rounded-full bg-rose-500/30 text-rose-200 text-xs font-bold uppercase tracking-wider">
+                  Emergency Support Notice · Non-Gated Safety Protocol
+                </div>
+                <h3 className="text-xl font-extrabold text-white">Immediate Care & Emergency Assistance</h3>
+                <p className="text-sm text-rose-100/90 leading-relaxed">
+                  Your entry indicates urgent distress or safety risk. You do not need to navigate this alone — free, confidential professional support is available right now.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <a
+                href="tel:952"
+                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-xs text-rose-300 font-medium">National Mental Health Hotline</div>
+                  <div className="text-lg font-black font-mono text-white">952 (Free / 24/7)</div>
+                </div>
+                <span className="text-xl">📞</span>
+              </a>
+              <a
+                href="tel:991"
+                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-xs text-rose-300 font-medium">Emergency Police Dispatch</div>
+                  <div className="text-lg font-black font-mono text-white">991</div>
+                </div>
+                <span className="text-xl">🚨</span>
+              </a>
+              <a
+                href="tel:907"
+                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <div className="text-xs text-rose-300 font-medium">Emergency Ambulance (Red Cross)</div>
+                  <div className="text-lg font-black font-mono text-white">907</div>
+                </div>
+                <span className="text-xl">🚑</span>
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Progress Stepper */}
         <nav aria-label="Case workflow progress" className="sci-fi-panel p-4 mb-8">
           <ol className="flex items-center gap-0 overflow-x-auto pb-1">
@@ -841,7 +1174,11 @@ export default function CasePage() {
         {draftAvailable && (
           <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-sky-500/30 bg-sky-950/20 p-4 text-sm text-sky-100" role="status">
             <span className="text-sky-300">↻</span>
-            <span className="flex-1">Your active case was restored from this browser.</span>
+            <span className="flex-1">
+              {draftNeedsReanalysis
+                ? "This saved report contained cultural or astrological material presented as a finding. Your case answers were preserved; generate a fresh report to continue."
+                : "Your active case was restored from this browser."}
+            </span>
             <button type="button" onClick={discardDraft} className="text-xs text-sky-300 underline underline-offset-2 hover:text-white">
               Discard draft
             </button>
@@ -867,7 +1204,7 @@ export default function CasePage() {
         )}
 
         {/* ─── PHASE: Domain ──────────────────────────────────────────────── */}
-        {phase === "domain" && (
+        {phase === "domain" && activeHubView === "intake" && (
           <section aria-label="Choose a case domain">
             {casesLoading ? (
               <p className="text-sm text-slate-400" role="status">Loading case domains...</p>
@@ -879,78 +1216,237 @@ export default function CasePage() {
             ) : (
               <div className="grid gap-6 xl:grid-cols-[minmax(620px,2fr)_minmax(280px,0.8fr)]">
                 <div className="space-y-6">
-                  {/* CASE 1: SPIRITUAL & LIFE DIRECTION HERO BANNER */}
-                  <Link
-                    href="/case/spiritual/intake/step-1"
-                    className="block p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-950/60 via-stone-900 to-black border-2 border-amber-500/60 shadow-2xl hover:border-amber-400 transition-all group relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-amber-500 to-amber-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
-                      ✨ Featured Case 1 · Dynamic Workflow
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                      <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                        🔮
-                      </div>
-                      <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-2xl font-black text-amber-100 font-serif group-hover:text-amber-300 transition-colors">
-                            Spiritual & Life Direction (መንፈሳዊ አቅጣጫ)
-                          </h2>
-                        </div>
-                        <p className="text-sm text-stone-300 leading-relaxed max-w-2xl">
-                          Full-functioning, real-time, adaptive divination workflow. Live Ge&apos;ez Fidel gematria calculation as you type,
-                          16 Circles of Awde Negest, personalized talismanic lineages, AI follow-ups, and verified debtera review.
-                        </p>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-                            Live Gematria (የፊደል ሂሳብ)
-                          </span>
-                          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-                            Awde Negest (አውደ ነገሥት)
-                          </span>
-                          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-                            Verified Debtera Review
-                          </span>
-                          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
-                            Custom Healing Scroll PDF
-                          </span>
-                        </div>
-                      </div>
-                      <div className="hidden lg:flex flex-col items-end justify-center">
-                        <span className="px-5 py-2.5 rounded-2xl bg-amber-500 text-black font-bold text-xs group-hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20">
-                          Begin Case 1 →
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-
-                  <div className="text-xs uppercase tracking-wider text-slate-400 font-mono font-bold pt-2">
-                    Additional Case Domains
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {cases.map((item) => (
+                  {/* Category Filter Chips */}
+                  <div className="flex flex-wrap items-center gap-2 pb-1">
+                    {[
+                      { id: "all", label: "All Pathways (9)" },
+                      { id: "flagship", label: "✨ Premier Engines (4)" },
+                      { id: "health", label: "✚ Health & Restoration" },
+                      { id: "purpose", label: "✦ Vocation & Spirit" },
+                      { id: "legal_social", label: "⚖️ Legal & Society" },
+                    ].map((tab) => (
                       <button
-                        key={item.id}
+                        key={tab.id}
                         type="button"
-                        onClick={() => void chooseDomain(item)}
-                        disabled={loading}
-                        className="glass-panel p-6 text-left hover:border-emerald-400/60 transition-colors disabled:opacity-50 hover:shadow-lg hover:shadow-emerald-950/20 group"
+                        onClick={() => setDomainFilter(tab.id as any)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                          domainFilter === tab.id
+                            ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
+                            : "bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                        }`}
                       >
-                        <span className="text-3xl text-amber-300 group-hover:scale-110 transition-transform inline-block">
-                          {item.icon}
-                        </span>
-                        <h2 className="text-xl font-bold text-white mt-4">{item.name}</h2>
-                        <p className="text-sm text-slate-400 mt-2 leading-relaxed">{item.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-5">
-                          {item.interests.slice(0, 3).map((interest) => (
-                            <span key={interest} className="badge badge-safe normal-case tracking-normal">
-                              {interest}
-                            </span>
-                          ))}
-                        </div>
+                        {tab.label}
                       </button>
                     ))}
+                  </div>
+
+                  {/* ══════════════════════════════════════════════════════════
+                      QUAD-FLAGSHIP PREMIER INTAKE ENGINES
+                     ══════════════════════════════════════════════════════════ */}
+                  {(domainFilter === "all" || domainFilter === "flagship" || domainFilter === "purpose") && (
+                    <div className="space-y-4">
+                      {/* FLAGSHIP 1: SPIRITUAL & LIFE DIRECTION */}
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-amber-950/70 via-stone-900/90 to-black border-2 border-amber-500/60 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-amber-500 to-amber-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                          ✨ Flagship 1 · Adaptive Divination
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                          <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                            🔮
+                          </div>
+                          <div className="space-y-1.5 flex-1">
+                            <h2 className="text-2xl font-black text-amber-100 font-serif group-hover:text-amber-300 transition-colors">
+                              Spiritual & Life Direction (መንፈሳዊ አቅጣጫ)
+                            </h2>
+                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                              Live Ge&apos;ez Fidel gematria calculation as you type, 16 Circles of Awde Negest, personalized talismanic lineages, AI follow-ups, and verified debtera review.
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 pt-2">
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                                Live Gematria (የፊደል ሂሳብ)
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                                Awde Negest (አውደ ነገሥት)
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                                Verified Debtera Review
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                            <Link
+                              href="/case/spiritual/intake/step-1"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20"
+                            >
+                              Launch Engine →
+                            </Link>
+                            {cases.find((c) => c.id === "spiritual") && (
+                              <button
+                                type="button"
+                                onClick={() => void chooseDomain(cases.find((c) => c.id === "spiritual")!)}
+                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                              >
+                                Quick In-Hub
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* FLAGSHIP 2: CAREER TIMING & VOCATIONAL DESTINY */}
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-sky-950/70 via-stone-900/90 to-black border-2 border-sky-500/60 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-sky-400 to-sky-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                          ✨ Flagship 2 · Vocational Destiny
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                          <div className="w-16 h-16 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                            💼
+                          </div>
+                          <div className="space-y-1.5 flex-1">
+                            <h2 className="text-2xl font-black text-sky-100 font-serif group-hover:text-sky-300 transition-colors">
+                              Career Timing & Vocational Destiny (የሙያና ዕጣ ፈንታ)
+                            </h2>
+                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                              Astrological timing windows, planetary alignments, Ge&apos;ez voice input, name numerology, and licensed career counselor & debtera review.
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 pt-2">
+                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                                Favorable Timing Windows
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                                Ge&apos;ez Voice Input
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                                Counselor Review
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                            <Link
+                              href="/case/career/intake"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-sky-500 text-black font-bold text-xs hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20"
+                            >
+                              Launch Engine →
+                            </Link>
+                            {cases.find((c) => c.id === "career") && (
+                              <button
+                                type="button"
+                                onClick={() => void chooseDomain(cases.find((c) => c.id === "career")!)}
+                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                              >
+                                Quick In-Hub
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {(domainFilter === "all" || domainFilter === "flagship" || domainFilter === "legal_social") && (
+                    <div className="space-y-4">
+                      {/* FLAGSHIP 3: LEGAL & DISPUTE GUIDANCE */}
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-purple-950/70 via-stone-900/90 to-black border-2 border-purple-500/60 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-purple-400 to-purple-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                          ✨ Flagship 3 · Confidential Triage
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                          <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                            ⚖️
+                          </div>
+                          <div className="space-y-1.5 flex-1">
+                            <h2 className="text-2xl font-black text-purple-100 font-serif group-hover:text-purple-300 transition-colors">
+                              Legal & Dispute Guidance (የሕግና ክርክር ምክር)
+                            </h2>
+                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                              Urgent safety screen, eviction & tenancy protection, contract disputes, family mediation, and roadmap review by licensed Ethiopian attorneys.
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 pt-2">
+                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                                Safety Triage Screen
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                                Eviction & Dispute Strategy
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                                Licensed Attorney Review
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                            <Link
+                              href="/case/legal/intake"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-purple-500 text-white font-bold text-xs hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/20"
+                            >
+                              Launch Engine →
+                            </Link>
+                            {cases.find((c) => c.id === "legal") && (
+                              <button
+                                type="button"
+                                onClick={() => void chooseDomain(cases.find((c) => c.id === "legal")!)}
+                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                              >
+                                Quick In-Hub
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ══════════════════════════════════════════════════════════
+                      ADDITIONAL CASE DOMAINS
+                     ══════════════════════════════════════════════════════════ */}
+                  <div className="pt-2">
+                    <div className="text-xs uppercase tracking-wider text-slate-400 font-mono font-bold mb-3 flex items-center justify-between">
+                      <span>Standard & Specialized Care Domains</span>
+                      <span className="text-emerald-400 text-[10px]">Dual Domain A & B Analysis</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {cases
+                        .filter((item) => {
+                          if (domainFilter === "health") return ["wellbeing", "peace"].includes(item.id);
+                          if (domainFilter === "purpose") return ["spiritual", "career", "power"].includes(item.id);
+                          if (domainFilter === "legal_social") return ["legal", "money", "relationships", "social"].includes(item.id);
+                          if (domainFilter === "flagship") return ["wellbeing", "spiritual", "career", "legal"].includes(item.id);
+                          return true;
+                        })
+                        .map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => void chooseDomain(item)}
+                            disabled={loading}
+                            className={`glass-panel p-6 text-left transition-all disabled:opacity-50 hover:shadow-lg group relative ${
+                              item.id === "wellbeing"
+                                ? "border-emerald-500/60 bg-emerald-950/20 hover:border-emerald-400"
+                                : "hover:border-emerald-400/60 hover:shadow-emerald-950/20"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <span className="text-3xl text-amber-300 group-hover:scale-110 transition-transform inline-block">
+                                {item.icon}
+                              </span>
+                              {item.id === "wellbeing" && (
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/40">
+                                  Clinical Engine
+                                </span>
+                              )}
+                            </div>
+                            <h2 className="text-xl font-bold text-white mt-4">{item.name}</h2>
+                            <p className="text-sm text-slate-400 mt-2 leading-relaxed">{item.description}</p>
+                            <div className="flex flex-wrap gap-2 mt-5">
+                              {item.interests.slice(0, 3).map((interest) => (
+                                <span key={interest} className="badge badge-safe normal-case tracking-normal text-xs">
+                                  {interest}
+                                </span>
+                              ))}
+                            </div>
+                          </button>
+                        ))}
+                    </div>
                   </div>
                 </div>
 
@@ -1044,20 +1540,21 @@ export default function CasePage() {
                             className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600"
                           />
                         </div>
-                        <div className="space-y-1.5">
-                          <label htmlFor="case-location" className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                            Where are you currently living? <span className="text-amber-400">*</span>
-                          </label>
-                          <input
-                            id="case-location"
-                            type="text"
-                            value={String(answers.location ?? "")}
-                            onChange={(e) => updateAnswer("location", e.target.value)}
-                            placeholder="e.g. Addis Ababa, Oromia Region…"
-                            required
-                            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600"
-                          />
-                        </div>
+                        <EthiopianLocationInput
+                          value={String(answers.location ?? "")}
+                          regionValue={String(answers.region ?? profileContext["Region or state"] ?? "")}
+                          onChange={(loc, reg, place) => {
+                            updateAnswer("location", loc);
+                            updateAnswer("region", reg);
+                            if (place) {
+                              updateAnswer("administrativePlace", place as unknown as Record<string, unknown>);
+                              const agro = estimateAgroEcology(reg, place.zone);
+                              updateAnswer("altitudeMeters", agro.altitudeMeters);
+                              updateAnswer("agroEcologyZone", agro.zoneName);
+                            }
+                          }}
+                          required
+                        />
                       </div>
 
                       {/* Describe concern */}
@@ -1228,6 +1725,11 @@ export default function CasePage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {profileContextError && (
+                        <p className="md:col-span-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-100" role="status">
+                          {profileContextError}
+                        </p>
+                      )}
                       <div className="rounded-xl border border-white/8 bg-black/30 p-4">
                         <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Wellbeing Context</div>
                         <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-300">
@@ -1300,7 +1802,7 @@ export default function CasePage() {
                       <button
                         type="button"
                         onClick={() => void runEmbeddedDiagnostic()}
-                        disabled={diagnosticLoading || isSubmitting}
+                        disabled={diagnosticLoading || isSubmitting || !profileContextLoaded}
                         className="btn-secondary text-sm"
                       >
                         {diagnosticLoading ? (
@@ -1311,7 +1813,7 @@ export default function CasePage() {
                         <button
                           type="button"
                           onClick={() => void runEmbeddedIntake()}
-                          disabled={intakeLoading || isSubmitting}
+                          disabled={intakeLoading || isSubmitting || !profileContextLoaded}
                           className="btn-secondary text-sm"
                         >
                           {intakeLoading ? (
@@ -1330,7 +1832,8 @@ export default function CasePage() {
                             diagnosticResult.summary.urgency === "high" ? "text-orange-300" :
                               diagnosticResult.summary.urgency === "medium" ? "text-amber-300" : "text-emerald-300"
                             }`}>{diagnosticResult.summary.urgency}</span>{" "}
-                          · Confidence {Math.round(diagnosticResult.summary.confidence)}%
+                          {diagnosticResult.summary.confidence > 0 &&
+                            ` · Signal strength ${Math.round(diagnosticResult.summary.confidence)}%`}
                         </span>
                       </div>
                     )}
@@ -1364,10 +1867,12 @@ export default function CasePage() {
                       </div>
                     </div>
 
-                    <div className="rounded-lg border border-rose-500/30 bg-rose-950/10 p-3 text-xs text-rose-200">
-                      <span className="text-rose-400">⚠️</span>
-                      <span className="ml-2">Progress could not be saved yet; your step submission will retry it.</span>
-                    </div>
+                    {answerSync === "error" && (
+                      <div className="rounded-lg border border-rose-500/30 bg-rose-950/10 p-3 text-xs text-rose-200">
+                        <span className="text-rose-400">⚠️</span>
+                        <span className="ml-2">Progress could not be saved yet; your step submission will retry it.</span>
+                      </div>
+                    )}
                   </section>
 
                   {/* Progress save status */}
@@ -1404,7 +1909,7 @@ export default function CasePage() {
                   <button
                     type="submit"
                     className="btn-primary w-full py-3 text-base"
-                    disabled={loading || isSubmitting}
+                    disabled={loading || isSubmitting || !profileContextLoaded}
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
@@ -1524,7 +2029,91 @@ export default function CasePage() {
                   {renderSummaryCards()}
                 </div>
 
-                {session.profileSynthesis && (
+                {reportDiagnostic?.summary && (
+                  <section className="mt-6 rounded-2xl border border-sky-500/25 bg-sky-950/10 p-5" aria-labelledby="case-analysis-heading">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">Personalized case analysis</div>
+                        <h3 id="case-analysis-heading" className="mt-2 text-lg font-bold text-white">{reportDiagnostic.summary.problem}</h3>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="rounded-full border border-sky-400/30 px-3 py-1 text-xs text-sky-100">
+                          Synthesis confidence {Math.round(reportDiagnostic.summary.confidence)}%
+                        </span>
+                        <span className="rounded-full border border-amber-400/30 px-3 py-1 text-xs capitalize text-amber-100">
+                          {reportDiagnostic.summary.urgency} priority
+                        </span>
+                      </div>
+                    </div>
+                    {reportDiagnostic.reasoning?.summaryReasoning && (
+                      <p className="mt-3 text-sm leading-6 text-slate-200">{reportDiagnostic.reasoning.summaryReasoning}</p>
+                    )}
+                    <p className="mt-2 text-xs text-slate-400">
+                      Based on this intake&apos;s answers and available profile context. This synthesis is not a diagnosis.
+                    </p>
+                    {reportDiagnostic.summary.matchedSignals.length > 0 && (
+                      <div className="mt-4">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Signals considered</div>
+                        <ul className="mt-2 flex flex-wrap gap-2">
+                          {reportDiagnostic.summary.matchedSignals.map((signal) => (
+                            <li key={signal} className="rounded-full border border-white/10 bg-black/25 px-3 py-1 text-xs text-slate-200">{signal}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {diagnosticActionGroups.some(({ key }) => reportDiagnostic.action_plan[key]?.length > 0) && (
+                      <div className="mt-5">
+                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Personalized action plan</h4>
+                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                          {diagnosticActionGroups.map(({ key, label }) => {
+                            const actions = reportDiagnostic.action_plan[key] || [];
+                            if (!actions.length) return null;
+                            return (
+                              <div key={key} className="rounded-xl border border-white/10 bg-black/25 p-4">
+                                <h5 className="text-sm font-semibold text-white">{label}</h5>
+                                <ul className="mt-3 space-y-3">
+                                  {actions.map((action) => (
+                                    <li key={action.id} className="text-sm text-slate-200">
+                                      <div className="font-medium">{action.title}</div>
+                                      <p className="mt-1 text-xs leading-5 text-slate-300">{action.action}</p>
+                                      <span className="mt-1 inline-block text-[10px] uppercase tracking-wide text-slate-500">
+                                        {action.priority} · {action.category}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {(reportDiagnostic.safety?.warnings.length > 0 || reportDiagnostic.safety?.herbDrugInteractions.length > 0) && (
+                      <div className="mt-5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-4">
+                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">Safety considerations</h4>
+                        {reportDiagnostic.safety.warnings.length > 0 && (
+                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-100">
+                            {reportDiagnostic.safety.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+                          </ul>
+                        )}
+                        {reportDiagnostic.safety.herbDrugInteractions.length > 0 && (
+                          <ul className="mt-3 space-y-2 text-xs text-amber-100">
+                            {reportDiagnostic.safety.herbDrugInteractions.map((interaction, index) => (
+                              <li key={`${interaction.herb}-${interaction.drug}-${index}`}>
+                                <strong>{interaction.herb} + {interaction.drug} ({interaction.severity}):</strong>{" "}
+                                {interaction.recommendation}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {session.profileSynthesis && String(answers.reflectionLens || "").toLowerCase().includes("yes") && (
                   <div className="mt-6 rounded-2xl border border-amber-500/25 bg-amber-950/10 p-5">
                     <div className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Identity + geographic synthesis</div>
                     <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -1568,7 +2157,7 @@ export default function CasePage() {
                       {activeFindings.length > 0 ? activeFindings.map((cause) => (
                         <li key={cause.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-3">
                           <div className="text-sm font-semibold text-white">{cause.description}</div>
-                          <div className="mt-2 text-xs text-slate-400">Confidence {Math.round(cause.confidence * 100)}%</div>
+                          <div className="mt-2 text-xs text-slate-400">Signal match {Math.round(cause.confidence * 100)}%</div>
                           {cause.culturalContext && (
                             <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-950/15 p-3">
                               <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Domain B cultural context</div>
@@ -1640,7 +2229,7 @@ export default function CasePage() {
                     Select the causes that resonate with your situation. Deselect any that feel unrelated.
                   </p>
                   <div className="space-y-3">
-                    {session.causes.map((cause) => (
+                    {reportCauses.map((cause) => (
                       <label
                         key={cause.id}
                         className={`flex gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${selectedCauseIds.includes(cause.id)
@@ -1657,7 +2246,7 @@ export default function CasePage() {
                         <span>
                           <strong className="text-white text-sm">{cause.description}</strong>
                           <span className="block text-xs text-slate-500 mt-1">
-                            Confidence {Math.round(cause.confidence * 100)}% ·{" "}
+                            Signal match {Math.round(cause.confidence * 100)}% ·{" "}
                             {cause.evidence.join(" · ")}
                           </span>
                         </span>

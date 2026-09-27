@@ -20,6 +20,7 @@ export const PUBLIC_PATHS = [
   "/zoonotic",
   "/foods",
   "/atlas",
+  "/case",
 ] as const;
 
 /**

@@ -12,6 +12,17 @@ export interface EthiopianAdministrativePlace {
   sourcePath: string;
 }
 
+export interface EthiopianAdministrativeZone {
+  name: string;
+  towns: string[];
+}
+
+export interface EthiopianAdministrativeRegion {
+  name: string;
+  zones: EthiopianAdministrativeZone[];
+  townCount: number;
+}
+
 export const ETHIOPIAN_ADMINISTRATIVE_PLACES: EthiopianAdministrativePlace[] = [
   {
     "id": "admin-sheger-sheger-sida-awash",
@@ -9751,6 +9762,40 @@ export const ETHIOPIAN_ADMINISTRATIVE_PLACES: EthiopianAdministrativePlace[] = [
   }
 ] as EthiopianAdministrativePlace[];
 
+export function getEthiopianAdministrativeHierarchy(): EthiopianAdministrativeRegion[] {
+  const regions = new Map<string, Map<string, Map<string, string>>>();
+  for (const place of ETHIOPIAN_ADMINISTRATIVE_PLACES) {
+    let zones = regions.get(place.region);
+    if (!zones) {
+      zones = new Map();
+      regions.set(place.region, zones);
+    }
+
+    let towns = zones.get(place.zone);
+    if (!towns) {
+      towns = new Map();
+      zones.set(place.zone, towns);
+    }
+    towns.set(place.town.trim().toLocaleLowerCase(), place.town);
+  }
+
+  return [...regions.entries()]
+    .map(([name, zones]) => {
+      const mappedZones = [...zones.entries()]
+        .map(([zoneName, towns]) => ({
+          name: zoneName,
+          towns: [...towns.values()].sort((a, b) => a.localeCompare(b)),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return {
+        name,
+        zones: mappedZones,
+        townCount: mappedZones.reduce((total, zone) => total + zone.towns.length, 0),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 const normalize = (value: string) => value.trim().toLocaleLowerCase();
 
 export function searchEthiopianAdministrativePlaces(query: string, region?: string, zone?: string): EthiopianAdministrativePlace[] {
@@ -9763,4 +9808,3 @@ export function searchEthiopianAdministrativePlaces(query: string, region?: stri
     (!q || [place.region, place.zone, place.town].some((value) => normalize(value).includes(q))),
   );
 }
-
