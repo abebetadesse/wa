@@ -60,28 +60,28 @@ export interface LegalCaseSession {
 
 export const LEGAL_EXPERTS: LegalExpert[] = [
   {
-    id: "legal-lawyer-1",
-    name: "Mihret Bekele",
-    credential: "Licensed attorney",
-    specialization: "housing and contract disputes",
+    id: "legal-shemgelna-1",
+    name: "Ato Mihret Bekele",
+    credential: "Traditional elder & customary mediator (ሽማግሌ)",
+    specialization: "customary reconciliation (ሽምግልና) and family harmony",
     languages: ["am", "en"],
+    rating: 4.9,
+    isAvailable: true,
+  },
+  {
+    id: "legal-spiritual-1",
+    name: "Kesis Daniel Tesfaye",
+    credential: "Spiritual peacemaker & community counselor",
+    specialization: "spiritual conscience, restorative ethics & mediation",
+    languages: ["am", "en", "om"],
     rating: 4.8,
     isAvailable: true,
   },
   {
-    id: "legal-mediator-1",
-    name: "Daniel Tesfaye",
-    credential: "Verified dispute mediator",
-    specialization: "family and community mediation",
-    languages: ["am", "en", "om"],
-    rating: 4.7,
-    isAvailable: true,
-  },
-  {
-    id: "legal-aid-1",
-    name: "Aster Gashaw",
-    credential: "Legal aid specialist",
-    specialization: "tenant rights and urgent support",
+    id: "legal-cultural-1",
+    name: "W/ro Aster Gashaw",
+    credential: "Cultural mediator & elder counselor",
+    specialization: "neighborhood peacemaking and customary dispute resolution",
     languages: ["am", "en"],
     rating: 4.9,
     isAvailable: true,
@@ -142,12 +142,12 @@ export function submitLegalCase(
   session.assignedExpert = assignLegalExpert(session.issueType);
   session.status = session.safetyResult?.action === "legal_aid_route" ? "legal_aid_route" : "pending_expert_review";
   session.report = {
-    title: "Legal review and next-step plan",
-    summary: `Your matter has been prepared for review in ${session.jurisdiction || "the relevant jurisdiction"}. The focus is on immediate risk, deadlines, and lawful next steps.`,
+    title: "Cultural & Spiritual Dispute Guidance (የሽምግልና እና የክርክር ምክር)",
+    summary: `Your matter has been prepared for customary reconciliation (ሽምግልና) and spiritual reflection in ${session.jurisdiction || "your community"}. Grounded entirely in traditional Ethiopian peacemaking and spiritual conscience — no scientific or statutory legal advice.`,
     recommendations: [
-      "Document the issue and keep evidence in a safe place.",
-      "Confirm any deadlines or notices before taking action.",
-      "Use a licensed attorney or legal aid office for high-risk matters.",
+      "Involve trusted community elders (ሽማግሌዎች) or spiritual leaders for customary reconciliation.",
+      "Ground dialogue in mutual dignity, spiritual conscience, and restorative harmony.",
+      "Spiritual and cultural reflection only: no scientific, clinical, or statutory legal advice is provided.",
     ],
   };
 

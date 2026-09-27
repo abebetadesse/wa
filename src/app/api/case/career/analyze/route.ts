@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   calculateTimingWindows,
   type CareerProfile,
+  type TimingAnalysis,
 } from "@/lib/cultural/careerTimingEngine";
 import {
   assignCareerAdvisor,
@@ -9,7 +10,6 @@ import {
   getAvailableAdvisors,
 } from "@/lib/case-workflow/careerExpertEngine";
 import { buildCareerProfile } from "@/lib/case-workflow/careerQuestionEngine";
-import { synthesizeCaseReportAnalysis } from "@/lib/ai/bionicGPT";
 
 // ════════════════════════════════════════════════════════════
 // POST /api/case/career/analyze
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Calculate timing windows + numerology
-    const timingAnalysis = calculateTimingWindows(profile);
+    const timingAnalysis = toReflectiveTimingAnalysis(calculateTimingWindows(profile));
 
     // Assign expert advisor
     const assignment = assignCareerAdvisor(profile, {
@@ -67,25 +67,39 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    function toReflectiveTimingAnalysis(analysis: TimingAnalysis): TimingAnalysis {
+      const reflectionOnly = {
+        label: "neutral" as const,
+        score: 5,
+        actionRecommendation: "This is a symbolic cultural reflection, not a recommendation about career or financial decisions.",
+        ritualNote: "Any prayer or customary reflection is optional and should follow your own beliefs.",
+        warningNote: undefined,
+      };
+      return {
+        ...analysis,
+        numerology: {
+          ...analysis.numerology,
+          avoidDays: [],
+          narrativeSummary: analysis.numerology.narrativeSummary,
+        },
+        currentWindow: { ...analysis.currentWindow, ...reflectionOnly },
+        nextThreeWindows: analysis.nextThreeWindows.map((window) => ({ ...window, ...reflectionOnly })),
+        recommendedActionMonth: "",
+        bestDayOfWeek: "",
+        bestDayAmharic: "",
+        lunarPhaseNote: "Traditional lunar-cycle symbolism is offered for reflection only, not as a decision guide.",
+      };
+    }
+
     // Build report shell
     const report = buildCareerReportShell(sessionId, profile, assignment);
-
-    // Enrich report shell with BionicGPT-backed synthesis when configured.
-    const aiAnalysis = await synthesizeCaseReportAnalysis("career", {
-      profile,
-      timingAnalysis,
-      assignment,
-      answers,
-      needsFinancialAdvisor: needsFinancialAdvisor ?? false,
-    });
-    report.aiAnalysis = aiAnalysis;
 
     // Enrich timing window on report
     const currentWindow = timingAnalysis.currentWindow;
     report.timingWindow = {
       currentLabel: currentWindow.label.replace(/_/g, " "),
       currentScore: currentWindow.score,
-      bestActionDate: `${currentWindow.dateRange.start} — ${currentWindow.dateRange.end}`,
+      bestActionDate: "",
       ritualNote: currentWindow.ritualNote,
       lunarPhaseNote: timingAnalysis.lunarPhaseNote,
     };
@@ -93,12 +107,9 @@ export async function POST(req: NextRequest) {
     // Enrich cultural integration
     report.culturalIntegration = {
       numerologySummary: timingAnalysis.numerology.narrativeSummary,
-      auspiciousActionNote: currentWindow.actionRecommendation,
+      auspiciousActionNote: "Traditional timing is presented as symbolic cultural reflection, not as a recommendation about career or financial decisions.",
       blessingRitual: currentWindow.ritualNote,
-      communityAngle:
-        profile.businessType === "cooperative"
-          ? "Your cooperative structure aligns well with Equb and Edir traditions. Consider formalizing your blessing ritual with the cooperative founding members."
-          : "If you participate in an Equb or Edir, this could be a strong community anchor for your professional network and initial funding conversations.",
+      communityAngle: "Work and vocation can be reflected on through community, identity, service, and spiritual values. Meanings differ across traditions; this is not practical career or financial guidance.",
     };
 
     return NextResponse.json({

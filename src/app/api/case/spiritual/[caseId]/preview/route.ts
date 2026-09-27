@@ -15,17 +15,15 @@ export async function GET(
       return NextResponse.json({ success: false, error: "Case not found" }, { status: 404 });
     }
 
-    const freeSummary = `Your name ${session.nameGeez} carries the vibration of ${session.gematria.finalNumber}, associated with the ancient constellation of ${session.gematria.zodiac.name}. The Awde Negest reveals you are currently within the Circle of ${session.gematria.awdeCircle.name} (${session.gematria.awdeCircle.nameAmharic}), Segment ${session.gematria.awdeSegment.number}, suggesting a period of significant reawakening...`;
-
-    const debteraNote = `"When I read your name, I immediately felt the tension between your deep inner desire for clarity and the external duties pulling at you. This is a season of release and renewal." — ${session.assignedExpert?.name || "Verified Debtera"}`;
+    if (!session.report || session.status !== "ai_draft_prepared") {
+      return NextResponse.json({ success: false, error: "The reading draft is not ready for preview." }, { status: 409 });
+    }
 
     const toc = [
       { id: 1, title: "Divination Summary", locked: false },
-      { id: 2, title: "Cultural Interpretation", locked: true },
-      { id: 3, title: "Practical Guidance", locked: true },
-      { id: 4, title: "Recommended Ritual", locked: true },
-      { id: 5, title: "Personalized Healing Scroll", locked: true },
-      { id: 6, title: "Follow-up Consultation Access", locked: true },
+      { id: 2, title: "Optional cultural reflection", locked: false },
+      { id: 3, title: "Practical next-step prompts", locked: false },
+      { id: 4, title: "Optional quiet reflection", locked: false },
     ];
 
     return NextResponse.json({
@@ -35,17 +33,19 @@ export async function GET(
         status: session.status,
         expert: session.assignedExpert,
         toc,
-        freeSummary,
-        debteraNote,
-        priceEtb: 500,
-        currency: "ETB",
-        scrollPreviewAvailable: true,
+        freeSummary: session.report.divinationSummary.narrative,
+        aiAnalysis: session.report.aiAnalysis,
+        culturalInterpretation: session.report.culturalInterpretation,
+        practicalGuidance: session.report.practicalGuidance,
+        recommendedRitual: session.report.recommendedRitual,
+        draftNotice: "AI-assisted cultural reflection draft. No human practitioner review or approval has been recorded.",
       },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch preview";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch preview" },
-      { status: 500 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 500 }
     );
   }
 }

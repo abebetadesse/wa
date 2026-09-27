@@ -5,7 +5,8 @@
 import { ApiError } from "@/lib/api/route";
 import { calculateFullDivination } from "@/lib/cultural/spiritualDivinationEngine";
 import { calculateTimingWindows } from "@/lib/cultural/careerTimingEngine";
-import { buildCareerProfile, FINANCIAL_DISCLAIMER, getCareerQuestions } from "@/lib/case-workflow/careerQuestionEngine";
+import { buildCareerProfile, getCareerQuestions } from "@/lib/case-workflow/careerQuestionEngine";
+import { retrieveReflectiveCaseFindings } from "@/lib/case-workflow/reflectiveCaseAnalysis";
 import { getLegalQuestions } from "@/lib/case-workflow/legalQuestionEngine";
 import { getRelationshipQuestions } from "@/lib/case-workflow/relationshipQuestionEngine";
 import { getSocialQuestions } from "@/lib/case-workflow/socialQuestionEngine";
@@ -13,7 +14,7 @@ import { generateDynamicQuestions } from "@/lib/case-workflow/spiritualQuestionE
 import type { DomainConfig, SafetyOutcome, WorkflowDomain } from "../types";
 import { concern, crisisOutcome, proceed, REFERRALS, screenFreeText, CONTACTS } from "../support";
 import { CAREER_SAFETY, LEGAL_SAFETY, RELATIONSHIP_SAFETY, SOCIAL_SAFETY, SPIRITUAL_SAFETY } from "./safetyQuestions";
-import { aiSection, buildEvidenceBasedRecommendations, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
+import { aiSection, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
 import { buildSpiritualSections } from "./spiritualContent";
 
 const SPIRITUAL_NAME_QUESTIONS = [
@@ -28,10 +29,10 @@ const incompleteScreen = () => concern("One or more safety questions were not an
 
 const career: DomainConfig = {
   domain: "career",
-  label: "Career & Business",
-  description: "Career direction, business timing and next steps, reviewed by a career advisor.",
+  label: "Career & Vocation Reflection",
+  description: "Spiritual and cultural reflection on vocation and work; no career, financial, or scientific advice.",
   pricing: { reportEtb: 500, consultationEtb: 1000, consultationFormats: ["video", "voice", "chat", "in_person"] },
-  reviewChecklist: [...STANDARD_CHECKLIST, { id: "financial_disclaimer", label: "No investment or financial instruction is given." }],
+  reviewChecklist: [...STANDARD_CHECKLIST, { id: "reflection_only", label: "Only cultural and spiritual reflection is included; no career or financial instructions are given." }],
   safetyQuestions: CAREER_SAFETY,
   evaluateSafety(answers) {
     if (answers.self_harm === "occasionally" || answers.self_harm === "frequently") return crisisOutcome("Self-harm reported in career screen");
@@ -52,40 +53,38 @@ const career: DomainConfig = {
   async buildDraft({ answers }) {
     const profile = buildCareerProfile(Object.fromEntries(Object.entries(answers).map(([key, value]) => [key, text(value)])));
     const timing = profile.geezName && profile.motherGeezName ? calculateTimingWindows(profile) : null;
-    const ai = await aiSection("career", { profile, answers });
-    const recommendations = buildEvidenceBasedRecommendations("career", answers);
+    const culturalFindings = await retrieveReflectiveCaseFindings("career", "vocation meaningful work identity and community values");
     return {
-      title: "Career direction review",
-      summary: profile.topGoal
-        ? `A review of your goal — “${profile.topGoal}” — at the ${profile.careerStage.replace(/_/g, " ")} stage${profile.sector ? ` in ${profile.sector}` : ""}.`
-        : `A review of your ${profile.careerStage.replace(/_/g, " ")} career stage and next steps.`,
+      title: "Vocation and cultural reflection",
+      summary: "Optional spiritual and cultural reflection on vocation, identity, and work. It does not predict outcomes or guide career or financial decisions.",
       sections: compact([
         {
-          id: "next_steps",
-          title: "Practical next steps",
-          items: [
-            "Write your goal as one concrete action you can take in the next 14 days.",
-            "List the two people or institutions most able to help with that action.",
-            "Set a review date to check progress with your advisor.",
-          ],
+          id: "cultural_reflection",
+          title: "Work, vocation, and community values",
+          body: "Different Ethiopian communities and faith traditions understand meaningful work through values such as service, responsibility, identity, and contribution. These are optional reflection themes, not instructions.",
           locked: false,
         },
-        ai,
+        culturalFindings.length > 0 && {
+          id: "ethiopian_cultural_context",
+          title: "Ethiopian cultural perspectives",
+          items: culturalFindings.map((finding) => `${finding.title}: ${finding.reflection} ${finding.culturalContext}`),
+          locked: false,
+          cultural: true,
+        },
         timing && {
           id: "timing",
-          title: "Traditional timing reflection",
-          body: `${timing.currentWindow.actionRecommendation} ${timing.lunarPhaseNote}`,
-          items: [`Best day of week: ${timing.bestDayOfWeek} (${timing.bestDayAmharic})`, `Suggested month for action: ${timing.recommendedActionMonth}`],
+          title: "Traditional symbolic timing",
+          body: "A tradition-based symbolic reading, offered for cultural reflection only. It is not a forecast or a recommendation about when to make career or business decisions.",
+          items: [timing.numerology.narrativeSummary],
           locked: true,
           cultural: true,
-          data: { numerology: timing.numerology.narrativeSummary, ritualNote: timing.currentWindow.ritualNote },
+          data: { numerology: timing.numerology.narrativeSummary },
         },
-        { id: "financial_disclaimer", title: "About financial topics", body: FINANCIAL_DISCLAIMER, locked: false },
       ]),
-      recommendations,
-      disclaimer: REPORT_DISCLAIMER,
+      recommendations: [],
+      disclaimer: "Spiritual and cultural reflection only. No career, financial, scientific, or predictive advice is provided.",
       generatedAt: new Date().toISOString(),
-      aiAssisted: Boolean(ai),
+      aiAssisted: false,
     };
   },
 };
@@ -94,10 +93,10 @@ const career: DomainConfig = {
 
 const legal: DomainConfig = {
   domain: "legal",
-  label: "Legal Guidance",
-  description: "Organising a legal question, deadlines and lawful next steps, reviewed by a legal practitioner.",
-  pricing: { reportEtb: 600, consultationEtb: 1500, consultationFormats: ["video", "voice", "in_person"] },
-  reviewChecklist: [...STANDARD_CHECKLIST, { id: "deadlines_flagged", label: "Deadlines and time-sensitive risks are clearly flagged." }],
+  label: "Legal & Dispute Guidance (የሕግና ክርክር ምክር)",
+  description: "Spiritual and cultural reflection on disputes, family harmony, and customary reconciliation (ሽምግልና); no scientific or statutory legal advice.",
+  pricing: { reportEtb: 500, consultationEtb: 1000, consultationFormats: ["video", "voice", "in_person"] },
+  reviewChecklist: [...STANDARD_CHECKLIST, { id: "reflection_only", label: "Only cultural and spiritual reflection is included; no scientific advice or formal statutory instruction is given." }],
   safetyQuestions: LEGAL_SAFETY,
   evaluateSafety(answers): SafetyOutcome {
     if (answers.immediateHarm === "physical_danger" || answers.immediateHarm === "threats") {
@@ -113,7 +112,7 @@ const legal: DomainConfig = {
         reason: "Criminal matter — requires a licensed attorney.",
         support: {
           title: "Criminal matters need a licensed attorney",
-          message: "This platform does not give guidance on criminal cases. You can still record your situation, but please contact a licensed attorney or legal aid service as soon as possible.",
+          message: "This platform provides spiritual and cultural dispute reflection only. For criminal matters, please contact a licensed attorney or legal aid service as soon as possible.",
           hotlines: [],
           steps: ["Do not make statements about the case without legal advice.", "Contact a licensed attorney or a legal aid clinic."],
           resources: [REFERRALS.legalAid],
@@ -123,7 +122,7 @@ const legal: DomainConfig = {
     if (answers.evictionRisk === "within_7" || answers.evictionRisk === "within_30") {
       return concern("Time-sensitive eviction risk.", "urgent", {
         title: "Eviction support may be time-sensitive",
-        message: "Contact legal aid promptly while your case is reviewed. Do not wait on this report for court or housing deadlines.",
+        message: "Contact legal aid or community elders promptly. Do not wait on this reflection report for formal court or housing deadlines.",
         hotlines: [],
         steps: ["Keep every notice and document you receive.", "Contact legal aid or your kebele housing office this week."],
         resources: [REFERRALS.legalAid],
@@ -134,31 +133,66 @@ const legal: DomainConfig = {
   },
   questions: () => normalizeQuestions([...getLegalQuestions("intake"), ...getLegalQuestions("matter")]),
   screenAnswers: screenFreeText,
-  async buildDraft({ answers, safety }) {
-    const ai = await aiSection("legal", { answers });
+  async buildDraft({ answers }) {
+    const culturalFindings = await retrieveReflectiveCaseFindings("legal", "customary dispute reconciliation shemgelna spiritual peacemaking");
     const deadline = text(answers.deadline);
     return {
-      title: "Legal question and next-step plan",
-      summary: `Your ${text(answers.issue_type) || "legal"} matter, organised around immediate risks, deadlines and lawful next steps.`,
+      title: "Cultural & Spiritual Dispute Reflection (የሽምግልና እና የዕርቅ ምክር)",
+      summary: `Your ${text(answers.issue_type) || "dispute"} matter, reflected through Ethiopian customary reconciliation (ሽምግልና / Shemgelna) and spiritual peacemaking traditions. Grounded entirely in cultural and spiritual wisdom — no scientific or statutory legal advice.`,
       sections: compact([
-        deadline && deadline !== "no"
-          ? { id: "deadline", title: "Time-sensitive", body: "You reported a deadline or notice. Contact legal aid or an attorney before that date, independently of this report.", locked: false }
-          : null,
         {
-          id: "next_steps",
-          title: "Next steps",
+          id: "customary_peacemaking",
+          title: "Customary Peacemaking & Elder Reconciliation (የሽምግልና መንገድ)",
+          body: "In Ethiopian traditions, disputes are resolved through respected elders (ሽማግሌዎች / Jaarsummaa / Sulh) who facilitate mutual listening, restorative equity, and relationship healing rather than adversarial division.",
           items: [
-            "Write down the key dates, names and documents in one place.",
-            "Keep originals safe and share copies only.",
-            safety.action === "referral_route" ? "Contact a licensed attorney before taking further action." : "Ask a legal aid clinic to confirm the rules that apply in your region.",
+            "Involve trusted community elders or spiritual leaders early to create a neutral space for dialogue.",
+            "Focus on restoring relationship harmony and community peace rather than escalating confrontation.",
+            "Acknowledge mutual dignity and explore restorative solutions that respect both parties' standing.",
           ],
           locked: false,
+          cultural: true,
         },
-        ai,
+        culturalFindings.length > 0 && {
+          id: "ethiopian_cultural_context",
+          title: "Ethiopian Cultural Reconciliation Context",
+          items: culturalFindings.map((finding) => `${finding.title}: ${finding.reflection} ${finding.culturalContext}`),
+          locked: false,
+          cultural: true,
+        },
+        deadline && deadline !== "no"
+          ? { id: "time_awareness", title: "Time and Conscience Awareness", body: "You noted an upcoming date or deadline. Seek peaceful communication or timely counsel with elders or trusted representatives before tension escalates.", locked: false }
+          : null,
+        {
+          id: "spiritual_reconciliation",
+          title: "Spiritual Conscience & Forgiving Grudges (ዕርቅ እና ሰላም)",
+          body: "Spiritual traditions teach that holding grudges (ቂም) impairs inner peace and community blessing. Reconciliation (ዕርቅ) seeks repentance, forgiveness, and restored fellowship.",
+          items: [
+            "Reflect with humility and prayerful discernment on fair terms of peace.",
+            "Prioritize family stability, child wellbeing, and communal brotherhood over winning an argument.",
+          ],
+          locked: false,
+          cultural: true,
+        },
       ]),
-      disclaimer: `${REPORT_DISCLAIMER} This is not legal advice or representation.`,
+      recommendations: [
+        {
+          id: "legal-r1",
+          title: "Involve community elders for customary mediation",
+          description: "Consult trusted family or community elders (ሽማግሌዎች / Jaarsummaa) for customary reconciliation (ሽምግልና).",
+          evidence: { grade: "traditional" as const, source: "Ethiopian customary law", confidence: 0.85, note: "Grounded in Ethiopian traditional peacemaking practice." },
+          domain: "cultural" as const,
+        },
+        {
+          id: "legal-r2",
+          title: "Emphasize reconciliation (ዕርቅ) and mutual understanding",
+          description: "Focus on restoring community harmony and mutual dignity rather than adversarial escalation.",
+          evidence: { grade: "reflective_only" as const, source: "Spiritual and cultural reflection", confidence: 0.8, note: "Spiritual and cultural reflection only." },
+          domain: "spiritual" as const,
+        },
+      ],
+      disclaimer: "Spiritual and cultural reflection only. No scientific, medical, or statutory legal advice is provided.",
       generatedAt: new Date().toISOString(),
-      aiAssisted: Boolean(ai),
+      aiAssisted: false,
     };
   },
 };

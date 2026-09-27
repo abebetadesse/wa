@@ -7,6 +7,7 @@ import { AwdeCircleVisualizer } from "@/components/cultural/AwdeCircleVisualizer
 import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
 import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
 import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
+import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
 
 export default function SpiritualDivinationPage({
   params,
@@ -19,16 +20,41 @@ export default function SpiritualDivinationPage({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [revealStep, setRevealStep] = useState(1);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState("");
+
+  const continueToProcessing = async () => {
+    setIsProcessing(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/case/spiritual/${caseId}/process`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to prepare your reading.");
+      router.push(`/case/spiritual/${caseId}/status`);
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "Unable to prepare your reading.";
+      setError(message === "AUTH_REQUIRED" ? "Sign in with the account that started this reading." : message);
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
-    fetch(`/api/case/spiritual/${caseId}/divination`)
-      .then((res) => res.json())
-      .then((payload) => {
-        if (payload.success && payload.data) {
-          setData(payload.data);
-        }
+    fetch(`/api/case/spiritual/${caseId}/divination`, { credentials: "include", cache: "no-store" })
+      .then(async (res) => {
+        const payload = await res.json();
+        if (!res.ok || !payload.success) throw new Error(payload.error || "Unable to load the cultural reading.");
+        return payload;
       })
-      .catch(() => { })
+      .then((payload) => {
+        if (payload.data) setData(payload.data);
+      })
+      .catch((caught) => {
+        const message = caught instanceof Error ? caught.message : "Unable to load the cultural reading.";
+        setError(message === "AUTH_REQUIRED" ? "Sign in with the account that started this reading." : message);
+      })
       .finally(() => setLoading(false));
 
     // Staggered reveal animation
@@ -59,6 +85,7 @@ export default function SpiritualDivinationPage({
       <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-stone-200 gap-4 px-6 text-center">
         <p className="text-lg font-semibold">This Case 1 session is no longer available.</p>
         <p className="text-sm text-stone-400">Start a new reading to create a secure session.</p>
+        {error.startsWith("Sign in") && <Link href="/auth" className="rounded-xl border border-stone-700 px-5 py-3 text-stone-200">Sign in</Link>}
         <Link href="/case/spiritual/intake/step-1" className="rounded-xl bg-amber-500 px-5 py-3 font-bold text-black">
           Start a new reading
         </Link>
@@ -75,9 +102,10 @@ export default function SpiritualDivinationPage({
             ← Back to Questions
           </Link>
           <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 font-mono">
-            STAGE 3: LIVE DIVINATION REVEAL
+            STEP 3 OF 5: CULTURAL READING
           </span>
         </div>
+        <SpiritualIntakeProgress current={3} />
 
         {/* Title */}
         <div className="text-center space-y-2">
@@ -220,21 +248,26 @@ export default function SpiritualDivinationPage({
             <span>Ethical Heritage Reflection & Cultural Heritage Scope</span>
           </div>
           <p className="leading-relaxed">
-            This divination is grounded in classical Ethiopian parchment traditions. It provides a mirror for spiritual
-            self-reflection and personal clarity. It does NOT predict specific deterministic events, guarantee commercial
-            outcomes, or replace medical, legal, or licensed mental health counsel. Your reading is personally verified by
-            a certified debtera.
+            This symbolic calculation is optional cultural reflection. It does not predict events, establish personal
+            traits, or replace medical, legal, financial, or licensed mental health support. No practitioner has reviewed
+            this reading at this stage.
           </p>
         </div>
 
         {/* Action Button */}
+        {error && (
+          <p role="alert" className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">
+            {error} {error.startsWith("Sign in") && <Link href="/auth" className="font-bold underline underline-offset-2">Sign in</Link>}
+          </p>
+        )}
         <div className="flex justify-end pt-2">
           <button
             type="button"
-            onClick={() => router.push(`/case/spiritual/${caseId}/status`)}
+            onClick={continueToProcessing}
+            disabled={isProcessing}
             className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-base shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
           >
-            <span>Continue to Submit for Expert Review →</span>
+            <span>{isProcessing ? "Preparing your draft..." : "Continue to Step 4: Process my answers →"}</span>
           </button>
         </div>
       </div>

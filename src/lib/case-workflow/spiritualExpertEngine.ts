@@ -6,7 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { FullDivinationResult, calculateFullDivination } from "@/lib/cultural/spiritualDivinationEngine";
-import { evaluateSpiritualCrisis, CrisisScreenResult } from "./spiritualQuestionEngine";
+import { evaluateSpiritualCrisis, generateDynamicQuestions, CrisisScreenResult } from "./spiritualQuestionEngine";
 import { synthesizeCaseReportAnalysis } from "@/lib/ai/bionicGPT";
 
 export interface Expert {
@@ -92,7 +92,7 @@ export interface SpiritualReport {
   culturalInterpretation: {
     narrative: string;
     references: string[];
-    expertSignature: string;
+    expertSignature?: string;
   };
   practicalGuidance: {
     steps: { order: number; title: string; description: string }[];
@@ -106,7 +106,7 @@ export interface SpiritualReport {
     expertNotes: string;
   };
   healingScroll: HealingScrollData;
-  expert: {
+  expert?: {
     id: string;
     name: string;
     credential: string;
@@ -298,43 +298,33 @@ export function generateHealingScroll(
   gematria: Partial<FullDivinationResult>,
   category: string = "life_direction"
 ): HealingScrollData {
-  const name = gematria.nameGeez || "ሰላማዊት";
-  const circleName = gematria.awdeCircle?.nameAmharic || "ቅድስት";
-  const circleNum = gematria.awdeCircle?.number || 8;
-  const patron = circleNum === 8 ? "ቅዱስ ሩፋኤልና ቅድስት ማርያም" : "ቅዱስ ሚካኤል";
+  const name = gematria.nameGeez || "Name not supplied";
+  const circleNum = gematria.awdeCircle?.number;
 
   const prayers = [
-    `በስመ አብ ወወልድ ወመንፈስ ቅዱስ አሐዱ አምላክ፤ ጸሎት በእንተ ማዕሰረ አጋንንት ወፈውስ ለ${name}።`,
-    `ኦ አምላከ ጻድቃን ወሰማዕታት፣ በበረከተ ${circleName} አውደ ነገሥት፣ የ${name}ን ጎዳና በብርሃንህ ምራ።`,
-    `ፈውስ ወሰላም ለሥጋ ወለመንፈስ፤ ከአእምሮ ጭንቀትና ከመንገድ እክል ሰላም አውርድ።`,
+    `A personal reflection for ${name}: May I approach ${category.replaceAll("_", " ")} with clarity, patience, and care.`,
+    "A quiet moment can help clarify what matters and what next step is within reach.",
   ];
 
   const wordsOfPower = [
-    "አልፋ (Alfa)",
-    "ቤጣ (Beta)",
-    "ዮድ (Yod)",
-    "ሳዶር (Sador)",
-    "አላዶር (Alador)",
-    "ዳናት (Danat)",
-    "አዴራ (Adera)",
-    "ሮዳስ (Rodas)",
+    `Chosen focus: ${category.replaceAll("_", " ")}`,
+    circleNum ? `Circle ${circleNum}: ${gematria.awdeCircle?.name || gematria.awdeCircle?.nameAmharic}` : "Name-based cultural symbolism",
   ];
 
   const imagery = [
-    "Sacred Eight-Pointed Ethiopian Ge'ez Cross",
-    "Parchment Eye of Protection (ዓይነ ጥላ መከላከያ)",
-    "Water of Renewal Mandala (የተሃድሶ ምንጭ ንድፍ)",
-    "Eagle of Nisr High Altitude Shield",
+    "A private space for reflection",
+    "A written intention for the selected focus",
+    `A symbolic reference to ${gematria.awdeCircle?.name || "the name calculation"}`,
   ];
 
   return {
-    pdfUrl: `/api/case/spiritual/scroll-document.pdf?name=${encodeURIComponent(name)}`,
-    previewUrl: `/api/case/spiritual/scroll-preview.png?name=${encodeURIComponent(name)}`,
-    title: `የ${name} የፈውስና የዕድል ክታብ (Healing & Guidance Scroll for ${name})`,
+    pdfUrl: "",
+    previewUrl: "",
+    title: `Reflective reading for ${name}`,
     prayers,
     wordsOfPower,
     imagery,
-    patronAngel: patron,
+    patronAngel: circleNum === 8 ? "ቅዱስ ሩፋኤልና ቅድስት ማርያም" : "Not specified",
     generatedAt: new Date().toISOString(),
   };
 }
@@ -342,56 +332,59 @@ export function generateHealingScroll(
 /**
  * Generates full personalized spiritual report
  */
-export function generateSpiritualReport(session: SpiritualCaseSession, expert: Expert): SpiritualReport {
+export function generateSpiritualReport(session: SpiritualCaseSession, expert?: Expert): SpiritualReport {
   const { gematria, nameGeez, motherNameGeez, category } = session;
   const now = new Date().toISOString();
 
   const scroll = generateHealingScroll(gematria, category);
-
-  const narrative = `Your name ${nameGeez} carries the numerical vibration of ${gematria.finalNumber || 10}, resonating with the ancient constellation of ${gematria.zodiac?.name || "Nisr"} (${gematria.zodiac?.nameAmharic || "ንስር"}). The Awde Negest reveals your life currents currently dwell in Circle ${gematria.awdeCircle?.number || 8} (${gematria.awdeCircle?.nameAmharic || "ቅድስት"} — ${gematria.awdeCircle?.name || "Transformation"}), Lake of Renewal, Segment ${gematria.awdeSegment?.number || 1}. This indicates a decisive turning point: an outworn cycle is concluding, opening fertile ground for authentic reinvention.`;
+  const categoryLabel = category.replaceAll("_", " ");
+  const responseContext = Object.entries(session.answers)
+    .filter(([key, value]) => key !== "question_category" && typeof value === "string" && value.trim())
+    .map(([key, value]) => `${key.replaceAll("_", " ")}: ${String(value).trim()}`)
+    .slice(0, 5);
+  const circleDescription = gematria.awdeCircle
+    ? ` Circle ${gematria.awdeCircle.number} (${gematria.awdeCircle.name}, ${gematria.awdeCircle.nameAmharic}).`
+    : "";
+  const answerSummary = responseContext.length
+    ? ` Your submitted reflections: ${responseContext.join("; ")}.`
+    : " You did not add a written reflection.";
+  const narrative = `This optional cultural reading was calculated from the Ge'ez name ${nameGeez}${motherNameGeez ? ` and the supplied mother's name ${motherNameGeez}` : ""}. The name calculation returned total ${gematria.totalSum} and final value ${gematria.finalNumber}.${circleDescription} You selected ${categoryLabel}.${answerSummary} These symbolic traditions are for reflection only; they do not predict outcomes or establish personal traits.`;
 
   const culturalInterpretation = {
-    narrative: `In classical parchment traditions of Gondar and Lake Tana, when the Fidel sum resolves to the ${gematria.talismanic?.name || "Visionary"} archetype under the ruling sphere of ${gematria.talismanic?.rulingPlanet || "Jupiter"}, the seeker is summoned to step out of repetitive stagnation. Debtera tradition emphasizes that external blockers are reflective mirrors urging you to clarify personal boundaries and spiritual alignment.`,
-    references: [
-      "Awde Negest Parchment Manuscript (EMML 1482, fol. 34a-38b)",
-      "Abushakir Computus of Chronology and Spheres (Book IV, Ch. 7)",
-      "Traditions of the Highland Debteras on Name Gematria & Plant Blessings",
-    ],
-    expertSignature: `${expert.name}, ${expert.credential} (${expert.titleAmharic})`,
+    narrative: `Reflection prompt for ${categoryLabel}: Which part of the situation you described feels most important to you, and what small, practical next step would you choose?${answerSummary} This prompt is generated from your submitted answers and is not a claim about your character or future.`,
+    references: ["No manuscript-specific source was verified for this generated reflection."],
+    expertSignature: expert ? `${expert.name}, ${expert.credential} (${expert.titleAmharic})` : undefined,
   };
 
   const practicalGuidance = {
     steps: [
       {
         order: 1,
-        title: "Morning Water Grounding Ritual",
-        description: "Drink a cup of warm water infused with a sprig of fresh Tena Adam at sunrise, setting your intention before speaking to anyone.",
+        title: "Clarify the focus",
+        description: `Write one sentence about what you want to understand regarding ${categoryLabel}.`,
       },
       {
         order: 2,
-        title: "Release the Dormant Commitment",
-        description: "Identify the one obligation or conversation you have delayed out of guilt, and speak your truth with gracious clarity this week.",
+        title: "Choose a manageable next step",
+        description: "Identify one action you can take safely and voluntarily, and decide when you will review how it went.",
       },
       {
         order: 3,
-        title: "Harmonize with Your Air Element",
-        description: "Engage in communicative expression—writing your reflections or sharing counsel with a trusted confidant every Thursday.",
+        title: "Use support if helpful",
+        description: "Consider discussing your reflection with someone you trust; seek qualified professional support for health, safety, legal, or financial needs.",
       },
     ],
-    expertNotes: `I reviewed your reflections regarding ${category}. Trust the timing of this transformation; do not force doors that are peacefully closing.`,
+    expertNotes: expert
+      ? `Prepared for review by ${expert.name}; expert approval has not yet been recorded.`
+      : "This is an automatically generated draft. No human expert review is recorded.",
   };
 
   const recommendedRitual = {
-    title: "Thursday Renewal & Incense Blessing",
-    description: "Light pure Frankincense (ዕጣን) or Myrrh on Thursday evening. Read the psalm or prayer of the day, reflecting on the Lake of Renewal.",
-    timing: "Thursday evening between 6:00 PM and 8:00 PM",
-    materials: [
-      "Highland Frankincense (ንፁሕ ዕጣን)",
-      "Sprig of fresh Tena Adam or Koseret",
-      "Pure spring water or blessed holy water (ጸበል)",
-      "A white clean cloth or Gabi",
-    ],
-    expertNotes: "Ensure quietude and peace of mind during the blessing; this is for personal reflection and serenity.",
+    title: "Optional quiet reflection",
+    description: "If it fits your own beliefs, take a few quiet minutes to reflect or pray in your own way. No ritual or material is required.",
+    timing: "Choose a time that feels comfortable to you.",
+    materials: ["None required"],
+    expertNotes: "Optional cultural or spiritual reflection only; it is not treatment or a promised outcome.",
   };
 
   return {
@@ -399,7 +392,6 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert: E
     caseId: session.id,
     status: session.status,
     generatedAt: now,
-    approvedAt: now,
     divinationSummary: {
       nameGeez,
       motherNameGeez,
@@ -424,14 +416,14 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert: E
     practicalGuidance,
     recommendedRitual,
     healingScroll: scroll,
-    expert: {
+    expert: expert ? {
       id: expert.id,
       name: expert.name,
       credential: expert.credential,
       rating: expert.rating,
       bioQuote: expert.bioQuote,
       avatarUrl: expert.avatarUrl,
-    },
+    } : undefined,
   };
 }
 
@@ -454,6 +446,15 @@ export function startSpiritualCase(
     throw new Error("Your name is required to start Case 1.");
   }
   const gematria = calculateFullDivination(nameGeez, motherNameGeez);
+  if (!gematria.isValid) {
+    throw new Error("Enter a valid Ge'ez or Amharic name before starting the reading.");
+  }
+  if (birthContext?.birthDate) {
+    const parsedDate = new Date(`${birthContext.birthDate}T00:00:00.000Z`);
+    if (Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== birthContext.birthDate) {
+      throw new Error("Enter a valid birth date or leave it blank.");
+    }
+  }
   const now = new Date().toISOString();
   const id = `spiritual-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
@@ -495,52 +496,14 @@ export function getSpiritualCase(id: string): SpiritualCaseSession | undefined {
     existing = loadCaseFromDisk(id);
   }
   if (existing) return existing;
-
-  // Fallback: If case ID follows spiritual-* pattern (e.g. from an existing active client flow),
-  // dynamically synthesize a healthy session so the client is never blocked by a 404
-  if (id.startsWith("spiritual-")) {
-    const now = new Date().toISOString();
-    const defaultGematria = calculateFullDivination("አበበ", "ማርያም");
-    const synthesized: SpiritualCaseSession = {
-      id,
-      createdAt: now,
-      lastUpdated: now,
-      status: "case_received",
-      nameGeez: "አበበ",
-      motherNameGeez: "ማርያም",
-      category: "life_direction",
-      gematria: defaultGematria,
-      answers: {},
-      crisisScreen: { isCrisis: false, urgencyLevel: "routine" },
-      estimatedMinutesRemaining: 384,
-      paymentConfirmed: false,
-    };
-    spiritualCases.set(id, synthesized);
-    persistCaseToDisk(synthesized);
-    return synthesized;
-  }
-
   return undefined;
 }
 
-export function getOwnedSpiritualCase(id: string, userId: string): SpiritualCaseSession | undefined {
+export function getOwnedSpiritualCase(id: string, userId?: string | null): SpiritualCaseSession | undefined {
+  if (!userId) return undefined;
   const session = getSpiritualCase(id);
   if (!session) return undefined;
-  if (!session.userId) {
-    session.userId = userId;
-    persistCaseToDisk(session);
-    return session;
-  }
-  if (session.userId === userId) {
-    return session;
-  }
-  // In development or if user switched session/role, allow continuity
-  if (process.env.NODE_ENV !== "production") {
-    session.userId = userId;
-    persistCaseToDisk(session);
-    return session;
-  }
-  return undefined;
+  return session.userId === userId ? session : undefined;
 }
 
 /**
@@ -558,8 +521,18 @@ export async function submitSpiritualCase(
   if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
     throw new Error("Please provide valid answers before continuing.");
   }
+  if (Object.keys(answers).length > 60 || Object.values(answers).some((value) =>
+    typeof value === "string" && value.length > 4000
+  )) {
+    throw new Error("The submitted answers exceed the allowed size.");
+  }
   session.answers = { ...session.answers, ...answers };
-  session.category = answers.question_category || session.category || "life_direction";
+  const allowedCategories = ["life_direction", "career", "relationships", "wellbeing", "family", "spiritual_growth", "other"];
+  const submittedCategory = answers.question_category || session.category || "life_direction";
+  if (!allowedCategories.includes(submittedCategory)) {
+    throw new Error("Choose a valid spiritual reading focus.");
+  }
+  session.category = submittedCategory;
   session.lastUpdated = new Date().toISOString();
 
   // Run crisis check
@@ -571,40 +544,50 @@ export async function submitSpiritualCase(
 
   if (crisisResult.isCrisis) {
     session.status = "visible_to_user";
+    session.lastUpdated = new Date().toISOString();
+    persistCaseToDisk(session);
     return session;
   }
 
-  // Assign expert
-  try {
-    const expert = await assignExpert(
-      session.id,
-      "spiritual",
-      ["am", "en"],
-      "addis_ababa",
-      session.category
-    );
-    session.assignedExpert = expert;
-    session.status = "pending_expert_review";
-  } catch (err) {
-    // Fallback to default expert if load is full
-    session.assignedExpert = EXPERTS_REGISTRY[0];
-    session.status = "pending_expert_review";
+  const missingQuestion = generateDynamicQuestions(session.gematria, session.category, session.answers)
+    .find((question) => question.required && (
+      session.answers[question.id] === undefined ||
+      (typeof session.answers[question.id] === "string" && !session.answers[question.id].trim()) ||
+      (Array.isArray(session.answers[question.id]) && session.answers[question.id].length === 0)
+    ));
+  if (missingQuestion) {
+    throw new Error(`Please answer the required question: ${missingQuestion.id}`);
   }
 
-  // Generate draft report in background
-  if (session.assignedExpert) {
-    session.report = generateSpiritualReport(session, session.assignedExpert);
-    const aiAnalysis = await synthesizeCaseReportAnalysis("spiritual", {
-      answers,
-      category: session.category,
-      crisisScreen: session.crisisScreen,
-      gematria: session.gematria,
-      nameGeez: session.nameGeez,
-      motherNameGeez: session.motherNameGeez,
-    });
-    session.report.aiAnalysis = aiAnalysis;
+  session.status = "divination_calculated";
+
+  persistCaseToDisk(session);
+  return session;
+}
+
+export async function processSpiritualCase(id: string): Promise<SpiritualCaseSession> {
+  const session = getSpiritualCase(id);
+  if (!session) throw new Error("Case not found");
+  if (session.crisisScreen.isCrisis) {
+    throw new Error("CRISIS_SUPPORT_REQUIRED");
+  }
+  if (session.status === "ai_draft_prepared" && session.report) return session;
+  if (session.status !== "divination_calculated" && session.status !== "ai_draft_prepared") {
+    throw new Error("INTAKE_NOT_SUBMITTED");
   }
 
+  const report = generateSpiritualReport(session);
+  report.aiAnalysis = await synthesizeCaseReportAnalysis("spiritual", {
+    answers: session.answers,
+    category: session.category,
+    gematria: session.gematria,
+    nameGeez: session.nameGeez,
+    motherNameGeez: session.motherNameGeez,
+  });
+  session.status = "ai_draft_prepared";
+  report.status = session.status;
+  session.report = report;
+  session.lastUpdated = new Date().toISOString();
   persistCaseToDisk(session);
   return session;
 }

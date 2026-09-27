@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 
 import { evaluateCareerSafetyScreen } from "../lib/case-workflow/careerSafetyScreen.ts";
 import { buildCareerProfile, getCareerQuestions } from "../lib/case-workflow/careerQuestionEngine.ts";
+import { CASE_STRAND_FILTERS } from "../lib/case-workflow/strandRouting.ts";
+import {
+  buildReflectiveDiagnosticSolution,
+  retrieveReflectiveCaseFindings,
+} from "../lib/case-workflow/reflectiveCaseAnalysis.ts";
 import {
   analyzeCareerCase,
   bookCareerConsult,
@@ -70,4 +75,36 @@ test("case 3 profile builder and question generator are consistent", () => {
   assert.equal(profile.careerStage, "starting_business");
   assert.equal(profile.sector, "agriculture");
   assert.ok(getCareerQuestions("starting_business").length > 0);
+});
+
+test("money and career reflections query only cultural and astrological strands", async () => {
+  assert.deepEqual(CASE_STRAND_FILTERS.money, ["cultural", "astrological"]);
+  assert.deepEqual(CASE_STRAND_FILTERS.career, ["cultural", "astrological"]);
+
+  for (const domain of ["money", "career"]) {
+    const findings = await retrieveReflectiveCaseFindings(domain, "I want to reflect on my future.");
+    assert.ok(findings.length > 0, `${domain} returns cultural reflection`);
+    assert.ok(findings.every((finding) => ["cultural", "astrological"].includes(finding.strand)));
+    assert.doesNotMatch(JSON.stringify(findings), /medical|clinical|diagnos|treatment|investment|capital allocation|contract signing|risk mitigation/i);
+    assert.ok(findings.every((finding) => !("recommendations" in finding)));
+    assert.ok(findings.every((finding) => domain === "money"
+      ? /\b(iqub|equb)\b/i.test(finding.title)
+      : /vocation|awude negest/i.test(finding.title)));
+    const solution = buildReflectiveDiagnosticSolution({
+      originalQuery: "I want to reflect on my future.",
+      mode: "text",
+      language: "en",
+      domain,
+      findings,
+      urgency: { level: "low", score: 0, matchedSignals: ["safety-check"] },
+      intent: "case_reflection",
+    });
+    assert.deepEqual(solution.causes, []);
+    assert.deepEqual(solution.solutions, []);
+    assert.ok(solution.rawFindings.cultural.length + solution.rawFindings.astrological.length > 0);
+    assert.ok(Object.entries(solution.rawFindings)
+      .filter(([strand]) => !["cultural", "astrological"].includes(strand))
+      .every(([, results]) => results.length === 0));
+    assert.ok(solution.safety.warnings.length > 0, "the separate safety signal is retained");
+  }
 });

@@ -25,10 +25,11 @@ export async function POST(
       paywall: updatedSession.crisisScreen.paywall,
       data: updatedSession,
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to submit case";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to submit case" },
-      { status: 400 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 400 }
     );
   }
 }

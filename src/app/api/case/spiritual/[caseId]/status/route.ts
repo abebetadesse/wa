@@ -20,6 +20,7 @@ export async function GET(
       data: {
         caseId: session.id,
         status: session.status,
+        hasReport: Boolean(session.report),
         nameGeez: session.nameGeez,
         motherNameGeez: session.motherNameGeez,
         birthContext: {
@@ -32,18 +33,19 @@ export async function GET(
           birthLongitude: session.birthLongitude ?? null,
         },
         category: session.category,
+        lastUpdated: session.lastUpdated,
         assignedExpert: session.assignedExpert,
         estimatedMinutesRemaining: session.estimatedMinutesRemaining,
         paymentConfirmed: session.paymentConfirmed,
         transactionRef: session.transactionRef,
         createdAt: session.createdAt,
-        lastUpdated: session.lastUpdated,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch status";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch status" },
-      { status: 500 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 500 }
     );
   }
 }

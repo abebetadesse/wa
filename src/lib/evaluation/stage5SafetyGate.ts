@@ -7,6 +7,9 @@ export interface HerbInteractionRule {
   interactionSeverity: "high" | "moderate" | "caution";
   mechanism: string;
   physiologicalEffect: string;
+  plainLanguageEffect?: string;
+  audience?: "user" | "professional" | "both";
+  cypPathways?: string[];
   contraindicated: boolean;
   sourceRef: string;
 }
@@ -20,6 +23,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "high",
     mechanism: "Furanocoumarins and rutin exert potent additive antiplatelet and antithrombotic effects, inhibiting CYP3A4-mediated drug metabolism.",
     physiologicalEffect: "Significant risk of gastrointestinal hemorrhage and uncontrollable bleeding.",
+    plainLanguageEffect: "Tena Adam significantly increases bleeding risk when taken with blood thinners like Warfarin or Aspirin. Do not take together.",
+    audience: "both",
+    cypPathways: ["CYP3A4", "CYP2C9"],
     contraindicated: true,
     sourceRef: "ETM-SAFETY-WAR-01",
   },
@@ -30,6 +36,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "high",
     mechanism: "Kosotoxin causes mucosal gastrointestinal erosion and hepatotoxic stress, compounding anticoagulant-induced hemorrhage.",
     physiologicalEffect: "Life-threatening internal hemorrhage and hepatic decompensation.",
+    plainLanguageEffect: "Kosso causes severe stomach lining irritation and compounding risk of internal bleeding when combined with blood-thinning medication.",
+    audience: "both",
+    cypPathways: ["CYP1A2", "CYP2E1"],
     contraindicated: true,
     sourceRef: "ETM-SAFETY-KOS-02",
   },
@@ -40,6 +49,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "high",
     mechanism: "Disruption of systemic acid-base equilibrium and additive metabolic strain with biguanides.",
     physiologicalEffect: "Uncontrolled metabolic destabilization and lactic acidosis risk.",
+    plainLanguageEffect: "Kosso interferes dangerously with diabetes medication, risking sudden metabolic instability.",
+    audience: "both",
+    cypPathways: ["Renal/Mitochondrial"],
     contraindicated: true,
     sourceRef: "ETM-SAFETY-KOS-03",
   },
@@ -50,6 +62,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "moderate",
     mechanism: "Thymoquinone enhances pancreatic insulin secretion and tissue glucose uptake additively with oral hypoglycemic agents.",
     physiologicalEffect: "Risk of symptomatic or nocturnal hypoglycemia.",
+    plainLanguageEffect: "Tikur Azmud lowers blood sugar and can cause your blood sugar to drop too low when taking diabetes medicine. Monitor closely.",
+    audience: "both",
+    cypPathways: ["CYP2C19", "CYP3A4"],
     contraindicated: false,
     sourceRef: "ETM-SAFETY-GLU-03",
   },
@@ -60,6 +75,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "moderate",
     mechanism: "Synergistic vasodilatory effect potentiating systemic vascular resistance reduction.",
     physiologicalEffect: "Sudden orthostatic hypotension, syncope, and dizziness.",
+    plainLanguageEffect: "Damakesse relaxes blood vessels and can cause dizzy spells or fainting if taken alongside blood pressure medicines.",
+    audience: "both",
+    cypPathways: ["Endothelial/NO pathway"],
     contraindicated: false,
     sourceRef: "ETM-SAFETY-HYP-04",
   },
@@ -70,6 +88,9 @@ export const KNOWN_HERB_DRUG_RULES: HerbInteractionRule[] = [
     interactionSeverity: "moderate",
     mechanism: "Additive natriuresis and aqueous diuresis compounding fluid/potassium losses.",
     physiologicalEffect: "Electrolyte depletion, prerenal azotemia, and dehydration.",
+    plainLanguageEffect: "Feto acts as a strong natural water-pill, and taking it with water pills (diuretics) can cause severe dehydration.",
+    audience: "both",
+    cypPathways: ["Renal tubular"],
     contraindicated: false,
     sourceRef: "ETM-SAFETY-DIU-05",
   },

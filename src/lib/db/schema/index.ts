@@ -10,3 +10,4 @@ export * from "./rbac";
 export * from "./literatureFindings";
 export * from "./ethnomedicine";
 export * from "./hexacore";
+export * from "./caseEvaluationPipeline";

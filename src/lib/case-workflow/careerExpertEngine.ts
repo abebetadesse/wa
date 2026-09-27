@@ -359,11 +359,8 @@ export function buildCareerReportShell(
       signature: `${assignment.advisor.name} · ${assignment.advisor.role.replace(/_/g, " ")}`,
     },
     financialDisclaimer:
-      "This report provides general career and business guidance only. " +
-      "Nothing in this report constitutes financial, investment, or legal advice. " +
-      "For decisions involving significant capital, contracts, or legal obligations, " +
-      "please consult a licensed professional.",
-    lockedSections: ["strategicRecommendations", "expertNarrative", "blessingRitual"],
+      "This report provides optional cultural and spiritual reflection only. It does not provide career, financial, investment, scientific, or predictive advice.",
+    lockedSections: ["culturalReflection", "spiritualInterpretation", "communityTraditions"],
   };
 }
 

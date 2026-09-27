@@ -3,7 +3,17 @@ import { IntentClassifier } from "@/lib/knowledge/parsing/intentClassifier";
 import { EntityExtractor } from "@/lib/knowledge/parsing/entityExtractor";
 import { UrgencyDetector } from "@/lib/knowledge/parsing/urgencyDetector";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
-import { UserProfile } from "@/lib/knowledge/types";
+import type {
+  DiagnosticSolution,
+  IntersectionFinding,
+  KnowledgeStrandType,
+  StrandFinding,
+  UserProfile,
+} from "@/lib/knowledge/types";
+import {
+  buildReflectiveDiagnosticSolution,
+  retrieveReflectiveCaseFindings,
+} from "@/lib/case-workflow/reflectiveCaseAnalysis";
 import { db } from "@/lib/db";
 import { diagnosticSessions, wellbeingProfiles } from "@/lib/db/schema";
 import { decryptRestrictedField } from "@/lib/security/encryption";
@@ -108,7 +118,7 @@ export async function POST(request: NextRequest) {
     const extractedSubs = entities.filter((e) => e.category === "substance").map((e) => e.value);
 
     let persistedProfile: UserProfile = {};
-    if (authenticatedUser?.id) {
+    if (authenticatedUser?.id && domain !== "money" && domain !== "career") {
       try {
         persistedProfile = await loadPersistedProfile(authenticatedUser.id);
       } catch (profileError) {
@@ -137,19 +147,42 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // 2. Orchestration: parallel retrieval across 11 strands + cross-strand integration + AI COT reasoning
-    const { strandResults, intersections, solution, fromCache } = await globalOrchestrator.retrieveAll(
-      query,
-      mode,
-      requestedLanguage || intentResult.detectedLanguage,
-      mergedProfile,
-      intentResult.intent,
-      urgency
-    );
+    const language = requestedLanguage || intentResult.detectedLanguage;
+    let strandResults: Record<KnowledgeStrandType, StrandFinding[]>;
+    let intersections: IntersectionFinding[];
+    let solution: DiagnosticSolution;
+    let fromCache: boolean;
+    let strandsQueried: KnowledgeStrandType[];
+
+    if (domain === "money" || domain === "career") {
+      const reflectiveQuery = `${originalQuery} ${selectedSymptoms.join(" ")}`.trim();
+      const findings = await retrieveReflectiveCaseFindings(domain, reflectiveQuery);
+      solution = buildReflectiveDiagnosticSolution({ originalQuery, mode, language, domain, findings, urgency, intent: intentResult.intent });
+      strandResults = solution.rawFindings;
+      intersections = [];
+      fromCache = false;
+      strandsQueried = ["cultural", "astrological"];
+    } else {
+      // Other case domains retain the full diagnostic workflow.
+      const result = await globalOrchestrator.retrieveAll(
+        query,
+        mode,
+        language,
+        mergedProfile,
+        intentResult.intent,
+        urgency
+      );
+      strandResults = result.strandResults;
+      intersections = result.intersections;
+      solution = result.solution;
+      fromCache = result.fromCache;
+      strandsQueried = Object.keys(result.strandResults) as KnowledgeStrandType[];
+    }
 
     // Keep internal routing context out of the user-facing problem statement.
     solution.query = originalQuery;
     solution.summary.problem = originalQuery.length > 90 ? `${originalQuery.slice(0, 87)}...` : originalQuery;
+    solution.rawFindings = strandResults;
 
     // 3. Persist session to database if connected
     try {
@@ -180,6 +213,7 @@ export async function POST(request: NextRequest) {
         if (saved?.id) {
           solution.id = saved.id;
         }
+
       }
     } catch (dbErr) {
       console.warn("Could not persist diagnostic session to DB:", dbErr);
@@ -193,7 +227,7 @@ export async function POST(request: NextRequest) {
         intent: intentResult.intent,
         entitiesCount: entities.length,
         intersectionsCount: intersections.length,
-        strandsQueried: Object.keys(strandResults),
+        strandsQueried,
       },
     });
   } catch (error) {

@@ -560,13 +560,25 @@ function fallbackCaseAiAnalysis(caseType: string, input: Record<string, any>): C
   }
 
   if (caseType === "spiritual" && input?.answers) {
-    base.situationSummary = "Spiritual case insights were prepared with a divination, expert assignment, and report narrative structure.";
-    base.strengths = [
-      "Healing scroll and symbolic guidance are prepared",
-      "Expert pathway has been selected",
-      "Cultural and spiritual context is preserved",
+    const category = String(input.category || input.answers.question_category || "life direction").replaceAll("_", " ");
+    const submittedDetails = Object.entries(input.answers as Record<string, unknown>)
+      .filter(([key, value]) => key !== "question_category" && typeof value === "string" && value.trim())
+      .map(([key, value]) => `${key.replaceAll("_", " ")}: ${String(value).trim()}`)
+      .slice(0, 4);
+    base.situationSummary = `You requested an optional spiritual reflection about ${category}.${submittedDetails.length ? ` Your submitted context: ${submittedDetails.join("; ")}.` : " No additional written context was provided."} This summary reflects only the answers supplied and does not infer traits, predict outcomes, or replace professional advice.`;
+    base.strengths = ["You identified a focus for reflection."];
+    base.challenges = submittedDetails.length
+      ? ["The reflection is limited to the details you chose to share."]
+      : ["No situation details were supplied, so personalized interpretation is limited."];
+    base.strategicRecommendations = [
+      {
+        title: "Choose one practical next step",
+        description: "Use the reflection to identify a small, safe action that fits your situation; consult a qualified professional for health, legal, or financial decisions.",
+        priority: "short_term",
+      },
     ];
-    base.challenges = ["Expert review must approve the final release"];
+    base.networkingSuggestions = ["If useful, discuss your own reflection with a trusted person or a qualified professional relevant to your concern."];
+    base.sectorInsights = "This is an AI-generated cultural reflection, not a verified traditional ruling or professional assessment.";
   }
 
   return base;
@@ -580,7 +592,7 @@ export async function synthesizeCaseReportAnalysis(
   if (!isBionicConfigured()) return fallback;
 
   try {
-    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and scientific-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Keep every recommendation ethical, non-diagnostic, culturally grounded, and concise.`;
+    const systemPrompt = `You are a cautious report synthesis assistant for an Ethiopian wellness, case-analysis, and scientific-reporting platform. Return valid JSON only with fields: situationSummary, strengths, challenges, strategicRecommendations, networkingSuggestions, sectorInsights. Use only details explicitly present in the input; do not invent traits, outcomes, citations, reviewers, or expert approval. For spiritual cases, clearly label interpretations as optional cultural reflection, make no medical, psychological, legal, or financial claims, and never recommend ingesting herbs, fasting, or stopping treatment. Keep every recommendation ethical and concise.`;
     const messages = buildBionicMessages(systemPrompt, [
       {
         role: "user",

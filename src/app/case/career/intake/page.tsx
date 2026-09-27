@@ -448,20 +448,6 @@ export default function CareerIntakePage() {
   const isLastQuestion = currentQuestionIdx >= questions.length - 1;
   const progressPct = questions.length > 0 ? Math.round(((currentQuestionIdx + 1) / questions.length) * 100) : 0;
 
-  const windowBadge = (label: string) => {
-    if (label === "highly_auspicious") return "bg-amber-500/20 text-amber-300 border border-amber-500/40";
-    if (label === "favorable") return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
-    if (label === "neutral") return "bg-stone-500/20 text-stone-300 border border-stone-500/40";
-    return "bg-red-500/20 text-red-300 border border-red-500/40";
-  };
-
-  const windowLabelColor = (label: string) => {
-    if (label === "highly_auspicious") return "text-amber-400";
-    if (label === "favorable") return "text-emerald-400";
-    if (label === "neutral") return "text-stone-400";
-    return "text-red-400";
-  };
-
   // ════════════════════════════════════════════════════════════
   // Render
   // ════════════════════════════════════════════════════════════
@@ -1182,9 +1168,9 @@ export default function CareerIntakePage() {
         {stage === "timing_reveal" && timingAnalysis && (
           <div className="space-y-8 animate-in fade-in duration-300">
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold">Your Timing Windows</h2>
+              <h2 className="text-3xl font-bold">Traditional Timing Reflection</h2>
               <p className="text-zinc-400 text-sm">
-                Based on your Ge'ez name gematria and Awde Negest analysis
+                A symbolic reading from Ge'ez name traditions and Awde Negest. This is cultural reflection, not a forecast or a guide for career or financial decisions.
               </p>
             </div>
 
@@ -1192,14 +1178,14 @@ export default function CareerIntakePage() {
             <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-6 space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs text-blue-400 uppercase tracking-widest mb-1">Career Element</p>
+                  <p className="text-xs text-blue-400 uppercase tracking-widest mb-1">Traditional Element Association</p>
                   <p className="text-xl font-bold text-blue-200">{timingAnalysis.numerology.careerElement}</p>
                   <p className="text-sm text-zinc-400" dir="auto">
                     {timingAnalysis.numerology.careerElementAmharic}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Life Path</p>
+                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Symbolic Number</p>
                   <p className="text-4xl font-bold font-mono text-blue-300">
                     {timingAnalysis.numerology.lifePathNumber}
                   </p>
@@ -1210,11 +1196,11 @@ export default function CareerIntakePage() {
               </p>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Lucky Days</p>
+                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Traditional Day Associations</p>
                   <p className="text-zinc-200">{timingAnalysis.numerology.luckyDays.join(", ")}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Lucky Colors</p>
+                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Traditional Color Associations</p>
                   <p className="text-zinc-200">{timingAnalysis.numerology.luckyColors.join(", ")}</p>
                 </div>
               </div>
@@ -1222,35 +1208,26 @@ export default function CareerIntakePage() {
 
             {/* Current Window */}
             <div
-              className={`rounded-2xl p-6 space-y-3 border ${
-                timingAnalysis.currentWindow.label === "highly_auspicious"
-                  ? "border-amber-500/40 bg-amber-950/20"
-                  : timingAnalysis.currentWindow.label === "favorable"
-                  ? "border-emerald-500/30 bg-emerald-950/10"
-                  : "border-zinc-700 bg-zinc-900/30"
-              }`}
+              className="rounded-2xl p-6 space-y-3 border border-zinc-700 bg-zinc-900/30"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Current Window</p>
+                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Current Symbolic Cycle</p>
                   <p className="text-sm text-zinc-300">
                     {timingAnalysis.currentWindow.dateRange.start} →{" "}
                     {timingAnalysis.currentWindow.dateRange.end}
                   </p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${windowBadge(timingAnalysis.currentWindow.label)}`}>
-                  {timingAnalysis.currentWindow.label.replace(/_/g, " ")}
+                <span className="px-3 py-1 rounded-full text-xs font-semibold text-zinc-300 bg-zinc-800">
+                  Traditional cycle
                 </span>
               </div>
-              <p className="text-sm text-zinc-300">{timingAnalysis.currentWindow.actionRecommendation}</p>
+              <p className="text-sm text-zinc-300">
+                This cycle label is part of a traditional symbolic reading; it does not indicate whether or when to take career or financial action.
+              </p>
               {timingAnalysis.currentWindow.ritualNote && (
                 <div className="rounded-xl bg-amber-900/20 border border-amber-600/20 p-3 text-sm text-amber-200">
                   ✨ {timingAnalysis.currentWindow.ritualNote}
-                </div>
-              )}
-              {timingAnalysis.currentWindow.warningNote && (
-                <div className="rounded-xl bg-red-900/20 border border-red-500/20 p-3 text-sm text-red-300">
-                  ⚠️ {timingAnalysis.currentWindow.warningNote}
                 </div>
               )}
             </div>
@@ -1258,7 +1235,7 @@ export default function CareerIntakePage() {
             {/* Next 3 Windows */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">
-                Next Timing Windows
+                Other Symbolic Cycles
               </h3>
               {timingAnalysis.nextThreeWindows.map((w, i) => (
                 <div
@@ -1269,15 +1246,12 @@ export default function CareerIntakePage() {
                     <p className="text-sm text-zinc-200">
                       {w.dateRange.start} → {w.dateRange.end}
                     </p>
-                    <p className="text-xs text-zinc-500">{w.awdeCircle}</p>
+                    <p className="text-xs text-zinc-500">Awde Negest cycle · {w.awdeCircle}</p>
                   </div>
                   <div className="text-right">
-                    <span className={`px-2 py-0.5 rounded-full text-xs ${windowBadge(w.label)}`}>
-                      {w.label.replace(/_/g, " ")}
+                    <span className="px-2 py-0.5 rounded-full text-xs text-zinc-300 bg-zinc-800">
+                      Traditional cycle
                     </span>
-                    <p className={`text-sm font-bold mt-1 ${windowLabelColor(w.label)}`}>
-                      {w.score}/10
-                    </p>
                   </div>
                 </div>
               ))}
@@ -1394,12 +1368,10 @@ export default function CareerIntakePage() {
             {/* TOC */}
             <div className="space-y-2">
               {[
-                { label: "Career Timing & Numerology", locked: false, icon: "🔢" },
-                { label: "Strategic Recommendations", locked: !isReportUnlocked, icon: "📊" },
-                { label: "Expert Narrative & Review", locked: !isReportUnlocked, icon: "👤" },
-                { label: "Blessing Ritual for Career Launch", locked: !isReportUnlocked, icon: "✨" },
-                { label: "Networking & Community Suggestions", locked: false, icon: "🌐" },
-                { label: "Sector Insights", locked: !isReportUnlocked, icon: "📈" },
+                { label: "Traditional Timing Reflection", locked: false, icon: "🔢" },
+                { label: "Vocation, Identity & Community", locked: !isReportUnlocked, icon: "🌐" },
+                { label: "Optional Spiritual Reflection", locked: !isReportUnlocked, icon: "✨" },
+                { label: "Cultural Interpretation", locked: !isReportUnlocked, icon: "🪶" },
               ].map((section) => (
                 <div
                   key={section.label}
@@ -1430,10 +1402,9 @@ export default function CareerIntakePage() {
               ))}
             </div>
 
-            {/* Financial disclaimer */}
+            {/* Scope disclaimer */}
             <div className="rounded-xl border border-amber-500/20 bg-amber-950/10 p-4 text-xs text-amber-300 leading-relaxed">
-              ⚠️ This report provides general career and business guidance only. Nothing here constitutes
-              financial, investment, or legal advice.
+              This report contains optional spiritual and cultural reflection only. It does not provide career, business, financial, scientific, or predictive advice.
             </div>
 
             {/* Unlocked sections */}
@@ -1442,59 +1413,36 @@ export default function CareerIntakePage() {
                 <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 flex items-center justify-between text-emerald-300 text-sm">
                   <div className="flex items-center gap-2 font-semibold">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Full Analysis Unlocked</span>
+                    <span>Cultural Reflection Unlocked</span>
                   </div>
                   <span className="text-xs font-mono text-emerald-400/80">Verified Access</span>
                 </div>
 
-                {/* Strategic Recommendations */}
+                {/* Vocation and community reflection */}
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">📊</span>
-                    <h3 className="text-lg font-semibold text-zinc-100">Strategic Recommendations</h3>
+                    <span className="text-lg">🌐</span>
+                    <h3 className="text-lg font-semibold text-zinc-100">Vocation, Identity &amp; Community</h3>
                   </div>
                   <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
-                    <p>
-                      • <strong>Optimal Action Window:</strong> Synchronize critical contract signings and capital
-                      allocation during the upcoming{" "}
-                      <span className="text-amber-300 font-semibold">
-                        {timingAnalysis?.currentWindow.label.replace(/_/g, " ")}
-                      </span>{" "}
-                      window ({timingAnalysis?.currentWindow.dateRange.start} –{" "}
-                      {timingAnalysis?.currentWindow.dateRange.end}).
-                    </p>
-                    <p>
-                      • <strong>Auspicious Days:</strong> Focus high-impact presentations and negotiations on{" "}
-                      {timingAnalysis?.numerology.luckyDays.join(" and ") || "favorable days"}.
-                    </p>
-                    <p>
-                      • <strong>Risk Mitigation:</strong> Avoid signing binding agreements on{" "}
-                      {timingAnalysis?.numerology.avoidDays.join(", ") || "challenging days"}.
-                    </p>
-                    <p>
-                      • <strong>Phase Blueprint:</strong> For your stage (
-                      {careerStage.replace(/_/g, " ")}), anchor your foundations in strong personal relationships
-                      before aggressive expansion.
-                    </p>
+                    <p>{culturalIntegration?.communityAngle ?? "Work and vocation may be reflected on through community, identity, service, and spiritual values. Traditions and personal interpretations differ."}</p>
+                    <p>Consider which of these themes, if any, resonate with your own beliefs and experience. They do not prescribe a career or business choice.</p>
                   </div>
                 </div>
 
-                {/* Expert Narrative */}
+                {/* Spiritual interpretation */}
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="text-lg">👤</span>
                     <div>
-                      <h3 className="text-lg font-semibold text-zinc-100">Expert Review &amp; Synthesis</h3>
+                      <h3 className="text-lg font-semibold text-zinc-100">Cultural Interpretation</h3>
                       <p className="text-xs text-blue-400">
-                        By {expertAssignment?.advisorName} — {expertAssignment?.advisorTitle}
+                        A symbolic reading, not a professional recommendation
                       </p>
                     </div>
                   </div>
                   <blockquote className="text-sm italic text-zinc-300 border-l-2 border-blue-500/50 pl-4 py-1">
-                    &ldquo;Based on your Ge&apos;ez gematria ({gematriaLive.nameSubtotal} +{" "}
-                    {gematriaLive.motherSubtotal} = {gematriaLive.totalSum}) and elemental alignment with{" "}
-                    {timingAnalysis?.numerology.careerElement}, your career trajectory demonstrates strong
-                    resilience. Capitalize on collective synergy rather than isolated venture risks.&rdquo;
+                    &ldquo;The name and number associations shown here belong to a traditional symbolic framework. You may use them as prompts to reflect on identity, values, and meaning; they do not establish a person&apos;s abilities or predict career outcomes.&rdquo;
                   </blockquote>
                 </div>
 
@@ -1507,16 +1455,16 @@ export default function CareerIntakePage() {
                   <div className="space-y-2 text-sm text-zinc-300">
                     {[
                       {
-                        step: "1. Morning Incense & Intention (እጣን)",
-                        desc: "Burn white frankincense (ጣን) at sunrise before embarking on major business ventures, setting clear ethical intentions.",
+                        step: "Optional personal reflection",
+                        desc: "If prayer, quiet reflection, or another practice belongs to your own tradition, you may choose to include it in a way that feels meaningful to you.",
                       },
                       {
-                        step: "2. Coffee Ceremony Blessing (የቡና ምርቃት)",
-                        desc: "Host a coffee ceremony with respected elders or colleagues to invoke communal peace and shared prosperity.",
+                        step: "Community and tradition",
+                        desc: "Some people find meaning in conversation, prayer, or a coffee ceremony with trusted community members. Participation is entirely optional.",
                       },
                       {
-                        step: "3. Charitable Offering (ምጽዋት / ሰደቃ)",
-                        desc: "Share a small portion of your opening gains with community members in need to sanctify ongoing abundance.",
+                        step: "Personal meaning",
+                        desc: "Practices vary by faith and community. Choose only what aligns with your beliefs; no ritual guarantees or predicts a career or financial outcome.",
                       },
                     ].map((r) => (
                       <div key={r.step} className="p-3 rounded-xl bg-zinc-800/60 border border-zinc-700/60">
@@ -1529,16 +1477,14 @@ export default function CareerIntakePage() {
                   </div>
                 </div>
 
-                {/* Sector Insights */}
+                {/* Tradition note */}
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">📈</span>
-                    <h3 className="text-lg font-semibold text-zinc-100">Sector &amp; Ecosystem Insights</h3>
+                    <span className="text-lg">🪶</span>
+                    <h3 className="text-lg font-semibold text-zinc-100">Traditions Are Diverse</h3>
                   </div>
                   <p className="text-sm text-zinc-300 leading-relaxed">
-                    Integration with modern digital rails (Telebirr SuperApp, CBE Birr, and e-Trade
-                    registration) gives traditional commerce a 4x efficiency multiplier. Leverage
-                    cooperative mechanisms (Equb) for low-cost operational liquidity.
+                    Ethiopian cultural and spiritual traditions are diverse and personal. This reflection is not a substitute for your own community&apos;s interpretation, and it does not offer practical career or financial guidance.
                   </p>
                 </div>
 
@@ -1561,8 +1507,7 @@ export default function CareerIntakePage() {
               /* Unlock CTA */
               <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-6 text-center space-y-4">
                 <p className="text-zinc-300 text-sm">
-                  Unlock the full report including expert narrative, strategic recommendations, and your
-                  personalised blessing ritual for{" "}
+                  Unlock the extended cultural reflection for{" "}
                   <span className="font-bold text-blue-300">
                     {expertAssignment?.consultationFeeETB ?? 500} ETB
                   </span>
@@ -1592,8 +1537,9 @@ export default function CareerIntakePage() {
         {stage === "consult_book" && !bookingResult && expertAssignment && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">Book a Consultation</h2>
+              <h2 className="text-2xl font-bold">Book a Cultural Reflection Consultation</h2>
               <p className="text-zinc-400 text-sm">30 minutes with {expertAssignment.advisorName}</p>
+              <p className="text-xs text-zinc-500">This consultation is limited to spiritual and cultural reflection, not practical career, financial, or scientific advice.</p>
             </div>
 
             <div className="space-y-3">

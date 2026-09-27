@@ -32,10 +32,11 @@ export async function GET(
         },
       },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch divination";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch divination" },
-      { status: 500 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 500 }
     );
   }
 }

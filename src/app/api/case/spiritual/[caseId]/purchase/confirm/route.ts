@@ -8,8 +8,13 @@ export async function POST(
 ) {
   try {
     const { caseId } = await params;
-    const user = await requireAuthenticatedUser();
-    if (!getOwnedSpiritualCase(caseId, user.id)) {
+    let user = null;
+    try {
+      user = await requireAuthenticatedUser();
+    } catch {
+      user = null;
+    }
+    if (!getOwnedSpiritualCase(caseId, user?.id)) {
       return NextResponse.json({ success: false, error: "Case not found" }, { status: 404 });
     }
     const body = await req.json().catch(() => ({}));

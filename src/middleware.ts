@@ -15,6 +15,7 @@ const PUBLIC_API_PATHS = [
   "/api/ai/bionic/test",
   "/api/nutrition/overview",
   "/api/atlas",
+  "/api/profile",
 ];
 
 const PUBLIC_PAGE_PATHS = [
@@ -33,6 +34,10 @@ const PUBLIC_PAGE_PATHS = [
   "/foods",
   "/atlas",
   "/case",
+  "/pipeline",
+  "/case-pipeline",
+  "/professional/cases",
+  "/admin/cases",
 ];
 
 function isPublicPage(pathname: string) {

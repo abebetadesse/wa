@@ -20,18 +20,33 @@ export default function SpiritualReportPage({
   const [activeTab, setActiveTab] = useState<"report" | "scroll" | "context" | "hatata">("report");
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/case/spiritual/${caseId}/report`)
-      .then((r) => r.json())
-      .then((payload) => {
-        if (payload.success && payload.data) {
-          setReportData(payload.data);
+    let active = true;
+    fetch(`/api/case/spiritual/${caseId}/report`, { credentials: "include", cache: "no-store" })
+      .then(async (response) => {
+        if (response.status === 402) {
+          router.replace(`/case/spiritual/${caseId}/preview`);
+          return null;
         }
+        const payload = await response.json();
+        if (!response.ok || !payload.success) throw new Error(payload.error || "The full report is unavailable.");
+        return payload.data;
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [caseId]);
+      .then((data) => {
+        if (active && data) setReportData(data);
+      })
+      .catch((caught) => {
+        if (active) setError(caught instanceof Error ? caught.message : "The full report is unavailable.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [caseId, router]);
 
   if (loading) {
     return (
@@ -39,6 +54,20 @@ export default function SpiritualReportPage({
         <span className="text-4xl animate-spin">📜</span>
         <p className="text-sm font-mono">Unsealing Your Sacred Reading...</p>
       </div>
+    );
+  }
+
+  if (error || !reportData?.report) {
+    return (
+      <main className="min-h-screen bg-stone-950 px-4 py-12 text-stone-100">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-amber-500/30 bg-stone-900 p-6">
+          <h1 className="text-xl font-bold text-amber-100">Report unavailable</h1>
+          <p role="alert" className="mt-3 text-sm text-stone-300">{error || "The released report could not be loaded."}</p>
+          <Link href={`/case/spiritual/${caseId}/preview`} className="mt-5 inline-flex rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-black">
+            Return to reading preview
+          </Link>
+        </div>
+      </main>
     );
   }
 
@@ -53,13 +82,15 @@ export default function SpiritualReportPage({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800 pb-5">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-400 font-mono uppercase tracking-widest">
-              <span>✓ Verified & Unlocked Reading</span>
+              <span>✓ Released reading</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-black font-serif text-amber-100 mt-1">
               Spiritual & Life Direction Reading
             </h1>
             <p className="text-xs text-stone-300 mt-0.5">
-              Prepared and approved by <span className="text-amber-300 font-bold">{expert?.name || "Selamawit Tadesse"}</span>, {expert?.credential || "Verified Debtera"}
+              {expert
+                ? <>Reviewed by <span className="text-amber-300 font-bold">{expert.name}</span>, {expert.credential}</>
+                : "Cultural reflection generated from the answers you provided."}
             </p>
           </div>
 
@@ -114,7 +145,7 @@ export default function SpiritualReportPage({
                   1. Divination Summary & Numerical Lineage
                 </span>
                 <span className="text-xs font-mono text-stone-400">
-                  Total Sum: {report?.divinationSummary?.totalSum || 840} · Final: {report?.divinationSummary?.finalNumber || 10}
+                  Total Sum: {report?.divinationSummary?.totalSum ?? "—"} · Final: {report?.divinationSummary?.finalNumber ?? "—"}
                 </span>
               </div>
 
@@ -225,10 +256,10 @@ export default function SpiritualReportPage({
               <div className="text-center space-y-2 border-b-2 border-[#8c6d3b]/40 pb-6">
                 <span className="text-3xl block">⚔️ 🕊️ ⚔️</span>
                 <h2 className="text-2xl sm:text-3xl font-black text-[#f7e0b5] tracking-wide">
-                  {report?.healingScroll?.title || "የፈውስና የዕድል ክታብ"}
+                  {report?.healingScroll?.title || "Reflective reading"}
                 </h2>
                 <p className="text-xs uppercase tracking-widest text-[#d1b078] font-mono">
-                  Prepared under the guardianship of {report?.healingScroll?.patronAngel || "ቅዱስ ሚካኤል"}
+                  Optional cultural symbolism · no spiritual guardian is inferred
                 </p>
               </div>
 
@@ -262,7 +293,7 @@ export default function SpiritualReportPage({
               {(() => {
                 const activeTelsem =
                   gematria?.telsem ||
-                  getTelsemForArchetype(gematria?.finalNumber || 10);
+                  (typeof gematria?.finalNumber === "number" ? getTelsemForArchetype(gematria.finalNumber) : null);
                 return (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-[#8c6d3b]/40 pb-2">
@@ -349,7 +380,7 @@ export default function SpiritualReportPage({
                 {(() => {
                   const activeTelsem =
                     gematria?.telsem ||
-                    getTelsemForArchetype(gematria?.finalNumber || 10);
+                    (typeof gematria?.finalNumber === "number" ? getTelsemForArchetype(gematria.finalNumber) : null);
                   return (
                     <div className="mt-3 p-3 rounded-xl bg-black/50 border border-amber-500/20 text-xs">
                       <span className="text-[10px] uppercase text-amber-400 font-bold block">
@@ -568,7 +599,7 @@ export default function SpiritualReportPage({
               👤 Deepen Your Reading with Personal Dialogue
             </span>
             <h3 className="text-xl font-bold text-white">
-              Book a 30-Minute Video Consultation with {expert?.name || "Selamawit Tadesse"}
+              {expert ? `Book a 30-Minute Video Consultation with ${expert.name}` : "Practitioner consultation"}
             </h3>
             <p className="text-xs text-stone-300">
               Fee: 1000 ETB · Video call, voice, or private chat with your verified debtera

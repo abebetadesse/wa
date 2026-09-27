@@ -7,6 +7,7 @@ import { generateDynamicQuestions, DynamicQuestion } from "@/lib/case-workflow/s
 import { useDynamicFollowUps } from "@/hooks/useDynamicFollowUps";
 import { CrisisAlertBanner } from "@/components/cultural/CrisisAlertBanner";
 import { CrisisScreenResult, evaluateSpiritualCrisis } from "@/lib/case-workflow/spiritualQuestionEngine";
+import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
 
 function SpiritualStep2Content() {
   const router = useRouter();
@@ -25,17 +26,36 @@ function SpiritualStep2Content() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [crisisState, setCrisisState] = useState<CrisisScreenResult | undefined>(undefined);
+  const [answersRestored, setAnswersRestored] = useState(false);
 
   // 1. Fetch case divination data
   useEffect(() => {
+    try {
+      const savedAnswers = sessionStorage.getItem(`spiritual_answers_${caseId}`);
+      if (savedAnswers) {
+        const restored = JSON.parse(savedAnswers) as Record<string, unknown>;
+        if (restored && typeof restored === "object" && !Array.isArray(restored)) {
+          setAnswers({ question_category: "life_direction", ...restored });
+          if (typeof restored.question_category === "string") setCategory(restored.question_category);
+        }
+      }
+    } catch {
+      sessionStorage.removeItem(`spiritual_answers_${caseId}`);
+    } finally {
+      setAnswersRestored(true);
+    }
     if (!caseId) {
       setIsLoadingCase(false);
       setError("This Case 1 session is missing. Start again so your responses can be saved securely.");
       return;
     }
 
-    fetch(`/api/case/spiritual/${caseId}/divination`)
-      .then((res) => res.json())
+    fetch(`/api/case/spiritual/${caseId}/divination`, { credentials: "include", cache: "no-store" })
+      .then(async (res) => {
+        const payload = await res.json();
+        if (!res.ok || !payload.success) throw new Error(payload.error || "Unable to restore this spiritual case.");
+        return payload;
+      })
       .then((payload) => {
         if (payload.success && payload.data) {
           setGematriaData(payload.data.gematria);
@@ -46,9 +66,21 @@ function SpiritualStep2Content() {
           }
         }
       })
-      .catch(() => {})
+      .catch((caught) => {
+        const message = caught instanceof Error ? caught.message : "Unable to load this case.";
+        setError(message === "AUTH_REQUIRED" ? "Sign in with the account that started this reading." : message);
+      })
       .finally(() => setIsLoadingCase(false));
   }, [caseId]);
+
+  useEffect(() => {
+    if (!caseId || !answersRestored) return;
+    try {
+      sessionStorage.setItem(`spiritual_answers_${caseId}`, JSON.stringify(answers));
+    } catch {
+      setError("This browser could not save your answers locally. Keep this page open until you submit them.");
+    }
+  }, [answers, answersRestored, caseId]);
 
   // 2. Stable gematria context
   const safeGematria = useMemo(() => gematriaData || {}, [gematriaData]);
@@ -102,12 +134,16 @@ function SpiritualStep2Content() {
       setError(`Please answer: ${missingQuestion.text}`);
       return;
     }
-    if (!caseId) return;
+    if (!caseId) {
+      setError("This case session is missing. Start Step 1 again while signed in.");
+      return;
+    }
     setIsSubmitting(true);
     setError("");
     try {
       const res = await fetch(`/api/case/spiritual/${caseId}/submit`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers }),
       });
@@ -124,12 +160,18 @@ function SpiritualStep2Content() {
           return;
         }
 
+        try {
+          sessionStorage.removeItem(`spiritual_answers_${caseId}`);
+        } catch {
+          // The server has already stored these answers; local cleanup is best-effort.
+        }
         router.push(`/case/spiritual/${caseId}/divination`);
       } else {
         throw new Error(payload.error || "Submission failed");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to submit your answers.");
+      const message = err instanceof Error ? err.message : "Unable to submit your answers.";
+      setError(message === "AUTH_REQUIRED" ? "Sign in with the account that started this reading." : message);
       setIsSubmitting(false);
     }
   };
@@ -161,8 +203,9 @@ function SpiritualStep2Content() {
                 <div>
                   <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-amber-300">
                     <span>🌿</span>
-                    <span>Step 2 of 4 — Adaptive Inquiry</span>
+                    <span>Step 2 of 5 — Adaptive inquiry</span>
                   </div>
+                  <div className="mt-6"><SpiritualIntakeProgress current={2} /></div>
                   <h1 className="mt-4 font-serif text-4xl md:text-5xl font-black text-amber-50">
                     Tell Us What Is on Your Heart
                   </h1>
@@ -199,6 +242,7 @@ function SpiritualStep2Content() {
               {error && (
                 <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">
                   {error}
+                  {error.startsWith("Sign in") && <Link href="/auth" className="ml-2 font-bold underline underline-offset-2">Sign in</Link>}
                 </div>
               )}
 
@@ -337,10 +381,10 @@ function SpiritualStep2Content() {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoadingCase || !gematriaData}
                   className="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-base shadow-xl shadow-amber-500/20 transition-all"
                 >
-                  {isSubmitting ? "Submitting to Debtera..." : "Review Divination Reveal →"}
+                  {isSubmitting ? "Saving your answers..." : "Save answers & review cultural reading →"}
                 </button>
               </div>
             </section>

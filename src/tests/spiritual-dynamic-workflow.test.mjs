@@ -1,5 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 import {
   calculateFullDivination,
@@ -16,10 +18,12 @@ import {
   assignExpert,
   startSpiritualCase,
   submitSpiritualCase,
+  processSpiritualCase,
   expertApproveSpiritualCase,
   confirmSpiritualPayment,
   generateHealingScroll,
   getSpiritualCase,
+  getOwnedSpiritualCase,
   EXPERTS_REGISTRY,
 } from "../lib/case-workflow/spiritualExpertEngine.ts";
 
@@ -116,6 +120,46 @@ describe("Spiritual Case Dynamic Workflow", () => {
     assert.equal(crisisCheck.paywall, undefined);
   });
 
+  test("intake submission and processing create an answer-specific draft without claiming human review", async () => {
+    const session = startSpiritualCase("ሰላማዊት", "ፀሐይ", "spiritual-flow-test-user");
+    try {
+      const submitted = await submitSpiritualCase(session.id, {
+        question_category: "family",
+        detail_narrative: "I want to rebuild a calmer relationship with my sister.",
+      });
+      assert.equal(submitted.status, "divination_calculated");
+      assert.equal(submitted.report, undefined);
+      assert.equal(submitted.assignedExpert, undefined);
+
+      const processed = await processSpiritualCase(session.id);
+      assert.equal(processed.status, "ai_draft_prepared");
+      assert.match(processed.report.divinationSummary.narrative, /calmer relationship with my sister/i);
+      assert.match(processed.report.aiAnalysis.situationSummary, /calmer relationship with my sister/i);
+      assert.equal(processed.report.approvedAt, undefined);
+      assert.equal(processed.report.expert, undefined);
+      assert.equal(processed.report.healingScroll.title.includes("ሰላማዊት"), true);
+      assert.equal(processed.report.healingScroll.prayers.some((line) => /Tena Adam|healing/i.test(line)), false);
+      assert.equal(getSpiritualCase(`spiritual-${Date.now()}-missing`), undefined);
+      assert.equal(getOwnedSpiritualCase(session.id, "another-user"), undefined);
+    } finally {
+      await fs.rm(path.join(process.cwd(), ".cases_cache", "spiritual", `${session.id}.json`), { force: true });
+    }
+  });
+
+  test("crisis cases cannot advance into routine spiritual draft processing", async () => {
+    const session = startSpiritualCase("ሰላማዊት", "", "spiritual-crisis-test-user");
+    try {
+      const submitted = await submitSpiritualCase(session.id, {
+        question_category: "family",
+        detail_narrative: "I want to kill myself.",
+      });
+      assert.equal(submitted.crisisScreen.isCrisis, true);
+      await assert.rejects(() => processSpiritualCase(session.id), /CRISIS_SUPPORT_REQUIRED/);
+    } finally {
+      await fs.rm(path.join(process.cwd(), ".cases_cache", "spiritual", `${session.id}.json`), { force: true });
+    }
+  });
+
   // ─── Expert Assignment ─────────────────────────────────────────
   test("assigns the best-matching expert based on language and load", async () => {
     const expert = await assignExpert("case-123", "spiritual", ["am", "en"], "addis_ababa");
@@ -165,9 +209,10 @@ describe("Spiritual Case Dynamic Workflow", () => {
   });
 
   // ─── Healing Scroll ────────────────────────────────────────────
-  test("generates a personalized healing scroll PDF", () => {
+  test("generates personalized reflection content without claiming a downloadable PDF", () => {
     const scroll = generateHealingScroll(mockGematria, "career");
-    assert.ok(scroll.pdfUrl);
+    assert.equal(scroll.pdfUrl, "");
+    assert.equal(scroll.previewUrl, "");
     assert.ok(scroll.prayers.length > 0);
     assert.ok(scroll.wordsOfPower.length > 0);
     assert.ok(scroll.imagery.length > 0);

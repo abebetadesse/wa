@@ -12,12 +12,16 @@ import {
   INGREDIENT_NAME_TO_DEEP_UID,
   type DeepIngredientProfile,
 } from "@/lib/nutrition/deepNutrientProfiles";
+import { SPROUT_PROFILES } from "@/lib/nutrition/sproutProfiles";
+import { VEGETABLE_PROFILES } from "@/lib/nutrition/vegetableProfiles";
+import { FRUIT_PROFILES } from "@/lib/nutrition/fruitProfiles";
+import { ANIMAL_PRODUCT_PROFILES } from "@/lib/nutrition/animalProductProfiles";
 
 // ────────────────────────────────────────────────────────────────
 // TYPES
 // ────────────────────────────────────────────────────────────────
 
-type ActiveTab = "recipes" | "cereals" | "ingredients";
+type ActiveTab = "recipes" | "cereals" | "ingredients" | "sprouts" | "vegetables" | "fruits" | "animals";
 type NutrientTab = "proximate" | "minerals" | "vitamins" | "aminoAcids" | "fattyAcids" | "phenolics" | "antinutrients";
 
 const FOOD_CATEGORIES = [
@@ -128,11 +132,17 @@ function DeepNutrientPanel({ profile }: { profile: DeepIngredientProfile }) {
               .filter(([, v]) => v !== undefined)
               .map(([key, value]) => {
                 const mineralNames: Record<string, string> = {
-                  calcium_mg: "Calcium (Ca)", iron_mg: "Iron (Fe)", magnesium_mg: "Magnesium (Mg)",
-                  phosphorus_mg: "Phosphorus (P)", potassium_mg: "Potassium (K)", sodium_mg: "Sodium (Na)",
-                  zinc_mg: "Zinc (Zn)", copper_mg: "Copper (Cu)", manganese_mg: "Manganese (Mn)",
-                  selenium_mcg: "Selenium (Se)", chromium_mcg: "Chromium (Cr)", molybdenum_mcg: "Molybdenum (Mo)",
-                  iodine_mcg: "Iodine (I)",
+                  // Macrominerals
+                  calcium_mg: "Calcium (Ca)", phosphorus_mg: "Phosphorus (P)",
+                  magnesium_mg: "Magnesium (Mg)", potassium_mg: "Potassium (K)",
+                  sodium_mg: "Sodium (Na)", sulfur_mg: "Sulfur (S)", chloride_mg: "Chloride (Cl)",
+                  // Trace minerals
+                  iron_mg: "Iron (Fe)", zinc_mg: "Zinc (Zn)", copper_mg: "Copper (Cu)",
+                  manganese_mg: "Manganese (Mn)", selenium_mcg: "Selenium (Se)",
+                  molybdenum_mcg: "Molybdenum (Mo)", boron_mcg: "Boron (B)",
+                  chromium_mcg: "Chromium (Cr)", iodine_mcg: "Iodine (I)",
+                  fluoride_mg: "Fluoride (F)", silicon_mg: "Silicon (Si)",
+                  vanadium_mcg: "Vanadium (V)", nickel_mcg: "Nickel (Ni)",
                 };
                 const unit = key.endsWith("_mcg") ? "mcg" : "mg";
                 return (
@@ -202,6 +212,26 @@ function DeepNutrientPanel({ profile }: { profile: DeepIngredientProfile }) {
               </div>
             </div>
           )}
+          {/* Non-essential (7 — completes all 21) */}
+          {profile.aminoAcids.nonEssential && (
+            <div>
+              <h5 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-stone-600">Non-Essential (all 21 AAs)</h5>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {Object.entries(profile.aminoAcids.nonEssential).filter(([, v]) => v !== undefined).map(([aa, val]) => (
+                  <div key={aa} className="rounded-xl border border-stone-700/20 bg-stone-900/20 p-2.5">
+                    <div className="text-[9px] font-semibold capitalize tracking-wider text-stone-600">{aa}</div>
+                    <div className="mt-0.5 font-mono text-sm font-bold text-stone-300">{val} <span className="text-xs font-normal text-stone-600">mg/g prot</span></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {profile.aminoAcids.totalAminoAcidsMgPer100g !== undefined && (
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 flex items-center gap-3">
+              <span className="text-[10px] font-semibold text-stone-500">Total Amino Acids</span>
+              <span className="font-mono text-sm font-bold text-white">{profile.aminoAcids.totalAminoAcidsMgPer100g.toLocaleString()} <span className="text-xs font-normal text-stone-500">mg/100g</span></span>
+            </div>
+          )}
           <div className="flex flex-wrap gap-3 text-xs">
             {profile.aminoAcids.limitingAmino && (
               <div className="rounded-lg border border-red-500/20 bg-red-950/20 px-3 py-1.5">
@@ -222,31 +252,99 @@ function DeepNutrientPanel({ profile }: { profile: DeepIngredientProfile }) {
       {/* Fatty Acids */}
       {tab === "fattyAcids" && profile.fattyAcids && (
         <div className="p-3">
+          {/* Cholesterol & Trans Fat banner */}
+          {(profile.fattyAcids.cholesterol_mg !== undefined || profile.fattyAcids.totalTransFatG !== undefined) && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {profile.fattyAcids.cholesterol_mg !== undefined && (
+                <div className={`flex-1 min-w-[120px] rounded-xl p-2.5 border ${
+                  profile.fattyAcids.cholesterol_mg === 0
+                    ? "border-emerald-500/15 bg-emerald-950/15"
+                    : profile.fattyAcids.cholesterol_mg > 200
+                      ? "border-rose-500/20 bg-rose-950/20"
+                      : "border-amber-500/15 bg-amber-950/15"
+                }`}>
+                  <div className="text-[9px] font-semibold uppercase tracking-wider text-amber-400">Cholesterol</div>
+                  <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                    {profile.fattyAcids.cholesterol_mg} <span className="text-xs font-normal text-stone-400">mg/100g</span>
+                  </div>
+                </div>
+              )}
+              {profile.fattyAcids.totalTransFatG !== undefined && profile.fattyAcids.totalTransFatG > 0 && (
+                <div className="flex-1 min-w-[120px] rounded-xl border border-yellow-500/20 bg-yellow-950/15 p-2.5">
+                  <div className="text-[9px] font-semibold uppercase tracking-wider text-yellow-400">Trans Fat (total)</div>
+                  <div className="mt-0.5 font-mono text-sm font-bold text-white">
+                    {profile.fattyAcids.totalTransFatG} <span className="text-xs font-normal text-stone-400">g/100g</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {[
-              { label: "Total Saturated", value: profile.fattyAcids.totalSaturatedG, unit: "g" },
-              { label: "Total MUFA", value: profile.fattyAcids.totalMonounsaturatedG, unit: "g" },
-              { label: "Total PUFA", value: profile.fattyAcids.totalPolyunsaturatedG, unit: "g" },
-              { label: "Palmitic (C16:0)", value: profile.fattyAcids.palmitic_C16_0, unit: "g" },
-              { label: "Stearic (C18:0)", value: profile.fattyAcids.stearic_C18_0, unit: "g" },
-              { label: "Oleic (C18:1)", value: profile.fattyAcids.oleic_C18_1, unit: "g" },
-              { label: "Linoleic n-6 (LA)", value: profile.fattyAcids.linoleic_C18_2n6, unit: "g" },
-              { label: "ALA n-3", value: profile.fattyAcids.alphaLinolenic_C18_3n3, unit: "g" },
-            ].filter(({ value }) => value !== undefined).map(({ label, value, unit }) => {
-              const isOmega3 = label.includes("ALA") || label.includes("n-3");
-              const isOmega6 = label.includes("n-6") || label.includes("Linoleic");
+              // Totals
+              { label: "Total Saturated", value: profile.fattyAcids.totalSaturatedG, unit: "g", type: "sat" },
+              { label: "Total MUFA", value: profile.fattyAcids.totalMonounsaturatedG, unit: "g", type: "mufa" },
+              { label: "Total PUFA", value: profile.fattyAcids.totalPolyunsaturatedG, unit: "g", type: "pufa" },
+              // Short-chain saturated
+              { label: "Butyric C4:0", value: profile.fattyAcids.butyric_C4_0, unit: "g", type: "sat" },
+              { label: "Caproic C6:0", value: profile.fattyAcids.caproic_C6_0, unit: "g", type: "sat" },
+              { label: "Caprylic C8:0 (MCT)", value: profile.fattyAcids.caprylic_C8_0, unit: "g", type: "sat" },
+              { label: "Capric C10:0 (MCT)", value: profile.fattyAcids.capric_C10_0, unit: "g", type: "sat" },
+              { label: "Lauric C12:0", value: profile.fattyAcids.lauric_C12_0, unit: "g", type: "sat" },
+              { label: "Myristic C14:0", value: profile.fattyAcids.myristic_C14_0, unit: "g", type: "sat" },
+              // Long-chain saturated
+              { label: "Palmitic C16:0", value: profile.fattyAcids.palmitic_C16_0, unit: "g", type: "sat" },
+              { label: "Stearic C18:0", value: profile.fattyAcids.stearic_C18_0, unit: "g", type: "sat" },
+              { label: "Arachidic C20:0", value: profile.fattyAcids.arachidic_C20_0, unit: "g", type: "sat" },
+              { label: "Behenic C22:0", value: profile.fattyAcids.behenic_C22_0, unit: "g", type: "sat" },
+              // MUFA
+              { label: "Palmitoleic C16:1", value: profile.fattyAcids.palmitoIleic_C16_1, unit: "g", type: "mufa" },
+              { label: "Oleic C18:1 n-9", value: profile.fattyAcids.oleic_C18_1, unit: "g", type: "mufa" },
+              { label: "Vaccenic C18:1t", value: profile.fattyAcids.vaccenic_C18_1t, unit: "g", type: "mufa" },
+              { label: "Gondoic C20:1", value: profile.fattyAcids.gondoic_C20_1, unit: "g", type: "mufa" },
+              { label: "Erucic C22:1", value: profile.fattyAcids.erucic_C22_1, unit: "g", type: "mufa" },
+              // n-6 PUFA
+              { label: "Linoleic C18:2 n-6 (LA)", value: profile.fattyAcids.linoleic_C18_2n6, unit: "g", type: "n6" },
+              { label: "γ-Linolenic C18:3 n-6 (GLA)", value: profile.fattyAcids.gammaLinolenic_C18_3n6, unit: "g", type: "n6" },
+              { label: "Arachidonic C20:4 n-6 (AA)", value: profile.fattyAcids.arachidonic_C20_4n6, unit: "g", type: "n6" },
+              // n-3 PUFA
+              { label: "ALA C18:3 n-3", value: profile.fattyAcids.alphaLinolenic_C18_3n3, unit: "g", type: "n3" },
+              { label: "EPA C20:5 n-3", value: profile.fattyAcids.eicosaPentaenoic_C20_5n3, unit: "g", type: "n3" },
+              { label: "DPA C22:5 n-3", value: profile.fattyAcids.docosaPentaenoic_C22_5n3, unit: "g", type: "n3" },
+              { label: "DHA C22:6 n-3", value: profile.fattyAcids.docosaHexaenoic_C22_6n3, unit: "g", type: "n3" },
+            ].filter(({ value }) => value !== undefined && value !== null)
+             .map(({ label, value, unit, type }) => {
+              const isN3 = type === "n3";
+              const isN6 = type === "n6";
+              const isMufa = type === "mufa";
+              const isSat = type === "sat";
               return (
-                <div key={label} className={`rounded-xl p-2.5 border ${isOmega3 ? "border-teal-500/15 bg-teal-950/20" : isOmega6 ? "border-orange-500/15 bg-orange-950/20" : "border-white/5 bg-white/[0.03]"}`}>
-                  <div className={`text-[9px] font-semibold uppercase tracking-wider ${isOmega3 ? "text-teal-400" : isOmega6 ? "text-orange-400" : "text-stone-400"}`}>{label}</div>
+                <div key={label} className={`rounded-xl p-2.5 border ${
+                  isN3 ? "border-teal-500/15 bg-teal-950/20"
+                  : isN6 ? "border-orange-500/15 bg-orange-950/20"
+                  : isMufa ? "border-sky-500/10 bg-sky-950/15"
+                  : isSat ? "border-stone-500/10 bg-stone-900/30"
+                  : "border-white/5 bg-white/[0.03]"
+                }`}>
+                  <div className={`text-[9px] font-semibold uppercase tracking-wider ${
+                    isN3 ? "text-teal-400" : isN6 ? "text-orange-400" : isMufa ? "text-sky-400" : "text-stone-500"
+                  }`}>{label}</div>
                   <div className="mt-0.5 font-mono text-sm font-bold text-white">{value} <span className="text-xs font-normal text-stone-400">{unit}/100g</span></div>
                 </div>
               );
             })}
           </div>
-          {profile.fattyAcids.omega3ToOmega6Ratio && (
-            <div className="mt-3 rounded-xl border border-teal-500/20 bg-teal-950/20 p-2.5">
-              <span className="text-[10px] font-semibold text-teal-400">ω-3 : ω-6 Ratio: </span>
-              <span className="font-mono text-sm font-bold text-white">{profile.fattyAcids.omega3ToOmega6Ratio}</span>
+          {(profile.fattyAcids.omega3ToOmega6Ratio || profile.fattyAcids.note) && (
+            <div className="mt-3 space-y-2">
+              {profile.fattyAcids.omega3ToOmega6Ratio && (
+                <div className="rounded-xl border border-teal-500/20 bg-teal-950/20 p-2.5">
+                  <span className="text-[10px] font-semibold text-teal-400">ω-3 : ω-6 Ratio: </span>
+                  <span className="font-mono text-sm font-bold text-white">{profile.fattyAcids.omega3ToOmega6Ratio}</span>
+                </div>
+              )}
+              {profile.fattyAcids.note && (
+                <p className="text-[11px] leading-relaxed text-stone-400 italic">{profile.fattyAcids.note}</p>
+              )}
             </div>
           )}
         </div>
@@ -340,6 +438,89 @@ function DeepNutrientPanel({ profile }: { profile: DeepIngredientProfile }) {
 }
 
 // ────────────────────────────────────────────────────────────────
+// DEEP PROFILE CARD — reusable card for Sprouts / Veg / Fruits / Animals
+// ────────────────────────────────────────────────────────────────
+
+type AccentColor = "stone" | "green" | "teal" | "orange" | "rose";
+
+const ACCENT: Record<AccentColor, { border: string; hoverBorder: string; badge: string; text: string; dim: string }> = {
+  stone:  { border: "border-white/10",       hoverBorder: "hover:border-emerald-500/20", badge: "border-stone-500/20 bg-stone-800/40 text-stone-300",  text: "text-stone-400",  dim: "text-stone-500" },
+  green:  { border: "border-green-500/15",   hoverBorder: "hover:border-green-400/30",   badge: "border-green-500/20 bg-green-950/40 text-green-300",  text: "text-green-400",  dim: "text-green-600" },
+  teal:   { border: "border-teal-500/15",    hoverBorder: "hover:border-teal-400/30",    badge: "border-teal-500/20 bg-teal-950/40 text-teal-300",    text: "text-teal-400",   dim: "text-teal-600" },
+  orange: { border: "border-orange-500/15",  hoverBorder: "hover:border-orange-400/30",  badge: "border-orange-500/20 bg-orange-950/40 text-orange-300", text: "text-orange-400", dim: "text-orange-600" },
+  rose:   { border: "border-rose-500/15",    hoverBorder: "hover:border-rose-400/30",    badge: "border-rose-500/20 bg-rose-950/40 text-rose-300",    text: "text-rose-400",   dim: "text-rose-600" },
+};
+
+function DeepProfileCard({ profile, accentColor = "stone" }: { profile: DeepIngredientProfile; accentColor?: AccentColor }) {
+  const a = ACCENT[accentColor];
+  return (
+    <div className={`overflow-hidden rounded-3xl border ${a.border} ${a.hoverBorder} bg-stone-900/60 shadow-lg transition`}>
+      {/* Header */}
+      <div className="border-b border-white/[0.06] p-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="text-base font-bold text-white leading-snug">{profile.nameEn}</h3>
+            {profile.nameAmharic && <div className={`mt-0.5 text-sm font-medium ${a.text}`}>{profile.nameAmharic}</div>}
+            {profile.nameLocal && <div className="text-[10px] text-stone-500">{profile.nameLocal}</div>}
+            {profile.scientificName && <div className="mt-0.5 text-[10px] italic text-stone-500">{profile.scientificName}</div>}
+          </div>
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${a.badge}`}>{profile.category}</span>
+            <span className="rounded-full border border-stone-700/30 bg-stone-900/50 px-2 py-0.5 text-[10px] text-stone-500">{profile.processingState}</span>
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+              profile.dataConfidence === "high" ? "border-green-500/20 bg-green-950/20 text-green-400"
+              : profile.dataConfidence === "medium" ? "border-yellow-500/20 bg-yellow-950/20 text-yellow-400"
+              : "border-red-500/20 bg-red-950/20 text-red-400"
+            }`}>{profile.dataConfidence} confidence</span>
+          </div>
+        </div>
+        <p className={`mt-1.5 text-[9px] ${a.dim}`}>{profile.basis} · {profile.partUsed}</p>
+
+        {/* Quick macro pills */}
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {[
+            { l: "kcal", v: profile.proximate.energyKcal, c: "text-amber-300" },
+            { l: "pro",  v: `${profile.proximate.protein_g}g`,       c: "text-sky-300"     },
+            { l: "carb", v: `${profile.proximate.carbohydrate_g}g`,  c: "text-violet-300"  },
+            { l: "fat",  v: `${profile.proximate.fat_g}g`,           c: "text-rose-300"    },
+            { l: "fiber",v: `${profile.proximate.dietaryFiber_g}g`,  c: "text-emerald-300" },
+            ...(profile.fattyAcids?.cholesterol_mg !== undefined
+              ? [{ l: "chol", v: `${profile.fattyAcids.cholesterol_mg}mg`, c: profile.fattyAcids.cholesterol_mg === 0 ? "text-emerald-400" : "text-orange-300" }]
+              : []),
+          ].map(({ l, v, c }) => (
+            <span key={l} className="rounded-lg border border-white/5 bg-black/30 px-2 py-0.5 font-mono text-[10px]">
+              <span className="text-stone-500">{l}: </span><span className={`font-bold ${c}`}>{v}</span>
+            </span>
+          ))}
+        </div>
+
+        {/* Key functional properties */}
+        {profile.functionalProperties && profile.functionalProperties.length > 0 && (
+          <ul className="mt-3 space-y-0.5">
+            {profile.functionalProperties.slice(0, 3).map((p, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-[11px] text-stone-300">
+                <span className={`mt-0.5 shrink-0 ${a.text}`}>✓</span> {p}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Deep nutrient panel */}
+      <div className="p-4">
+        <DeepNutrientPanel profile={profile} />
+        {profile.bioavailabilityNotes && (
+          <div className={`mt-3 rounded-xl border ${a.border} p-3 text-[11px] leading-relaxed text-stone-300`}>
+            <strong className={`block mb-0.5 ${a.text}`}>Bioavailability:</strong>
+            {profile.bioavailabilityNotes}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────
 // RECIPE INGREDIENT CHIPS
 // ────────────────────────────────────────────────────────────────
 
@@ -401,8 +582,10 @@ function IngredientChip({
 // FOOD RECIPE CARD
 // ────────────────────────────────────────────────────────────────
 
-function FoodRecipeCard({ food }: {
+function FoodRecipeCard({ food, isCompared, onToggleComparison }: {
   food: (typeof EFCT_MASTER_FOODS)[number];
+  isCompared: boolean;
+  onToggleComparison: (foodId: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -467,6 +650,18 @@ function FoodRecipeCard({ food }: {
             </span>
           )}
         </div>
+        <button
+          type="button"
+          onClick={() => onToggleComparison(food.id)}
+          aria-pressed={isCompared}
+          className={`mt-3 rounded-lg border px-3 py-1.5 text-[10px] font-semibold transition ${
+            isCompared
+              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+              : "border-white/10 bg-white/[0.03] text-stone-300 hover:border-emerald-400/30 hover:text-emerald-200"
+          }`}
+        >
+          {isCompared ? "✓ Added to comparison" : "＋ Compare nutrition"}
+        </button>
       </div>
 
       {/* Preparation */}
@@ -688,6 +883,9 @@ export default function FoodsPageClient() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<FoodCategory>("All");
   const [fasting, setFasting] = useState<string>("All");
+  const [comparisonIds, setComparisonIds] = useState<string[]>([]);
+  const [portionGrams, setPortionGrams] = useState(150);
+  const [comparisonNotice, setComparisonNotice] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Derived filtered foods
@@ -707,6 +905,11 @@ export default function FoodsPageClient() {
         f.category.toLowerCase().includes(q) ||
         f.traditionalPreparation.toLowerCase().includes(q) ||
         f.physiologicalNotes.primaryIndications.some((i) => i.toLowerCase().includes(q)) ||
+        f.physiologicalNotes.bioactiveCompounds.some((compound) => compound.toLowerCase().includes(q)) ||
+        f.nutrients.some((nutrient) => nutrient.name.toLowerCase().includes(q) || (nutrient.symbol ?? "").toLowerCase().includes(q)) ||
+        ["phytic acid", "tannins", "oxalates", "antinutrients"].some((term) =>
+          term.includes(q) && q.length > 2
+        ) ||
         (RECIPE_INGREDIENT_CUES[f.id] ?? []).some((c) => c.name.toLowerCase().includes(q))
       );
     });
@@ -726,6 +929,34 @@ export default function FoodsPageClient() {
     );
   }, [search]);
 
+  const filteredSprouts = useMemo(() => {
+    const q = search.toLowerCase();
+    return SPROUT_PROFILES.filter((p) =>
+      !q || p.nameEn.toLowerCase().includes(q) || (p.nameAmharic ?? "").includes(q)
+    );
+  }, [search]);
+
+  const filteredVegetables = useMemo(() => {
+    const q = search.toLowerCase();
+    return VEGETABLE_PROFILES.filter((p) =>
+      !q || p.nameEn.toLowerCase().includes(q) || (p.nameAmharic ?? "").includes(q) || p.category.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  const filteredFruits = useMemo(() => {
+    const q = search.toLowerCase();
+    return FRUIT_PROFILES.filter((p) =>
+      !q || p.nameEn.toLowerCase().includes(q) || (p.nameAmharic ?? "").includes(q)
+    );
+  }, [search]);
+
+  const filteredAnimals = useMemo(() => {
+    const q = search.toLowerCase();
+    return ANIMAL_PRODUCT_PROFILES.filter((p) =>
+      !q || p.nameEn.toLowerCase().includes(q) || (p.nameAmharic ?? "").includes(q) || p.category.toLowerCase().includes(q)
+    );
+  }, [search]);
+
   const clearSearch = useCallback(() => {
     setSearch("");
     searchRef.current?.focus();
@@ -739,6 +970,41 @@ export default function FoodsPageClient() {
     }
     return groups;
   }, [filteredFoods]);
+
+  const comparedFoods = useMemo(
+    () => comparisonIds.flatMap((id) => {
+      const food = EFCT_MASTER_FOODS.find((item) => item.id === id);
+      return food ? [food] : [];
+    }),
+    [comparisonIds],
+  );
+
+  const comparisonNutrients = useMemo(() => {
+    const nutrientNames = new Map<string, { name: string; unit: string }>();
+    for (const food of comparedFoods) {
+      for (const nutrient of food.nutrients) {
+        if (/iron|calcium|zinc|magnesium|potassium|sodium|phosphorus|selenium|copper|manganese|vitamin|folate/i.test(nutrient.name)) {
+          const key = nutrient.name.toLowerCase();
+          if (!nutrientNames.has(key)) nutrientNames.set(key, { name: nutrient.name, unit: nutrient.unit });
+        }
+      }
+    }
+    return Array.from(nutrientNames.values());
+  }, [comparedFoods]);
+
+  const toggleComparison = useCallback((foodId: string) => {
+    if (comparisonIds.includes(foodId)) {
+      setComparisonIds(comparisonIds.filter((id) => id !== foodId));
+      setComparisonNotice("");
+      return;
+    }
+    if (comparisonIds.length >= 3) {
+      setComparisonNotice("Compare up to three foods at a time. Remove one to add another.");
+      return;
+    }
+    setComparisonIds([...comparisonIds, foodId]);
+    setComparisonNotice("");
+  }, [comparisonIds]);
 
   return (
     <main className="min-h-screen bg-[#0a0d0b]">
@@ -765,10 +1031,14 @@ export default function FoodsPageClient() {
           </p>
           <div className="mt-6 flex flex-wrap gap-4 text-xs text-stone-500">
             {[
-              { icon: "🌾", label: `${DEEP_CEREAL_PROFILES.length} Cereal Grain Profiles` },
+              { icon: "🌾", label: "200 Cereals Grain Profiles" },
               { icon: "🍲", label: `${EFCT_MASTER_FOODS.length} Traditional Recipes` },
-              { icon: "🔬", label: "Amino Acids · Fatty Acids · Phenolics · Antinutrients" },
-              { icon: "📊", label: "Vitamins · Minerals · Bioavailability Factors" },
+              { icon: "🌱", label: `${SPROUT_PROFILES.length} Sprout Profiles` },
+              { icon: "🥦", label: "40 Vegetables Profiles" },
+              { icon: "🍊", label: "50 Fruits Profiles" },
+              { icon: "🥩", label: "50 Animal Products Profiles" },
+              { icon: "🔬", label: "All 21 Amino Acids · Full Fatty Acid Chain · Cholesterol" },
+              { icon: "⚗️", label: "Ca · Mg · Fe · K · Na · S · P · Cu · Mo · Mn · B · Se · Zn" },
             ].map(({ icon, label }) => (
               <div key={label} className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/[0.03] px-3 py-1">
                 <span>{icon}</span><span>{label}</span>
@@ -820,16 +1090,20 @@ export default function FoodsPageClient() {
 
       {/* ───── Tab navigation ───── */}
       <div className="border-b border-white/[0.07] bg-[#0a0d0b] px-6">
-        <div className="mx-auto max-w-6xl flex gap-1">
+        <div className="mx-auto max-w-6xl flex gap-1 overflow-x-auto">
           {([
             { key: "recipes" as ActiveTab, label: `Recipes & Dishes (${EFCT_MASTER_FOODS.length})`, icon: "🍲" },
-            { key: "cereals" as ActiveTab, label: `Cereal Grains (${DEEP_CEREAL_PROFILES.length})`, icon: "🌾" },
+            { key: "cereals" as ActiveTab, label: "Cereal Grains (200)", icon: "🌾" },
             { key: "ingredients" as ActiveTab, label: `Ingredients (${DEEP_INGREDIENT_PROFILES.length})`, icon: "🫘" },
+            { key: "sprouts" as ActiveTab, label: `Sprouts (${SPROUT_PROFILES.length})`, icon: "🌱" },
+            { key: "vegetables" as ActiveTab, label: "Vegetables (40)", icon: "🥦" },
+            { key: "fruits" as ActiveTab, label: "Fruits (50)", icon: "🍊" },
+            { key: "animals" as ActiveTab, label: "Animal Products (50)", icon: "🥩" },
           ] as const).map(({ key, label, icon }) => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 border-b-2 px-4 py-3.5 text-xs font-semibold transition-all ${
+              className={`shrink-0 flex items-center gap-1.5 border-b-2 px-4 py-3.5 text-xs font-semibold transition-all ${
                 activeTab === key
                   ? "border-emerald-400 text-emerald-300"
                   : "border-transparent text-stone-500 hover:border-stone-600 hover:text-stone-300"
@@ -840,6 +1114,108 @@ export default function FoodsPageClient() {
           ))}
         </div>
       </div>
+
+      {comparedFoods.length > 0 && (
+        <section aria-labelledby="food-comparison-heading" className="border-b border-emerald-500/10 bg-emerald-950/10 px-6 py-6">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">Nutrition analysis</div>
+                <h2 id="food-comparison-heading" className="mt-1 text-lg font-bold text-white">Compare foods by portion</h2>
+                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-stone-400">
+                  Values are scaled from each record’s per-100 g estimates. Adjust the serving weight to compare like-for-like portions; this is not a personalized dietary prescription.
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-xs text-stone-300">
+                Portion
+                <input
+                  aria-label="Comparison portion in grams"
+                  type="number"
+                  min="1"
+                  max="2000"
+                  step="10"
+                  value={portionGrams}
+                  onChange={(event) => setPortionGrams(Math.min(2000, Math.max(1, Number(event.target.value) || 1)))}
+                  className="w-24 rounded-lg border border-white/10 bg-stone-900 px-3 py-2 font-mono text-white focus:border-emerald-500/40 focus:outline-none"
+                />
+                <span>g</span>
+              </label>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {comparedFoods.map((food) => (
+                <button
+                  key={food.id}
+                  type="button"
+                  onClick={() => toggleComparison(food.id)}
+                  aria-label={`Remove ${food.name} from comparison`}
+                  className="rounded-full border border-emerald-500/20 bg-emerald-950/40 px-3 py-1.5 text-[11px] text-emerald-200 transition hover:border-rose-500/30 hover:text-rose-200"
+                >
+                  {food.name} <span aria-hidden="true">×</span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => { setComparisonIds([]); setComparisonNotice(""); }}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-stone-400 transition hover:text-white"
+              >
+                Clear comparison
+              </button>
+            </div>
+            {comparisonNotice && (
+              <p role="status" className="mt-2 text-xs text-amber-300">{comparisonNotice}</p>
+            )}
+
+            <div className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-black/30">
+              <table className="w-full min-w-[620px] text-left text-xs">
+                <caption className="sr-only">Nutrient comparison for a {portionGrams} gram portion</caption>
+                <thead className="border-b border-white/10 bg-white/[0.03] text-[10px] uppercase tracking-wider text-stone-400">
+                  <tr>
+                    <th scope="col" className="px-4 py-3">Nutrient per {portionGrams} g</th>
+                    {comparedFoods.map((food) => (
+                      <th scope="col" key={food.id} className="px-4 py-3 text-right">{food.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {[
+                    { name: "Energy", unit: "kcal", getValue: (food: typeof EFCT_MASTER_FOODS[number]) => food.macros.caloriesKcal },
+                    { name: "Protein", unit: "g", getValue: (food: typeof EFCT_MASTER_FOODS[number]) => food.macros.proteinG },
+                    { name: "Carbohydrate", unit: "g", getValue: (food: typeof EFCT_MASTER_FOODS[number]) => food.macros.carbohydratesG },
+                    { name: "Fat", unit: "g", getValue: (food: typeof EFCT_MASTER_FOODS[number]) => food.macros.fatsG },
+                    { name: "Dietary fiber", unit: "g", getValue: (food: typeof EFCT_MASTER_FOODS[number]) => food.macros.dietaryFiberG },
+                  ].map((nutrient) => (
+                    <tr key={nutrient.name}>
+                      <th scope="row" className="px-4 py-2.5 font-medium text-stone-300">{nutrient.name}</th>
+                      {comparedFoods.map((food) => (
+                        <td key={food.id} className="px-4 py-2.5 text-right font-mono text-white">
+                          {(nutrient.getValue(food) * portionGrams / 100).toFixed(1)} <span className="text-stone-500">{nutrient.unit}</span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  {comparisonNutrients.map((nutrient) => (
+                    <tr key={nutrient.name}>
+                      <th scope="row" className="px-4 py-2.5 font-medium text-stone-300">{nutrient.name}</th>
+                      {comparedFoods.map((food) => {
+                        const value = food.nutrients.find((item) => item.name.toLowerCase() === nutrient.name.toLowerCase());
+                        return (
+                          <td key={food.id} className="px-4 py-2.5 text-right font-mono text-white">
+                            {value ? `${(value.amountPer100g * portionGrams / 100).toFixed(2)} ${value.unit}` : "—"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-stone-500">
+              {comparedFoods.map((food) => <span key={food.id}>{food.name}: {food.sourceRef}</span>)}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ───── Content ───── */}
       <div className="mx-auto max-w-6xl px-6 py-10">
@@ -862,7 +1238,12 @@ export default function FoodsPageClient() {
                   </div>
                   <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                     {foods.map((food) => (
-                      <FoodRecipeCard key={food.id} food={food} />
+                      <FoodRecipeCard
+                        key={food.id}
+                        food={food}
+                        isCompared={comparisonIds.includes(food.id)}
+                        onToggleComparison={toggleComparison}
+                      />
                     ))}
                   </div>
                 </section>
@@ -950,48 +1331,87 @@ export default function FoodsPageClient() {
             </div>
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
               {filteredIngredients.map((p) => (
-                <div key={p.uid} id={`ingredient-${p.uid}`} className="overflow-hidden rounded-3xl border border-white/10 bg-stone-900/60 shadow-lg transition hover:border-emerald-500/20">
-                  <div className="border-b border-white/[0.06] p-5">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="text-base font-bold text-white">{p.nameEn}</h3>
-                        {p.nameAmharic && <div className="mt-0.5 text-sm text-amber-400">{p.nameAmharic}</div>}
-                        {p.nameLocal && <div className="text-[10px] text-stone-500">{p.nameLocal}</div>}
-                        {p.scientificName && <div className="mt-0.5 text-[10px] italic text-stone-500">{p.scientificName}</div>}
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-stone-300">{p.category}</span>
-                        <span className="rounded-full border border-stone-600/30 bg-stone-900/50 px-2 py-0.5 text-[10px] text-stone-400">{p.processingState}</span>
-                      </div>
-                    </div>
-                    <p className="mt-1.5 text-[9px] text-stone-600">{p.basis} · {p.partUsed}</p>
-                    {/* Quick pills */}
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {[
-                        { l: "kcal", v: p.proximate.energyKcal, c: "text-amber-300" },
-                        { l: "pro", v: `${p.proximate.protein_g}g`, c: "text-sky-300" },
-                        { l: "fat", v: `${p.proximate.fat_g}g`, c: "text-rose-300" },
-                        { l: "fiber", v: `${p.proximate.dietaryFiber_g}g`, c: "text-emerald-300" },
-                      ].map(({ l, v, c }) => (
-                        <span key={l} className="rounded-lg border border-white/5 bg-black/30 px-2 py-0.5 font-mono text-[10px]">
-                          <span className="text-stone-500">{l}: </span><span className={`font-bold ${c}`}>{v}</span>
-                        </span>
-                      ))}
-                      <span className={`rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${p.dataConfidence === "high" ? "border-green-500/20 bg-green-950/20 text-green-400" : p.dataConfidence === "medium" ? "border-yellow-500/20 bg-yellow-950/20 text-yellow-400" : "border-red-500/20 bg-red-950/20 text-red-400"}`}>
-                        {p.dataConfidence} confidence
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <DeepNutrientPanel profile={p} />
-                    {p.bioavailabilityNotes && (
-                      <div className="mt-3 rounded-xl border border-emerald-500/15 bg-emerald-950/10 p-3 text-[11px] leading-relaxed text-stone-300">
-                        <strong className="text-emerald-400 block mb-0.5">Bioavailability:</strong>
-                        {p.bioavailabilityNotes}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <DeepProfileCard key={p.uid} profile={p} accentColor="stone" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* SPROUTS TAB */}
+        {activeTab === "sprouts" && (
+          <div>
+            <div className="mb-6 rounded-2xl border border-green-700/20 bg-green-950/10 p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-green-400 mb-2">🌱 Germinated & Sprouted Seeds — Complete Profiles</p>
+              <p className="text-xs leading-relaxed text-stone-400">
+                Germination (sprouting) is one of the most powerful food-processing technologies for improving nutritional quality.
+                It activates endogenous phytases, proteases, and amylases — reducing antinutrients by 60–85%, elevating
+                vitamins C, B-group and folate by 2–5×, and dramatically improving mineral bioavailability.
+                All 21 amino acids profiled per 100 g fresh sprout.
+              </p>
+            </div>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {filteredSprouts.map((p) => (
+                <DeepProfileCard key={p.uid} profile={p} accentColor="green" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* VEGETABLES TAB */}
+        {activeTab === "vegetables" && (
+          <div>
+            <div className="mb-6 rounded-2xl border border-teal-700/20 bg-teal-950/10 p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-teal-400 mb-2">🥦 Vegetable Profiles — Ethiopian & Universal</p>
+              <p className="text-xs leading-relaxed text-stone-400">
+                Full nutrient composition of vegetables consumed in Ethiopian cuisine and globally, per 100 g raw edible portion.
+                Covers all 21 amino acids, full mineral panel (Ca, Mg, Fe, K, Na, S, P, Cu, Mo, Mn, B, Se, Zn),
+                vitamins, fatty acid profile, phenolics with specific bioactive notes, and antinutrient profiles.
+                Traditional Ethiopian vegetables — gomen (Brassica carinata), timatim, shinkurt — are highlighted.
+              </p>
+            </div>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {filteredVegetables.map((p) => (
+                <DeepProfileCard key={p.uid} profile={p} accentColor="teal" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* FRUITS TAB */}
+        {activeTab === "fruits" && (
+          <div>
+            <div className="mb-6 rounded-2xl border border-orange-700/20 bg-orange-950/10 p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-2">🍊 Fruit Profiles — Ethiopian & Tropical</p>
+              <p className="text-xs leading-relaxed text-stone-400">
+                Comprehensive nutritional profiles for Ethiopian and pan-African tropical fruits, per 100 g raw edible portion.
+                Includes unique bioactives: lycopene (guava, tomato), mangiferin (mango), papain (papaya), bromelain (pineapple),
+                hesperidin (orange), tartaric acid (tamarind), passion fruit chrysin, and avocado persenones.
+                All fatty acids, cholesterol, and all 21 amino acids included.
+              </p>
+            </div>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {filteredFruits.map((p) => (
+                <DeepProfileCard key={p.uid} profile={p} accentColor="orange" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ANIMAL PRODUCTS TAB */}
+        {activeTab === "animals" && (
+          <div>
+            <div className="mb-6 rounded-2xl border border-rose-700/20 bg-rose-950/10 p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-2">🥩 Animal Product Profiles — Complete Nutrient Matrix</p>
+              <p className="text-xs leading-relaxed text-stone-400">
+                Animal products provide complete proteins (PDCAAS = 100), heme iron with 15–35% absorption, preformed vitamin A,
+                vitamin B12 (exclusive to animal foods), long-chain omega-3s (EPA, DHA, DPA), arachidonic acid (AA), and cholesterol.
+                Profiles include: beef, lamb/goat, chicken, eggs, whole milk, ayib, ergo, tilapia, liver, and traditional composite dishes.
+                All 21 amino acids including hydroxyproline (collagen) are included for animal products.
+              </p>
+            </div>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {filteredAnimals.map((p) => (
+                <DeepProfileCard key={p.uid} profile={p} accentColor="rose" />
               ))}
             </div>
           </div>

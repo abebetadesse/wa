@@ -7,6 +7,7 @@ import { useLiveGematria } from "@/hooks/useLiveGematria";
 import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
 import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaPreview";
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
+import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
 
 const FIDEL_NAME_MIN_LENGTH = 2;
 
@@ -23,6 +24,7 @@ export default function SpiritualStep1Page() {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [needsSignIn, setNeedsSignIn] = useState(false);
 
   const gematria = useLiveGematria(nameGeez, motherNameGeez);
 
@@ -120,16 +122,8 @@ export default function SpiritualStep1Page() {
     }
   };
 
-  const signalReadiness = Math.min(100, Math.max(14, Math.round(22 + (gematria.letters.length || 0) * 7 + (gematria.isValid ? 20 : 0))));
   const nameLengthClass = nameGeez.trim().length >= FIDEL_NAME_MIN_LENGTH;
   const isNameEntryReady = gematria.isValid && nameLengthClass;
-
-  const cycle3Signals = [
-    { label: "Name signal", value: nameGeez.trim() ? nameGeez.trim() : "Awaiting", status: nameGeez.trim() ? "active" : "pending" },
-    { label: "Mother signal", value: motherNameGeez.trim() ? motherNameGeez.trim() : "Unspecified", status: motherNameGeez.trim() ? "active" : "soft" },
-    { label: "Gematria arc", value: gematria.totalSum ? String(gematria.totalSum) : "—", status: gematria.isValid ? "active" : "pending" },
-    { label: "Cycle 3 route", value: isNameEntryReady ? "Synthesis ready" : "Listening", status: isNameEntryReady ? "active" : "pending" },
-  ];
 
   const handleContinue = async () => {
     if (!nameGeez.trim()) {
@@ -165,15 +159,23 @@ export default function SpiritualStep1Page() {
       });
 
       const payload = await res.json();
+      if (res.status === 401) {
+        setNeedsSignIn(true);
+        throw new Error("Sign in to your account before starting a private spiritual reading.");
+      }
       if (payload.success && payload.data) {
         const caseId = payload.data.id;
-        sessionStorage.setItem("spiritual_case_id", caseId);
-        sessionStorage.setItem("spiritual_name_geez", nameGeez);
-        sessionStorage.setItem("spiritual_mother_geez", motherNameGeez);
-        sessionStorage.setItem("spiritual_birth_date", birthDate);
-        sessionStorage.setItem("spiritual_birth_location", birthLocationName);
-        if (birthLatitude !== null && birthLongitude !== null) {
-          sessionStorage.setItem("spiritual_birth_coordinates", JSON.stringify({ latitude: birthLatitude, longitude: birthLongitude }));
+        try {
+          sessionStorage.setItem("spiritual_case_id", caseId);
+          sessionStorage.setItem("spiritual_name_geez", nameGeez);
+          sessionStorage.setItem("spiritual_mother_geez", motherNameGeez);
+          sessionStorage.setItem("spiritual_birth_date", birthDate);
+          sessionStorage.setItem("spiritual_birth_location", birthLocationName);
+          if (birthLatitude !== null && birthLongitude !== null) {
+            sessionStorage.setItem("spiritual_birth_coordinates", JSON.stringify({ latitude: birthLatitude, longitude: birthLongitude }));
+          }
+        } catch {
+          setLocationStatus("This browser could not save locally; your case is saved to your account.");
         }
         router.push(`/case/spiritual/intake/step-2?caseId=${caseId}`);
       } else {
@@ -212,7 +214,7 @@ export default function SpiritualStep1Page() {
                 <div>
                   <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-amber-300">
                     <span>🔮</span>
-                    <span>Step 1 of 4 — Name Entry & Live Gematria</span>
+                    <span>Step 1 of 5 — Name & context</span>
                   </div>
                   <h1 className="mt-4 font-serif text-4xl md:text-5xl font-black text-amber-50">
                     Spiritual & Life Direction Reading
@@ -224,21 +226,22 @@ export default function SpiritualStep1Page() {
               </div>
 
               <p className="mt-4 text-sm text-stone-300 leading-7">
-                In Ethiopian parchment tradition, your name carries an intrinsic numerical vibration that connects
-                your personal lineage to the cosmos. Enter your name in Ge&apos;ez script, along with your mother&apos;s
-                name (optional but traditional), to begin your personalized Awde Negest alignment.
+                Enter your name in Ge&apos;ez or Amharic for an optional symbolic calculation. A mother&apos;s name and birth
+                details are optional context; they do not determine personality, health, or future outcomes.
               </p>
+              <div className="mt-6"><SpiritualIntakeProgress current={1} /></div>
 
               {error && (
                 <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">
                   {error}
+                  {needsSignIn && <Link href="/auth" className="ml-2 font-bold underline underline-offset-2">Sign in</Link>}
                 </div>
               )}
 
               <div className="mt-7 space-y-6">
                 <section className="rounded-2xl border border-sky-500/20 bg-sky-950/10 p-5">
                   <h2 className="text-sm font-bold text-sky-200">Birth context for cultural calculations</h2>
-                  <p className="mt-1 text-xs leading-5 text-stone-400">Optional. Used to label the reading context only; it does not determine medical, legal, or psychological outcomes.</p>
+                  <p className="mt-1 text-xs leading-5 text-stone-400">Optional cultural context only. It does not determine medical, legal, or psychological outcomes.</p>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <label className="space-y-2 text-sm text-stone-300">
                       Birth year, month and day
@@ -344,13 +347,13 @@ export default function SpiritualStep1Page() {
 
                 <div className="pt-2 border-t border-stone-800 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold text-amber-400 tracking-wider uppercase font-mono">
-                    <span>🌟 LIVE GEMATRIA PREVIEW</span>
+                    <span>🌟 LIVE SYMBOLIC NAME CALCULATION</span>
                   </div>
 
                   <AnimatedGematriaPreview state={gematria} />
 
                   <p className="text-[11px] text-stone-400 italic">
-                    ⚠️ This preview updates live as you type. Your comprehensive reading will be personalized and reviewed by verified debteras.
+                    This calculation updates as you type. The resulting reflection uses only submitted information; no practitioner review is implied.
                   </p>
                 </div>
               </div>
@@ -360,7 +363,7 @@ export default function SpiritualStep1Page() {
                   <span className="text-xl">🔒</span>
                   <div>
                     <span className="font-bold text-stone-200 block">Privacy & Lineage Protection</span>
-                    Your Ge&apos;ez name is calculated locally and securely encrypted at rest.
+                    Your name calculation is performed in this reading flow. Avoid sharing details you do not want included in the report.
                   </div>
                 </div>
 
@@ -385,24 +388,18 @@ export default function SpiritualStep1Page() {
                   <div className="text-[11px] font-black uppercase tracking-[0.24em] text-amber-300">Reading Protocol</div>
                   <div className="mt-2 text-xs text-stone-500">Intake Circuit // 01</div>
                 </div>
-                <span className="rounded-full border border-emerald-500/50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-300">
-                  Secure
+                <span className="rounded-full border border-stone-700 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-stone-300">
+                  Private reading
                 </span>
               </div>
 
               <div className="mt-8 space-y-4">
                 <div className="rounded-2xl border border-amber-500/30 bg-amber-500/8 p-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-200">Signal Quality</span>
-                    <span className={`text-xs font-bold ${gematria.isValid ? "text-emerald-300" : "text-stone-400"}`}>{gematria.isValid ? "Online" : "Awaiting"}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-200">Name entry</span>
+                    <span className={`text-xs font-bold ${isNameEntryReady ? "text-emerald-300" : "text-stone-400"}`}>{isNameEntryReady ? "Valid name input" : "Awaiting name"}</span>
                   </div>
-                  <div className="mt-4 h-2 rounded-full bg-stone-800">
-                    <div className="h-2 rounded-full bg-gradient-to-r from-amber-300 to-emerald-400 transition-all duration-500" style={{ width: `${signalReadiness}%` }} />
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-stone-500">Lineage Readiness</span>
-                    <span className="text-[10px] font-bold text-amber-200">{signalReadiness}%</span>
-                  </div>
+                  <p className="mt-3 text-xs leading-5 text-stone-400">The number is a traditional symbolic calculation, not a measure of personal signal, readiness, or certainty.</p>
                 </div>
 
                 <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
@@ -433,23 +430,10 @@ export default function SpiritualStep1Page() {
                 </div>
 
                 <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">Cycle 3 · Oracle Continuity</span>
-                    <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase border ${isNameEntryReady ? "border-emerald-400 text-emerald-200" : "border-stone-700 text-stone-500"}`}>{isNameEntryReady ? "Synced" : "Awake"}</span>
-                  </div>
-
-                  <div className="mt-4 space-y-2">
-                    {cycle3Signals.map((signal, idx) => (
-                      <div key={signal.label} className="flex items-center justify-between gap-3 rounded-xl bg-black/20 px-3 py-2 border border-stone-800">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400">{signal.label}</span>
-                        <span className={`font-serif text-xs ${signal.status === "active" ? "text-amber-200" : signal.status === "soft" ? "text-stone-300" : "text-stone-500"}`}>{signal.value}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 border-t border-emerald-500/20 pt-3 text-[10px] text-stone-400">
-                    Cycle 3 direction: <span className="text-emerald-300">{isNameEntryReady ? "Generate continuity through the living name." : "Awaiting valid name resonance."}</span>
-                  </div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200">Name-based calculation</div>
+                  <div className="mt-3 text-sm text-stone-300">Name: <span className="font-serif text-amber-100">{nameGeez || "Not entered"}</span></div>
+                  <div className="mt-2 text-sm text-stone-300">Mother&apos;s name: <span className="font-serif text-amber-100">{motherNameGeez || "Not supplied"}</span></div>
+                  <div className="mt-2 text-sm text-stone-300">Calculation: <span className="font-mono text-amber-100">{gematria.isValid ? `${gematria.totalSum} total · ${gematria.finalNumber} final value` : "Awaiting valid name"}</span></div>
                 </div>
 
                 {(voiceError || isListening) && (

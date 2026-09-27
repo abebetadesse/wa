@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const nameGeez = typeof body.nameGeez === "string" ? body.nameGeez : "";
     const motherNameGeez = typeof body.motherNameGeez === "string" ? body.motherNameGeez : "";
-    const birthDate = typeof body.birthDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(body.birthDate) ? body.birthDate : undefined;
+    const birthDate = typeof body.birthDate === "string" && body.birthDate.trim() ? body.birthDate : undefined;
     const birthLocationName = typeof body.birthLocationName === "string" ? body.birthLocationName.trim().slice(0, 120) : undefined;
     const birthLatitude = typeof body.birthLatitude === "number" && Number.isFinite(body.birthLatitude) && body.birthLatitude >= -90 && body.birthLatitude <= 90 ? body.birthLatitude : undefined;
     const birthLongitude = typeof body.birthLongitude === "number" && Number.isFinite(body.birthLongitude) && body.birthLongitude >= -180 && body.birthLongitude <= 180 ? body.birthLongitude : undefined;
@@ -24,10 +24,11 @@ export async function POST(req: NextRequest) {
       success: true,
       data: session,
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to start spiritual case";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to start spiritual case" },
-      { status: 400 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 400 }
     );
   }
 }

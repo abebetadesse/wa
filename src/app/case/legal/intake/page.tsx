@@ -374,10 +374,10 @@ export default function LegalIntakePage() {
                 <Scale className="w-8 h-8 text-purple-400" />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-br from-white via-zinc-200 to-purple-300 bg-clip-text text-transparent">
-                Legal & Dispute Guidance
+                Legal & Dispute Guidance (የሕግና ክርክር ምክር)
               </h1>
               <p className="text-zinc-400 max-w-lg mx-auto text-sm leading-relaxed">
-                Confidential support for housing issues, contract disputes, family matters, and civil rights — reviewed by licensed attorneys and verified mediators.
+                Spiritual peacemaking, community reconciliation (ሽምግልና), and cultural restorative justice. Grounded entirely in traditional Ethiopian wisdom — no scientific or statutory legal advice.
               </p>
             </div>
 
@@ -386,22 +386,22 @@ export default function LegalIntakePage() {
               {[
                 {
                   icon: Shield,
-                  title: "Safety First",
-                  desc: "A brief screen ensures the right pathway for your situation before any information is collected.",
+                  title: "Safety & Conscience First",
+                  desc: "A brief check ensures your safety and peace of mind before any reflection begins.",
                   color: "text-red-400",
                   bg: "bg-red-500/10 border-red-500/20",
                 },
                 {
                   icon: Gavel,
-                  title: "Expert Review",
-                  desc: "Licensed attorneys and dispute mediators fluent in Amharic and Ethiopian law review every case.",
+                  title: "Elders & Spiritual Mentors",
+                  desc: "Traditional elders (ሽማግሌዎች) and spiritual peacemakers experienced in Ethiopian customary reconciliation.",
                   color: "text-purple-400",
                   bg: "bg-purple-500/10 border-purple-500/20",
                 },
                 {
                   icon: FileText,
-                  title: "Your Report",
-                  desc: "A concrete next-step plan with rights, deadlines, and legal options — not generic advice.",
+                  title: "Cultural Reconciliation Plan",
+                  desc: "A restorative path rooted in mutual dignity, spiritual conscience, and community harmony — no scientific advice.",
                   color: "text-emerald-400",
                   bg: "bg-emerald-500/10 border-emerald-500/20",
                 },
@@ -422,10 +422,10 @@ export default function LegalIntakePage() {
               <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-widest">How it works</h2>
               <div className="space-y-3">
                 {[
-                  { step: "01", label: "Safety Screen", desc: "Four quick questions to ensure the right support pathway." },
-                  { step: "02", label: "Describe Your Matter", desc: "Jurisdiction, issue type, urgency, and context." },
-                  { step: "03", label: "Expert Assignment", desc: "A licensed attorney or mediator is matched to your case." },
-                  { step: "04", label: "Your Report & Plan", desc: "Concrete next steps, rights, and booking a direct consultation." },
+                  { step: "01", label: "Safety & Peace Check", desc: "Four quick questions to ensure immediate safety and comfort." },
+                  { step: "02", label: "Describe the Situation", desc: "Community context, dispute nature, and reconciliation goals." },
+                  { step: "03", label: "Elder & Mentor Reflection", desc: "A respected customary elder or spiritual mediator reflects on the matter." },
+                  { step: "04", label: "Restorative Guidance", desc: "Cultural reconciliation principles, spiritual peacemaking, and elder consultation." },
                 ].map(({ step, label, desc }) => (
                   <div key={step} className="flex gap-4 items-start">
                     <span className="text-xs font-mono text-purple-500 mt-0.5 w-6 shrink-0">{step}</span>
@@ -441,14 +441,14 @@ export default function LegalIntakePage() {
             {/* Disclaimer */}
             <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-4 text-xs text-amber-300/80 leading-relaxed">
               <span className="font-semibold text-amber-300">Disclaimer: </span>
-              This platform provides educational legal information and referrals — not legal advice. For high-stakes or criminal matters, consult a licensed attorney directly.
+              Grounded exclusively in Ethiopian cultural and spiritual traditions (ሽምግልና / Shemgelna, traditional restorative peacemaking, and spiritual conscience). It provides spiritual and cultural reflection only — no scientific, clinical, or statutory legal advice is provided.
             </div>
 
             <button
               onClick={() => setStage("safety_screen")}
               className="w-full py-4 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-all shadow-lg shadow-purple-950/40 flex items-center justify-center gap-2 text-sm"
             >
-              Begin Legal Intake
+              Begin Cultural & Spiritual Intake
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

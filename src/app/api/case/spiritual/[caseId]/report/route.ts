@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getOwnedSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine";
 import { requireAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(
-  req: NextRequest,
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   try {
@@ -18,6 +17,13 @@ export async function GET(
     // Review gate enforcement
     const isUnlocked = session.paymentConfirmed || session.status === "full_report_released" || session.status === "consultation_booked";
 
+    if (!isUnlocked) {
+      return NextResponse.json({ success: false, error: "The full report has not been released." }, { status: 402 });
+    }
+    if (!session.report) {
+      return NextResponse.json({ success: false, error: "The report draft has not been prepared." }, { status: 409 });
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -28,10 +34,11 @@ export async function GET(
         assignedExpert: session.assignedExpert,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch report";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch report" },
-      { status: 500 }
+      { success: false, error: message },
+      { status: message === "AUTH_REQUIRED" ? 401 : 500 }
     );
   }
 }

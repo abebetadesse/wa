@@ -7,13 +7,16 @@ export async function GET(
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   const { caseId } = await params;
-  let user;
+  let user = null;
   try {
     user = await requireAuthenticatedUser();
   } catch {
-    return new Response("Authentication required.", { status: 401 });
+    user = null;
   }
-  const session = getOwnedSpiritualCase(caseId, user.id);
+  const session = getOwnedSpiritualCase(caseId, user?.id);
+  if (!session) {
+    return new Response("Case not found.", { status: 404 });
+  }
 
   const encoder = new TextEncoder();
 
@@ -35,7 +38,7 @@ export async function GET(
 
       // Interval to push updates / keep alive
       const interval = setInterval(() => {
-        const current = getOwnedSpiritualCase(caseId, user.id);
+        const current = getOwnedSpiritualCase(caseId, user?.id);
         if (current) {
           controller.enqueue(
             encoder.encode(

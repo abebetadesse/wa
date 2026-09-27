@@ -9,8 +9,8 @@
  * - Safety flags from the pre-screen
  *
  * Safety rule: No question may suggest, recommend, or imply investment,
- * financial advice, or legal guidance. An advisor disclaimer is injected
- * automatically when financial topics appear.
+ * financial advice, or legal guidance. A reflection-only scope disclaimer
+ * is injected automatically when financial topics appear.
  */
 
 import type { CareerProfile, CareerStage, BusinessType } from "@/lib/cultural/careerTimingEngine";
@@ -523,5 +523,4 @@ export function requiresFinancialDisclaimer(questionId: string): boolean {
 }
 
 export const FINANCIAL_DISCLAIMER =
-  "Note: This platform provides general guidance only. Nothing here constitutes financial, legal, or investment advice. " +
-  "For financial decisions, please consult a licensed financial advisor or legal professional.";
+  "This intake provides optional spiritual and cultural reflection only. It does not provide career, business, financial, legal, scientific, or predictive advice.";

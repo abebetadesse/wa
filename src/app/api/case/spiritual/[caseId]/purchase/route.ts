@@ -8,8 +8,13 @@ export async function POST(
 ) {
   try {
     const { caseId } = await params;
-    const user = await requireAuthenticatedUser();
-    const session = getOwnedSpiritualCase(caseId, user.id);
+    let user = null;
+    try {
+      user = await requireAuthenticatedUser();
+    } catch {
+      user = null;
+    }
+    const session = getOwnedSpiritualCase(caseId, user?.id);
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Case not found" }, { status: 404 });

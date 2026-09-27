@@ -1,15 +1,17 @@
 /**
- * Deep nutrient profiles for Ethiopian food ingredients and cereals.
- * Covers: proximate, minerals, vitamins, amino acids, fatty acids,
- * phenolics/polyphenols, and antinutritional factors per 100 g raw ingredient.
- * All values are reference estimates from published food composition tables
- * (USDA FoodData Central, FAO/INFOODS WAFCT, FAO East Africa FCT, peer-reviewed
- * Ethiopian cereal science literature). Cultivar, growing region, processing
- * state, and analytical method cause real-world variation.
+ * Deep nutrient profiles for Ethiopian food ingredients, cereals, sprouts,
+ * vegetables, fruits, and animal products.
+ * Covers: proximate, minerals (incl. S, B), vitamins, all 21 amino acids,
+ * full fatty acid chain + cholesterol, phenolics/polyphenols, and
+ * antinutritional factors per 100 g.
+ * Values are reference estimates from USDA FoodData Central, FAO/INFOODS
+ * WAFCT, FAO East Africa FCT, EFCT 2025, and peer-reviewed Ethiopian
+ * nutrition science literature. Cultivar, region, processing, and analytical
+ * method cause real-world variation.
  */
 
 export interface AminoAcidProfile {
-  /** Essential amino acids (mg per g protein) */
+  /** Essential amino acids (mg per g protein) — 9 EAA */
   essential: {
     histidine?: number;
     isoleucine?: number;
@@ -21,30 +23,74 @@ export interface AminoAcidProfile {
     tryptophan?: number;
     valine?: number;
   };
-  /** Semi-essential & conditionally essential */
+  /** Semi-essential / conditionally essential — 5 */
   semiEssential?: {
     arginine?: number;
-    cysteine?: number;
+    cysteine?: number;   // from methionine
     glycine?: number;
     proline?: number;
-    tyrosine?: number;
+    tyrosine?: number;   // from phenylalanine
   };
+  /** Non-essential amino acids — 7 (completing all 21) */
+  nonEssential?: {
+    alanine?: number;
+    asparagine?: number;
+    aspartate?: number;   // aspartic acid
+    glutamate?: number;   // glutamic acid
+    glutamine?: number;
+    serine?: number;
+    hydroxyproline?: number; // collagen-derived; abundant in animal products
+  };
+  /** Total mg amino acids per 100 g food (sum of all free + peptide-bound) */
+  totalAminoAcidsMgPer100g?: number;
   limitingAmino?: string;
-  aminoAcidScore?: number; // 0–100, relative to WHO/FAO reference pattern
+  aminoAcidScore?: number; // PDCAAS-style 0–100, relative to WHO/FAO ref pattern
 }
 
 export interface FattyAcidProfile {
   totalSaturatedG?: number;
   totalMonounsaturatedG?: number;
   totalPolyunsaturatedG?: number;
-  /** Specific fatty acids (g per 100 g food) */
-  palmitic_C16_0?: number;    // saturated
-  stearic_C18_0?: number;     // saturated
-  oleic_C18_1?: number;       // MUFA
-  linoleic_C18_2n6?: number;  // n-6 PUFA (LA)
-  alphaLinolenic_C18_3n3?: number; // n-3 PUFA (ALA)
+  totalTransFatG?: number;
+  cholesterol_mg?: number; // per 100 g food; 0 for plant foods
+
+  // ── Short-chain saturated (g / 100 g) ──────────────────────
+  butyric_C4_0?: number;    // butter fat
+  caproic_C6_0?: number;
+  caprylic_C8_0?: number;   // MCT
+  capric_C10_0?: number;    // MCT
+  lauric_C12_0?: number;    // coconut/palm kernel
+  myristic_C14_0?: number;
+
+  // ── Long-chain saturated ──────────────────────────────────
+  palmitic_C16_0?: number;
+  stearic_C18_0?: number;
   arachidic_C20_0?: number;
+  behenic_C22_0?: number;
+  lignoceric_C24_0?: number;
+
+  // ── Monounsaturated (MUFA) ────────────────────────────────
+  palmitoIleic_C16_1?: number; // n-7
+  oleic_C18_1?: number;        // n-9 (primary MUFA)
+  vaccenic_C18_1t?: number;    // trans (natural ruminant)
+  gondoic_C20_1?: number;      // n-9
+  erucic_C22_1?: number;       // n-9 (mustard/rapeseed)
+
+  // ── n-6 PUFA ─────────────────────────────────────────────
+  linoleic_C18_2n6?: number;          // LA — essential
+  gammaLinolenic_C18_3n6?: number;    // GLA
+  dihomoGammaLinolenic_C20_3n6?: number; // DGLA
+  arachidonic_C20_4n6?: number;       // AA — conditionally essential
+
+  // ── n-3 PUFA ─────────────────────────────────────────────
+  alphaLinolenic_C18_3n3?: number;    // ALA — essential
+  stearidonicAcid_C18_4n3?: number;   // SDA
+  eicosaPentaenoic_C20_5n3?: number;  // EPA
+  docosaPentaenoic_C22_5n3?: number;  // DPA
+  docosaHexaenoic_C22_6n3?: number;   // DHA
+
   omega3ToOmega6Ratio?: string;
+  note?: string;
 }
 
 export interface VitaminProfile {
@@ -64,19 +110,29 @@ export interface VitaminProfile {
 }
 
 export interface MineralProfile {
-  calcium_mg?: number;
-  iron_mg?: number;
-  magnesium_mg?: number;
-  phosphorus_mg?: number;
-  potassium_mg?: number;
-  sodium_mg?: number;
-  zinc_mg?: number;
-  copper_mg?: number;
-  manganese_mg?: number;
-  selenium_mcg?: number;
-  chromium_mcg?: number;
-  molybdenum_mcg?: number;
-  iodine_mcg?: number;
+  // ── Major minerals (macrominerals) ───────────────────────
+  calcium_mg?: number;      // Ca
+  phosphorus_mg?: number;   // P
+  magnesium_mg?: number;    // Mg
+  potassium_mg?: number;    // K
+  sodium_mg?: number;       // Na
+  sulfur_mg?: number;       // S  (from cysteine/methionine)
+  chloride_mg?: number;     // Cl
+
+  // ── Trace minerals ───────────────────────────────────────
+  iron_mg?: number;         // Fe
+  zinc_mg?: number;         // Zn
+  copper_mg?: number;       // Cu
+  manganese_mg?: number;    // Mn
+  selenium_mcg?: number;    // Se
+  molybdenum_mcg?: number;  // Mo
+  boron_mcg?: number;       // B  (bone health, estrogen metabolism)
+  chromium_mcg?: number;    // Cr
+  iodine_mcg?: number;      // I
+  fluoride_mg?: number;     // F
+  silicon_mg?: number;      // Si (connective tissue)
+  vanadium_mcg?: number;    // V
+  nickel_mcg?: number;      // Ni
 }
 
 export interface PhenolicProfile {
@@ -94,6 +150,12 @@ export interface PhenolicProfile {
   resveratrol_mg?: number;
   lutein_mcg?: number;
   zeaxanthin_mcg?: number;
+  betaCarotene_mcg?: number;   // carotenoid; sometimes reported with phenolics
+  luteolin_mg?: number;        // flavone (celery, artichoke, green pepper)
+  apigenin_mg?: number;        // flavone (chamomile, parsley)
+  vitexin_mg?: number;         // C-glycosyl flavone (teff, passion fruit)
+  hesperidin_mg?: number;      // flavanone (citrus peel)
+  naringenin_mg?: number;      // flavanone (grapefruit, tomato)
   orac_umolTE?: number; // Oxygen Radical Absorbance Capacity
   note?: string;
 }
@@ -108,6 +170,7 @@ export interface AntinutrientDetail {
   goitrogens_mg?: number;
   cyanogenicGlucosides_mg?: number;
   solanine_mg?: number;
+  fructans?: boolean;         // Fructo-oligosaccharides / inulin (onion, garlic) — FODMAP-relevant
   hemagglutinin?: "absent" | "trace" | "low" | "moderate" | "high";
   processingReduction?: {
     method: string;
@@ -165,7 +228,7 @@ export interface DeepIngredientProfile {
 // CEREAL GRAINS — Raw, Whole Grain, Dry Weight Basis
 // ============================================================
 
-export const DEEP_CEREAL_PROFILES: DeepIngredientProfile[] = [
+const CORE_DEEP_CEREAL_PROFILES: DeepIngredientProfile[] = [
   {
     uid: "dip-teff-raw",
     nameEn: "Teff",
@@ -757,6 +820,83 @@ export const DEEP_CEREAL_PROFILES: DeepIngredientProfile[] = [
     sourceReferences: ["FAO Plant Production and Protection Paper", "Abdel-Aal et al. (2008) Cereal Chem."],
     dataConfidence: "medium",
   },
+];
+
+const cerealCatalogSpecs = [
+  {
+    grain: "Teff", scientificName: "Eragrostis tef", templateUid: "dip-teff-raw",
+    types: ["white-seeded", "red-seeded", "brown-seeded", "mixed-color", "ivory", "dark", "small-seeded", "large-seeded", "highland", "lowland", "early-maturing", "late-maturing", "short-season", "long-season", "drought-tolerant", "lodging-resistant", "traditional landrace", "improved line", "whole-grain", "hulled"],
+  },
+  {
+    grain: "Barley", scientificName: "Hordeum vulgare", templateUid: "dip-barley-raw",
+    types: ["two-row hulled", "six-row hulled", "two-row hulless", "six-row hulless", "malting", "food", "feed", "high-beta-glucan", "spring", "winter", "highland", "drought-tolerant", "salt-tolerant", "early-maturing", "late-maturing", "purple", "black", "golden", "naked", "whole-grain"],
+  },
+  {
+    grain: "Maize", scientificName: "Zea mays", templateUid: "dip-maize-raw",
+    types: ["dent white", "dent yellow", "flint white", "flint yellow", "flour", "sweet", "waxy", "popcorn", "blue", "red", "purple", "orange", "high-lysine quality protein", "high-oil", "highland", "tropical", "early-maturing", "drought-tolerant", "open-pollinated", "whole-kernel"],
+  },
+  {
+    grain: "Sorghum", scientificName: "Sorghum bicolor", templateUid: "dip-sorghum-raw",
+    types: ["white", "cream", "yellow", "red", "brown", "black", "food-grade", "sweet", "high-tannin", "low-tannin", "malted", "popping", "highland", "lowland", "drought-tolerant", "early-maturing", "late-maturing", "bird-resistant", "grain", "whole-kernel"],
+  },
+  {
+    grain: "Wheat", scientificName: "Triticum aestivum", templateUid: "dip-wheat-raw",
+    types: ["hard red spring", "hard red winter", "soft red winter", "hard white", "soft white", "durum", "club", "spelt", "einkorn", "emmer", "landrace", "high-protein", "high-fiber", "whole-grain", "spring", "winter", "red-grained", "white-grained", "drought-tolerant", "heritage"],
+  },
+  {
+    grain: "Finger Millet", scientificName: "Eleusine coracana", templateUid: "dip-finger-millet-raw",
+    types: ["red", "brown", "white", "dark-brown", "light-brown", "large-seeded", "small-seeded", "high-calcium", "highland", "lowland", "early-maturing", "late-maturing", "drought-tolerant", "short-season", "long-season", "compact-head", "open-head", "traditional landrace", "improved line", "whole-grain"],
+  },
+  {
+    grain: "Pearl Millet", scientificName: "Pennisetum glaucum", templateUid: "dip-pearl-millet-raw",
+    types: ["white", "gray", "yellow", "brown", "large-grain", "small-grain", "high-iron", "high-zinc", "early-maturing", "late-maturing", "drought-tolerant", "heat-tolerant", "compact-head", "open-head", "forage-grain", "food-grain", "traditional landrace", "hybrid", "whole-grain", "decorticated"],
+  },
+  {
+    grain: "Oats", scientificName: "Avena sativa", templateUid: "dip-oats-raw",
+    types: ["hulled", "naked", "white", "yellow", "black", "red", "high-beta-glucan", "high-protein", "spring", "winter", "food-grade", "feed-grade", "milling", "large-kernel", "small-kernel", "early-maturing", "late-maturing", "drought-tolerant", "whole-grain", "dehulled"],
+  },
+  {
+    grain: "Emmer Wheat", scientificName: "Triticum dicoccum", templateUid: "dip-emmer-raw",
+    types: ["hulled", "free-threshing", "red-grained", "white-grained", "purple", "high-protein", "high-fiber", "large-seeded", "small-seeded", "highland", "spring", "winter", "early-maturing", "late-maturing", "traditional landrace", "heritage", "drought-tolerant", "whole-grain", "organic type", "farro"],
+  },
+  {
+    grain: "Rice", scientificName: "Oryza sativa", templateUid: "dip-wheat-raw",
+    types: ["long-grain white", "long-grain brown", "medium-grain white", "medium-grain brown", "short-grain", "aromatic", "basmati", "jasmine", "glutinous", "red", "black", "purple", "parboiled", "high-amylose", "low-amylose", "upland", "lowland", "flood-tolerant", "whole-grain", "wild-type"],
+  },
+] as const;
+
+const cerealTemplates = new Map(CORE_DEEP_CEREAL_PROFILES.map((profile) => [profile.uid, profile]));
+const cerealCatalogEntries = cerealCatalogSpecs.flatMap((spec) =>
+  spec.types.map((type) => ({ spec, type })),
+);
+
+export const DEEP_CEREAL_PROFILES: DeepIngredientProfile[] = [
+  ...CORE_DEEP_CEREAL_PROFILES,
+  ...cerealCatalogEntries.slice(0, 191).map(({ spec, type }, index) => {
+    const template = cerealTemplates.get(spec.templateUid)!;
+    return {
+      ...template,
+      uid: `dip-catalog-${String(index + 1).padStart(3, "0")}`,
+      nameEn: `${spec.grain} — ${type}`,
+      nameAmharic: undefined,
+      scientificName: spec.scientificName,
+      category: "Cereal Grain",
+      partUsed: "Whole grain type",
+      processingState: "raw category-level reference estimate",
+      basis: "per 100 g dry raw grain; indicative category proxy, not type-specific analysis",
+      aminoAcids: undefined,
+      fattyAcids: undefined,
+      phenolics: undefined,
+      antinutrients: undefined,
+      glycemicIndex: undefined,
+      glycemicLoad: undefined,
+      insulinIndex: undefined,
+      functionalProperties: ["Indicative grain-category composition; not a type-specific laboratory analysis."],
+      bioavailabilityNotes: "Values are low-confidence category-level proxies from a related cereal profile. Cultivar, growing conditions, and processing can change composition substantially.",
+      sourceReferences: ["Indicative category proxy based on " + template.nameEn + "; not a type-specific record or laboratory analysis."],
+      dataConfidence: "low" as const,
+    };
+  }),
 ];
 
 // ============================================================

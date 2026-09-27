@@ -77,24 +77,24 @@ const domainConfigs: DomainConfig[] = [
   },
   {
     id: "money", name: "Money", icon: "◈", order: 4, isActive: true,
-    description: "Clarify financial pressure, resources, and the next workable move.", knowledgeStrandFilters: CASE_STRAND_FILTERS.money, domainLayers: ["A", "B"], interests: ["stability", "debt or obligations", "income growth", "resource planning"],
+    description: "Explore financial pressures through Ethiopian spiritual, cultural, and community traditions. This path offers reflection only, not financial or scientific advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.money, domainLayers: ["B"], interests: ["stability", "debt or obligations", "income growth", "resource planning"],
     challengeOptions: ["Unstable income", "Debt or obligations", "Household pressure", "Planning and saving"],
     specificQuestions: [
       { id: "money-detail", fieldId: "detail", questionSetId: "money-specific", text: "Describe the financial situation you want to change.", type: "textarea", required: true, order: 1, section: "specialized" },
       { id: "money-horizon", fieldId: "horizon", questionSetId: "money-specific", text: "What time horizon feels most useful?", type: "select", options: ["This week", "This month", "This year"], required: true, order: 2, section: "specialized" },
       { id: "money-interest", fieldId: "selectedInterest", questionSetId: "money-specific", text: "Which outcome should lead the plan?", type: "select", options: ["stability", "debt or obligations", "income growth", "resource planning"], required: true, order: 3, section: "specialized" },
-      { id: "money-reflection", fieldId: "reflectionLens", questionSetId: "money-specific", text: "Include community and cultural resource reflection?", type: "select", options: ["No", "Yes"], required: true, order: 4, section: "specialized" },
+      { id: "money-reflection", fieldId: "reflectionLens", questionSetId: "money-specific", text: "Include spiritual and cultural reflection?", type: "select", options: ["Yes, include spiritual and cultural reflection"], required: true, order: 4, section: "specialized" },
     ],
   },
   {
     id: "career", name: "Career", icon: "↗", order: 5, isActive: true,
-    description: "Move from uncertainty to a focused, sustainable professional direction.", knowledgeStrandFilters: CASE_STRAND_FILTERS.career, domainLayers: ["A", "B"], interests: ["career direction", "job search", "skill building", "sustainable work"],
+    description: "Explore work and vocation through Ethiopian spiritual and cultural traditions. This path offers reflection only, not career, financial, or scientific advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.career, domainLayers: ["B"], interests: ["career direction", "job search", "skill building", "sustainable work"],
     challengeOptions: ["Choosing a direction", "Finding work", "Skill or study decisions", "Burnout or work fit"],
     specificQuestions: [
       { id: "career-detail", fieldId: "detail", questionSetId: "career-specific", text: "What work or career change are you considering?", type: "textarea", required: true, order: 1, section: "specialized" },
       { id: "career-stage", fieldId: "stage", questionSetId: "career-specific", text: "Where are you in the process?", type: "select", options: ["Exploring", "Preparing", "Applying", "Changing direction"], required: true, order: 2, section: "specialized" },
       { id: "career-interest", fieldId: "selectedInterest", questionSetId: "career-specific", text: "Which outcome should lead the plan?", type: "select", options: ["career direction", "job search", "skill building", "sustainable work"], required: true, order: 3, section: "specialized" },
-      { id: "career-reflection", fieldId: "reflectionLens", questionSetId: "career-specific", text: "Include identity, values, and cultural reflection?", type: "select", options: ["No", "Yes"], required: true, order: 4, section: "specialized" },
+      { id: "career-reflection", fieldId: "reflectionLens", questionSetId: "career-specific", text: "Include spiritual and cultural reflection?", type: "select", options: ["Yes, include spiritual and cultural reflection"], required: true, order: 4, section: "specialized" },
     ],
   },
   {
@@ -121,13 +121,13 @@ const domainConfigs: DomainConfig[] = [
   },
   {
     id: "legal", name: "Legal & Dispute", icon: "⚖", order: 8, isActive: true,
-    description: "Handle tenancy, contractual, family, and dispute questions with legal-safety screening before any written advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.legal, domainLayers: ["A", "B"], interests: ["rights and obligations", "contract review", "dispute strategy", "urgency planning"],
-    challengeOptions: ["Housing or tenancy dispute", "Contract or obligation concern", "Family or inheritance issue", "I need a clear next step"],
+    description: "Explore dispute resolution, community harmony, and ethical conscience through Ethiopian customary peacemaking (ሽምግልና / Shemgelna) and spiritual reconciliation. Grounded entirely in cultural and spiritual wisdom — no scientific or statutory legal advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.legal, domainLayers: ["B"], interests: ["customary reconciliation (ሽምግልና)", "spiritual peacemaking & erek", "elder mediation (የአገር ሽማግሌ)", "spiritual conscience & ethics"],
+    challengeOptions: ["Customary dispute reconciliation (ሽምግልና)", "Family or inheritance dispute resolution", "Community or tenancy harmony", "Spiritual conscience & ethical guidance"],
     specificQuestions: [
-      { id: "legal-detail", fieldId: "detail", questionSetId: "legal-specific", text: "Briefly describe the dispute or legal matter you need guidance on.", type: "textarea", required: true, order: 1, section: "specialized" },
-      { id: "legal-deadline", fieldId: "deadline", questionSetId: "legal-specific", text: "Is there a court date, eviction notice, or deadline in the next 30 days?", type: "select", options: ["No", "Yes, within 30 days", "Yes, within 7 days", "Prefer not to say"], required: true, order: 2, section: "specialized" },
-      { id: "legal-interest", fieldId: "selectedInterest", questionSetId: "legal-specific", text: "What kind of guidance feels most useful?", type: "select", options: ["rights and obligations", "contract review", "dispute strategy", "urgency planning"], required: true, order: 3, section: "specialized" },
-      { id: "legal-reflection", fieldId: "reflectionLens", questionSetId: "legal-specific", text: "Would you like a cultural mediation perspective included separately from legal information?", type: "select", options: ["No", "Yes"], required: true, order: 4, section: "specialized" },
+      { id: "legal-detail", fieldId: "detail", questionSetId: "legal-specific", text: "Briefly describe the dispute or matter you seek spiritual and cultural guidance on.", type: "textarea", required: true, order: 1, section: "specialized" },
+      { id: "legal-interest", fieldId: "selectedInterest", questionSetId: "legal-specific", text: "What spiritual or cultural perspective feels most helpful?", type: "select", options: ["customary reconciliation (ሽምግልና)", "spiritual peacemaking & erek", "elder mediation (የአገር ሽማግሌ)", "spiritual conscience & ethics"], required: true, order: 2, section: "specialized" },
+      { id: "legal-community", fieldId: "communityElders", questionSetId: "legal-specific", text: "Are trusted elders (ሽማግሌዎች), spiritual mentors, or family mediators available to participate?", type: "select", options: ["Yes, elders and mediators are available", "Seeking elder or spiritual guidance first", "Exploring personal spiritual reflection"], required: true, order: 3, section: "specialized" },
+      { id: "legal-reflection", fieldId: "reflectionLens", questionSetId: "legal-specific", text: "Confirm cultural and spiritual reflection (no scientific or formal statutory advice):", type: "select", options: ["Yes, I understand this is cultural and spiritual reflection only"], required: true, order: 4, section: "specialized" },
     ],
   },
   {
@@ -326,7 +326,8 @@ export function processSession(sessionId: string) {
   const selectedCase = getCase(session.caseId); if (!selectedCase) return undefined;
   const interest = String(session.answers.selectedInterest || selectedCase.interests[0]);
   const challenge = String(session.answers.challenge || "your selected challenge");
-  const reflection = String(session.answers.reflectionLens || "").toLowerCase().includes("yes");
+  const reflectionOnlyDomain = selectedCase.id === "money" || selectedCase.id === "career" || selectedCase.id === "legal";
+  const reflection = reflectionOnlyDomain || String(session.answers.reflectionLens || "").toLowerCase().includes("yes");
   const query = [challenge, session.answers.detail, session.answers.medications, session.answers.barrier, session.answers.support].filter(Boolean).join(" ");
   session.workflowContext = buildWorkflowContext(selectedCase.id, query, reflection);
   session.profileSynthesis = buildProfileSynthesisFromSession(session);
@@ -334,7 +335,30 @@ export function processSession(sessionId: string) {
     causes?: Array<{ name: string; probability: number; evidence: string; domain: string; culturalContext?: ReportCulturalContext }>;
     solutions?: Array<{ id: string; title: string; description: string; priority?: string; sourceRef?: string; culturalContext?: ReportCulturalContext }>;
   } | undefined;
-  if (diagnosticAssessment?.causes?.length) {
+  if (reflectionOnlyDomain) {
+    const reflections = diagnosticAssessment?.causes?.filter((cause) =>
+      /^(cultural|astrological|domain b)$/i.test(cause.domain),
+    ) ?? [];
+    session.causes = reflections.length
+      ? reflections.map((cause, index) => ({
+        id: `${selectedCase.id}-reflection-${index + 1}`,
+        description: cause.name,
+        confidence: Math.min(cause.probability / 100, 0.6),
+        evidence: [cause.evidence, `Reflective knowledge strand: ${cause.domain}`],
+        category: "cultural_reflection",
+        isSelected: true,
+        relatedCauses: [],
+      }))
+      : [{
+        id: `${selectedCase.id}-reflection`,
+        description: "Cultural and spiritual reflection was requested; no cause or prediction is inferred.",
+        confidence: 1,
+        evidence: ["Legal, career, and finance cases are restricted to cultural and spiritual reflection; no scientific advice is provided."],
+        category: "cultural_reflection",
+        isSelected: true,
+        relatedCauses: [],
+      }];
+  } else if (diagnosticAssessment?.causes?.length) {
     const evidenceBasedCauses = diagnosticAssessment.causes.filter((cause) =>
       !/^(cultural|astrological|domain b)$/i.test(cause.domain) &&
       !/^(afere\b|.*d[äa]bt[äa]ra.*healing scroll)/i.test(cause.name),
@@ -358,7 +382,23 @@ export function processSession(sessionId: string) {
       session.causes.unshift({ id: `${selectedCase.id}-safety`, description: "The case includes a potential emergency signal requiring immediate in-person care.", confidence: 1, evidence: session.workflowContext.safety.matchedSignals, category: "safety", isSelected: true, relatedCauses: [] });
     }
   }
-  if (diagnosticAssessment?.solutions?.length) {
+  if (reflectionOnlyDomain) {
+    const reflectiveSolutions = diagnosticAssessment?.solutions?.filter((solution) =>
+      Boolean(solution.culturalContext),
+    ) ?? [];
+    session.solutions = reflectiveSolutions.length
+      ? reflectiveSolutions.map((solution, index) => ({
+        id: solution.id || `${selectedCase.id}-reflection-${index + 1}`,
+        title: solution.title,
+        section: "holistic" as const,
+        description: solution.description,
+        steps: ["Consider whether this cultural or spiritual reflection resonates with your own values.", "Treat it as reflection, not an instruction or a prediction."],
+        confidence: 0.5,
+        basedOnCauses: session.causes.map((cause) => cause.id),
+        knowledgeReferences: solution.sourceRef ? [solution.sourceRef] : ["Cultural and astrological knowledge strands"],
+      }))
+      : buildReflectiveOnlySolutions(selectedCase, session.causes);
+  } else if (diagnosticAssessment?.solutions?.length) {
     session.solutions = diagnosticAssessment.solutions.map((solution, index) => ({
       id: solution.id || `${selectedCase.id}-diagnostic-solution-${index + 1}`,
       title: solution.title,
@@ -381,6 +421,9 @@ export function confirmReport(sessionId: string, confirmed: boolean) {
 }
 function buildSolutions(session: CaseSession): Solution[] {
   const selectedCase = getCase(session.caseId); if (!selectedCase) return [];
+  if (selectedCase.id === "money" || selectedCase.id === "career" || selectedCase.id === "legal") {
+    return buildReflectiveOnlySolutions(selectedCase, session.causes);
+  }
   const interest = String(session.answers.selectedInterest || selectedCase.interests[0]);
   const detail = String(session.answers.detail || "your stated situation");
   const reflection = (session.workflowContext?.domainB.length || 0) > 0;
@@ -390,6 +433,19 @@ function buildSolutions(session: CaseSession): Solution[] {
     { id: `${selectedCase.id}-short-term`, title: `Build a ${interest} plan`, section: "shortTerm", description: `Use a seven-day experiment to test the most practical path for ${interest}.`, steps: ["Set one measurable weekly target", "Review the result with a trusted person or qualified professional where appropriate"], confidence: 0.25, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [], interestMatch: interest },
     { id: `${selectedCase.id}-holistic`, title: "Holistic reflection and support", section: "holistic", description: `Connect the plan to your relationships, environment, routines, and values.${layer}`, steps: ["Name the people, place, or practice that supports this goal", "Revisit the plan after new information or changing circumstances"], confidence: 0.25, basedOnCauses: session.causes.filter((cause) => cause.isSelected).map((cause) => cause.id), knowledgeReferences: [], interestMatch: interest },
   ];
+}
+
+function buildReflectiveOnlySolutions(selectedCase: CaseDefinition, causes: Cause[]): Solution[] {
+  return [{
+    id: `${selectedCase.id}-cultural-reflection`,
+    title: "Spiritual and cultural reflection",
+    section: "holistic",
+    description: "Use the traditions shown here as optional prompts for reflection on customary reconciliation (ሽምግልና), spiritual peacemaking, values, and community harmony. No legal, financial, career, scientific, or causal instruction is provided.",
+    steps: ["Consider whether the reflection resonates with your own beliefs and experience.", "You may adapt or disregard any reflection that does not feel appropriate."],
+    confidence: 0.5,
+    basedOnCauses: causes.filter((cause) => cause.isSelected).map((cause) => cause.id),
+    knowledgeReferences: ["Cultural and astrological knowledge strands"],
+  }];
 }
 export function refineCauses(sessionId: string, selectedCauseIds: string[]) {
   const session = sessions.get(sessionId); if (!session) return undefined;

@@ -87,10 +87,10 @@ const CAREER_ELEMENTS: Record<number, { english: string; amharic: string; luckyD
   2: { english: "Water — Collaboration & Flow", amharic: "ውሃ — ትብብርና ፍሰት", luckyDays: ["Tuesday", "Friday"], avoidDays: ["Sunday"], luckyColors: ["Blue", "Silver", "White"] },
   3: { english: "Earth — Stability & Foundation", amharic: "መሬት — ጸጋና መሠረት", luckyDays: ["Thursday", "Saturday"], avoidDays: ["Monday"], luckyColors: ["Green", "Brown", "Yellow"] },
   4: { english: "Wind — Communication & Networks", amharic: "ነፋስ — ግንኙነትና አውታሮች", luckyDays: ["Wednesday", "Sunday"], avoidDays: ["Friday"], luckyColors: ["Purple", "Teal", "Grey"] },
-  5: { english: "Metal — Precision & Contracts", amharic: "ብረት — ትክክለኛነትና ውሎች", luckyDays: ["Tuesday", "Thursday"], avoidDays: ["Wednesday"], luckyColors: ["Silver", "Black", "Navy"] },
+  5: { english: "Metal — Reflection & Discernment", amharic: "ብረት — ነጸብራቅና ማስተዋል", luckyDays: ["Tuesday", "Thursday"], avoidDays: ["Wednesday"], luckyColors: ["Silver", "Black", "Navy"] },
   6: { english: "Light — Vision & Innovation", amharic: "ብርሃን — ራዕይና ፈጠራ", luckyDays: ["Monday", "Friday"], avoidDays: ["Tuesday"], luckyColors: ["Gold", "White", "Cream"] },
   7: { english: "Spirit — Wisdom & Discernment", amharic: "መንፈስ — ጥበብና ማስተዋል", luckyDays: ["Sunday", "Thursday"], avoidDays: ["Saturday"], luckyColors: ["Indigo", "Violet", "White"] },
-  8: { english: "Thunder — Authority & Expansion", amharic: "ነጎድጓድ — ስልጣንና ማስፋፋት", luckyDays: ["Saturday", "Monday"], avoidDays: ["Thursday"], luckyColors: ["Black", "Gold", "Red"] },
+  8: { english: "Thunder — Voice & Transformation", amharic: "ነጎድጓድ — ድምፅና ለውጥ", luckyDays: ["Saturday", "Monday"], avoidDays: ["Thursday"], luckyColors: ["Black", "Gold", "Red"] },
   9: { english: "Rainbow — Completion & Legacy", amharic: "ቀስተ ደመና — ፍጻሜና ቅርስ", luckyDays: ["Friday", "Sunday"], avoidDays: ["Tuesday"], luckyColors: ["Multicolor", "White", "Gold"] },
   10: { english: "Moon — Intuition & Cycles", amharic: "ጨረቃ — ስሜትና ዑደቶች", luckyDays: ["Monday", "Tuesday"], avoidDays: ["Friday"], luckyColors: ["Silver", "White", "Pearl"] },
   11: { english: "Sun — Purpose & Vitality", amharic: "ፀሐይ — ዓላማና ህይወት", luckyDays: ["Wednesday", "Thursday"], avoidDays: ["Monday"], luckyColors: ["Yellow", "Orange", "Gold"] },
@@ -146,7 +146,7 @@ export function calculateCareerNumerology(profile: CareerProfile): CareerNumerol
   const elementKey = lifePathNumber;
   const element = CAREER_ELEMENTS[elementKey] ?? CAREER_ELEMENTS[1];
 
-  const narrativeSummary = buildCareerNarrative(profile, lifePathNumber, businessNumber, element.english);
+  const narrativeSummary = buildCareerNarrative(lifePathNumber, businessNumber, element.english);
 
   return {
     nameSum,
@@ -164,41 +164,11 @@ export function calculateCareerNumerology(profile: CareerProfile): CareerNumerol
 }
 
 function buildCareerNarrative(
-  profile: CareerProfile,
   lifePathNumber: number,
   businessNumber: number,
   element: string
 ): string {
-  const stage = profile.careerStage.replace(/_/g, " ");
-  const parts: string[] = [
-    `Your Ge'ez name carries a life-path number of ${lifePathNumber} — aligned with the energy of ${element}.`,
-    `Your business number is ${businessNumber}, which governs how others perceive your professional presence and capacity for partnership.`,
-    `For someone in the "${stage}" stage, your element provides ${getElementStrength(lifePathNumber, profile.careerStage)} energy. `,
-  ];
-
-  if (profile.hasExistingBusiness) {
-    parts.push(
-      `Since you are operating an existing ${profile.businessType.replace(/_/g, " ")}, ` +
-      `the timing window analysis focuses on expansion, renewal, and consolidation cycles.`
-    );
-  } else {
-    parts.push(
-      `As you prepare to enter the professional or entrepreneurial arena, ` +
-      `your timing window analysis focuses on launch, establishment, and early-growth cycles.`
-    );
-  }
-
-  return parts.join(" ");
-}
-
-function getElementStrength(lifePathNumber: number, stage: CareerStage): string {
-  const map: Partial<Record<CareerStage, Record<number, string>>> = {
-    starting_business: { 1: "very high", 3: "high", 8: "very high", 5: "high" },
-    scaling: { 8: "very high", 11: "high", 4: "high", 6: "high" },
-    recovering: { 2: "supportive", 10: "supportive", 9: "restorative" },
-    transitioning: { 9: "very high", 7: "high", 12: "high" },
-  };
-  return map[stage]?.[lifePathNumber] ?? "moderate";
+  return `In this Ge'ez numerology tradition, the number ${lifePathNumber} and the ${element} association are symbolic cultural interpretations. The number ${businessNumber} is another traditional association. Meanings differ between practitioners; these associations do not measure ability, determine career suitability, or predict outcomes.`;
 }
 
 // ════════════════════════════════════════════════════════════

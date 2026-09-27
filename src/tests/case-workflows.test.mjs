@@ -74,6 +74,13 @@ test("every domain runs the full pipeline: intake → review → approval → pa
     assert.equal(approved.review.expert.name, "Test Expert");
     assert.ok(approved.report, `${domain} report visible after approval`);
     assert.ok(approved.report.sections.every((section) => !section.locked || (!section.body && !section.items)), `${domain} locked content withheld`);
+    if (domain === "career") {
+      assert.deepEqual(approved.report.recommendations, []);
+      assert.equal(approved.report.aiAssisted, false);
+      assert.match(approved.report.disclaimer, /Spiritual and cultural reflection only/);
+      assert.doesNotMatch(JSON.stringify(approved.report), /practical next steps|strategic recommendations|capital allocation|investment advice/i);
+      assert.ok(approved.report.sections.some((section) => section.id === "ethiopian_cultural_context"));
+    }
 
     const purchase = await svc.purchase(owner, approved.id, "telebirr");
     assert.equal(purchase.amountEtb, DOMAIN_CONFIGS[domain].pricing.reportEtb);

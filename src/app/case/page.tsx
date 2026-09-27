@@ -1348,7 +1348,7 @@ export default function CasePage() {
                       {/* FLAGSHIP 3: LEGAL & DISPUTE GUIDANCE */}
                       <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-purple-950/70 via-stone-900/90 to-black border-2 border-purple-500/60 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-purple-400 to-purple-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
-                          ✨ Flagship 3 · Confidential Triage
+                          ✨ Flagship 3 · Customary Peacemaking & Shimgelna
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                           <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -1359,17 +1359,20 @@ export default function CasePage() {
                               Legal & Dispute Guidance (የሕግና ክርክር ምክር)
                             </h2>
                             <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
-                              Urgent safety screen, eviction & tenancy protection, contract disputes, family mediation, and roadmap review by licensed Ethiopian attorneys.
+                              Rooted entirely in Ethiopian customary reconciliation (ሽምግልና / Shemgelna), spiritual peacemaking, and traditional restorative justice. Provides cultural and spiritual wisdom for dispute resolution, family harmony, and conscience guidance — with no scientific or statutory advice.
                             </p>
                             <div className="flex flex-wrap gap-1.5 pt-2">
                               <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
-                                Safety Triage Screen
+                                Customary Peacemaking (ሽምግልና)
                               </span>
                               <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
-                                Eviction & Dispute Strategy
+                                Spiritual Conscience & Ethics
                               </span>
                               <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
-                                Licensed Attorney Review
+                                Restorative Community Wisdom
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                                Cultural & Spiritual Only · No Scientific Advice
                               </span>
                             </div>
                           </div>

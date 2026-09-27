@@ -89,6 +89,22 @@ export class CulturalKnowledgeStrand implements KnowledgeStrand {
       aliases: ["family", "elder", "clan", "marriage", "funeral", "birth rite", "mourning", "community"],
     },
     {
+      title: "Iqub (እቁብ) and Community Reciprocity",
+      description: "Iqub is a community association built around mutual trust, agreed participation, reciprocity, and shared responsibility. Its cultural significance can be explored without making decisions about money or participation.",
+      practices: ["Community-defined participation", "Reciprocity and mutual recognition", "Trust, consent, and shared responsibility"],
+      advice: ["Reflect on how community, trust, and reciprocity shape your sense of belonging and responsibility; this is cultural reflection, not financial guidance."],
+      context: "Iqub practices and meanings vary across communities and groups.",
+      aliases: ["iqub", "equb", "community savings", "rotating savings"],
+    },
+    {
+      title: "Vocation, Work, and Communal Values",
+      description: "Work and vocation may be understood through service, responsibility, craftsmanship, family identity, and contribution to community life.",
+      practices: ["Reflecting on meaningful work", "Learning and mentorship across generations", "Balancing personal purpose with community values"],
+      advice: ["Use these themes as optional prompts for personal reflection; they do not predict career outcomes or prescribe a career choice."],
+      context: "Ideas about vocation and work differ across Ethiopian communities, faiths, and personal traditions.",
+      aliases: ["vocation", "meaningful work", "career purpose", "craftsmanship", "mentorship"],
+    },
+    {
       title: "Ethiopian Festivals and health",
       description: "Enkutatash, Timkat, Fasika, Meskel, Irreecha, Eid, and other celebrations combine food, worship, travel, family, and community.",
       practices: ["Family and community gatherings", "Fasting and feast transitions", "Water and outdoor ceremonies", "Coffee, shared meals, singing, and prayer"],

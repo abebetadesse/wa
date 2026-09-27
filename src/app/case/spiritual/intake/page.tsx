@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 const sequence = [
-  { id: "01", title: "Name & Gematria", detail: "Enter the names that carry your lineage and vibration.", icon: "✦" },
-  { id: "02", title: "Adaptive Inquiry", detail: "Answer living questions that respond to your situation.", icon: "✎" },
-  { id: "03", title: "Divination Reveal", detail: "Receive a constellation-aware arc of guidance.", icon: "☼" },
+  { id: "01", title: "Name & context", detail: "Enter a Ge'ez name and optional birth context for a symbolic calculation.", icon: "✦" },
+  { id: "02", title: "Adaptive inquiry", detail: "Choose a focus and answer questions relevant to your situation.", icon: "✎" },
+  { id: "03", title: "Cultural reading", detail: "Review the name-based calculation as optional cultural reflection.", icon: "☼" },
+  { id: "04", title: "Draft processing", detail: "Screen for urgent safety needs and prepare a clearly labeled draft.", icon: "⌁" },
+  { id: "05", title: "Reading preview", detail: "Review the reflection generated from your submitted answers.", icon: "◇" },
 ];
 
 const livingSignals = [
@@ -55,8 +57,8 @@ export default function SpiritualIntakeLandingPage() {
                     Sacred Intake
                   </h1>
                   <p className="max-w-2xl text-sm leading-7 text-stone-300">
-                    Enter your name, lineage, and living situation in a guided flow that translates vibration,
-                    family memory, and present direction into a coherent spiritual care path.
+                    Share only what you choose in a five-step flow. Name calculations are symbolic cultural reflection;
+                    the reading does not predict outcomes or replace qualified professional support.
                   </p>
                 </div>
 
@@ -90,7 +92,7 @@ export default function SpiritualIntakeLandingPage() {
               <div className="flex items-center justify-between border-b border-stone-800 pb-4">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-300">Reading Protocol</div>
-                  <div className="mt-2 text-xs text-stone-500">01 / 03</div>
+                  <div className="mt-2 text-xs text-stone-500">01 / 05</div>
                 </div>
                 <span className="rounded-full border border-emerald-500/50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-300">
                   Secure

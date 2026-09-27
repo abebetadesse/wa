@@ -52,10 +52,10 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
       meetingLink: format === "in_person" ? undefined : `https://meet.Debtera.com/c/${crypto.randomUUID().slice(0, 8)}`,
       preparationNotes: [
-        "Review your timing window analysis before the session.",
-        "Write down your top 3 questions for the advisor.",
-        "Have any relevant documents (business plan, job offer, contract) ready to share.",
-        "The session will be 30 minutes — come with clarity on your most urgent priority.",
+        "Consider which spiritual or cultural traditions you would like the reflection to respect.",
+        "You may note themes of identity, community, vocation, or meaning that you want to explore.",
+        "Share only information you are comfortable discussing.",
+        "The session is limited to spiritual and cultural reflection, not practical career or financial advice.",
       ],
     };
 

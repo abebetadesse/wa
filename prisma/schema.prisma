@@ -1,0 +1,127 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  PROFESSIONAL
+  ADMIN
+}
+
+enum CaseStatus {
+  SUBMITTED
+  EVALUATING
+  PENDING_PROFESSIONAL
+  PROFESSIONAL_RETURNED
+  PENDING_ADMIN
+  APPROVED
+  PUBLISHED
+  BLOCKED_BY_SAFETY_GATE
+}
+
+enum ReportKind {
+  USER
+  PROFESSIONAL
+}
+
+model User {
+  id            String   @id @default(cuid())
+  role          Role     @default(USER)
+  locale        String   @default("am")
+  consent       Json?
+  profile       Profile?
+  cases         Case[]
+  createdAt     DateTime @default(now())
+}
+
+model Profile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ageBand           String
+  sex               String
+  pregnancyStatus   String?
+  chronicConditions String[]
+  currentMeds       Json     // MedEntry[] free text + normalized
+  allergies         String[]
+  traditionalUse    Json     // HerbEntry[] what they already take
+  diet              Json     // DietPattern
+  substanceUse      Json     // SubstanceUse
+  location          Json     // LocationContext snapshot
+  spiritualContext  String?  // optional, user-controlled
+  culturalContext   String?  // optional, user-controlled
+  submittedAt       DateTime
+  preliminaryAnalysis PreliminaryAnalysis?
+  cases             Case[]
+}
+
+model PreliminaryAnalysis {
+  id           String   @id @default(cuid())
+  profileId    String   @unique
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  locationCtx  Json
+  sections     Json     // Section 7 schema
+  confidence   String
+  generatedAt  DateTime
+}
+
+model Case {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId     String
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  narrative     String
+  symptoms      Json
+  duration      String
+  selfTreatments Json
+  attachments   String[]
+  status        CaseStatus @default(SUBMITTED)
+  submittedAt   DateTime
+  reports       Report[]
+  assignments   Assignment[]
+  events        CaseEvent[]
+}
+
+model Assignment {
+  id             String   @id @default(cuid())
+  caseId         String
+  case           Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  professionalId String
+  assignedAt     DateTime @default(now())
+}
+
+model Report {
+  id            String   @id @default(cuid())
+  caseId        String
+  case          Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  kind          ReportKind
+  version       Int
+  payload       Json
+  safetyGate    Json?
+  confidence    String
+  provenance    Json
+  authoredBy    String?
+  approvedBy    String?
+  approvedAt    DateTime?
+  publishedAt   DateTime?
+  supersededBy  String?
+}
+
+model CaseEvent {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actorId   String
+  actorRole Role
+  type      String   // submitted | evaluated | edited | approved | returned | published | gate_blocked | gate_overridden
+  before    Json?
+  after     Json?
+  note      String?
+  at        DateTime @default(now())
+}
