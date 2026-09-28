@@ -13,3 +13,4 @@ export * from "./hexacore";
 export * from "./caseEvaluationPipeline";
 // Enhancement tables (bio-narratives, case summary cards, publishing criteria)
 // are exported from users.ts above
+export * from "./marketplace";

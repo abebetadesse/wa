@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthSecret } from "@/lib/auth/secret";
 
 const PUBLIC_API_PATHS = [
+  // Marketplace browsing is public; booking and messaging routes require sign-in themselves.
+  "/api/marketplace/",
   "/api/auth/",
   "/api/case/",
   "/api/cases",
@@ -20,6 +22,8 @@ const PUBLIC_API_PATHS = [
 
 const PUBLIC_PAGE_PATHS = [
   "/",
+  "/marketplace",
+  "/b",
   "/auth",
   "/emergency",
   "/safety",
