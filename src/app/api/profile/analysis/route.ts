@@ -34,7 +34,18 @@ export async function GET(req: Request) {
 
     let analysis = await pipelineRepository.getPreliminaryAnalysisByProfileId(profile.id);
     if (!analysis) {
-      analysis = await evaluateProfile(profile);
+      analysis = await evaluateProfile({
+        ...profile,
+        diet: {
+          pattern: profile.diet?.primaryStaple,
+          restrictions: [profile.diet?.fastingSchedule, profile.diet?.meatDairyFrequency].filter((value): value is string => Boolean(value)),
+        },
+        substanceUse: {
+          coffeeCupsDaily: profile.substanceUse?.coffeeDailyCups,
+          khat: profile.substanceUse?.khatFrequency ? profile.substanceUse.khatFrequency !== "never" : undefined,
+          alcohol: profile.substanceUse?.alcoholFrequency,
+        },
+      });
       await pipelineRepository.savePreliminaryAnalysis(profile.id, analysis);
     }
 

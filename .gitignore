@@ -11,3 +11,7 @@ next-env.d.ts
 
 # Large files - keep locally but don't track in git
 *.pdf
+
+# Local runtime caches (contain personal case data)
+.cases_cache/
+push_debug.log
