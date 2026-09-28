@@ -14,6 +14,8 @@ import {
 import { logAuditEvent, logLoginAttempt, logUserActivity } from "@/lib/audit";
 import { ApiError } from "@/lib/api/route";
 import { createOtpCode, createSecretToken, deliverCode, digest } from "./codes";
+import { resolveAndPersistLocationOnRegistration } from "@/lib/location/resolveOnRegistration";
+
 
 export const MAX_LOGIN_ATTEMPTS = 5;
 export const LOCKOUT_MINUTES = 15;
@@ -138,7 +140,13 @@ export interface RegisterInput {
   gender?: string;
   region?: string;
   city?: string;
+  // Enhancement — location resolution fields
+  geoLat?: number;
+  geoLng?: number;
+  consentLocation?: boolean;
+  birthLocation?: string;
 }
+
 
 async function issueVerification(user: { id: string; email: string }) {
   const token = createSecretToken();
@@ -207,6 +215,18 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     activityType: "registration",
     description: "Created new wellbeing account",
     metadata: { preferredLanguage: input.preferredLanguage, region: input.region },
+  });
+
+  // Fire location resolution immediately after account creation (non-blocking).
+  // Failure here is caught inside resolveAndPersistLocationOnRegistration and
+  // does NOT abort the registration response.
+  resolveAndPersistLocationOnRegistration({
+    userId: created.id,
+    geoLat: input.geoLat,
+    geoLng: input.geoLng,
+    consentLocation: input.consentLocation ?? false,
+    region: input.region,
+    birthLocation: input.birthLocation,
   });
 
   return {

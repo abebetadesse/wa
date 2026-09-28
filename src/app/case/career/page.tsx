@@ -12,6 +12,7 @@ import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
 import { useDynamicFollowUps } from "@/hooks/useDynamicFollowUps";
 import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaPreview";
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
+import VoiceCaptureConsent from "@/components/case/VoiceCaptureConsent";
 
 // ════════════════════════════════════════════════════════════
 // Types
@@ -106,7 +107,7 @@ export default function CareerCasePage() {
   const gematriaLive = useLiveGematria(geezName, motherGeezName);
 
   // Voice input for Ge'ez names
-  const { isListening, startListening, stopListening, error: voiceError } = useGeezVoiceInput((text) => {
+  const { isListening, startListening, stopListening, error: voiceError, consentPending, acceptVoiceConsent, declineVoiceConsent } = useGeezVoiceInput((text) => {
     const clean = text.trim();
     if (!clean) return;
     if (activeNameInput === "name") setGeezName(clean);
@@ -564,6 +565,7 @@ export default function CareerCasePage() {
               </button>
             </div>
 
+            {consentPending && <VoiceCaptureConsent onAccept={acceptVoiceConsent} onDecline={declineVoiceConsent} />}
             {voiceError && (
               <div className="text-xs text-amber-400 text-center">{voiceError}</div>
             )}

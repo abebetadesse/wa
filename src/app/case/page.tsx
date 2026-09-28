@@ -13,7 +13,17 @@ import { EthiopianLocationInput } from "@/components/location/EthiopianLocationI
 import { estimateAgroEcology } from "@/lib/location/ethiopianPlacesSearch";
 
 type Answers = Record<string, unknown>;
-type Phase = "domain" | "challenge" | "specific" | "report" | "causes" | "solutions" | "complete";
+type Phase = "domain" | "challenge" | "specific" | "endorsement" | "report" | "causes" | "solutions" | "complete";
+type SummaryReviewCard = {
+  id: string;
+  headline: string;
+  domain: string;
+  subDomain: string;
+  userIntention: string;
+  keySymptoms: string[];
+  urgencyFlag: "none" | "watch" | "urgent" | "emergency";
+  suggestedStrandDetails: Array<{ strand: string; tier: "biomedical" | "evidence-informed" | "traditional" | "cultural"; rationale: string }>;
+};
 type VoiceRecognition = {
   start: () => void;
   stop: () => void;
@@ -83,6 +93,7 @@ const PHASE_LABELS: Record<Phase, string> = {
   domain: "Choose care path",
   challenge: "Select the challenge",
   specific: "Your case story",
+  endorsement: "Confirm your summary",
   report: "Review the guidance",
   causes: "Refine the findings",
   solutions: "Choose practical actions",
@@ -93,6 +104,7 @@ const PHASE_ICONS: Record<Phase, string> = {
   domain: "📋",
   challenge: "🎯",
   specific: "✍️",
+  endorsement: "✓",
   report: "📄",
   causes: "🔍",
   solutions: "💡",
@@ -128,6 +140,7 @@ export default function CasePage() {
   const [diagnosticLoading, setDiagnosticLoading] = useState(false);
   const [intakeLoading, setIntakeLoading] = useState(false);
   const [intakeResult, setIntakeResult] = useState<{ reportId?: string; message?: string } | null>(null);
+  const [summaryReview, setSummaryReview] = useState<SummaryReviewCard | null>(null);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [draftAvailable, setDraftAvailable] = useState(false);
   const [draftNeedsReanalysis, setDraftNeedsReanalysis] = useState(false);
@@ -622,6 +635,54 @@ export default function CasePage() {
     setIsSubmitting(true);
     setError("");
     try {
+      const narrative = [
+        String(answers.challenge || ""),
+        String(answers.detail || ""),
+        String(answers.medications || ""),
+      ].filter(Boolean).join("\n");
+      const summaryResponse = await fetch("/api/case/summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          narrative,
+          preferredLanguage: String(profileContext.preferredLanguage || "en").startsWith("am") ? "am" : "en",
+          inputMode: "text",
+        }),
+      });
+      const summaryPayload = await summaryResponse.json();
+      if (!summaryResponse.ok || !summaryPayload.success) {
+        throw new Error(summaryPayload.error || "Unable to prepare your case summary.");
+      }
+      if (summaryPayload.data.isCrisis) {
+        window.location.assign(summaryPayload.data.emergencyRoute || "/emergency");
+        return;
+      }
+      setSummaryReview(summaryPayload.data.card as SummaryReviewCard);
+      setPhase("endorsement");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to prepare the case summary.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function endorseSummaryAndContinue() {
+    if (!session || !summaryReview) return;
+    setIsSubmitting(true);
+    setError("");
+    try {
+      const endorsementResponse = await fetch(`/api/case/summary/${summaryReview.id}/endorse`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ confirmed: true }),
+      });
+      const endorsementPayload = await endorsementResponse.json();
+      if (!endorsementResponse.ok || !endorsementPayload.success) {
+        throw new Error(endorsementPayload.error || "Please review the summary before continuing.");
+      }
+
       const latestDiagnostic = await requestEmbeddedDiagnostic(buildCaseAnalysisQuery(selectedCase, answers));
       setDiagnosticResult(latestDiagnostic);
       const mergedAnswers = { ...answers, diagnosticAssessment: latestDiagnostic };
@@ -636,7 +697,7 @@ export default function CasePage() {
       setPhase("report");
       setDraftNeedsReanalysis(false);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Unable to prepare the report.");
+      setError(caught instanceof Error ? caught.message : "Unable to confirm the summary and prepare the report.");
     } finally {
       setIsSubmitting(false);
     }
@@ -1927,6 +1988,71 @@ export default function CasePage() {
 
             <div className="xl:pt-1">
               {renderAiPanel()}
+            </div>
+          </section>
+        )}
+
+        {phase === "endorsement" && summaryReview && (
+          <section className="mx-auto max-w-4xl space-y-5" aria-labelledby="case-summary-review-heading">
+            <div className="glass-panel border border-emerald-500/25 p-6 md:p-8">
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">Review before analysis</p>
+              <h2 id="case-summary-review-heading" className="mt-2 text-2xl font-bold text-white">{summaryReview.headline}</h2>
+              <p className="mt-2 text-sm text-slate-300">
+                {summaryReview.userIntention} · {summaryReview.domain}{summaryReview.subDomain !== "general" ? ` / ${summaryReview.subDomain.replaceAll("_", " ")}` : ""}
+              </p>
+              {summaryReview.keySymptoms.length > 0 && (
+                <div className="mt-5">
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Key points recognized</h3>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {summaryReview.keySymptoms.map((item) => (
+                      <li key={item} className="rounded-md border border-white/10 bg-black/20 px-3 py-1.5 text-xs text-slate-200">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {summaryReview.urgencyFlag !== "none" && (
+                <p className={`mt-4 rounded-md border p-3 text-sm ${summaryReview.urgencyFlag === "emergency" ? "border-rose-500/40 bg-rose-950/30 text-rose-100" : "border-amber-500/30 bg-amber-950/20 text-amber-100"}`} role="status">
+                  Priority detected: {summaryReview.urgencyFlag}. This flag is a routing signal, not a diagnosis.
+                </p>
+              )}
+            </div>
+
+            <div className="glass-panel border border-sky-500/20 p-6">
+              <h3 className="text-sm font-semibold text-white">Knowledge types considered</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                These sources are not equivalent. Biomedical evidence has the strongest clinical grounding; cultural and spiritual material is reflective and does not establish medical facts.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {(["biomedical", "evidence-informed", "traditional", "cultural"] as const).map((tier) => {
+                  const items = summaryReview.suggestedStrandDetails.filter((item) => item.tier === tier);
+                  if (items.length === 0) return null;
+                  const title = tier === "biomedical"
+                    ? "Biomedical and clinical evidence"
+                    : tier === "evidence-informed"
+                      ? "Evidence-informed context"
+                      : tier === "traditional"
+                        ? "Traditional knowledge"
+                        : "Cultural and spiritual reflection";
+                  const tone = tier === "biomedical" ? "border-emerald-500/30" : tier === "evidence-informed" ? "border-sky-500/30" : tier === "traditional" ? "border-amber-500/30" : "border-rose-500/25";
+                  return (
+                    <section key={tier} className={`rounded-lg border ${tone} bg-black/15 p-4`}>
+                      <h4 className="text-sm font-semibold text-white">{title}</h4>
+                      <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
+                        {items.map((item) => <li key={item.strand}>{item.rationale}</li>)}
+                      </ul>
+                    </section>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button type="button" className="btn-primary" onClick={() => void endorseSummaryAndContinue()} disabled={isSubmitting}>
+                {isSubmitting ? "Preparing report…" : "Confirm summary and continue"}
+              </button>
+              <button type="button" className="btn-secondary" onClick={() => { setSummaryReview(null); setPhase("specific"); }} disabled={isSubmitting}>
+                Edit case details
+              </button>
             </div>
           </section>
         )}

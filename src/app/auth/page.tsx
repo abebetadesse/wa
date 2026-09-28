@@ -22,6 +22,7 @@ import {
   Briefcase,
   Sparkles,
   Compass,
+  MapPin,
 } from "lucide-react";
 import { notifyAuthStateChanged } from "@/lib/auth/clientEvents";
 
@@ -95,6 +96,42 @@ function AuthPageInner() {
   const [verificationCode, setVerificationCode] = useState("");
   const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
   const [demoCodeNotice, setDemoCodeNotice] = useState<string | null>(null);
+  // Location consent & geolocation coordinates
+  const [consentLocation, setConsentLocation] = useState(false);
+  const [geoLat, setGeoLat] = useState<number | null>(null);
+  const [geoLng, setGeoLng] = useState<number | null>(null);
+  const [locationDetecting, setLocationDetecting] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<"idle" | "detecting" | "detected" | "denied">("idle");
+
+  const handleLocationConsent = (checked: boolean) => {
+    setConsentLocation(checked);
+    if (checked) {
+      if (typeof window !== "undefined" && "geolocation" in navigator) {
+        setLocationDetecting(true);
+        setLocationStatus("detecting");
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setGeoLat(pos.coords.latitude);
+            setGeoLng(pos.coords.longitude);
+            setLocationDetecting(false);
+            setLocationStatus("detected");
+          },
+          (err) => {
+            console.warn("Geolocation permission denied or failed:", err);
+            setLocationDetecting(false);
+            setLocationStatus("denied");
+          },
+          { timeout: 10000, enableHighAccuracy: true }
+        );
+      } else {
+        setLocationStatus("denied");
+      }
+    } else {
+      setGeoLat(null);
+      setGeoLng(null);
+      setLocationStatus("idle");
+    }
+  };
 
   // Forgot Password
   const [forgotEmail, setForgotEmail] = useState("");
@@ -201,6 +238,9 @@ function AuthPageInner() {
           preferredLanguage: regLanguage,
           region: regRegion,
           gender: regGender,
+          consentLocation,
+          geoLat: geoLat ?? undefined,
+          geoLng: geoLng ?? undefined,
           acceptTerms,
           acceptPrivacy: true,
         }),
@@ -825,6 +865,46 @@ function AuthPageInner() {
                         <option value="Gambela">Gambela (ጋምቤላ)</option>
                       </select>
                     </div>
+                  </div>
+                  {/* Location Context Consent Toggle */}
+                  <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={consentLocation}
+                        onChange={(e) => handleLocationConsent(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 rounded border-emerald-500/50 bg-black/40 text-emerald-500 focus:ring-emerald-500"
+                      />
+                      <div className="text-xs">
+                        <span className="font-semibold text-emerald-300 block">
+                          Allow Debtera to detect your current location to personalise your wellness context.
+                        </span>
+                        <span className="text-slate-400 block mt-0.5">
+                          Enables ecological, climate, altitude, and regional dietary adaptation tailored to where you live.
+                        </span>
+                      </div>
+                    </label>
+
+                    {consentLocation && (
+                      <div className="flex items-center gap-2 pt-1 pl-7 text-xs">
+                        <MapPin size={13} className="text-emerald-400" />
+                        {locationDetecting && (
+                          <span className="text-amber-300 animate-pulse">
+                            Detecting your GPS coordinates...
+                          </span>
+                        )}
+                        {!locationDetecting && locationStatus === "detected" && (
+                          <span className="text-emerald-300">
+                            Location detected ({geoLat?.toFixed(3)}, {geoLng?.toFixed(3)})
+                          </span>
+                        )}
+                        {!locationDetecting && locationStatus === "denied" && (
+                          <span className="text-amber-400">
+                            GPS unavailable or permission denied. We will use your selected region above.
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-3 pt-2">

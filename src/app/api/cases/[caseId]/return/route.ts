@@ -7,6 +7,11 @@ import { CaseStatus } from "@/lib/pipeline/types";
 
 const returnSchema = z.object({
   note: z.string().min(5, "A detailed explanation must be provided when returning a case"),
+  emergencyAck: z.object({
+    userNotifiedAt: z.string().datetime(),
+    notificationMethod: z.enum(["in-app", "email", "sms", "phone"]),
+    resourcesShared: z.array(z.string().min(1)).min(1),
+  }).optional(),
 });
 
 export async function POST(
@@ -42,6 +47,13 @@ export async function POST(
       );
     }
 
+    if (caseRecord.emergencyDetected && (session.role !== "ADMIN" || !parsed.emergencyAck)) {
+      return NextResponse.json(
+        { success: false, error: "An emergency-flagged case requires an administrator emergency acknowledgement before it can be returned." },
+        { status: 409 }
+      );
+    }
+
     const hasOverride = await pipelineRepository.hasSafetyGateOverride(caseId);
 
     let nextStatus: CaseStatus;
@@ -74,10 +86,14 @@ export async function POST(
       caseId,
       actorId: session.userId,
       actorRole: session.role,
-      type: "returned",
+      type: caseRecord.emergencyDetected ? "held" : "returned",
       before: { status: prevStatus },
-      after: { status: nextStatus },
-      note: `Case returned by ${session.role}: ${parsed.note}`,
+      after: caseRecord.emergencyDetected
+        ? { status: nextStatus, emergencyAcknowledged: true, ...parsed.emergencyAck }
+        : { status: nextStatus },
+      note: caseRecord.emergencyDetected
+        ? `Emergency-acknowledged return by ${session.role}: ${parsed.note}`
+        : `Case returned by ${session.role}: ${parsed.note}`,
     });
 
     return NextResponse.json(

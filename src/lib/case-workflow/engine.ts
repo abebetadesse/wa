@@ -358,6 +358,25 @@ export function processSession(sessionId: string) {
         isSelected: true,
         relatedCauses: [],
       }];
+    if (reflection) {
+      session.causes.push({
+        id: `${selectedCase.id}-reflection-preference`,
+        description: "You opted in to a separate cultural reflection layer.",
+        confidence: 1,
+        evidence: ["Selected cultural reflection during case intake."],
+        category: "preference",
+        isSelected: true,
+        relatedCauses: [],
+        culturalContext: {
+          layer: "Domain B",
+          status: "included",
+          strands: ["cultural"],
+          interpretation: "Cultural context was requested by the user; no specific tradition or belief has been inferred.",
+          practice: "Invite the user to name any practices or values they want considered.",
+          disclaimer: "This layer is reflective only and does not affect diagnosis, medication safety, or urgency.",
+        },
+      });
+    }
   } else if (diagnosticAssessment?.causes?.length) {
     const evidenceBasedCauses = diagnosticAssessment.causes.filter((cause) =>
       !/^(cultural|astrological|domain b)$/i.test(cause.domain) &&
@@ -421,10 +440,10 @@ export function confirmReport(sessionId: string, confirmed: boolean) {
 }
 function buildSolutions(session: CaseSession): Solution[] {
   const selectedCase = getCase(session.caseId); if (!selectedCase) return [];
-  if (selectedCase.id === "money" || selectedCase.id === "career" || selectedCase.id === "legal") {
-    return buildReflectiveOnlySolutions(selectedCase, session.causes);
-  }
   const interest = String(session.answers.selectedInterest || selectedCase.interests[0]);
+  if (selectedCase.id === "money" || selectedCase.id === "career" || selectedCase.id === "legal") {
+    return buildReflectiveOnlySolutions(selectedCase, session.causes, interest);
+  }
   const detail = String(session.answers.detail || "your stated situation");
   const reflection = (session.workflowContext?.domainB.length || 0) > 0;
   const layer = reflection ? " Include the requested Domain B reflection as a separate values and cultural perspective." : "";
@@ -435,7 +454,7 @@ function buildSolutions(session: CaseSession): Solution[] {
   ];
 }
 
-function buildReflectiveOnlySolutions(selectedCase: CaseDefinition, causes: Cause[]): Solution[] {
+function buildReflectiveOnlySolutions(selectedCase: CaseDefinition, causes: Cause[], interest?: string): Solution[] {
   return [{
     id: `${selectedCase.id}-cultural-reflection`,
     title: "Spiritual and cultural reflection",
@@ -445,6 +464,7 @@ function buildReflectiveOnlySolutions(selectedCase: CaseDefinition, causes: Caus
     confidence: 0.5,
     basedOnCauses: causes.filter((cause) => cause.isSelected).map((cause) => cause.id),
     knowledgeReferences: ["Cultural and astrological knowledge strands"],
+    interestMatch: interest,
   }];
 }
 export function refineCauses(sessionId: string, selectedCauseIds: string[]) {

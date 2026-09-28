@@ -51,7 +51,33 @@ type AccountProfile = {
   dateOfBirth: string;
   role: string;
   isVerified: boolean;
+  consent: {
+    location: boolean;
+    spiritual: boolean;
+    traditionalMedicine: boolean;
+    bioNarrative: boolean;
+    voiceIntake: boolean;
+    manuscriptKnowledge: boolean;
+  };
 };
+
+const DEFAULT_CONSENT: AccountProfile["consent"] = {
+  location: false,
+  spiritual: false,
+  traditionalMedicine: false,
+  bioNarrative: false,
+  voiceIntake: false,
+  manuscriptKnowledge: false,
+};
+
+const CONSENT_OPTIONS: Array<{ key: keyof AccountProfile["consent"]; label: string; detail: string }> = [
+  { key: "location", label: "Location context", detail: "Resolve and use regional context in reports." },
+  { key: "spiritual", label: "Cultural and spiritual reflection", detail: "Use cultural, lineage, numerology, and astrology content." },
+  { key: "traditionalMedicine", label: "Traditional medicine context", detail: "Include population-level regional medicine context; this is not a treatment recommendation." },
+  { key: "bioNarrative", label: "Bio-narrative generation", detail: "Allow generation of a personal profile report." },
+  { key: "voiceIntake", label: "Voice intake", detail: "Allow browser speech recognition for case intake; transcription may use a third-party service." },
+  { key: "manuscriptKnowledge", label: "Manuscript knowledge matching", detail: "Allow historical manuscript references in relevant reports." },
+];
 
 const PRESETS = [
   {
@@ -167,6 +193,7 @@ export default function ProfileClient() {
             city: payload.data.city || "",
             gender: payload.data.gender || "",
             dateOfBirth: payload.data.dateOfBirth || "",
+            consent: { ...DEFAULT_CONSENT, ...(payload.data.profile?.consent || {}) },
             role: payload.data.role || "user",
             isVerified: Boolean(payload.data.isVerified),
           });
@@ -201,6 +228,7 @@ export default function ProfileClient() {
           city: accountProfile.city,
           gender: accountProfile.gender,
           dateOfBirth: accountProfile.dateOfBirth,
+          consent: accountProfile.consent,
         }),
       });
       const payload = await response.json();
@@ -494,6 +522,28 @@ export default function ProfileClient() {
                   </select>
                 </label>
               </div>
+              <fieldset className="space-y-3 border-t border-white/10 pt-4">
+                <legend className="text-sm font-semibold text-white">Optional data and content permissions</legend>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {CONSENT_OPTIONS.map(({ key, label, detail }) => (
+                    <label key={key} className="flex items-start gap-3 rounded-lg border border-white/10 p-3">
+                      <input
+                        type="checkbox"
+                        checked={accountProfile.consent[key]}
+                        onChange={(event) => setAccountProfile({
+                          ...accountProfile,
+                          consent: { ...accountProfile.consent, [key]: event.target.checked },
+                        })}
+                        className="mt-1 accent-emerald-500"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-white">{label}</span>
+                        <span className="mt-1 block text-xs text-slate-400">{detail}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
               <div className="flex flex-wrap items-center gap-3">
                 <button type="submit" disabled={accountSaving} className="btn-pill-primary disabled:opacity-60">
                   {accountSaving ? "Saving..." : "Save account profile"}

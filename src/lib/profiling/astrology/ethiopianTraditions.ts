@@ -294,6 +294,38 @@ export function toEthiopianDate(input: Date | string | number): GeezDate {
   });
 }
 
+/** Convert JDN back to Gregorian date components. */
+export function jdnToGregorian(jdn: number): { year: number; month: number; day: number } {
+  const a = jdn + 32044;
+  const b = Math.floor((4 * a + 3) / 146097);
+  const c = a - Math.floor((146097 * b) / 4);
+  const d = Math.floor((4 * c + 3) / 1461);
+  const e = c - Math.floor((1461 * d) / 4);
+  const m = Math.floor((5 * e + 2) / 153);
+  const day = e - Math.floor((153 * m + 2) / 5) + 1;
+  const month = m + 3 - 12 * Math.floor(m / 10);
+  const year = 100 * b + d - 4800 + Math.floor(m / 10);
+  return { year, month, day };
+}
+
+/** Convert an Ethiopian calendar date into Gregorian date components and YYYY-MM-DD string. */
+export function ethiopianToGregorian(
+  year: number,
+  month: number,
+  day: number
+): { year: number; month: number; day: number; formatted: string } {
+  const jdn =
+    ETHIOPIAN_EPOCH_OFFSET +
+    365 * year +
+    Math.floor(year / 4) +
+    30 * (month - 1) +
+    day -
+    1;
+  const res = jdnToGregorian(jdn);
+  const formatted = `${res.year}-${String(res.month).padStart(2, "0")}-${String(res.day).padStart(2, "0")}`;
+  return { ...res, formatted };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION 5 — CANONICAL TABLE
 // ═══════════════════════════════════════════════════════════════════════════

@@ -8,6 +8,7 @@ import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
 import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaPreview";
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
+import VoiceCaptureConsent from "@/components/case/VoiceCaptureConsent";
 
 const FIDEL_NAME_MIN_LENGTH = 2;
 
@@ -28,7 +29,7 @@ export default function SpiritualStep1Page() {
 
   const gematria = useLiveGematria(nameGeez, motherNameGeez);
 
-  const { isListening, startListening, stopListening, error: voiceError } = useGeezVoiceInput((text) => {
+  const { isListening, startListening, stopListening, error: voiceError, consentPending, acceptVoiceConsent, declineVoiceConsent } = useGeezVoiceInput((text) => {
     const cleanText = (text || "").trim();
     if (!cleanText) return;
 
@@ -436,6 +437,7 @@ export default function SpiritualStep1Page() {
                   <div className="mt-2 text-sm text-stone-300">Calculation: <span className="font-mono text-amber-100">{gematria.isValid ? `${gematria.totalSum} total · ${gematria.finalNumber} final value` : "Awaiting valid name"}</span></div>
                 </div>
 
+                {consentPending && <VoiceCaptureConsent onAccept={acceptVoiceConsent} onDecline={declineVoiceConsent} />}
                 {(voiceError || isListening) && (
                   <div className="rounded-2xl border border-amber-500/30 bg-black/30 p-4">
                     <div className="text-[10px] font-black uppercase tracking-[0.21em] text-amber-200">

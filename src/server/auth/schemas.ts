@@ -28,6 +28,11 @@ export const registerBody = z
     gender: optionalText,
     region: optionalText,
     city: optionalText,
+    // Enhancement — location resolution on registration
+    geoLat: z.coerce.number().optional(),
+    geoLng: z.coerce.number().optional(),
+    consentLocation: z.coerce.boolean().optional().default(false),
+    birthLocation: optionalText,
     acceptTerms: mustAccept,
     acceptPrivacy: mustAccept,
   })
@@ -39,6 +44,7 @@ export const registerBody = z
     ...rest,
     name: fullName ?? name,
   }));
+
 
 export const verifyBody = z
   .object({ code: optionalText, otpCode: optionalText, token: optionalText, email: z.string().trim().toLowerCase().optional() })

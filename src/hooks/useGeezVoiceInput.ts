@@ -6,9 +6,11 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [consentPending, setConsentPending] = useState(false);
+  const [consentGranted, setConsentGranted] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  const startListening = useCallback(async () => {
+  const beginListening = useCallback(() => {
     setError(null);
     if (typeof window === "undefined") return;
 
@@ -55,6 +57,22 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
     }
   }, [onResult]);
 
+  const startListening = useCallback(() => {
+    if (!consentGranted) {
+      setConsentPending(true);
+      return;
+    }
+    beginListening();
+  }, [beginListening, consentGranted]);
+
+  const acceptVoiceConsent = useCallback(() => {
+    setConsentGranted(true);
+    setConsentPending(false);
+    beginListening();
+  }, [beginListening]);
+
+  const declineVoiceConsent = useCallback(() => setConsentPending(false), []);
+
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -62,5 +80,14 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
     }
   }, []);
 
-  return { isListening, transcript, error, startListening, stopListening };
+  return {
+    isListening,
+    transcript,
+    error,
+    consentPending,
+    startListening,
+    stopListening,
+    acceptVoiceConsent,
+    declineVoiceConsent,
+  };
 }

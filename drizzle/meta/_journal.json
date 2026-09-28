@@ -15,6 +15,20 @@
       "when": 1788845906300,
       "tag": "0001_worried_johnny_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790581900000,
+      "tag": "0002_dynamic_profile",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790582000000,
+      "tag": "0003_safety_and_epistemic_tiers",
+      "breakpoints": true
     }
   ]
 }

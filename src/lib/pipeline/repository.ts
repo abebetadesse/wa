@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { CaseStatus, Role } from "./types";
+import { CaseStatus, Role, type CaseEvent, type EventType } from "./types";
 import { LocationContext } from "../location/types";
 import { PreliminaryAnalysis } from "../evaluation/profileEvaluator";
 import { ProfessionalReport, UserReport } from "../reports/types";
@@ -49,6 +49,9 @@ export interface PipelineCaseRecord {
   duration: string;
   selfTreatments: string[];
   attachments: string[];
+  emergencyDetected?: boolean;
+  emergencySignals?: string[];
+  emergencyRoutedAt?: string;
   status: CaseStatus;
   submittedAt: string;
   updatedAt: string;
@@ -94,6 +97,38 @@ const userToProfileMap = new Map<string, string>();
 const analysesCache = new Map<string, PreliminaryAnalysis>();
 const casesCache = new Map<string, PipelineCaseRecord>();
 const reportsCache = new Map<string, PipelineReportRecord>();
+
+type PipelineEventInput = {
+  caseId: string;
+  actorId: string;
+  actorRole: Role;
+  type: EventType;
+  before?: Record<string, unknown> | null;
+  after?: Record<string, unknown> | null;
+  note?: string | null;
+};
+
+async function appendPipelineEvent(input: PipelineEventInput): Promise<CaseEvent> {
+  const caseRecord = casesCache.get(input.caseId);
+  const latestUserReport = Array.from(reportsCache.values())
+    .filter((report) => report.caseId === input.caseId && report.kind === "USER" && !report.supersededBy)
+    .sort((left, right) => right.version - left.version)[0];
+
+  return appendCaseEvent({
+    ...input,
+    after: {
+      ...(input.after ?? {}),
+      userVisibleSnapshot: {
+        caseStatus: caseRecord?.status ?? null,
+        emergencyDetected: caseRecord?.emergencyDetected ?? false,
+        emergencySignals: caseRecord?.emergencySignals ?? [],
+        userReport: latestUserReport?.payload ?? null,
+        userReportVersion: latestUserReport?.version ?? null,
+        userReportPublishedAt: latestUserReport?.publishedAt ?? null,
+      },
+    },
+  });
+}
 
 // Hydrate from disk on module load
 try {
@@ -256,6 +291,6 @@ export const pipelineRepository = {
   },
 
   // Audit Events
-  appendEvent: appendCaseEvent,
+  appendEvent: appendPipelineEvent,
   getEvents: getCaseEvents,
 };

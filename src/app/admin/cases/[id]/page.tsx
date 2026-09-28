@@ -32,6 +32,13 @@ export default function AdminCaseDetailPage() {
 
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnNote, setReturnNote] = useState("");
+  const [emergencyAcknowledged, setEmergencyAcknowledged] = useState(false);
+  const [notificationMethod, setNotificationMethod] = useState<"in-app" | "email" | "sms" | "phone">("in-app");
+  const [resourcesShared, setResourcesShared] = useState("Local emergency services");
+  const [userNotifiedAt, setUserNotifiedAt] = useState(() => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+  });
 
   const loadData = async () => {
     if (!caseId) return;
@@ -113,12 +120,22 @@ export default function AdminCaseDetailPage() {
           "x-actor-id": "admin-board",
           "x-actor-role": "ADMIN",
         },
-        body: JSON.stringify({ note: returnNote }),
+        body: JSON.stringify({
+          note: returnNote,
+          ...(caseRecord?.emergencyDetected ? {
+            emergencyAck: {
+              userNotifiedAt: new Date(userNotifiedAt).toISOString(),
+              notificationMethod,
+              resourcesShared: resourcesShared.split(",").map((resource: string) => resource.trim()).filter(Boolean),
+            },
+          } : {}),
+        }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Return failed");
 
       setShowReturnModal(false);
+      setEmergencyAcknowledged(false);
       setActionSuccess("Case returned to professional for revision.");
       loadData();
     } catch (err: any) {
@@ -280,6 +297,36 @@ export default function AdminCaseDetailPage() {
                 Specify what changes, clarifications, or risk reassessments are required before publication can be approved.
               </p>
 
+              {caseRecord?.emergencyDetected && (
+                <section className="space-y-3 rounded-lg border border-rose-500/40 bg-rose-950/20 p-4" aria-labelledby="emergency-return-heading">
+                  <h4 id="emergency-return-heading" className="text-sm font-semibold text-rose-100">Emergency follow-up required</h4>
+                  <p className="text-xs leading-relaxed text-rose-100/80">
+                    Signals recorded: {(caseRecord.emergencySignals || []).join(", ") || "Emergency signal"}. Record how the user was notified and the emergency resources shared before returning this case.
+                  </p>
+                  <label className="block space-y-1 text-xs text-slate-200">
+                    User notified at
+                    <input type="datetime-local" value={userNotifiedAt} onChange={(event) => setUserNotifiedAt(event.target.value)} className="input-warm w-full" />
+                  </label>
+                  <label className="block space-y-1 text-xs text-slate-200">
+                    Notification method
+                    <select value={notificationMethod} onChange={(event) => setNotificationMethod(event.target.value as typeof notificationMethod)} className="input-warm w-full">
+                      <option value="in-app">In-app</option>
+                      <option value="email">Email</option>
+                      <option value="sms">SMS</option>
+                      <option value="phone">Phone</option>
+                    </select>
+                  </label>
+                  <label className="block space-y-1 text-xs text-slate-200">
+                    Emergency resources shared (comma-separated)
+                    <input value={resourcesShared} onChange={(event) => setResourcesShared(event.target.value)} className="input-warm w-full" />
+                  </label>
+                  <label className="flex items-start gap-2 text-xs text-rose-100">
+                    <input type="checkbox" checked={emergencyAcknowledged} onChange={(event) => setEmergencyAcknowledged(event.target.checked)} className="mt-0.5" />
+                    I confirm the user was notified and the resources above were shared.
+                  </label>
+                </section>
+              )}
+
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Revision Directive (min 5 characters) *
@@ -302,7 +349,7 @@ export default function AdminCaseDetailPage() {
                 </button>
                 <button
                   onClick={handleReturnToPro}
-                  disabled={returnNote.trim().length < 5}
+                  disabled={returnNote.trim().length < 5 || (Boolean(caseRecord?.emergencyDetected) && (!emergencyAcknowledged || !resourcesShared.trim()))}
                   className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold disabled:opacity-50"
                 >
                   Confirm Return

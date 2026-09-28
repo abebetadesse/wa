@@ -153,6 +153,11 @@ export default function UserPipelinePage() {
         throw new Error(json.error || "Failed to submit case");
       }
 
+      if (json.data.emergencyDetected && json.data.emergencyRoute) {
+        window.location.assign(json.data.emergencyRoute);
+        return;
+      }
+
       setCurrentCase(json.data);
       // Attempt to load report if already published
       fetchUserReport(json.data.caseId);

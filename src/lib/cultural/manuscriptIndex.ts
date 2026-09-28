@@ -13,9 +13,20 @@ export interface ManuscriptIndexEntry {
   evidenceLevel?: "source_structure" | "source_summary" | "externally_verified";
   mediaEvaluation?: "not_applicable_no_embedded_image" | "image_requires_review" | "image_reviewed";
   reviewStatus: "needs_cultural_review";
+  safety: ManuscriptSafetyClassification;
 }
 
-export const ETHIOPIAN_MANUSCRIPT_INDEX: ManuscriptIndexEntry[] = [
+export interface ManuscriptSafetyClassification {
+  category: "herbal" | "ritual" | "talismanic" | "devotional" | "diagnostic" | "surgical" | "historical";
+  containsToxicHerb: boolean | null;
+  containsSurgicalInstruction: boolean | null;
+  containsDiagnosticClaim: boolean | null;
+  allowedInUserReport: boolean;
+  allowedInProfessionalReport: boolean;
+  restrictionNotes: string[];
+}
+
+const MANUSCRIPT_INDEX_SOURCE: Array<Omit<ManuscriptIndexEntry, "safety">> = [
   {
     id: "fews-docx-contents",
     sourceId: "metsehafe-fews-docx",
@@ -201,10 +212,44 @@ export const ETHIOPIAN_MANUSCRIPT_INDEX: ManuscriptIndexEntry[] = [
   },
 ];
 
+export function classifyManuscriptIndexEntry(
+  entry: Pick<ManuscriptIndexEntry, "kind" | "reviewStatus">,
+): ManuscriptSafetyClassification {
+  const category: ManuscriptSafetyClassification["category"] = entry.kind === "ritual_topic"
+    ? "ritual"
+    : entry.kind === "healing_topic"
+      ? "herbal"
+      : entry.kind === "historical_context"
+        ? "historical"
+        : "devotional";
+  return {
+    category,
+    containsToxicHerb: null,
+    containsSurgicalInstruction: null,
+    containsDiagnosticClaim: null,
+    allowedInUserReport: false,
+    allowedInProfessionalReport: false,
+    restrictionNotes: ["Pending cultural and safety review; excluded from generated reports."],
+  };
+}
+
+export const ETHIOPIAN_MANUSCRIPT_INDEX: ManuscriptIndexEntry[] = MANUSCRIPT_INDEX_SOURCE.map((entry) => ({
+  ...entry,
+  safety: classifyManuscriptIndexEntry(entry),
+}));
+
 export function getManuscriptIndex(sourceId?: string) {
   return sourceId
     ? ETHIOPIAN_MANUSCRIPT_INDEX.filter((entry) => entry.sourceId === sourceId)
     : ETHIOPIAN_MANUSCRIPT_INDEX;
+}
+
+export function getManuscriptEntriesForReport(audience: "user" | "professional") {
+  return ETHIOPIAN_MANUSCRIPT_INDEX.filter((entry) =>
+    audience === "user"
+      ? entry.safety.allowedInUserReport
+      : entry.safety.allowedInProfessionalReport
+  );
 }
 
 export function getIndexedManuscriptSource(sourceId: string): ManuscriptSource | undefined {

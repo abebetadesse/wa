@@ -5,6 +5,7 @@ import { pipelineRepository } from "@/lib/pipeline/repository";
 import { evaluateCase } from "@/lib/evaluation/caseEvaluator";
 import { CaseStatus } from "@/lib/pipeline/types";
 import { listCases as legacyListCases } from "@/lib/case-workflow/engine";
+import { detectEmergency } from "@/lib/case-workflow/caseSummaryEngine";
 
 const caseIntakeSchema = z.object({
   narrative: z.string().min(10, "Case narrative must be at least 10 characters"),
@@ -98,6 +99,47 @@ export async function POST(req: Request) {
       selfTreatments: parsed.selfTreatments,
       attachments: parsed.attachments,
     };
+
+    const emergencyCheck = detectEmergency([
+      parsed.narrative,
+      ...parsed.symptoms,
+      ...parsed.selfTreatments,
+    ].join(" "));
+    if (emergencyCheck.detected) {
+      await pipelineRepository.saveCase({
+        ...caseInput,
+        status: CaseStatus.BLOCKED_BY_SAFETY_GATE,
+        emergencyDetected: true,
+        emergencySignals: emergencyCheck.signals,
+        emergencyRoutedAt: nowIso,
+        submittedAt: nowIso,
+        updatedAt: nowIso,
+      });
+      await pipelineRepository.appendEvent({
+        caseId,
+        actorId: "SYSTEM_EMERGENCY_GATE",
+        actorRole: "ADMIN",
+        type: "held",
+        after: {
+          status: CaseStatus.BLOCKED_BY_SAFETY_GATE,
+          emergencyDetected: true,
+          emergencySignals: emergencyCheck.signals,
+          route: "/emergency",
+        },
+        note: "Emergency signal detected before case evaluation; automated evaluation was not run.",
+      });
+      return NextResponse.json({
+        success: true,
+        data: {
+          caseId,
+          status: CaseStatus.BLOCKED_BY_SAFETY_GATE,
+          emergencyDetected: true,
+          emergencySignals: emergencyCheck.signals,
+          emergencyRoute: "/emergency",
+          evaluationStarted: false,
+        },
+      }, { status: 201, headers: { "Cache-Control": "no-store" } });
+    }
 
     // Stage C: Run parallel dual-track evaluation
     const evaluation = await evaluateCase({

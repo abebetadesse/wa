@@ -43,7 +43,32 @@ export const GET = defineRoute({
         ? Number((weight / (height / 100) ** 2).toFixed(1))
         : null;
 
-    return { data, fields, computed: { bmi } };
+    return {
+      data,
+      fields,
+      profile: {
+        primaryName: profile?.primaryName || (data.primaryName as string) || (data.fullName as string) || "",
+        birthDate: profile?.birthDate || (data.birthDate as string) || (data.dob as string) || "",
+        birthTime: profile?.birthTime || (data.birthTime as string) || "",
+        birthLocation: profile?.birthLocation || (data.birthLocation as string) || "",
+        currentLocation: profile?.currentLocation || (data.currentLocation as string) || "",
+        motherName: profile?.motherName || (data.motherName as string) || "",
+        consentSpiritual: profile?.consentSpiritual ?? Boolean(data.consentSpiritual ?? false),
+        consentLocation: profile?.consentLocation ?? Boolean(data.consentLocation ?? false),
+        consent: profile?.consent ?? {
+          location: profile?.consentLocation ?? false,
+          spiritual: profile?.consentSpiritual ?? false,
+          traditionalMedicine: false,
+          bioNarrative: false,
+          voiceIntake: false,
+          manuscriptKnowledge: false,
+        },
+        onboardingCompleted: profile?.onboardingCompleted ?? Boolean(data.onboardingCompleted ?? data.onboardingComplete ?? false),
+        locationContext: profile?.locationContext ?? data.locationContext ?? null,
+        birthLocationContext: profile?.birthLocationContext ?? data.birthLocationContext ?? null,
+      },
+      computed: { bmi },
+    };
   },
 });
 
@@ -67,7 +92,8 @@ export const PUT = defineRoute({
       .from(userProfiles)
       .where(eq(userProfiles.userId, user.id));
 
-    const data = { ...(existing?.data || {}), ...incoming };
+    const existingData = (existing?.data || {}) as Record<string, unknown>;
+    const data = { ...existingData, ...incoming };
 
     for (const field of fields) {
       if (
@@ -79,15 +105,118 @@ export const PUT = defineRoute({
       }
     }
 
+    // Extract dedicated columns
+    const primaryName = (incoming.primaryName || incoming.fullName || incoming.name || existing?.primaryName || null) as string | null;
+    const birthDate = (incoming.birthDate || incoming.dob || existing?.birthDate || null) as string | null;
+    const birthTime = (incoming.birthTime || existing?.birthTime || null) as string | null;
+    const birthLocation = (incoming.birthLocation || existing?.birthLocation || null) as string | null;
+    const currentLocation = (incoming.currentLocation || incoming.region || existing?.currentLocation || null) as string | null;
+    const motherName = (incoming.motherName || existing?.motherName || null) as string | null;
+    let consentSpiritual = incoming.consentSpiritual !== undefined
+      ? Boolean(incoming.consentSpiritual)
+      : (existing?.consentSpiritual ?? false);
+    let consentLocation = incoming.consentLocation !== undefined
+      ? Boolean(incoming.consentLocation)
+      : (existing?.consentLocation ?? false);
+    const consentKeys = ["location", "spiritual", "traditionalMedicine", "bioNarrative", "voiceIntake", "manuscriptKnowledge"] as const;
+    const previousConsent = existing?.consent ?? {
+      location: consentLocation,
+      spiritual: consentSpiritual,
+      traditionalMedicine: false,
+      bioNarrative: false,
+      voiceIntake: false,
+      manuscriptKnowledge: false,
+    };
+    const suppliedConsent = incoming.consent;
+    if (suppliedConsent !== undefined && (
+      typeof suppliedConsent !== "object" || suppliedConsent === null || Array.isArray(suppliedConsent) ||
+      consentKeys.some((key) => key in suppliedConsent && typeof (suppliedConsent as Record<string, unknown>)[key] !== "boolean") ||
+      Object.keys(suppliedConsent as Record<string, unknown>).some((key) => !consentKeys.includes(key as typeof consentKeys[number]))
+    )) {
+      throw ApiError.badRequest("Consent must contain only supported consent flags with boolean values.");
+    }
+    const consent = {
+      ...previousConsent,
+      ...(suppliedConsent as Partial<typeof previousConsent> | undefined),
+      ...(incoming.consentSpiritual !== undefined ? { spiritual: consentSpiritual } : {}),
+      ...(incoming.consentLocation !== undefined ? { location: consentLocation } : {}),
+    };
+    consentSpiritual = consent.spiritual;
+    consentLocation = consent.location;
+    const consentChanges = Object.fromEntries(
+      consentKeys.filter((key) => consent[key] !== previousConsent[key]).map((key) => [key, consent[key]])
+    );
+    const consentUpdatedAt = Object.keys(consentChanges).length > 0 ? new Date() : existing?.consentUpdatedAt ?? null;
+    const consentHistory = Object.keys(consentChanges).length > 0
+      ? [...(existing?.consentHistory ?? []), { at: consentUpdatedAt!.toISOString(), changes: consentChanges }]
+      : existing?.consentHistory ?? [];
+    const onboardingCompleted = (incoming.onboardingComplete !== undefined || incoming.onboardingCompleted !== undefined)
+      ? Boolean(incoming.onboardingComplete || incoming.onboardingCompleted)
+      : (existing?.onboardingCompleted ?? false);
+
+    // Resolve birth location context if provided
+    let birthLocationContext = existing?.birthLocationContext || null;
+    let birthLocationContextSource = existing?.birthLocationContextSource || null;
+    if (birthLocation && (!birthLocationContext || birthLocation !== existing?.birthLocation)) {
+      try {
+        const { resolveLocation } = await import("@/lib/location");
+        birthLocationContext = await resolveLocation({ region: birthLocation, source: "manual" });
+        birthLocationContextSource = "manual";
+      } catch (err) {
+        console.warn("[PUT /api/profile] Could not resolve birthLocationContext:", err);
+      }
+    }
+
+    data.consentSpiritual = consentSpiritual;
+    data.consentLocation = consentLocation;
+    data.onboardingCompleted = onboardingCompleted;
+    if (birthLocationContext) data.birthLocationContext = birthLocationContext;
+
+    const row = {
+      userId: user.id,
+      primaryName,
+      birthDate,
+      birthTime,
+      birthLocation,
+      currentLocation,
+      motherName,
+      consentSpiritual,
+      consentLocation,
+      consent,
+      consentUpdatedAt,
+      consentHistory,
+      onboardingCompleted,
+      birthLocationContext,
+      birthLocationContextSource,
+      data,
+      updatedAt: new Date(),
+    };
+
     await db
       .insert(userProfiles)
-      .values({ userId: user.id, data, updatedAt: new Date() })
+      .values(row)
       .onConflictDoUpdate({
         target: userProfiles.userId,
-        set: { data, updatedAt: new Date() },
+        set: row,
       });
 
-    return { data };
+    return {
+      data,
+      profile: {
+        primaryName,
+        birthDate,
+        birthTime,
+        birthLocation,
+        currentLocation,
+        motherName,
+        consentSpiritual,
+        consentLocation,
+        consent,
+        consentUpdatedAt: consentUpdatedAt?.toISOString() ?? null,
+        onboardingCompleted,
+        birthLocationContext,
+      },
+    };
   },
 });
 
