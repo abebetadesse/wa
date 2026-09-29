@@ -24,6 +24,7 @@ const PUBLIC_PAGE_PATHS = [
   "/",
   "/marketplace",
   "/b",
+  "/heritage",
   "/auth",
   "/emergency",
   "/safety",

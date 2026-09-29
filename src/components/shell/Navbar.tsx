@@ -121,13 +121,13 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 lg:flex">
+        <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 xl:flex">
           {PRIMARY.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors",
+                "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition-colors",
                 isActive(link.href) ? "bg-brand/10 text-brand-strong" : "text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
             >
@@ -157,7 +157,7 @@ export default function Navbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
-          <div className="hidden items-center rounded-full border border-border bg-card/60 p-0.5 text-[11px] md:flex" role="group" aria-label="Language">
+          <div className="hidden items-center rounded-full border border-border bg-card/60 p-0.5 text-[11px] xl:flex" role="group" aria-label="Language">
             {LANGUAGES.map((option) => (
               <button
                 key={option.code}
@@ -232,7 +232,7 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <Link href={`/auth?next=${encodeURIComponent(pathname)}`} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-brand-strong">
+            <Link href={`/auth?next=${encodeURIComponent(pathname)}`} className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-brand-strong">
               <LogIn className="size-4" aria-hidden="true" /> Sign in
             </Link>
           )}
@@ -240,7 +240,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
-            className="inline-flex size-10 items-center justify-center rounded-full text-foreground hover:bg-accent lg:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-full text-foreground hover:bg-accent xl:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
@@ -251,7 +251,7 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <nav id="mobile-navigation" aria-label="Mobile" className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-background px-4 pb-6 pt-3 lg:hidden">
+        <nav id="mobile-navigation" aria-label="Mobile" className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-background px-4 pb-6 pt-3 xl:hidden">
           <div className="flex flex-col gap-1">
             {PRIMARY.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-semibold text-foreground hover:bg-accent">

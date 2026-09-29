@@ -7,6 +7,9 @@
  */
 
 export const PUBLIC_PATHS = [
+  "/marketplace",
+  "/b",
+  "/heritage",
   "/auth",
   "/emergency",
   "/safety",
