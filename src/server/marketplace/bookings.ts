@@ -298,7 +298,13 @@ export async function listClientBookings(user: AuthenticatedUser, scope: "upcomi
 
 export async function getBookingForClient(user: AuthenticatedUser, bookingId: string) {
   const [row] = await db
-    .select({ ...bookingColumns, safety: bookings.safety, businessAddress: businesses.address, cancelReason: bookings.cancelReason })
+    .select({
+      ...bookingColumns,
+      safety: bookings.safety,
+      businessAddress: businesses.address,
+      cancelReason: bookings.cancelReason,
+      reviewed: sql<boolean>`exists (select 1 from reviews where reviews.booking_id = ${bookings.id})`,
+    })
     .from(bookings)
     .innerJoin(services, eq(services.id, bookings.serviceId))
     .innerJoin(businesses, eq(businesses.id, bookings.businessId))
