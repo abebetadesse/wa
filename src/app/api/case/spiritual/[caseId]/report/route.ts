@@ -3,6 +3,7 @@ import { getOwnedSpiritualCase } from "@/lib/case-workflow/spiritualExpertEngine
 import { requireAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(
+  _request: Request,
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   try {

@@ -7,6 +7,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability, roleCan, type MemberRole } from "./access";
 import { DELIVERY_MODES } from "./businesses";
 import { availableSlots } from "./catalogue";
+import { localToUtc } from "./time";
 import { BOOKING_STATUSES, bookingReference, canTransition, type BookingStatus } from "./bookingRules";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
@@ -48,7 +49,9 @@ export const bookingRequest = z.object({
   safety: safetyAnswers.optional(),
 });
 
-export const staffBookingRequest = bookingRequest.omit({ safety: true }).extend({
+/** Staff enter wall-clock time in the business's timezone; the server converts it. */
+export const staffBookingRequest = bookingRequest.omit({ safety: true, startsAt: true }).extend({
+  startsAtLocal: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Choose a date and time."),
   clientId: z.string().uuid(),
   status: z.enum(["requested", "confirmed"]).default("confirmed"),
 });
@@ -172,7 +175,11 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
 /** Staff book on behalf of a client (phone or walk-in). */
 export async function createStaffBooking(user: AuthenticatedUser, businessId: string, input: z.infer<typeof staffBookingRequest>) {
   await requireCapability(user, businessId, "manageBookings");
-  const { service } = await loadBookableService(businessId, input.serviceId);
+  const { service, business } = await loadBookableService(businessId, input.serviceId);
+  if (!service.deliveryModes.includes(input.deliveryMode)) throw ApiError.badRequest("This service is not offered that way.");
+  const [date, time] = input.startsAtLocal.split("T");
+  const [hours, minutes] = time.split(":").map(Number);
+  const startsAt = localToUtc(date, hours * 60 + minutes, business.timezone);
   const [client] = await db.select({ id: businessClients.id, userId: businessClients.userId }).from(businessClients).where(and(eq(businessClients.id, input.clientId), eq(businessClients.businessId, businessId))).limit(1);
   if (!client) throw ApiError.notFound("Client");
 
@@ -182,10 +189,11 @@ export async function createStaffBooking(user: AuthenticatedUser, businessId: st
       businessId,
       serviceId: service.id,
       clientId: client.id,
-      bookedByUserId: user.id,
+      // The client's own account (if any) owns the booking; staff act on their behalf.
+      bookedByUserId: client.userId,
       memberId: input.memberId ?? null,
-      startsAt: input.startsAt,
-      endsAt: new Date(input.startsAt.getTime() + service.durationMinutes * 60_000),
+      startsAt,
+      endsAt: new Date(startsAt.getTime() + service.durationMinutes * 60_000),
       deliveryMode: input.deliveryMode,
       status: input.status,
       priceEtb: service.priceEtb,

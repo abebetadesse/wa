@@ -10,3 +10,4 @@ export * from "./page";
 export * from "./select";
 export * from "./separator";
 export * from "./states";
+export * from "./dialog";

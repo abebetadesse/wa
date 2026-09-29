@@ -62,6 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navLinks = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { href: "/admin/marketplace", label: "Marketplace", icon: ShieldAlert },
     { href: "/admin/users", label: "Users & Accounts", icon: Users },
     { href: "/admin/roles", label: "Roles & Permissions", icon: KeyRound },
     { href: "/admin/knowledge", label: "Knowledge Base", icon: BookOpen },

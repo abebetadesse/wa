@@ -7,32 +7,9 @@ import { businessMembers } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 
-export const MEMBER_ROLES = ["owner", "manager", "practitioner", "staff"] as const;
-export type MemberRole = (typeof MEMBER_ROLES)[number];
+import { roleCan, type Capability, type MemberRole } from "./roles";
 
-/** Capabilities per role. Owners and managers run the business; practitioners serve clients. */
-const CAPABILITIES = {
-  view: ["owner", "manager", "practitioner", "staff"],
-  manageBookings: ["owner", "manager", "practitioner", "staff"],
-  manageClients: ["owner", "manager", "practitioner"],
-  viewClientNotes: ["owner", "manager", "practitioner"],
-  manageServices: ["owner", "manager"],
-  manageSchedule: ["owner", "manager"],
-  manageInventory: ["owner", "manager", "practitioner"],
-  recordPayments: ["owner", "manager", "staff"],
-  voidPayments: ["owner", "manager"],
-  viewFinance: ["owner", "manager"],
-  manageProfile: ["owner", "manager"],
-  manageTeam: ["owner"],
-  respondReviews: ["owner", "manager"],
-  message: ["owner", "manager", "practitioner", "staff"],
-} as const satisfies Record<string, readonly MemberRole[]>;
-
-export type Capability = keyof typeof CAPABILITIES;
-
-export function roleCan(role: MemberRole, capability: Capability) {
-  return (CAPABILITIES[capability] as readonly MemberRole[]).includes(role);
-}
+export { MEMBER_ROLES, roleCan, type Capability, type MemberRole } from "./roles";
 
 export interface Membership {
   id: string;

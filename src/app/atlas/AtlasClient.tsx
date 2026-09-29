@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { RegionData } from "@/app/api/atlas/route";
+import type { RegionData } from "@/lib/location/atlas";
 import type { EthiopianAdministrativeRegion } from "@/lib/location/ethiopianAdministrativePlaces";
 import AdministrativeExplorer from "./AdministrativeExplorer";
 
