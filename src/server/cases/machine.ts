@@ -42,6 +42,9 @@ export function createCase(input: {
   safetyAnswers: Record<string, unknown>;
   answers: Record<string, unknown>;
   consent?: Partial<ConsentRecord>;
+  /** Set when the case was opened from a marketplace booking; that business reviews it. */
+  businessId?: string | null;
+  bookingId?: string | null;
 }): WorkflowCase {
   const safety = input.config.evaluateSafety(input.safetyAnswers);
   const stage = stageForSafety(safety);
@@ -50,6 +53,8 @@ export function createCase(input: {
   return {
     id: input.id,
     userId: input.userId,
+    businessId: input.businessId ?? null,
+    bookingId: input.bookingId ?? null,
     domain: input.config.domain,
     stage,
     safetyAnswers: input.safetyAnswers,
@@ -184,5 +189,30 @@ export function requestConsultation(
     stage: "consultation_requested",
     consultation: { ...input, feeEtb: config.pricing.consultationEtb, requestedAt: now(), status: "requested" },
     updatedAt: now(),
+  };
+}
+
+/**
+ * Cases opened from a marketplace booking are paid for through the booking, so approval releases
+ * the full report directly instead of asking the client to pay again.
+ */
+export function releaseWithBooking(record: WorkflowCase): WorkflowCase {
+  if (!record.bookingId) throw ApiError.conflict("Only booking-linked cases are released with their booking.");
+  assertStage(record, ["visible_to_user"], "release the report");
+  const timestamp = now();
+  return {
+    ...record,
+    stage: "full_report_released",
+    payment: {
+      status: "confirmed",
+      purchaseId: `booking:${record.bookingId}`,
+      amountEtb: 0,
+      method: "booking",
+      provider: "business",
+      providerReference: record.bookingId,
+      createdAt: timestamp,
+      confirmedAt: timestamp,
+    },
+    updatedAt: timestamp,
   };
 }

@@ -312,9 +312,12 @@ export async function getBookingForClient(user: AuthenticatedUser, bookingId: st
       businessAddress: businesses.address,
       cancelReason: bookings.cancelReason,
       reviewed: sql<boolean>`exists (select 1 from reviews where reviews.booking_id = ${bookings.id})`,
+      caseId: bookings.caseId,
+      caseDomain: serviceKinds.caseDomain,
     })
     .from(bookings)
     .innerJoin(services, eq(services.id, bookings.serviceId))
+    .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))
     .innerJoin(businesses, eq(businesses.id, bookings.businessId))
     .where(and(eq(bookings.id, bookingId), eq(bookings.bookedByUserId, user.id)))
     .limit(1);

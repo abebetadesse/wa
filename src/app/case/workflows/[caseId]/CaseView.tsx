@@ -95,8 +95,14 @@ export function CaseView({ caseId }: { caseId: string }) {
         </Card>
       )}
       {view.report && <ReportView report={view.report} review={view.review} />}
-      {view.stage === "visible_to_user" && <PurchasePanel view={view} />}
-      {view.stage === "full_report_released" && <ConsultationForm view={view} onChange={setView} />}
+      {/* Booking-opened cases are covered by the booking and meet the practitioner there. */}
+      {view.stage === "visible_to_user" && !view.bookingId && <PurchasePanel view={view} />}
+      {view.stage === "full_report_released" && !view.bookingId && <ConsultationForm view={view} onChange={setView} />}
+      {view.bookingId && view.stage === "full_report_released" && (
+        <Alert tone="success" title="Included with your booking">
+          This report is part of your booked session. <a href={`/account/bookings/${view.bookingId}`} className="font-semibold text-brand underline">View your booking</a>
+        </Alert>
+      )}
       {view.stage === "consultation_requested" && view.consultation && (
         <Alert tone="success" title="Consultation requested">
           {FORMAT_LABELS[view.consultation.format]} · {view.consultation.feeEtb} ETB. Your practitioner will confirm a time from your suggestions:{" "}

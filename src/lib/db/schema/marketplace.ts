@@ -363,3 +363,29 @@ export const notifications = pgTable(
   },
   (table) => [index("notifications_user_idx").on(table.userId, table.createdAt)],
 );
+
+// ── Team invitations ─────────────────────────────────────────────────────────
+
+/**
+ * An invitation to join a business team. Only a SHA-256 digest of the token is stored; the link
+ * is shown once to the inviter (and sent in-app when the invitee already has an account).
+ */
+export const businessInvitations = pgTable(
+  "business_invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    role: varchar("role", { length: 20 }).notNull(),
+    title: varchar("title", { length: 120 }),
+    isBookable: boolean("is_bookable").default(false).notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+    invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    acceptedBy: uuid("accepted_by").references(() => users.id, { onDelete: "set null" }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [index("business_invitations_business_idx").on(table.businessId)],
+);

@@ -19,6 +19,8 @@ export const CAPABILITIES = {
   manageTeam: ["owner"],
   respondReviews: ["owner", "manager"],
   message: ["owner", "manager", "practitioner", "staff"],
+  /** Review and approve expert-reviewed cases opened from this business's bookings. */
+  reviewCases: ["owner", "manager", "practitioner"],
 } as const satisfies Record<string, readonly MemberRole[]>;
 
 export type Capability = keyof typeof CAPABILITIES;

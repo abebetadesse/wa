@@ -198,3 +198,84 @@ test("workspace access is enforced", { skip: skip() }, async () => {
   await assert.rejects(operations.listClients(client, business.id, { page: 1 }), (e) => e.status === 404);
   await assert.rejects(catalogue.saveService(client, business.id, null, { kindId: remedyKind.id, name: "X", durationMinutes: 30, priceEtb: 1, deliveryModes: ["in_person"], bufferMinutes: 0, isActive: true, sortOrder: 0 }), (e) => e.status === 404);
 });
+
+const caseSvc = await import("../server/cases/service.ts");
+const { DOMAIN_CONFIGS } = await import("../server/cases/domains/index.ts");
+const team = await import("../server/marketplace/team.ts");
+
+test("booking a reading opens a case that the business's own team reviews", { skip: skip() }, async () => {
+  const readingKind = (await catalogue.listServiceKinds()).find((kind) => kind.caseDomain === "spiritual");
+  assert.ok(readingKind, "seed data includes a service kind linked to spiritual cases");
+  const reading = await catalogue.saveService(owner, business.id, null, {
+    kindId: readingKind.id, name: "Awde Negest reading", durationMinutes: 45, priceEtb: 300, deliveryModes: ["in_person"], bufferMinutes: 0, isActive: true, sortOrder: 1,
+  });
+  const date = addDays(todayIn("Africa/Addis_Ababa"), 3);
+  const { slots } = await catalogue.availableSlots(business.id, { serviceId: reading.id, date });
+  const booking = await bookingsSvc.requestBooking(client, business.id, { serviceId: reading.id, startsAt: new Date(slots[0]), deliveryMode: "in_person" });
+  assert.equal(booking.caseDomain, "spiritual");
+
+  const svc = caseSvc.caseService;
+  await assert.rejects(svc.start(client, "career", { safetyAnswers: { basic_needs: "yes_comfortable", self_harm: "no", financial_pressure: "no" }, answers: {}, bookingId: booking.id }), (e) => e.status === 400, "domain must match the service");
+  await assert.rejects(svc.start(otherClient, "spiritual", { safetyAnswers: { self_harm: "no", immediateRisk: "no" }, answers: { nameGeez: "ሰላማዊት" }, bookingId: booking.id }), (e) => e.status === 404, "only the booking's client can open its case");
+
+  let view = await svc.start(client, "spiritual", { safetyAnswers: { self_harm: "no", immediateRisk: "no" }, answers: { nameGeez: "ሰላማዊት" }, bookingId: booking.id });
+  const linked = await bookingsSvc.getBookingForClient(client, booking.id);
+  assert.equal(linked.caseId, view.id, "the booking points at its case");
+  await assert.rejects(svc.start(client, "spiritual", { safetyAnswers: { self_harm: "no", immediateRisk: "no" }, answers: { nameGeez: "ሰላማዊት" }, bookingId: booking.id }), (e) => e.status === 409, "one case per booking");
+
+  const required = Object.fromEntries(view.questions.filter((q) => q.required).map((q) => [q.id, q.options?.[0]?.value ?? "ሰላማዊት"]));
+  view = await svc.answer(client, view.id, required);
+  view = await svc.submit(client, view.id);
+  assert.equal(view.stage, "awaiting_expert");
+
+  const queue = await svc.businessQueue(owner, business.id);
+  assert.equal(queue.waiting.length, 1, "the case waits in the business's own queue");
+  await assert.rejects(svc.businessQueue(otherClient, business.id), (e) => e.status === 404);
+
+  // The owner is a regular account (no platform expert role) yet can review their business's case.
+  await svc.claim(owner, view.id);
+  const checklist = Object.fromEntries(DOMAIN_CONFIGS.spiritual.reviewChecklist.map((item) => [item.id, true]));
+  await svc.approve(owner, view.id, { checklist, notes: "Reviewed with care." });
+  const approved = await svc.get(client, view.id);
+  assert.equal(approved.stage, "full_report_released", "the booking covers the report: no second payment");
+  assert.equal(approved.report.unlocked, true);
+  assert.equal(approved.payment.amountEtb, 0);
+  await assert.rejects(svc.purchase(client, view.id, "telebirr"), (e) => e.status === 409, "cannot be charged again");
+  assert.ok((await notifications.listNotifications(client.id)).items.some((n) => n.type === "case.approved"), "the client is told the report is ready");
+});
+
+test("owners invite team members; invitations are single-use and email-bound", { skip: skip() }, async () => {
+  const invitee = person("practitioner");
+  await db.insert(schema.users).values({ id: invitee.id, email: invitee.email, name: invitee.name, role: "user" });
+  created.users.push(invitee.id);
+
+  const invite = await team.inviteMember(owner, business.id, { email: invitee.email.toUpperCase(), role: "practitioner", title: "Herbalist", isBookable: true }, "http://localhost:5500");
+  const token = invite.link.split("/invitations/")[1];
+  assert.ok((await notifications.listNotifications(invitee.id)).items.some((n) => n.type === "team.invited"), "existing accounts are notified in-app");
+
+  await assert.rejects(team.inviteMember(client, business.id, { email: "x@example.test", role: "staff", isBookable: false }, "http://x"), (e) => e.status === 404, "non-members cannot invite");
+  await assert.rejects(team.acceptInvitation(otherClient, token), (e) => e.status === 403, "another account cannot accept");
+  assert.equal((await team.previewInvitation(otherClient, token)).matchesAccount, false);
+
+  const joined = await team.acceptInvitation(invitee, token);
+  assert.equal(joined.businessId, business.id);
+  await assert.rejects(team.acceptInvitation(invitee, token), (e) => e.status === 409, "invitations are single-use");
+
+  const roster = await team.getTeam(owner, business.id);
+  const member = roster.members.find((m) => m.userId === invitee.id);
+  assert.equal(member.role, "practitioner");
+  assert.equal(member.isBookable, true);
+
+  // The new practitioner can now review cases but not manage the team.
+  assert.ok(await caseSvc.caseService.businessQueue(invitee, business.id));
+  await assert.rejects(team.inviteMember(invitee, business.id, { email: "y@example.test", role: "staff", isBookable: false }, "http://x"), (e) => e.status === 403);
+
+  await team.updateMember(owner, business.id, member.id, { role: "manager" });
+  const ownerMember = roster.members.find((m) => m.role === "owner");
+  await assert.rejects(team.removeMember(invitee, business.id, ownerMember.id), (e) => e.status === 403, "the owner cannot be removed");
+  await assert.rejects(team.updateMember(owner, business.id, ownerMember.id, { role: "staff" }), (e) => e.status === 403, "the owner's role is fixed");
+
+  const left = await team.removeMember(invitee, business.id, member.id);
+  assert.equal(left.left, true, "members can leave on their own");
+  await assert.rejects(caseSvc.caseService.businessQueue(invitee, business.id), (e) => e.status === 404, "former members lose access");
+});

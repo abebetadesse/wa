@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import type { OwnerView } from "@/server/cases/views";
@@ -19,6 +19,8 @@ interface DomainSummary {
 
 export function StartCase({ domain }: { domain: WorkflowDomain }) {
   const router = useRouter();
+  // Set when the case is opened from a marketplace booking (a reading or review).
+  const bookingId = useSearchParams().get("booking") ?? undefined;
   const [config, setConfig] = useState<DomainSummary | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -58,7 +60,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
     try {
       const view = await apiFetch<OwnerView>(`/api/case-workflows/${domain}`, {
         method: "POST",
-        json: { safetyAnswers: safety, answers, consent },
+        json: { safetyAnswers: safety, answers, consent, bookingId },
       });
       router.push(`/case/workflows/${view.id}`);
     } catch (error) {
@@ -76,6 +78,11 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
         <ArrowLeft className="size-4" aria-hidden="true" /> All case types
       </ButtonLink>
       <PageHeader eyebrow="New case" title={config.label} description={config.description} />
+      {bookingId && (
+        <Alert tone="success" title="Booking requested — one more step" className="mb-6">
+          Your practitioner reviews these answers and prepares a written report before you meet. It takes about five minutes.
+        </Alert>
+      )}
 
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
         {config.startQuestions.length > 0 && (

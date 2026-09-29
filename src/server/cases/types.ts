@@ -169,6 +169,9 @@ export interface ReviewAuditEvent {
 export interface WorkflowCase {
   id: string;
   userId: string;
+  /** The marketplace business reviewing this case (null: the platform's expert pool). */
+  businessId: string | null;
+  bookingId: string | null;
   domain: WorkflowDomain;
   stage: WorkflowStage;
   safetyAnswers: Record<string, unknown>;

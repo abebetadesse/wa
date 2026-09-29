@@ -300,6 +300,7 @@ export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser 
         kind: serviceKinds.name,
         kindSlug: serviceKinds.slug,
         requiresSafetyScreen: serviceKinds.requiresSafetyScreen,
+        caseDomain: serviceKinds.caseDomain,
       })
       .from(services)
       .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))

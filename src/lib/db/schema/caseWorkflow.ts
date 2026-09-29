@@ -71,6 +71,9 @@ export const workflowCases = pgTable("workflow_cases", {
   domain: varchar("domain", { length: 30 }).notNull(),
   stage: varchar("stage", { length: 40 }).notNull(),
   reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+  /** Marketplace business that reviews the case (see drizzle/0005). References added in SQL to avoid an import cycle. */
+  businessId: uuid("business_id"),
+  bookingId: uuid("booking_id").unique(),
   safetyAnswers: jsonb("safety_answers").default({}).notNull(),
   safety: jsonb("safety").notNull(),
   answers: jsonb("answers").default({}).notNull(),

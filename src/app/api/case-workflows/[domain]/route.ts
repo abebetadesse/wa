@@ -17,12 +17,14 @@ export const POST = defineRoute({
       retention: z.enum(["30_days", "90_days", "1_year", "until_closed"]).default("90_days"),
       consentTextVersion: z.string().default("v1"),
     }).optional(),
+    /** Opens the case for a marketplace booking; the booked business reviews it. */
+    bookingId: z.string().uuid().optional(),
   }),
   handler: ({ user, params, body }) => caseService.start(user, params.domain, body),
   audit: {
     action: "case_started",
     resourceType: "workflow_case",
     resourceId: (_ctx, view) => view.id,
-    details: ({ params }, view) => ({ domain: params.domain, stage: view.stage, safety: view.safety.action, retention: view.consent.retention }),
+    details: ({ params, body }, view) => ({ domain: params.domain, stage: view.stage, safety: view.safety.action, retention: view.consent.retention, bookingId: body.bookingId ?? null }),
   },
 });

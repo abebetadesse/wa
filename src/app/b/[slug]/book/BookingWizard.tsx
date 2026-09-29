@@ -20,6 +20,8 @@ interface Service {
   deliveryModes: string[];
   kind: string;
   requiresSafetyScreen: boolean;
+  /** Set for services that open an expert-reviewed case (e.g. readings). */
+  caseDomain: string | null;
 }
 
 interface Business {
@@ -142,7 +144,8 @@ export function BookingWizard({ slug }: { slug: string }) {
             : undefined,
         },
       });
-      router.push(`/account/bookings/${booking.id}?new=1`);
+      // Readings and reviews continue straight into the case intake the practitioner will review.
+      router.push(service.caseDomain ? `/case/workflows/new/${service.caseDomain}?booking=${booking.id}` : `/account/bookings/${booking.id}?new=1`);
     } catch (error) {
       setSubmitError(errorMessage(error));
       if (error instanceof ApiClientError && error.status === 409) {
@@ -328,6 +331,11 @@ export function BookingWizard({ slug }: { slug: string }) {
                   <div><dt className="text-muted-foreground">Price</dt><dd className="font-semibold text-foreground">{formatEtb(service.priceEtb)} · pay the business directly</dd></div>
                 </dl>
               </div>
+              {service.caseDomain && (
+                <Alert tone="info" title="A short intake follows">
+                  After you request this booking you&apos;ll answer a few questions. {business.name} reviews your answers and prepares your written reading before you meet.
+                </Alert>
+              )}
               <Field label="Message for the business (optional)">
                 {(control) => <Textarea {...control} rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything they should prepare or know?" />}
               </Field>

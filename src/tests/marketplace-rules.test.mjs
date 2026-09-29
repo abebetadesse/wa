@@ -65,3 +65,12 @@ test("slugs", () => {
   assert.equal(slugify("Tena Herbal & Sons"), "tena-herbal-sons");
   assert.equal(slugify("ጤና አዳም"), "business", "non-Latin names fall back to a safe slug");
 });
+
+test("team rules protect the owner and let members leave", async () => {
+  const { teamActionError } = await import("../server/marketplace/team.ts");
+  assert.match(teamActionError({ kind: "remove", actorId: "a", actorRole: "owner", target: { userId: "o", role: "owner" } }), /cannot be removed/);
+  assert.match(teamActionError({ kind: "update", actorId: "a", target: { userId: "o", role: "owner" } }), /cannot be changed/);
+  assert.equal(teamActionError({ kind: "remove", actorId: "p", actorRole: "practitioner", target: { userId: "p", role: "practitioner" } }), null, "leaving");
+  assert.match(teamActionError({ kind: "remove", actorId: "m", actorRole: "manager", target: { userId: "p", role: "practitioner" } }), /Only the owner/);
+  assert.equal(teamActionError({ kind: "remove", actorId: "o", actorRole: "owner", target: { userId: "p", role: "practitioner" } }), null);
+});

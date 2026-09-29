@@ -29,6 +29,8 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
     stage: record.stage,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    /** Set when the case came from a marketplace booking: the booking covers the report. */
+    bookingId: record.bookingId,
     consent: record.consent,
     auditTrail: record.auditTrail,
     safety: {
@@ -89,5 +91,9 @@ export function toExpertView(record: WorkflowCase, config: DomainConfig) {
     review: record.review,
     auditTrail: record.auditTrail,
     checklist: config.reviewChecklist,
+    businessId: record.businessId,
+    bookingId: record.bookingId,
+    /** Question text for each answer, so reviewers read questions rather than ids. */
+    questions: [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)].map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] })),
   };
 }

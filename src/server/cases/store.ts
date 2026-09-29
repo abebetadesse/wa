@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { workflowCases } from "@/lib/db/schema";
 import type { WorkflowCase, WorkflowDomain, WorkflowStage } from "./types";
@@ -6,7 +6,11 @@ import type { WorkflowCase, WorkflowDomain, WorkflowStage } from "./types";
 export interface CaseStore {
   get(id: string): Promise<WorkflowCase | null>;
   listByUser(userId: string): Promise<WorkflowCase[]>;
-  listForReview(filter: { domains: WorkflowDomain[]; stages: WorkflowStage[]; reviewerId?: string }): Promise<WorkflowCase[]>;
+  /**
+   * Cases to review. `businessId: null` limits to the platform expert pool; a business id limits
+   * to that business's cases (any domain); omitted means both.
+   */
+  listForReview(filter: { domains?: WorkflowDomain[]; stages: WorkflowStage[]; reviewerId?: string; businessId?: string | null }): Promise<WorkflowCase[]>;
   insert(record: WorkflowCase): Promise<void>;
   save(record: WorkflowCase): Promise<void>;
 }
@@ -20,6 +24,8 @@ function fromRow(row: Row): WorkflowCase {
   return {
     id: row.id,
     userId: row.userId,
+    businessId: row.businessId ?? null,
+    bookingId: row.bookingId ?? null,
     domain: row.domain as WorkflowDomain,
     stage: row.stage as WorkflowStage,
     safetyAnswers: (row.safetyAnswers ?? {}) as WorkflowCase["safetyAnswers"],
@@ -48,6 +54,8 @@ function toRow(record: WorkflowCase) {
   return {
     id: record.id,
     userId: record.userId,
+    businessId: record.businessId,
+    bookingId: record.bookingId,
     domain: record.domain,
     stage: record.stage,
     reviewerId: record.review?.expertId ?? null,
@@ -77,10 +85,13 @@ export const dbCaseStore: CaseStore = {
     const rows = await db.select().from(workflowCases).where(eq(workflowCases.userId, userId)).orderBy(desc(workflowCases.updatedAt));
     return rows.map(fromRow);
   },
-  async listForReview({ domains, stages, reviewerId }) {
-    if (!domains.length || !stages.length) return [];
-    const conditions = [inArray(workflowCases.domain, domains), inArray(workflowCases.stage, stages)];
+  async listForReview({ domains, stages, reviewerId, businessId }) {
+    if ((domains && !domains.length) || !stages.length) return [];
+    const conditions: SQL[] = [inArray(workflowCases.stage, stages)];
+    if (domains) conditions.push(inArray(workflowCases.domain, domains));
     if (reviewerId) conditions.push(eq(workflowCases.reviewerId, reviewerId));
+    if (businessId === null) conditions.push(isNull(workflowCases.businessId));
+    else if (businessId) conditions.push(eq(workflowCases.businessId, businessId));
     const rows = await db.select().from(workflowCases).where(and(...conditions)).orderBy(workflowCases.createdAt);
     return rows.map(fromRow);
   },
@@ -105,10 +116,11 @@ export function createMemoryCaseStore(): CaseStore {
     async listByUser(userId) {
       return [...records.values()].filter((record) => record.userId === userId).map(clone);
     },
-    async listForReview({ domains, stages, reviewerId }) {
+    async listForReview({ domains, stages, reviewerId, businessId }) {
       return [...records.values()]
-        .filter((record) => domains.includes(record.domain) && stages.includes(record.stage))
+        .filter((record) => (!domains || domains.includes(record.domain)) && stages.includes(record.stage))
         .filter((record) => !reviewerId || record.review?.expertId === reviewerId)
+        .filter((record) => businessId === undefined || record.businessId === businessId)
         .map(clone);
     },
     async insert(record) {

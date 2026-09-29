@@ -30,6 +30,8 @@ interface BookingDetail {
   timezone: string;
   cancelReason: string | null;
   reviewed: boolean;
+  caseId: string | null;
+  caseDomain: string | null;
 }
 
 export default function BookingDetailPage() {
@@ -152,6 +154,27 @@ export default function BookingDetailPage() {
           )}
         </div>
       </div>
+
+      {booking.caseDomain && ["requested", "confirmed", "completed"].includes(booking.status) && (
+        <Card className="mt-6 border-brand/30">
+          <CardContent className="flex flex-wrap items-center gap-4 pt-6">
+            <div className="min-w-0 flex-1">
+              <p className="font-display font-bold text-foreground">{booking.caseId ? "Your case" : "Complete your intake"}</p>
+              <p className="text-sm text-muted-foreground">
+                {booking.caseId
+                  ? `${booking.businessName} reviews your answers and prepares your written report.`
+                  : `Answer a few questions so ${booking.businessName} can prepare before you meet.`}
+              </p>
+            </div>
+            <Link
+              href={booking.caseId ? `/case/workflows/${booking.caseId}` : `/case/workflows/new/${booking.caseDomain}?booking=${booking.id}`}
+              className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-strong"
+            >
+              {booking.caseId ? "Open case" : "Start intake"}
+            </Link>
+          </CardContent>
+        </Card>
+      )}
 
       {booking.status === "completed" && (
         <Card className="mt-6">
