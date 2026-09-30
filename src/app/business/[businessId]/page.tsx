@@ -23,6 +23,7 @@ interface Dashboard {
     completedUnpaid: number;
     newClients30Days: number;
     lowStockRemedies: number;
+    paymentsToConfirm: number;
     ratingAverage: number | null;
     ratingCount: number;
     revenueMonthEtb: number | null;
@@ -78,6 +79,7 @@ function SetupChecklist({ hasServices, hasHours }: { hasServices: boolean; hasHo
     { done: true, label: "Create your business", href: `${base}/settings` },
     { done: hasServices, label: "Add at least one service with a price", href: `${base}/services` },
     { done: hasHours, label: "Set your opening hours", href: `${base}/hours` },
+    { done: Boolean(business.paymentAccounts?.telebirr || business.paymentAccounts?.banks?.length), label: "Add your telebirr or bank details so clients can pay you", href: `${base}/settings#payments` },
     { done: business.status === "pending_verification" || business.status === "verified", label: "Request verification to appear in the marketplace", href: `${base}/settings#verification` },
   ];
   const doneCount = steps.filter((step) => step.done).length;
@@ -156,8 +158,15 @@ export default function DashboardPage() {
         <Kpi icon={Star} label="Rating" value={kpis.ratingAverage !== null ? kpis.ratingAverage.toFixed(1) : "—"} hint={`${kpis.ratingCount} reviews`} tone="gold" href={`${base}/reviews`} />
       </div>
 
-      {(kpis.completedUnpaid > 0 || kpis.lowStockRemedies > 0) && (
+      {(kpis.completedUnpaid > 0 || kpis.lowStockRemedies > 0 || kpis.paymentsToConfirm > 0) && (
         <div className="grid gap-3 sm:grid-cols-2">
+          {kpis.paymentsToConfirm > 0 && can("viewFinance") && (
+            <Link href={`${base}/payments`} className="flex items-center gap-3 rounded-2xl border border-brand/40 bg-brand/10 p-4 text-sm">
+              <Wallet className="size-5 text-brand" aria-hidden="true" />
+              <span className="flex-1 text-foreground"><strong>{kpis.paymentsToConfirm}</strong> client {kpis.paymentsToConfirm === 1 ? "payment" : "payments"} to confirm</span>
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          )}
           {kpis.completedUnpaid > 0 && can("recordPayments") && (
             <Link href={`${base}/bookings?status=completed`} className="flex items-center gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-4 text-sm">
               <AlertTriangle className="size-5 text-warning" aria-hidden="true" />

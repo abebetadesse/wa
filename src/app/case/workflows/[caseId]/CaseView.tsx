@@ -1,9 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CalendarClock, CreditCard, Save } from "lucide-react";
-import type { OwnerView } from "@/server/cases/views";
+import { ArrowLeft, CalendarClock, Save } from "lucide-react";
+import type { OwnerView as BaseOwnerView } from "@/server/cases/views";
+import type { PaymentAttempt } from "@/server/cases/billing";
+import { PayPanel } from "@/features/payments/PayPanel";
 import { ApiClientError, apiFetch, errorMessage } from "@/lib/api/client";
 import {
   Alert,
@@ -22,15 +23,22 @@ import {
   PageHeader,
   Textarea,
 } from "@/components/ui";
-import { isApplicable, QuestionField, ReportView, ReviewStatus, StageProgress, SupportPanel } from "@/features/cases/components";
+import {
+  AnswersSummary,
+  CareActionPlan,
+  CarePathway,
+  isApplicable,
+  QuestionField,
+  ReportView,
+  ReviewStatus,
+  SupportPanel,
+  WhatHappensNext,
+} from "@/features/cases/components";
 import { STAGE_LABELS } from "../WorkflowHub";
 
 const POLL_MS = 30_000;
-const PAYMENT_METHODS = [
-  { value: "telebirr", label: "Telebirr" },
-  { value: "cbe_birr", label: "CBE Birr" },
-  { value: "chapa", label: "Chapa (card / bank)" },
-];
+
+type OwnerView = BaseOwnerView & { paymentAttempt?: PaymentAttempt | null };
 const FORMAT_LABELS: Record<string, string> = { video: "Video call", voice: "Voice call", chat: "Chat", in_person: "In person" };
 
 export function CaseView({ caseId }: { caseId: string }) {
@@ -74,10 +82,17 @@ export function CaseView({ caseId }: { caseId: string }) {
         <ArrowLeft className="size-4" aria-hidden="true" /> Your cases
       </ButtonLink>
       <PageHeader eyebrow={view.label} title="Your case" actions={<Badge tone={stage.tone}>{stage.label}</Badge>} className="mb-0" />
-      <StageProgress stage={view.stage} />
+      <CarePathway stage={view.stage} />
       <SupportPanel safety={view.safety} />
+      <WhatHappensNext stage={view.stage} />
 
       {(view.stage === "intake" || view.stage === "referred") && <IntakeForm view={view} onChange={setView} />}
+      {view.stage !== "intake" && view.stage !== "referred" && (
+        <AnswersSummary
+          answers={{ ...(view.safetyAnswers ?? {}), ...view.answers }}
+          questions={view.submittedQuestions ?? view.questions}
+        />
+      )}
       {view.review && <ReviewStatus review={view.review} />}
       {view.auditTrail && view.auditTrail.length > 0 && (
         <Card>
@@ -95,8 +110,11 @@ export function CaseView({ caseId }: { caseId: string }) {
         </Card>
       )}
       {view.report && <ReportView report={view.report} review={view.review} />}
+      {(view.stage === "full_report_released" || view.stage === "consultation_requested") && (
+        <CareActionPlan domain={view.domain} />
+      )}
       {/* Booking-opened cases are covered by the booking and meet the practitioner there. */}
-      {view.stage === "visible_to_user" && !view.bookingId && <PurchasePanel view={view} />}
+      {view.stage === "visible_to_user" && !view.bookingId && <PurchasePanel view={view} onChange={setView} />}
       {view.stage === "full_report_released" && !view.bookingId && <ConsultationForm view={view} onChange={setView} />}
       {view.bookingId && view.stage === "full_report_released" && (
         <Alert tone="success" title="Included with your booking">
@@ -105,7 +123,7 @@ export function CaseView({ caseId }: { caseId: string }) {
       )}
       {view.stage === "consultation_requested" && view.consultation && (
         <Alert tone="success" title="Consultation requested">
-          {FORMAT_LABELS[view.consultation.format]} · {view.consultation.feeEtb} ETB. Your practitioner will confirm a time from your suggestions:{" "}
+          {FORMAT_LABELS[view.consultation.format]} · {view.consultation.feeEtb > 0 ? `${view.consultation.feeEtb} ETB` : "free"}. Your practitioner will confirm a time from your suggestions:{" "}
           {view.consultation.preferredTimes.join(", ")}.
         </Alert>
       )}
@@ -123,6 +141,12 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
   const dirty = useRef(false);
 
   const questions = useMemo(() => view.questions.filter((question) => isApplicable(question, answers)), [view.questions, answers]);
+  const requiredQuestions = useMemo(() => questions.filter((q) => q.required), [questions]);
+  const answeredCount = useMemo(
+    () => requiredQuestions.filter((q) => answers[q.id] !== undefined && String(answers[q.id]).trim() !== "").length,
+    [requiredQuestions, answers]
+  );
+  const completionPercent = requiredQuestions.length > 0 ? Math.round((answeredCount / requiredQuestions.length) * 100) : 100;
 
   // Warn before leaving with unsaved answers.
   useEffect(() => {
@@ -193,6 +217,22 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
           <CardDescription>Answer in your own words. Nothing is shared until you submit, and only your reviewer sees your answers.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
+          {requiredQuestions.length > 0 && (
+            <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/20 p-3.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-muted-foreground">Required questions</span>
+                <span className="tabular-nums font-semibold text-foreground">
+                  {answeredCount} of {requiredQuestions.length} answered ({completionPercent}%)
+                </span>
+              </div>
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-border">
+                <div
+                  className="h-full rounded-full bg-brand transition-all duration-300"
+                  style={{ width: `${completionPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
           {questions.map((question) => (
             <div key={question.id} id={`question-${question.id}`}>
               <QuestionField question={question} value={answers[question.id]} error={errors[question.id]} onChange={(value) => update(question.id, value)} />
@@ -213,40 +253,20 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
 
 // ── Purchase ─────────────────────────────────────────────────────────────────
 
-function PurchasePanel({ view }: { view: OwnerView }) {
-  const router = useRouter();
-  const [method, setMethod] = useState("telebirr");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function onPurchase() {
-    setBusy(true);
-    setError(null);
-    try {
-      const { checkoutUrl } = await apiFetch<{ checkoutUrl: string }>(`/api/case-workflows/cases/${view.id}/purchase`, { method: "POST", json: { method } });
-      router.push(checkoutUrl);
-    } catch (err) {
-      setError(errorMessage(err));
-      setBusy(false);
-    }
-  }
-
+function PurchasePanel({ view, onChange }: { view: OwnerView; onChange: (view: OwnerView) => void }) {
+  const base = `/api/case-workflows/cases/${view.id}`;
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Unlock the full report</CardTitle>
-        <CardDescription>
-          {view.pricing.reportEtb} ETB, one time. Includes every section above and the option to book a follow-up consultation.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <ChoiceGroup name="payment-method" legend="Payment method" options={PAYMENT_METHODS} value={method} onChange={setMethod} />
-        {error && <Alert tone="danger">{error}</Alert>}
-        <Button onClick={onPurchase} disabled={busy} className="self-end">
-          <CreditCard className="size-4" aria-hidden="true" /> {busy ? "Opening checkout…" : `Pay ${view.pricing.reportEtb} ETB`}
-        </Button>
-      </CardContent>
-    </Card>
+    <PayPanel<OwnerView>
+      title="Unlock the full report"
+      description={`${view.pricing.reportEtb} ETB, one time. Includes every section above and the option to book a follow-up consultation.`}
+      amountEtb={view.pricing.reportEtb}
+      attempt={view.paymentAttempt}
+      endpoints={{ view: base, purchase: `${base}/purchase`, confirm: `${base}/purchase/confirm`, manual: `${base}/purchase/manual` }}
+      onUpdated={(next) => {
+        onChange(next);
+        if (next.stage === "full_report_released") window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+    />
   );
 }
 
@@ -280,7 +300,7 @@ function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view
     <Card>
       <CardHeader>
         <CardTitle>Book a follow-up consultation</CardTitle>
-        <CardDescription>{view.pricing.consultationEtb} ETB. Your practitioner confirms the time with you.</CardDescription>
+        <CardDescription>{view.pricing.consultationEtb > 0 ? `${view.pricing.consultationEtb} ETB` : "Free"}. Your practitioner confirms the time with you.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="flex flex-col gap-5">

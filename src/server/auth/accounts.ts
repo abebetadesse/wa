@@ -15,6 +15,8 @@ import { logAuditEvent, logLoginAttempt, logUserActivity } from "@/lib/audit";
 import { ApiError } from "@/lib/api/route";
 import { createOtpCode, createSecretToken, deliverCode, digest } from "./codes";
 import { resolveAndPersistLocationOnRegistration } from "@/lib/location/resolveOnRegistration";
+import { getSettings } from "@/server/settings";
+import { sendTelegramMessage, telegramStatus } from "./telegram";
 
 
 export const MAX_LOGIN_ATTEMPTS = 5;
@@ -162,7 +164,12 @@ async function issueVerification(user: { id: string; email: string }) {
   return deliverCode({ to: user.email, purpose: "email_verification", code: otpCode, token });
 }
 
+/**
+ * Email registration signs the person in straight away: no inbox verification step. Accounts can
+ * be verified later by connecting Telegram (see ./telegram.ts).
+ */
 export async function register(input: RegisterInput, meta: RequestMeta) {
+  if (!(await getSettings("registration")).open) throw ApiError.forbidden("New sign-ups are paused right now. Please try again later.");
   assertStrongPassword(input.password);
   assertMinimumAge(input.dateOfBirth);
   const phone = normalizePhone(input.phone);
@@ -200,7 +207,6 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     })
     .returning({ id: users.id });
 
-  const dev = await issueVerification({ id: created.id, email: input.email });
   await establishAuth({ id: created.id, role: "user" }, { request: meta.request });
   await logAuditEvent({
     userId: created.id,
@@ -236,8 +242,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     role: "user",
     preferredLanguage: input.preferredLanguage,
     isVerified: false,
-    requiresVerification: true,
-    ...dev,
+    requiresVerification: false,
   };
 }
 
@@ -286,8 +291,14 @@ export async function resendVerification(email: string | undefined, current: Aut
 
 // ── Password reset & change ──────────────────────────────────────────────────
 
-export async function requestPasswordReset(email: string) {
-  const message = "If an account matches that email address, a password reset link has been sent.";
+/**
+ * Reset links go to the account's connected Telegram (no email provider is configured). Without
+ * Telegram the person is told to contact support; the response never reveals whether the account exists.
+ */
+export async function requestPasswordReset(email: string, origin = "") {
+  const message = telegramStatus().configured
+    ? "If an account with that email has Telegram connected, we've sent a reset link there. Otherwise, please contact support."
+    : "If an account matches that email address, please contact support to reset your password.";
   const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (!user || !user.isActive || user.isSuspended) return { message };
 
@@ -296,6 +307,11 @@ export async function requestPasswordReset(email: string) {
   await db.insert(passwordResets).values({ userId: user.id, token: digest(token), expiresAt: new Date(Date.now() + RESET_TTL_MS) });
   await logAuditEvent({ userId: user.id, action: "password_reset_requested", resourceType: "user", resourceId: user.id, details: { email } });
   await logUserActivity({ userId: user.id, activityType: "security", description: "Password reset token requested" });
+  if (user.telegramId) {
+    const base = (process.env.APP_URL || origin).replace(/\/$/, "");
+    const url = `${base}/auth/reset-password?token=${token}`;
+    await sendTelegramMessage(user.telegramId, `Password reset requested for ${user.email}. The link works once and expires in 1 hour. If this wasn't you, ignore this message.`, { url, label: "Reset password" });
+  }
   return { message, ...(await deliverCode({ to: user.email, purpose: "password_reset", token })) };
 }
 

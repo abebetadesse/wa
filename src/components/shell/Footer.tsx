@@ -5,15 +5,14 @@ import Link from "next/link";
 import { Sparkles, ShieldCheck, Mail, ArrowRight, Check } from "lucide-react";
 import { ETHIOPIAN_LOCATIONS } from "@/lib/location/ethiopiaLocations";
 import { KNOWLEDGE_STRANDS } from "@/lib/knowledge/catalog";
-import { AUTH_STATE_CHANGED } from "@/lib/auth/clientEvents";
-import { getClientUser, invalidateClientUser } from "@/lib/auth/clientState";
+import { useExplore } from "@/features/toolkit/useExplore";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [currentYear, setCurrentYear] = useState(2026);
   const [foodCount, setFoodCount] = useState<number | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const explore = useExplore();
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -29,29 +28,6 @@ export default function Footer() {
       .catch(() => { });
     return () => {
       cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    const refreshAdminAccess = () => {
-      getClientUser({ force: true }).then((user) => {
-        if (!cancelled) {
-          setIsAdmin(user?.role === "admin" || user?.role === "super_admin");
-        }
-      });
-    };
-
-    refreshAdminAccess();
-    const handleAuthChange = () => {
-      invalidateClientUser();
-      refreshAdminAccess();
-    };
-    window.addEventListener(AUTH_STATE_CHANGED, handleAuthChange);
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener(AUTH_STATE_CHANGED, handleAuthChange);
     };
   }, []);
 
@@ -136,100 +112,27 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Platform Navigation */}
-          <div>
-            <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4 font-mono">
-              Care pathways
-            </h4>
-            <ul className="space-y-2.5 text-xs">
-              <li>
-                <Link href="/case/spiritual/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                  <span>Spiritual healing &amp; divination</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/case/wellbeing/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                  <span>Scientific &amp; body care</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/case/career/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                  <span>Life timing &amp; work guidance</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/case/relationships/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-pink-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-pink-400/70 transition-colors group-hover:bg-pink-300" aria-hidden="true" />
-                  <span>Family &amp; relationship balance</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/case/legal/intake" className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-purple-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400/70 transition-colors group-hover:bg-purple-300" aria-hidden="true" />
-                  <span>Community wisdom &amp; conflict care</span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Knowledge & Safety Infrastructure — admin-only */}
-          {isAdmin && (
-            <div>
-              <h4 className="mb-4 border-b border-white/10 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200 font-mono">
-                Evidence Repositories
-              </h4>
-              <ul className="space-y-2.5 text-xs">
-                <li>
-                  <Link
-                    href="/foods"
-                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
-                    <span>EFCT 2025 Food Matrix {foodCount !== null ? `(${foodCount} Items)` : ""}</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/safety"
-                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                    <span>ETM-DB Herb-Drug Safety Matrix</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/atlas"
-                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-cyan-300"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/70 transition-colors group-hover:bg-cyan-300" aria-hidden="true" />
-                    <span>Altitude-Calibrated Regional Atlas</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/cultural"
-                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70 transition-colors group-hover:bg-amber-300" aria-hidden="true" />
-                    <span>Ge&apos;ez Fidel Gematria &amp; Calendar</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/audit"
-                    className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/70 transition-colors group-hover:bg-emerald-300" aria-hidden="true" />
-                    <span>Immutable Compliance Ledger</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          )}
+          {/* Col 2–3: care pathways and evidence repositories, managed in Admin → Healer toolkit. */}
+          {(["care_pathway", "evidence"] as const).map((groupKey) => {
+            const group = explore?.groups.find((entry) => entry.group === groupKey);
+            if (!group) return null;
+            const accent = groupKey === "care_pathway" ? "bg-amber-400/70 group-hover:bg-amber-300" : "bg-cyan-400/70 group-hover:bg-cyan-300";
+            return (
+              <div key={groupKey}>
+                <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4 font-mono">{group.label}</h4>
+                <ul className="space-y-2.5 text-xs">
+                  {group.tools.slice(0, 7).map((tool) => (
+                    <li key={tool.key}>
+                      <Link href={tool.href} title={tool.description} className="group inline-flex items-center gap-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:text-amber-300">
+                        <span className={`h-1.5 w-1.5 rounded-full transition-colors ${accent}`} aria-hidden="true" />
+                        <span>{tool.name}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
 
           {/* Col 4: Platform Scale & Community Verification */}
           <div className="space-y-3">

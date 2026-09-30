@@ -165,18 +165,6 @@ export function startPayment(record: WorkflowCase, payment: Omit<PaymentRecord, 
   return { ...record, payment: { ...payment, status: "pending", createdAt: now() }, updatedAt: now() };
 }
 
-export function confirmPayment(record: WorkflowCase, purchaseId: string, providerReference: string): WorkflowCase {
-  if (record.payment?.status === "confirmed" && record.payment.purchaseId === purchaseId) return record;
-  assertStage(record, ["visible_to_user"], "confirm a payment");
-  if (!record.payment || record.payment.purchaseId !== purchaseId) throw ApiError.badRequest("Unknown purchase for this case.");
-  return {
-    ...record,
-    stage: "full_report_released",
-    payment: { ...record.payment, status: "confirmed", providerReference, confirmedAt: now() },
-    updatedAt: now(),
-  };
-}
-
 export function requestConsultation(
   record: WorkflowCase,
   input: Pick<ConsultationRecord, "format" | "preferredTimes" | "note">,
@@ -199,18 +187,37 @@ export function requestConsultation(
 export function releaseWithBooking(record: WorkflowCase): WorkflowCase {
   if (!record.bookingId) throw ApiError.conflict("Only booking-linked cases are released with their booking.");
   assertStage(record, ["visible_to_user"], "release the report");
+  return released(record, { purchaseId: `booking:${record.bookingId}`, amountEtb: 0, method: "booking", provider: "business", providerReference: record.bookingId });
+}
+
+/** Releases the full report without payment (free mode, or a report priced at zero). */
+export function releaseFree(record: WorkflowCase): WorkflowCase {
+  assertStage(record, ["visible_to_user"], "release the report");
+  return released(record, { purchaseId: `free:${record.id}`, amountEtb: 0, method: "free", provider: "platform" });
+}
+
+/**
+ * Credits a payment confirmed by the payment service (Chapa verify or an administrator's review).
+ * Repeating the same purchase is a no-op, so webhooks, return URLs and retries can all call it.
+ */
+export function settlePayment(record: WorkflowCase, payment: { purchaseId: string; amountEtb: number; method: string; provider: string; reference: string }): WorkflowCase {
+  if (record.payment?.status === "confirmed") {
+    if (record.payment.purchaseId === payment.purchaseId) return record;
+    throw ApiError.conflict("This report was already paid for with another payment.");
+  }
+  assertStage(record, ["visible_to_user"], "confirm a payment");
+  return released(record, { purchaseId: payment.purchaseId, amountEtb: payment.amountEtb, method: payment.method, provider: payment.provider, providerReference: payment.reference });
+}
+
+function released(record: WorkflowCase, payment: Omit<PaymentRecord, "status" | "createdAt" | "confirmedAt">): WorkflowCase {
   const timestamp = now();
   return {
     ...record,
     stage: "full_report_released",
     payment: {
+      ...payment,
       status: "confirmed",
-      purchaseId: `booking:${record.bookingId}`,
-      amountEtb: 0,
-      method: "booking",
-      provider: "business",
-      providerReference: record.bookingId,
-      createdAt: timestamp,
+      createdAt: record.payment?.purchaseId === payment.purchaseId ? record.payment.createdAt : timestamp,
       confirmedAt: timestamp,
     },
     updatedAt: timestamp,

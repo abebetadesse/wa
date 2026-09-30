@@ -18,6 +18,14 @@ const PUBLIC_API_PATHS = [
   "/api/nutrition/overview",
   "/api/atlas",
   "/api/profile",
+  // Public, non-secret settings for the sign-in screen (the route itself allows anonymous access).
+  "/api/platform/",
+  // Chapa calls these server-to-server without a session; each payment is re-verified with Chapa.
+  "/api/payments/chapa/",
+  // The Explore menu is shown to visitors too; the route filters tools by audience.
+  "/api/toolkit/explore",
+  // The medicine & remedy safety matrix is a public reference.
+  "/api/safety/",
 ];
 
 const PUBLIC_PAGE_PATHS = [

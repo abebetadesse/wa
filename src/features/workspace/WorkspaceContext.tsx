@@ -25,6 +25,12 @@ export interface WorkspaceBusiness {
   verification: { submittedAt?: string; reviewedAt?: string; notes?: string; credentials?: { label: string; issuer?: string; reference?: string }[] } | null;
   ratingAverage: string | null;
   ratingCount: number;
+  paymentAccounts: {
+    telebirr?: { name: string; phone: string } | null;
+    banks?: { bank: string; accountName: string; accountNumber: string }[];
+    acceptsCash?: boolean;
+    instructions?: string;
+  } | null;
   category: { id: string; name: string; sector: string };
   myRole: MemberRole;
 }

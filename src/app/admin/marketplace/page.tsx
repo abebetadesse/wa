@@ -25,6 +25,7 @@ interface QueueItem {
   };
   category: string;
   ownerEmail: string;
+  ownerTelegramVerifiedAt: string | null;
   ownerName: string | null;
 }
 
@@ -104,6 +105,7 @@ function VerificationQueue({ status }: { status: string }) {
                 {item.business.tagline && <p className="text-sm text-muted-foreground">{item.business.tagline}</p>}
                 <p className="mt-1 text-xs text-muted-foreground">
                   {item.ownerName ?? "Owner"} · {item.ownerEmail}{item.business.phone ? ` · ${item.business.phone}` : ""}{item.business.city ? ` · ${item.business.city}` : ""}
+                  {item.ownerTelegramVerifiedAt && <Badge tone="success" className="ml-2">Telegram verified</Badge>}
                   {item.business.verification?.submittedAt && ` · submitted ${new Date(item.business.verification.submittedAt).toLocaleDateString()}`}
                 </p>
                 {item.business.verification?.credentials && item.business.verification.credentials.length > 0 && (

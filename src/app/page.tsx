@@ -4,6 +4,7 @@ import { ArrowRight, BadgeCheck, CalendarCheck, HeartHandshake, Leaf, MessageCir
 import { directoryFacets, searchDirectory } from "@/server/marketplace/businesses";
 import { BusinessCard } from "@/features/marketplace/shared";
 import { ButtonLink } from "@/components/ui";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
 
 async function loadHome() {
   try {
-    const [facets, featured] = await Promise.all([directoryFacets(), searchDirectory({ sort: "rating", page: 1, limit: 6 })]);
+    const viewer = await getAuthenticatedUser().catch(() => null);
+    const [facets, featured] = await Promise.all([directoryFacets(viewer), searchDirectory({ sort: "rating", page: 1, limit: 6 }, viewer)]);
     return { facets, featured };
   } catch (error) {
     console.error("[home] marketplace data unavailable:", error);
@@ -92,7 +94,7 @@ export default async function HomePage() {
             {[
               { title: "Healing traditions", icon: Leaf, items: healing, sector: "healing" },
               { title: "Cultural services", icon: HeartHandshake, items: cultural, sector: "cultural" },
-            ].map((group) => (
+            ].filter((group) => group.items.length > 0).map((group) => (
               <div key={group.title} className="rounded-3xl border border-border bg-card/70 p-6">
                 <h3 className="flex items-center gap-2 font-display text-lg font-bold text-foreground">
                   <group.icon className={group.sector === "cultural" ? "size-5 text-gold" : "size-5 text-brand"} aria-hidden="true" /> {group.title}

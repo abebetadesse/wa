@@ -18,6 +18,10 @@ import {
   Menu,
   X,
   Radio,
+  Compass,
+  Pill,
+  UserCheck,
+  Wallet,
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -63,6 +67,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navLinks = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { href: "/admin/marketplace", label: "Marketplace", icon: ShieldAlert },
+    { href: "/admin/toolkit", label: "Healer toolkit", icon: Compass },
+    { href: "/admin/safety", label: "Safety matrix", icon: Pill },
+    { href: "/admin/payments", label: "Payments & pricing", icon: Wallet },
+    { href: "/admin/sign-up", label: "Sign-up & Telegram", icon: UserCheck },
     { href: "/admin/users", label: "Users & Accounts", icon: Users },
     { href: "/admin/roles", label: "Roles & Permissions", icon: KeyRound },
     { href: "/admin/knowledge", label: "Knowledge Base", icon: BookOpen },

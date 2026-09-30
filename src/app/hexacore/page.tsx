@@ -1,4 +1,6 @@
+import Link from "next/link";
 import HexacoreOrrery from "@/components/cultural/HexacoreOrrery";
+import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
 import { Sparkles, Shield, Compass, Calendar, BookOpen, Layers } from "lucide-react";
 
 export const metadata = {
@@ -59,6 +61,21 @@ export default function HexacorePage() {
 
       {/* Grand Orrery & Multi-Layer System */}
       <HexacoreOrrery />
+
+      {/* Connects the reflection to real practice: debteras who offer readings, and the reading pathway. */}
+      <section aria-labelledby="hexacore-practice" className="grid gap-4 lg:grid-cols-[1fr_1.4fr] lg:items-start">
+        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 id="hexacore-practice" className="text-xl font-bold text-white">Reflect on it with a debtera</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            The arcana is a map for reflection. To explore your own name and season in depth, start the Spiritual &amp; Life Direction pathway, or book a debtera who offers readings and will review it with you.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/case/workflows/new/spiritual" className="btn-pill-primary">Start the reading pathway</Link>
+            <Link href="/safety" className="btn-pill-secondary">Check plants against medicines</Link>
+          </div>
+        </div>
+        <PathwayPractitioners domain="spiritual" />
+      </section>
     </main>
   );
 }

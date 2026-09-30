@@ -1,99 +1,64 @@
 "use client";
 
-import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { ArrowLeft, KeyRound } from "lucide-react";
+import { apiFetch, errorMessage } from "@/lib/api/client";
+import { Alert, Button, Card, CardContent, Field, Input, PageShell } from "@/components/ui";
 
+/**
+ * Reset links are sent to the account's connected Telegram. In development with AUTH_DEV_CODES=true
+ * the server also returns the token so the flow can be tested without Telegram.
+ */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [token, setToken] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ message: string; demoResetToken?: string } | null>(null);
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
     try {
-      const res = await fetch("/api/auth/password/forgot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Request failed");
-      setSuccess(data.data?.message || "Reset token generated.");
-      if (data.data?.demoResetToken) setToken(data.data?.demoResetToken);
+      setResult(await apiFetch<{ message: string; demoResetToken?: string }>("/api/auth/password/forgot", { method: "POST", json: { email } }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed.");
+      setError(errorMessage(err));
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }
 
   return (
-    <main className="min-h-screen py-16 px-4 flex items-center justify-center">
-      <div className="w-full max-w-md glass-panel p-8 rounded-2xl border border-white/10 shadow-2xl">
-        <Link href="/auth" className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-white mb-6">
-          <ArrowLeft size={14} /> Back to Sign In
-        </Link>
-        <h1 className="text-2xl font-bold text-white mb-2">Forgot Password</h1>
-        <p className="text-sm text-slate-400 mb-6">
-          Enter your account email. We will generate a secure one-hour password reset token.
-        </p>
-
-        {error && (
-          <div className="mb-4 p-3 bg-rose-950/50 border border-rose-500/40 rounded-xl flex items-center gap-2.5 text-rose-300 text-sm">
-            <AlertCircle size={16} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-4 p-3 bg-emerald-950/50 border border-emerald-500/40 rounded-xl flex items-center gap-2.5 text-emerald-300 text-sm">
-            <CheckCircle2 size={16} />
-            <span>{success}</span>
-          </div>
-        )}
-
-        <form onSubmit={submit} className="space-y-4">
+    <PageShell width="narrow">
+      <Link href="/auth" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="size-4" aria-hidden="true" /> Back to sign in
+      </Link>
+      <Card>
+        <CardContent className="flex flex-col gap-5 p-6 sm:p-8">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Email Address</label>
-            <div className="relative">
-              <Mail size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@domain.et"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+            <KeyRound className="size-8 text-brand" aria-hidden="true" />
+            <h1 className="mt-3 font-display text-2xl font-extrabold text-foreground">Reset your password</h1>
+            <p className="mt-1 text-sm text-muted-foreground">If your account has Telegram connected, we&apos;ll send a one-time reset link there. It expires in one hour.</p>
           </div>
-
-          {token && (
-            <div className="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl text-amber-300 text-xs">
-              <strong>Password Reset Token:</strong>
-              <div className="font-mono text-[11px] bg-black/50 p-2 rounded mt-1 break-all text-emerald-400">
-                {token}
-              </div>
-              <Link
-                href={`/auth/reset-password?token=${token}`}
-                className="mt-2 inline-block text-xs font-semibold text-amber-300 underline"
-              >
-                Proceed to Reset Password Page →
-              </Link>
-            </div>
+          {result ? (
+            <>
+              <Alert tone="success">{result.message}</Alert>
+              {result.demoResetToken && (
+                <Alert tone="warning" title="Development only">
+                  <Link href={`/auth/reset-password?token=${result.demoResetToken}`} className="font-semibold text-brand underline">Open the reset page</Link>
+                </Alert>
+              )}
+            </>
+          ) : (
+            <form onSubmit={submit} className="flex flex-col gap-4">
+              <Field label="Account email" required>{(control) => <Input {...control} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />}</Field>
+              {error && <Alert tone="danger">{error}</Alert>}
+              <Button type="submit" size="lg" disabled={busy || !email}>{busy ? "Sending…" : "Send reset link"}</Button>
+            </form>
           )}
-
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3 rounded-xl font-semibold">
-            {loading ? "Sending..." : "Request Password Reset"}
-          </button>
-        </form>
-      </div>
-    </main>
+        </CardContent>
+      </Card>
+    </PageShell>
   );
 }

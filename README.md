@@ -56,9 +56,10 @@ The registration flow:
 4. Enforces the current minimum registration age.
 5. Prevents duplicate email and phone accounts.
 6. Creates the user with the default user role.
-7. Creates an email-verification record and one-time verification code.
-8. Establishes an authenticated session so the user can continue onboarding.
-9. Writes audit and activity events.
+7. Signs the person in straight away. There is no email-verification step.
+8. Writes audit and activity events.
+
+Administrators can pause sign-ups under **Admin → Sign-up & Telegram**. Accounts are verified by connecting Telegram from `/account` (Telegram Login Widget, verified server-side with the bot token). A connected Telegram also enables one-tap sign-in, notification forwarding and password-reset links. Administrators can require Telegram for business owners before a business is submitted for listing.
 
 Login is handled by `POST /api/auth/login`.
 
@@ -394,6 +395,27 @@ npm install
 ### Environment
 
 Create a local `.env` file using the deployment configuration as a guide. Never commit credentials or production secrets. Database, authentication, email, and integration variables are read by the relevant modules under `src/lib`.
+
+| Variable | Needed for |
+|---|---|
+| `DATABASE_URL`, `AUTH_SECRET`, `DATA_ENCRYPTION_KEY` | Always |
+| `APP_URL` | Production: public base URL for invitation, payment-return and Telegram links (e.g. `https://example.et`) |
+| `CHAPA_SECRET_KEY` | Online payments via Chapa (cards, telebirr, CBE Birr, M-Pesa). A `CHASECK_TEST-…` key runs in test mode |
+| `CHAPA_WEBHOOK_SECRET` | Optional: checks Chapa webhook signatures. Payments are always re-verified with Chapa's API |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` | Telegram verification, sign-in, notifications and password resets. Create the bot with @BotFather and link your domain with `/setdomain` (Telegram does not allow localhost) |
+
+In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Apply the latest migration with `npm run db:apply drizzle/0006_payments_and_telegram.sql`.
+
+### Payments
+
+Administrators control payments under **Admin → Payments & pricing**:
+
+- **Free mode**: everything the platform charges for is free, and reports unlock on approval.
+- **Methods**: Chapa checkout; telebirr, either inside Chapa or sent to the platform's number and confirmed by an admin; bank transfer to the platform's accounts, confirmed by an admin.
+- **Prices** per case type (0 means free), and whether clients can report payments to businesses.
+- **Review queue** for manual payments, plus totals. Duplicate or underpaid payments are flagged under "Needs attention" and never unlock anything.
+
+Businesses add their own telebirr number and bank accounts under **Settings → How clients pay you**. Clients pay the business directly and submit the transaction number from their booking. The business confirms or rejects it under **Payments**. The platform never holds business money.
 
 ### Start the development server
 

@@ -960,7 +960,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Light gives meaning; Order gives it boundary. Spirit without Order becomes chaos; Order without Spirit becomes empty law.",
     practice: "Meditation, deep breathwork, dawn greeting",
     bodySign: "Crown, breath",
-    herb: "Frankincense",
+    herb: "Frankincense (Itan)",
     soundHz: 963,
   },
   {
@@ -971,7 +971,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Order creates space for connection. Boundaries are not walls; they are the banks that let the river of Humanity flow.",
     practice: "Set intentions, organize weekly routines, establish limits",
     bodySign: "Nervous system, skin",
-    herb: "Fennel (Tena Adam)",
+    herb: "Rue (Tena Adam)",
     soundHz: 852,
   },
   {
@@ -982,7 +982,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Creation needs Power to emerge. The seed must push through soil. Power without Creation is force without fruit.",
     practice: "Make something tangible with your hands; plant, build, or craft",
     bodySign: "Womb, hands",
-    herb: "Basil (Tikur Azmud)",
+    herb: "Black seed (Tikur Azmud)",
     soundHz: 528,
   },
   {
@@ -993,7 +993,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Power governs time; Order gives Power its seasons. The sun rules the day, the moon rules the night—each within its law.",
     practice: "Act decisively, take leadership, make difficult decisions",
     bodySign: "Spine, blood",
-    herb: "Nettle (Withania somnifera)",
+    herb: "Ashwagandha (Gizawa)",
     soundHz: 741,
   },
   {
@@ -1004,7 +1004,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Humanity is the bridge between depths and heights. Spirit gives Humanity its wings; Humanity gives Spirit its heart.",
     practice: "Connect deeply, listen without speaking, serve, forgive",
     bodySign: "Heart, hands",
-    herb: "Rose (Rosa abyssinica)",
+    herb: "Wild rose (Kega)",
     soundHz: 396,
   },
   {
@@ -1015,7 +1015,7 @@ export const CREATION_DAY_MAPPINGS: CreationDayMapping[] = [
     relationalMeaning: "Peace crowns creation. Humanity is made for rest, not endless toil. On the sixth day, the work is good—and Peace is the verdict.",
     practice: "Rest, heal, forgive self, practice stillness",
     bodySign: "Navel, feet",
-    herb: "Chamomile (Kosso / Hagenia)",
+    herb: "Kosso (Hagenia abyssinica)",
     soundHz: 432,
   },
 ];
@@ -1036,7 +1036,7 @@ export const CROSS_SYSTEM_TRADITIONS: Record<HexacoreName, Record<string, string
 export const ETHIOPIAN_HERBAL_INTEGRATION: EthiopianHerbDetail[] = [
   {
     core: "Power",
-    herb: "Withania somnifera (Grawa / Ashwagandha)",
+    herb: "Withania somnifera (Gizawa / Ashwagandha)",
     scientificName: "Withania somnifera",
     preparation: "Root powder in warm milk or water",
     activeIngredient: "Withanolides, alkaloids",

@@ -1,7 +1,8 @@
 import { and, asc, desc, eq, gte, inArray, lt, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { bookings, businessClients, businesses, businessMembers, payments, serviceKinds, services, users } from "@/lib/db/schema";
+import { bookings, businessClients, businesses, businessMembers, payments, remedies, remedyIngredients, serviceKinds, services, users } from "@/lib/db/schema";
+import { screenBookingSafety } from "@/server/safety";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability, roleCan, type MemberRole } from "./access";
@@ -72,6 +73,22 @@ function safetyFlags(answers?: z.infer<typeof safetyAnswers>) {
   return flags;
 }
 
+/** Runs the client's medicines against this business's remedies through the safety matrix. */
+async function matrixFlags(businessId: string, answers: z.infer<typeof safetyAnswers>) {
+  const rows = await db
+    .select({ remedy: remedies.name, ingredient: remedyIngredients.name })
+    .from(remedies)
+    .leftJoin(remedyIngredients, eq(remedyIngredients.remedyId, remedies.id))
+    .where(and(eq(remedies.businessId, businessId), eq(remedies.isActive, true)));
+  const remedyNames = [...new Set(rows.flatMap((row) => [row.remedy, row.ingredient]).filter((name): name is string => Boolean(name)))];
+  const screen = await screenBookingSafety({
+    medicinesText: answers.takingMedicines === "yes" ? answers.medicines : undefined,
+    pregnant: answers.pregnantOrBreastfeeding === "yes",
+    remedyNames,
+  });
+  return screen.flags;
+}
+
 // ── Notification fan-out ─────────────────────────────────────────────────────
 
 async function staffToNotify(tx: Tx, businessId: string) {
@@ -126,6 +143,9 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
 
   const endsAt = new Date(input.startsAt.getTime() + service.durationMinutes * 60_000);
   const flags = safetyFlags(input.safety);
+  if (input.safety && (input.safety.takingMedicines === "yes" || input.safety.pregnantOrBreastfeeding === "yes")) {
+    flags.push(...(await matrixFlags(businessId, input.safety)));
+  }
 
   const booking = await db.transaction(async (tx) => {
     // Serialise concurrent requests for the same business so the slot check and insert agree.

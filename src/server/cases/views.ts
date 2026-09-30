@@ -42,9 +42,11 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
       evidence: record.safety.evidence ?? null,
       support: record.safety.support ?? null,
     },
+    safetyAnswers: record.safetyAnswers,
     answers: record.answers,
     context: record.context,
     questions: record.stage === "intake" || record.stage === "referred" ? config.questions(record.answers) : [],
+    submittedQuestions: [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)].map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] })),
     review: REVIEW_STAGES.has(record.stage) || approved
       ? {
           status: record.stage === "awaiting_expert" ? "queued" : record.stage === "in_review" ? "in_review" : "approved",

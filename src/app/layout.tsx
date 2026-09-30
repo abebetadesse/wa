@@ -5,6 +5,7 @@ import Footer from "../components/shell/Footer";
 import ClientProviders from "../components/shell/ClientProviders";
 import PwaRegister from "../components/shell/PwaRegister";
 import AuthGate from "../components/shell/AuthGate";
+import { ToolUsageTracker } from "@/features/toolkit/ToolUsageTracker";
 import GlobalLayers from "../components/layout/GlobalLayers";
 import "../styles/globals.css";
 import "../styles/hud-effects.css";
@@ -59,6 +60,7 @@ export default function RootLayout({
         <ClientProviders>
           <PwaRegister />
           <Navbar />
+          <ToolUsageTracker />
           <main className="flex-grow relative z-10">
             <Suspense
               fallback={

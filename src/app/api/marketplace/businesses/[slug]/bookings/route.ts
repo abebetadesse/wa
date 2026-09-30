@@ -9,6 +9,6 @@ export const POST = defineRoute({
   rateLimit: { limit: 20, windowMs: 60 * 60_000 },
   params: z.object({ slug: z.string().min(1).max(120) }),
   body: bookingRequest,
-  handler: async ({ user, params, body }) => requestBooking(user, await resolvePublicBusinessId(params.slug), body),
+  handler: async ({ user, params, body }) => requestBooking(user, await resolvePublicBusinessId(params.slug, user), body),
   audit: { action: "booking_requested", resourceType: "booking", resourceId: (_ctx, booking) => booking.id },
 });

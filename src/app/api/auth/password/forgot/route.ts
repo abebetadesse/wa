@@ -7,5 +7,5 @@ export const POST = defineRoute({
   access: "public",
   rateLimit: { limit: 5, windowMs: 15 * MINUTE },
   body: z.object({ email: z.string().trim().toLowerCase().min(1, "Please enter your registered email address.") }),
-  handler: ({ body }) => requestPasswordReset(body.email),
+  handler: ({ req, body }) => requestPasswordReset(body.email, req.nextUrl.origin),
 });

@@ -11,6 +11,7 @@ import { useToast } from "@/features/feedback/Toaster";
 import { BookingStatusBadge, PaymentStatusBadge, formatWhen } from "@/features/marketplace/status";
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
+import { BookingPayments } from "@/features/payments/BookingPayments";
 
 interface BookingDetail {
   id: string;
@@ -174,6 +175,10 @@ export default function BookingDetailPage() {
             </Link>
           </CardContent>
         </Card>
+      )}
+
+      {Number(booking.priceEtb) > 0 && booking.status !== "declined" && (
+        <BookingPayments bookingId={booking.id} businessName={booking.businessName} active={booking.status !== "cancelled"} />
       )}
 
       {booking.status === "completed" && (

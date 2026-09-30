@@ -14,3 +14,6 @@ export * from "./caseEvaluationPipeline";
 // Enhancement tables (bio-narratives, case summary cards, publishing criteria)
 // are exported from users.ts above
 export * from "./marketplace";
+export * from "./platform";
+export * from "./toolkit";
+export * from "./safety";

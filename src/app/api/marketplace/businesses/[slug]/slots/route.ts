@@ -7,5 +7,5 @@ export const GET = defineRoute({
   access: "public",
   params: z.object({ slug: z.string().min(1).max(120) }),
   query: slotQuery,
-  handler: async ({ params, query }) => availableSlots(await resolvePublicBusinessId(params.slug), query),
+  handler: async ({ params, query, user }) => availableSlots(await resolvePublicBusinessId(params.slug, user), query),
 });

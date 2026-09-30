@@ -2,10 +2,12 @@
 import { and, asc, desc, eq, gte, ilike, inArray, isNull, lt, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { bookings, businessClients, businesses, payments, remedies, reviews, services } from "@/lib/db/schema";
+import { bookings, businessClients, businesses, businessMembers, payments, remedies, reviews, services } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
-import { requireCapability, roleCan } from "./access";
+import { requireCapability, roleCan, type MemberRole } from "./access";
+import { notify } from "./notifications";
+import { getSettings } from "@/server/settings";
 import { paymentStatus } from "./bookingRules";
 import { todayIn, localToUtc, addDays } from "./time";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
@@ -164,6 +166,150 @@ export async function voidPayment(user: AuthenticatedUser, businessId: string, p
   });
 }
 
+// ── Payments reported by clients ─────────────────────────────────────────────
+//
+// A client who paid a business by telebirr or bank transfer submits the transaction number from
+// their booking. It stays "pending" (not counted anywhere) until the business confirms it against
+// its own statement; confirming turns it into an ordinary recorded payment.
+
+export const clientPaymentInput = z.object({
+  method: z.enum(["telebirr", "bank_transfer"]),
+  amountEtb: z.coerce.number().positive("Enter the amount you paid.").max(10_000_000),
+  reference: z.string().trim().min(4, "Enter the transaction number from your receipt.").max(60).regex(/^[A-Za-z0-9 _./-]+$/, "Use only the letters and numbers from your receipt."),
+  note: z.string().trim().max(500).optional(),
+});
+
+async function clientBooking(user: AuthenticatedUser, bookingId: string) {
+  const [row] = await db
+    .select({
+      id: bookings.id,
+      reference: bookings.reference,
+      status: bookings.status,
+      priceEtb: bookings.priceEtb,
+      clientId: bookings.clientId,
+      businessId: bookings.businessId,
+      businessName: businesses.name,
+      timezone: businesses.timezone,
+      accounts: businesses.paymentAccounts,
+      paidEtb: sql<string>`coalesce((select sum(${payments.amountEtb}) from ${payments} where ${payments.bookingId} = ${bookings.id} and ${payments.status} = 'recorded'), 0)`,
+      pendingEtb: sql<string>`coalesce((select sum(${payments.amountEtb}) from ${payments} where ${payments.bookingId} = ${bookings.id} and ${payments.status} = 'pending'), 0)`,
+    })
+    .from(bookings)
+    .innerJoin(businesses, eq(businesses.id, bookings.businessId))
+    .where(and(eq(bookings.id, bookingId), eq(bookings.bookedByUserId, user.id)))
+    .limit(1);
+  if (!row) throw ApiError.notFound("Booking");
+  return row;
+}
+
+export async function bookingPaymentsForClient(user: AuthenticatedUser, bookingId: string) {
+  const booking = await clientBooking(user, bookingId);
+  const [settings, submissions] = await Promise.all([
+    getSettings("payments"),
+    db
+      .select({ id: payments.id, amountEtb: payments.amountEtb, method: payments.method, reference: payments.reference, status: payments.status, reason: payments.voidReason, createdAt: payments.createdAt })
+      .from(payments)
+      .where(and(eq(payments.bookingId, bookingId), eq(payments.submittedBy, user.id)))
+      .orderBy(desc(payments.createdAt)),
+  ]);
+  const accounts = booking.accounts ?? {};
+  const price = Number(booking.priceEtb);
+  const paid = Number(booking.paidEtb);
+  const pending = Number(booking.pendingEtb);
+  const canSubmit = settings.bookingPayments.clientSubmissions && !["declined", "cancelled"].includes(booking.status) && Boolean(accounts.telebirr || accounts.banks?.length);
+  return {
+    priceEtb: price,
+    paidEtb: paid,
+    pendingEtb: pending,
+    balanceEtb: Math.max(0, Math.round((price - paid - pending) * 100) / 100),
+    canSubmit,
+    accounts: { telebirr: accounts.telebirr ?? null, banks: accounts.banks ?? [], acceptsCash: accounts.acceptsCash ?? true, instructions: accounts.instructions ?? null },
+    submissions,
+  };
+}
+
+async function membersWith(businessId: string, capability: "recordPayments") {
+  const rows = await db.select({ userId: businessMembers.userId, role: businessMembers.role }).from(businessMembers).where(eq(businessMembers.businessId, businessId));
+  return rows.filter((row) => roleCan(row.role as MemberRole, capability)).map((row) => row.userId);
+}
+
+export async function submitClientPayment(user: AuthenticatedUser, bookingId: string, input: z.infer<typeof clientPaymentInput>) {
+  const info = await bookingPaymentsForClient(user, bookingId);
+  if (!info.canSubmit) throw ApiError.conflict("Payments can't be reported for this booking. Please pay the business directly.");
+  const booking = await clientBooking(user, bookingId);
+  const accounts = booking.accounts ?? {};
+  if (input.method === "telebirr" && !accounts.telebirr) throw ApiError.badRequest("This business doesn't take telebirr.");
+  if (input.method === "bank_transfer" && !accounts.banks?.length) throw ApiError.badRequest("This business doesn't take bank transfers.");
+  if (input.amountEtb > info.balanceEtb + 0.005) {
+    throw ApiError.badRequest(info.balanceEtb > 0 ? `The most you can report is ${info.balanceEtb} ETB (what's left to pay).` : "Nothing is left to pay on this booking.");
+  }
+  const reference = input.reference.toUpperCase().replace(/\s+/g, "");
+  const [duplicate] = await db
+    .select({ id: payments.id })
+    .from(payments)
+    .where(and(eq(payments.businessId, booking.businessId), eq(payments.method, input.method), eq(payments.reference, reference), inArray(payments.status, ["pending", "recorded"])))
+    .limit(1);
+  if (duplicate) throw ApiError.conflict("This transaction number has already been submitted.");
+
+  const payment = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(payments)
+      .values({
+        businessId: booking.businessId,
+        bookingId,
+        clientId: booking.clientId,
+        amountEtb: input.amountEtb.toFixed(2),
+        method: input.method,
+        reference,
+        note: input.note,
+        status: "pending",
+        receivedOn: todayIn(booking.timezone),
+        submittedBy: user.id,
+      })
+      .returning();
+    await publish(businessChannel(booking.businessId), "payment.submitted", { paymentId: row.id, bookingId }, tx);
+    return row;
+  });
+  const staff = await membersWith(booking.businessId, "recordPayments");
+  await Promise.all(
+    staff.map((id) =>
+      notify(id, { type: "payment.submitted", title: "Payment to confirm", body: `${booking.reference}: ${input.amountEtb} ETB by ${input.method === "telebirr" ? "telebirr" : "bank transfer"} (${reference})`, href: `/business/${booking.businessId}/payments` }).catch(() => null),
+    ),
+  );
+  return payment;
+}
+
+export const paymentReviewInput = z.object({ decision: z.enum(["confirm", "reject"]), reason: z.string().trim().max(500).optional() });
+
+export async function reviewClientPayment(user: AuthenticatedUser, businessId: string, paymentId: string, input: z.infer<typeof paymentReviewInput>) {
+  await requireCapability(user, businessId, "recordPayments");
+  if (input.decision === "reject" && !input.reason) throw ApiError.badRequest("Tell the client why the payment wasn't found.");
+  const payment = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .update(payments)
+      .set(
+        input.decision === "confirm"
+          ? { status: "recorded", recordedBy: user.id, updatedAt: new Date() }
+          : { status: "rejected", voidedBy: user.id, voidReason: input.reason, updatedAt: new Date() },
+      )
+      .where(and(eq(payments.id, paymentId), eq(payments.businessId, businessId), eq(payments.status, "pending")))
+      .returning();
+    if (!row) throw ApiError.conflict("This payment was already reviewed.");
+    if (row.bookingId) await refreshBookingPayment(tx, row.bookingId);
+    await publish(businessChannel(businessId), input.decision === "confirm" ? "payment.recorded" : "payment.rejected", { paymentId }, tx);
+    return row;
+  });
+  if (payment.submittedBy) {
+    await notify(payment.submittedBy, {
+      type: `payment.${input.decision === "confirm" ? "confirmed" : "rejected"}`,
+      title: input.decision === "confirm" ? "Payment confirmed" : "Payment not found",
+      body: input.decision === "confirm" ? `${payment.amountEtb} ETB (${payment.reference}) was received. Thank you.` : `${payment.reference}: ${input.reason}`,
+      href: payment.bookingId ? `/account/bookings/${payment.bookingId}` : undefined,
+    }).catch(() => null);
+  }
+  return payment;
+}
+
 export const paymentQuery = z.object({ from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() });
 
 export async function listPayments(user: AuthenticatedUser, businessId: string, query: z.infer<typeof paymentQuery>) {
@@ -180,10 +326,17 @@ export async function listPayments(user: AuthenticatedUser, businessId: string, 
     .orderBy(desc(payments.receivedOn), desc(payments.createdAt))
     .limit(500);
   const recorded = rows.filter((row) => row.payment.status === "recorded");
+  const pending = await db
+    .select({ payment: payments, clientName: businessClients.name, bookingReference: bookings.reference })
+    .from(payments)
+    .leftJoin(businessClients, eq(businessClients.id, payments.clientId))
+    .leftJoin(bookings, eq(bookings.id, payments.bookingId))
+    .where(and(eq(payments.businessId, businessId), eq(payments.status, "pending")))
+    .orderBy(asc(payments.createdAt));
   const byMethod = Object.fromEntries(
     [...new Set(recorded.map((row) => row.payment.method))].map((method) => [method, recorded.filter((row) => row.payment.method === method).reduce((sum, row) => sum + Number(row.payment.amountEtb), 0)]),
   );
-  return { payments: rows, totalEtb: recorded.reduce((sum, row) => sum + Number(row.payment.amountEtb), 0), byMethod };
+  return { payments: rows.filter((row) => row.payment.status !== "pending"), pending, totalEtb: recorded.reduce((sum, row) => sum + Number(row.payment.amountEtb), 0), byMethod };
 }
 
 // ── Dashboard ────────────────────────────────────────────────────────────────
@@ -202,7 +355,7 @@ export async function dashboard(user: AuthenticatedUser, businessId: string) {
 
   const count = (where: SQL) => db.select({ n: sql<number>`count(*)::int` }).from(bookings).where(and(eq(bookings.businessId, businessId), where)).then(([row]) => row.n);
 
-  const [todayCount, pending, weekCount, unpaidCompleted, newClients, lowStock, revenue, upcoming, latestReviews] = await Promise.all([
+  const [todayCount, pending, weekCount, unpaidCompleted, newClients, lowStock, revenue, upcoming, latestReviews, paymentsToConfirm] = await Promise.all([
     count(and(gte(bookings.startsAt, dayStart), lt(bookings.startsAt, dayEnd), inArray(bookings.status, ["requested", "confirmed", "completed"]))!),
     count(eq(bookings.status, "requested")),
     count(and(gte(bookings.startsAt, dayStart), lt(bookings.startsAt, weekEnd), inArray(bookings.status, ["requested", "confirmed"]))!),
@@ -225,6 +378,7 @@ export async function dashboard(user: AuthenticatedUser, businessId: string) {
       .orderBy(asc(bookings.startsAt))
       .limit(8),
     db.select({ id: reviews.id, rating: reviews.rating, comment: reviews.comment, createdAt: reviews.createdAt, responded: sql<boolean>`${reviews.response} is not null` }).from(reviews).where(and(eq(reviews.businessId, businessId), eq(reviews.status, "published"))).orderBy(desc(reviews.createdAt)).limit(3),
+    db.select({ n: sql<number>`count(*)::int` }).from(payments).where(and(eq(payments.businessId, businessId), eq(payments.status, "pending"))).then(([row]) => row.n),
   ]);
 
   const revenueRows = revenue ? [...revenue] : [];
@@ -244,6 +398,7 @@ export async function dashboard(user: AuthenticatedUser, businessId: string) {
       completedUnpaid: unpaidCompleted,
       newClients30Days: newClients,
       lowStockRemedies: lowStock,
+      paymentsToConfirm,
       ratingAverage: business.ratingAverage ? Number(business.ratingAverage) : null,
       ratingCount: business.ratingCount,
       revenueMonthEtb: canSeeFinance ? revenueSeries.filter((point) => point.day >= monthStart).reduce((sum, point) => sum + point.totalEtb, 0) : null,

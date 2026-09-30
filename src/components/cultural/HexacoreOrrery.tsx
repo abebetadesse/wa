@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { HerbSafetyBadge } from "@/features/safety/HerbSafetyBadge";
 import {
   CREATION_DAY_MAPPINGS,
   HEXACORE_ASPECTS,
@@ -1083,6 +1084,7 @@ export default function HexacoreOrrery() {
                         </div>
                         <p className="mt-1.5 font-bold text-amber-200 text-sm">{selectedMeta.botanicalPreview.name}</p>
                         <p className="mt-0.5 text-[10px] text-slate-400">{selectedMeta.botanicalPreview.localName}</p>
+                        <HerbSafetyBadge label={`${selectedMeta.botanicalPreview.name} / ${selectedMeta.botanicalPreview.localName}`} className="mt-2" />
                       </div>
 
                       <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
@@ -1935,19 +1937,15 @@ export default function HexacoreOrrery() {
                   <h4 className="font-bold text-base">Ethiopian Herbal Integration & Scientific Safety Profile</h4>
                 </div>
                 <p className="text-xs text-amber-200/80">
-                  Traditional botanical correspondences are documented for cultural inquiry only. Certain herbs (such as Kosso / <em>Hagenia abyssinica</em>) pose known toxicological risks (e.g. optic nerve toxicity at high doses).
+                  Traditional botanical correspondences are documented for cultural inquiry only. Each plant&apos;s status comes live from the medicine &amp; remedy safety matrix; select it to check against medicines.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                   {ETHIOPIAN_HERBAL_INTEGRATION.map((herb) => (
                     <div key={herb.scientificName} className="rounded-2xl border border-white/10 bg-[#0c0c1a] p-4 text-xs space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white text-sm">{herb.herb}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${herb.safetyRating === "Caution"
-                            ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
-                            : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                          }`}>
-                          {herb.safetyRating || "Reflective"}
-                        </span>
+                        {/* Live status from the safety matrix instead of a fixed rating. */}
+                        <HerbSafetyBadge label={`${herb.herb} / ${herb.scientificName}`} />
                       </div>
                       <p className="text-[11px] text-slate-400 italic">{herb.scientificName}</p>
                       <div className="text-[11px] space-y-1 text-slate-300">

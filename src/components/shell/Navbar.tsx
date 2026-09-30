@@ -20,31 +20,21 @@ import {
   Store,
   Sun,
   User,
+  UserCog,
   X,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { useTheme } from "@/lib/theme/ThemeContext";
 import { useSession } from "@/features/session/SessionProvider";
 import { NotificationBell } from "@/features/realtime/NotificationBell";
+import { useExplore } from "@/features/toolkit/useExplore";
 import { cn } from "@/lib/utils";
 
 const PRIMARY = [
   { href: "/marketplace", label: "Find a healer", icon: Search },
-  { href: "/marketplace?sector=cultural", label: "Cultural services", icon: Sparkles },
+  // Shown only while cultural listings are visible to the viewer (administrators by default).
+  { href: "/marketplace?sector=cultural", label: "Cultural services", icon: Sparkles, cultural: true },
   { href: "/business", label: "For businesses", icon: Store },
-];
-
-const EXPLORE = [
-  { href: "/case/workflows", label: "Expert-reviewed cases" },
-  { href: "/library", label: "Sacred library" },
-  { href: "/library/medicinal-plants", label: "Medicinal plant atlas" },
-  { href: "/cultural", label: "Astral memory & heritage" },
-  { href: "/awde-negast", label: "Awde Negest" },
-  { href: "/fasting", label: "Fasting & lunar rhythm" },
-  { href: "/foods", label: "Food knowledge" },
-  { href: "/heritage", label: "Heritage atlas" },
-  { href: "/safety", label: "Herb & medicine safety" },
-  { href: "/emergency", label: "Emergency support" },
 ];
 
 const LANGUAGES = [
@@ -99,7 +89,12 @@ export default function Navbar() {
     return path === "/" ? pathname === "/" : pathname.startsWith(path);
   };
 
+  const explore = useExplore();
+  const primary = PRIMARY.filter((link) => !link.cultural || explore?.culturalVisible);
+  const exploreGroups = explore?.groups ?? [];
+
   const accountLinks = [
+    { href: "/account", label: "Account & Telegram", icon: UserCog },
     { href: "/account/bookings", label: "My bookings", icon: CalendarCheck },
     { href: "/messages", label: "Messages", icon: MessageCircle },
     { href: "/business", label: "My business", icon: Briefcase },
@@ -122,7 +117,7 @@ export default function Navbar() {
         </Link>
 
         <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 xl:flex">
-          {PRIMARY.map((link) => (
+          {primary.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -145,12 +140,20 @@ export default function Navbar() {
               Explore <ChevronDown className={cn("size-4 transition-transform", exploreOpen && "rotate-180")} aria-hidden="true" />
             </button>
             {exploreOpen && (
-              <div className="absolute left-0 mt-2 grid w-[30rem] grid-cols-2 gap-1 rounded-2xl border border-border bg-card p-2 shadow-2xl backdrop-blur-xl">
-                {EXPLORE.map((link) => (
-                  <Link key={link.href} href={link.href} className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-accent">
-                    {link.label}
-                  </Link>
-                ))}
+              <div className="absolute left-0 mt-2 max-h-[70vh] w-[40rem] overflow-y-auto rounded-2xl border border-border bg-card p-3 shadow-2xl backdrop-blur-xl">
+                {exploreGroups.length === 0 && <p className="px-3 py-2 text-sm text-muted-foreground">Loading…</p>}
+                <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+                  {exploreGroups.map((group) => (
+                    <div key={group.group}>
+                      <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{group.label}</p>
+                      {group.tools.map((tool) => (
+                        <Link key={tool.key} href={tool.href} title={tool.description} className="block rounded-xl px-3 py-1.5 text-sm text-foreground hover:bg-accent">
+                          {tool.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -253,20 +256,24 @@ export default function Navbar() {
       {mobileOpen && (
         <nav id="mobile-navigation" aria-label="Mobile" className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-background px-4 pb-6 pt-3 xl:hidden">
           <div className="flex flex-col gap-1">
-            {PRIMARY.map((link) => (
+            {primary.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-semibold text-foreground hover:bg-accent">
                 <link.icon className="size-5 text-brand" aria-hidden="true" /> {link.label}
               </Link>
             ))}
           </div>
-          <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Explore</p>
-          <div className="mt-1 grid grid-cols-2 gap-1">
-            {EXPLORE.map((link) => (
-              <Link key={link.href} href={link.href} className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-accent">
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {exploreGroups.map((group) => (
+            <div key={group.group}>
+              <p className="mt-4 px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">{group.label}</p>
+              <div className="mt-1 grid grid-cols-2 gap-1">
+                {group.tools.map((tool) => (
+                  <Link key={tool.key} href={tool.href} className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-accent">
+                    {tool.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
           <div className="mt-4 flex flex-wrap gap-1 px-2" role="group" aria-label="Language">
             {LANGUAGES.map((option) => (
               <button

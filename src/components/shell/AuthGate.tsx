@@ -55,30 +55,27 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (state === "checking") {
     return (
-      <main className="min-h-[60vh] flex items-center justify-center px-6">
-        <section className="glass-panel max-w-md p-8 text-center" aria-live="polite">
-          <LockKeyhole className="mx-auto mb-4 text-sky-400" size={30} />
-          <h1 className="text-xl font-semibold text-slate-100">Checking your account</h1>
-          <p className="mt-2 text-sm text-slate-400">Securely restoring your session before opening this service.</p>
-        </section>
+      <main className="flex min-h-[60vh] items-center justify-center px-6" aria-live="polite">
+        <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">
+          <span className="size-8 animate-spin rounded-full border-2 border-brand border-t-transparent" aria-hidden="true" />
+          Checking your account…
+        </div>
       </main>
     );
   }
 
   // state === "guest"
   return (
-    <main className="min-h-[60vh] flex items-center justify-center px-6">
-      <section className="glass-panel max-w-md p-8 text-center">
-        <LockKeyhole className="mx-auto mb-4 text-amber-400" size={30} />
-        <h1 className="text-xl font-semibold text-slate-100">Sign in required</h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Register or sign in to keep your cultural care journey, personal notes, and wellbeing workflows private.
-        </p>
+    <main className="flex min-h-[60vh] items-center justify-center px-6">
+      <section className="max-w-md rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
+        <LockKeyhole className="mx-auto mb-4 size-8 text-gold" aria-hidden="true" />
+        <h1 className="font-display text-xl font-extrabold text-foreground">Sign in to continue</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Create a free account in under a minute, or sign in, to open this page.</p>
         <Link
           href={`/auth?next=${encodeURIComponent(`${pathname}${typeof window !== "undefined" ? window.location.search : ""}`)}`}
-          className="btn-pill-primary inline-flex mt-6 px-5 py-2.5"
+          className="mt-6 inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-brand-strong"
         >
-          Continue to sign in
+          Sign in or create an account
         </Link>
       </section>
     </main>

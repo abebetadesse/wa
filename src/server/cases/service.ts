@@ -10,24 +10,26 @@ import { canReview, expertSummaries, loadExpert, reviewableDomains, type ExpertC
 import {
   approveCase,
   claimCase,
-  confirmPayment,
   createCase,
   recordAnswers,
   releaseClaim,
+  releaseFree,
   releaseWithBooking,
   requestConsultation,
+  settlePayment,
   startPayment,
   submitCase,
 } from "./machine";
-import { getPaymentProvider, newPurchaseId, type PaymentMethod, type PaymentProvider } from "./payments";
+import type { CaseBilling, CasePayMethod } from "./billing";
+import { caseBilling } from "@/server/payments/caseBilling";
 import { dbCaseStore, type CaseStore } from "./store";
-import type { ConsultationRecord, ConsentRecord, DraftReport, WorkflowCase, WorkflowDomain } from "./types";
+import type { ConsultationRecord, ConsentRecord, DomainConfig, DraftReport, WorkflowCase, WorkflowDomain } from "./types";
 import { toExpertView, toOwnerView } from "./views";
 import { caseBridge, type CaseBridge } from "@/server/marketplace/caseBridge";
 
 interface Deps {
   store: CaseStore;
-  payments: () => PaymentProvider;
+  billing: CaseBilling;
   loadExpert: (userId: string) => Promise<ExpertCandidate>;
   expertSummaries: typeof expertSummaries;
   /** Marketplace link: booking-opened cases are reviewed by the booked business's team. */
@@ -37,10 +39,31 @@ interface Deps {
 export function createCaseService(deps: Deps) {
   const { store } = deps;
 
+  /** The domain's configuration with the administrator's current prices. */
+  async function configFor(domain: WorkflowDomain): Promise<DomainConfig> {
+    const config = getDomainConfig(domain);
+    const prices = await deps.billing.pricing(domain, { reportEtb: config.pricing.reportEtb, consultationEtb: config.pricing.consultationEtb });
+    return { ...config, pricing: { ...config.pricing, ...prices } };
+  }
+
   async function ownerView(record: WorkflowCase) {
     const expertId = record.review?.expertId;
-    const experts = expertId ? await deps.expertSummaries([expertId]) : new Map();
-    return toOwnerView(record, getDomainConfig(record.domain), expertId ? experts.get(expertId) ?? null : null);
+    const [experts, config, attempt] = await Promise.all([
+      expertId ? deps.expertSummaries([expertId]) : Promise.resolve(new Map()),
+      configFor(record.domain),
+      record.stage === "visible_to_user" && !record.bookingId ? deps.billing.latest(record.id) : Promise.resolve(null),
+    ]);
+    return { ...toOwnerView(record, config, expertId ? experts.get(expertId) ?? null : null), paymentAttempt: attempt };
+  }
+
+  async function released(record: WorkflowCase) {
+    await store.save(record);
+    await deps.billing.onReleased?.({ userId: record.userId, caseId: record.id, label: getDomainConfig(record.domain).label });
+  }
+
+  function assertPayable(record: WorkflowCase) {
+    if (record.payment?.status === "confirmed") throw ApiError.conflict("This report is already paid for.");
+    if (record.stage !== "visible_to_user" || record.bookingId) throw ApiError.conflict("This report cannot be purchased right now.");
   }
 
   async function owned(user: AuthenticatedUser, caseId: string) {
@@ -77,6 +100,14 @@ export function createCaseService(deps: Deps) {
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   });
+
+  async function settle(caseId: string, payment: { purchaseId: string; amountEtb: number; method: string; provider: string; reference: string }) {
+    const record = await store.get(caseId);
+    if (!record) throw ApiError.notFound("Case");
+    const next = settlePayment(record, payment);
+    if (next !== record) await released(next);
+    return next;
+  }
 
   const byPriority = (a: WorkflowCase, b: WorkflowCase) => {
     const rank = { urgent: 0, high: 1, routine: 2 };
@@ -137,32 +168,50 @@ export function createCaseService(deps: Deps) {
       return ownerView(next);
     },
 
-    async purchase(user: AuthenticatedUser, caseId: string, method: PaymentMethod) {
+    /**
+     * Online checkout (Chapa, or telebirr through Chapa). When the report is free the full report
+     * is released straight away and `released` is returned instead of a checkout URL.
+     */
+    async purchase(user: AuthenticatedUser, caseId: string, method: CasePayMethod, origin = "") {
       const record = await owned(user, caseId);
-      const config = getDomainConfig(record.domain);
-      // Validate the case state before touching the payment provider.
-      if (record.payment?.status === "confirmed") throw ApiError.conflict("This report is already paid for.");
-      if (record.stage !== "visible_to_user") throw ApiError.conflict("This report cannot be purchased right now.");
-      const provider = deps.payments();
-      const purchaseId = newPurchaseId();
-      const next = startPayment(record, { purchaseId, amountEtb: config.pricing.reportEtb, method, provider: provider.name });
-      const { checkoutUrl } = await provider.createCheckout({ purchaseId, caseId, amountEtb: config.pricing.reportEtb, method });
-      await store.save(next);
-      return { purchaseId, amountEtb: config.pricing.reportEtb, currency: "ETB", method, checkoutUrl };
+      assertPayable(record);
+      const config = await configFor(record.domain);
+      if (config.pricing.reportEtb <= 0) {
+        const next = releaseFree(record);
+        await released(next);
+        return { released: true as const, amountEtb: 0, currency: "ETB", view: await ownerView(next) };
+      }
+      const { purchaseId, checkoutUrl } = await deps.billing.checkout({ user, caseId, amountEtb: config.pricing.reportEtb, method, description: `${config.label} full report`, origin });
+      await store.save(startPayment(record, { purchaseId, amountEtb: config.pricing.reportEtb, method, provider: "chapa" }));
+      return { released: false as const, purchaseId, amountEtb: config.pricing.reportEtb, currency: "ETB", method, checkoutUrl };
     },
 
-    async confirmPurchase(user: AuthenticatedUser, caseId: string, purchaseId: string, reference?: string) {
+    /** telebirr / bank transfer paid by the client; an administrator confirms it against the statement. */
+    async submitManualPayment(user: AuthenticatedUser, caseId: string, input: { method: "telebirr" | "bank_transfer"; reference: string; payerName?: string; note?: string }) {
       const record = await owned(user, caseId);
-      const verdict = await deps.payments().verify({ purchaseId, reference });
-      if (!verdict.paid || !verdict.reference) throw new ApiError(402, "Payment has not been received yet.");
-      const next = confirmPayment(record, purchaseId, verdict.reference);
-      await store.save(next);
-      return ownerView(next);
+      assertPayable(record);
+      const config = await configFor(record.domain);
+      if (config.pricing.reportEtb <= 0) throw ApiError.conflict("This report is free. Refresh the page to open it.");
+      const { purchaseId } = await deps.billing.submitManual({ user, caseId, amountEtb: config.pricing.reportEtb, description: `${config.label} full report`, ...input });
+      await store.save(startPayment(record, { purchaseId, amountEtb: config.pricing.reportEtb, method: input.method, provider: "manual" }));
+      return ownerView(await owned(user, caseId));
     },
+
+    /** Called when the client returns from checkout. Only the payment service can say it was paid. */
+    async confirmPurchase(user: AuthenticatedUser, caseId: string, purchaseId: string) {
+      const record = await owned(user, caseId);
+      if (record.payment?.status === "confirmed" && record.payment.purchaseId === purchaseId) return ownerView(record);
+      const verdict = await deps.billing.verify(user, purchaseId);
+      if (!verdict.paid) throw new ApiError(402, "Payment has not been received yet.");
+      return ownerView(await settle(caseId, { purchaseId, amountEtb: verdict.amountEtb ?? 0, method: verdict.method ?? "chapa", provider: verdict.provider ?? "chapa", reference: verdict.reference ?? purchaseId }));
+    },
+
+    /** Credits a confirmed payment (from the client's return, Chapa's webhook or an administrator). */
+    settlePayment: settle,
 
     async requestConsultation(user: AuthenticatedUser, caseId: string, input: Pick<ConsultationRecord, "format" | "preferredTimes" | "note">) {
       const record = await owned(user, caseId);
-      const next = requestConsultation(record, input, getDomainConfig(record.domain));
+      const next = requestConsultation(record, input, await configFor(record.domain));
       await store.save(next);
       return ownerView(next);
     },
@@ -218,8 +267,11 @@ export function createCaseService(deps: Deps) {
       const record = await reviewable(user, caseId);
       const config = getDomainConfig(record.domain);
       const approved = approveCase(record, user.id, input, config);
-      const next = approved.bookingId ? releaseWithBooking(approved) : approved;
+      // Booking cases are covered by the booking; free reports are released on approval.
+      const free = !approved.bookingId && (await configFor(approved.domain)).pricing.reportEtb <= 0;
+      const next = approved.bookingId ? releaseWithBooking(approved) : free ? releaseFree(approved) : approved;
       await store.save(next);
+      if (free) await deps.billing.onReleased?.({ userId: next.userId, caseId: next.id, label: config.label });
       await announce(next, "approved");
       return toExpertView(next, config);
     },
@@ -230,7 +282,7 @@ export type CaseService = ReturnType<typeof createCaseService>;
 
 export const caseService = createCaseService({
   store: dbCaseStore,
-  payments: getPaymentProvider,
+  billing: caseBilling,
   loadExpert,
   expertSummaries,
   bridge: caseBridge,

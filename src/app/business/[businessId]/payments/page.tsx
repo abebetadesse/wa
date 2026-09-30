@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Plus, Undo2 } from "lucide-react";
+import { Check, Download, Plus, Undo2, X } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
-import { Badge, Button, Card, CardContent, Dialog, EmptyState, ErrorState, Field, LoadingState, PageHeader, Textarea } from "@/components/ui";
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Dialog, EmptyState, ErrorState, Field, LoadingState, PageHeader, Textarea } from "@/components/ui";
 import { useApi } from "@/features/workspace/useApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { useToast } from "@/features/feedback/Toaster";
@@ -32,13 +32,26 @@ export default function PaymentsPage() {
   const toast = useToast();
   const [offset, setOffset] = useState(0);
   const range = monthRange(offset);
-  const { data, error, reload } = useApi<{ payments: PaymentRow[]; totalEtb: number; byMethod: Record<string, number> }>(
+  const { data, error, reload } = useApi<{ payments: PaymentRow[]; pending: PaymentRow[]; totalEtb: number; byMethod: Record<string, number> }>(
     `/api/workspace/businesses/${business.id}/payments?from=${range.from}&to=${range.to}`,
     { liveTypes: ["payment."] },
   );
   const [recording, setRecording] = useState(false);
   const [voiding, setVoiding] = useState<PaymentRow | null>(null);
   const [voidReason, setVoidReason] = useState("");
+  const [rejecting, setRejecting] = useState<PaymentRow | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+
+  async function review(row: PaymentRow, decision: "confirm" | "reject", reason?: string) {
+    try {
+      await apiFetch(`/api/workspace/businesses/${business.id}/payments/${row.payment.id}/review`, { method: "POST", json: { decision, reason } });
+      toast({ tone: "success", title: decision === "confirm" ? "Payment confirmed" : "Client told the payment wasn't found" });
+      setRejecting(null);
+      reload();
+    } catch (err) {
+      toast({ tone: "error", title: "Could not update the payment", body: errorMessage(err) });
+    }
+  }
 
   async function confirmVoid() {
     if (!voiding) return;
@@ -82,6 +95,35 @@ export default function PaymentsPage() {
         <Button variant="outline" size="sm" onClick={() => setOffset((o) => o + 1)} disabled={offset >= 0}>→</Button>
       </div>
 
+      {data && data.pending.length > 0 && (
+        <Card className="border-warning/40">
+          <CardHeader>
+            <CardTitle>Payments to confirm ({data.pending.length})</CardTitle>
+            <CardDescription>Clients say they paid you. Check each transaction number against your telebirr or bank statement, then confirm or reject it.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {data.pending.map((row) => (
+              <div key={row.payment.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border px-4 py-3 text-sm">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-foreground">{row.clientName ?? "Client"} · {formatEtb(row.payment.amountEtb)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {PAYMENT_METHOD_LABELS[row.payment.method] ?? row.payment.method} · <span className="font-mono">{row.payment.reference}</span>
+                    {row.bookingReference ? ` · ${row.bookingReference}` : ""}
+                  </p>
+                  {row.payment.note && <p className="text-xs text-muted-foreground">“{row.payment.note}”</p>}
+                </div>
+                {can("recordPayments") && (
+                  <>
+                    <Button size="sm" variant="ghost" onClick={() => { setRejectReason(""); setRejecting(row); }}><X className="size-4" aria-hidden="true" /> Not received</Button>
+                    <Button size="sm" onClick={() => review(row, "confirm")}><Check className="size-4" aria-hidden="true" /> Received</Button>
+                  </>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {error && <ErrorState message={error} onRetry={reload} />}
       {!error && !data && <LoadingState />}
       {data && (
@@ -113,7 +155,7 @@ export default function PaymentsPage() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {data.payments.map((row) => {
-                    const voided = row.payment.status === "voided";
+                    const voided = row.payment.status === "voided" || row.payment.status === "rejected";
                     return (
                       <tr key={row.payment.id} className={cn(voided && "text-muted-foreground")}>
                         <td className="px-4 py-3">{new Date(row.payment.receivedOn).toLocaleDateString()}</td>
@@ -126,7 +168,7 @@ export default function PaymentsPage() {
                         <td className={cn("px-4 py-3 text-right font-semibold", voided ? "line-through" : "text-foreground")}>{formatEtb(row.payment.amountEtb)}</td>
                         <td className="px-4 py-3 text-right">
                           {voided ? (
-                            <Badge tone="neutral" title={row.payment.voidReason ?? undefined}>Voided</Badge>
+                            <Badge tone="neutral" title={row.payment.voidReason ?? undefined}>{row.payment.status === "rejected" ? "Rejected" : "Voided"}</Badge>
                           ) : (
                             can("voidPayments") && (
                               <button type="button" onClick={() => { setVoidReason(""); setVoiding(row); }} className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-danger">
@@ -145,6 +187,16 @@ export default function PaymentsPage() {
         </>
       )}
 
+      <Dialog
+        open={Boolean(rejecting)}
+        onClose={() => setRejecting(null)}
+        size="sm"
+        title="Payment not received?"
+        description="The client is told, with your reason, and can send the correct transaction number."
+        footer={<><Button variant="ghost" onClick={() => setRejecting(null)}>Cancel</Button><Button variant="destructive" onClick={() => rejecting && review(rejecting, "reject", rejectReason)} disabled={rejectReason.trim().length < 3}>Reject</Button></>}
+      >
+        <Field label="Reason" required>{(control) => <Textarea {...control} rows={2} value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="e.g. No transfer with this number on our statement" />}</Field>
+      </Dialog>
       {recording && <RecordPaymentDialog open onClose={() => setRecording(false)} businessId={business.id} onRecorded={reload} />}
       <Dialog
         open={Boolean(voiding)}

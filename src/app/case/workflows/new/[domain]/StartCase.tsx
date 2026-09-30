@@ -5,9 +5,11 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import type { OwnerView } from "@/server/cases/views";
 import type { WorkflowDomain, WorkflowQuestion } from "@/server/cases/types";
-import { apiFetch, errorMessage } from "@/lib/api/client";
+import { ApiClientError, apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Button, ButtonLink, Card, CardContent, ErrorState, LoadingState, PageHeader } from "@/components/ui";
 import { QuestionField } from "@/features/cases/components";
+import { GeezKeyboard, GeezNamePreview } from "@/features/cases/GeezNameTools";
+import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
 
 interface DomainSummary {
   domain: WorkflowDomain;
@@ -29,6 +31,9 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Spiritual pathway: which name field the Ge'ez letter picker types into.
+  const [typingInto, setTypingInto] = useState<"nameGeez" | "motherNameGeez" | null>(null);
+  const nameText = (id: string) => String(answers[id] ?? "");
 
   useEffect(() => {
     apiFetch<{ domains: DomainSummary[] }>("/api/case-workflows")
@@ -64,6 +69,11 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
       });
       router.push(`/case/workflows/${view.id}`);
     } catch (error) {
+      // Visitors can read and fill the pathway; they sign in (or register) to submit it.
+      if (error instanceof ApiClientError && error.status === 401) {
+        router.push(`/auth?mode=register&next=${encodeURIComponent(`/case/workflows/new/${domain}`)}`);
+        return;
+      }
       setSubmitError(errorMessage(error));
       setSubmitting(false);
     }
@@ -84,6 +94,8 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
         </Alert>
       )}
 
+      {!bookingId && <div className="mb-6"><PathwayPractitioners domain={domain} /></div>}
+
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
         {config.startQuestions.length > 0 && (
           <Card>
@@ -97,6 +109,22 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                   onChange={(value) => setAnswers((current) => ({ ...current, [question.id]: value }))}
                 />
               ))}
+              {domain === "spiritual" && (
+                <>
+                  <div className="flex flex-wrap gap-2">
+                    {([["nameGeez", "Type my name with Ge'ez letters"], ["motherNameGeez", "Type my mother's name"]] as const).map(([id, label]) => (
+                      <Button key={id} type="button" size="sm" variant={typingInto === id ? "primary" : "outline"} onClick={() => setTypingInto(typingInto === id ? null : id)}>{label}</Button>
+                    ))}
+                  </div>
+                  {typingInto && (
+                    <GeezKeyboard
+                      onInsert={(char) => setAnswers((current) => ({ ...current, [typingInto]: `${String(current[typingInto] ?? "")}${char}` }))}
+                      onBackspace={() => setAnswers((current) => ({ ...current, [typingInto]: [...String(current[typingInto] ?? "")].slice(0, -1).join("") }))}
+                    />
+                  )}
+                  <GeezNamePreview name={nameText("nameGeez")} motherName={nameText("motherNameGeez")} />
+                </>
+              )}
             </CardContent>
           </Card>
         )}

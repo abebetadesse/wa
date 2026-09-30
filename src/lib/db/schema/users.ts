@@ -51,6 +51,12 @@ export const users = pgTable("users", {
   preferredLanguage: varchar("preferred_language", { length: 10 }).default("en").notNull(), // 'am' | 'om' | 'en' | 'ti' | 'so'
   profileImageUrl: varchar("profile_image_url", { length: 500 }),
   isVerified: boolean("is_verified").default(false).notNull(),
+  /** Telegram account linked through the Telegram Login Widget (verification, sign-in, notifications). */
+  telegramId: varchar("telegram_id", { length: 32 }).unique(),
+  telegramUsername: varchar("telegram_username", { length: 64 }),
+  telegramVerifiedAt: timestamp("telegram_verified_at"),
+  /** Forward in-app notifications to Telegram. */
+  telegramNotify: boolean("telegram_notify").default(true).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   isSuspended: boolean("is_suspended").default(false).notNull(),
   suspensionReason: text("suspension_reason"),

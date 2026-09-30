@@ -6,5 +6,5 @@ import { resolvePublicBusinessId } from "@/server/marketplace/businesses";
 export const POST = defineRoute({
   access: "user",
   params: z.object({ slug: z.string().min(1).max(120) }),
-  handler: async ({ user, params }) => openConversation(user, await resolvePublicBusinessId(params.slug)),
+  handler: async ({ user, params }) => openConversation(user, await resolvePublicBusinessId(params.slug, user)),
 });

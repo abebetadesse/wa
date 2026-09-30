@@ -15,20 +15,37 @@ const experts = {
   "unverified": { id: "unverified", role: "expert", practitionerCredentials: { domains: ["career"] } },
 };
 
-function service({ paid = true } = {}) {
+function service({ paid = true, prices = null, released = [] } = {}) {
   let verifications = 0;
+  let sequence = 0;
+  const attempts = new Map();
   const svc = createCaseService({
     store: createMemoryCaseStore(),
-    payments: () => ({
-      name: "test",
-      async createCheckout({ purchaseId }) {
-        return { checkoutUrl: `/pay/${purchaseId}` };
+    billing: {
+      async pricing(domain, defaults) {
+        return prices ? prices(domain, defaults) : defaults;
       },
-      async verify({ purchaseId }) {
+      async checkout({ caseId, amountEtb, method }) {
+        const purchaseId = `pur_${++sequence}`;
+        attempts.set(caseId, { purchaseId, method, channel: "chapa", status: "pending", amountEtb, reference: null, reviewNote: null, createdAt: new Date().toISOString() });
+        return { purchaseId, checkoutUrl: `/pay/${purchaseId}` };
+      },
+      async submitManual({ caseId, amountEtb, method, reference }) {
+        const purchaseId = `man_${++sequence}`;
+        attempts.set(caseId, { purchaseId, method, channel: "manual", status: "awaiting_review", amountEtb, reference, reviewNote: null, createdAt: new Date().toISOString() });
+        return { purchaseId };
+      },
+      async verify(_user, purchaseId) {
         verifications++;
-        return paid ? { paid: true, reference: `REF-${purchaseId}` } : { paid: false };
+        return paid ? { paid: true, amountEtb: 500, method: "chapa", provider: "chapa", reference: `REF-${purchaseId}` } : { paid: false };
       },
-    }),
+      async latest(caseId) {
+        return attempts.get(caseId) ?? null;
+      },
+      async onReleased(event) {
+        released.push(event);
+      },
+    },
     loadExpert: async (id) => experts[id] ?? { id, role: "user" },
     expertSummaries: async (ids) => new Map(ids.map((id) => [id, { id, name: "Test Expert", credential: "Debtera" }])),
   });
@@ -113,7 +130,7 @@ test("payment is confirmed only by the provider, never by the client", async () 
   const { svc } = service({ paid: false });
   const approved = await runToApproval(svc, "career");
   const purchase = await svc.purchase(owner, approved.id, "telebirr");
-  await assert.rejects(svc.confirmPurchase(owner, approved.id, purchase.purchaseId, "TXN-FAKE"), (e) => e.status === 402);
+  await assert.rejects(svc.confirmPurchase(owner, approved.id, purchase.purchaseId), (e) => e.status === 402);
   assert.equal((await svc.get(owner, approved.id)).stage, "visible_to_user");
   await assert.rejects(svc.confirmPurchase(owner, approved.id, "pur_other"), (e) => e.status === 402 || e.status === 400);
 });
@@ -203,4 +220,58 @@ test("domain safety rules (ported from the per-domain screen tests)", () => {
 
   assert.equal(action(spiritual, { ...safe.spiritual, immediateRisk: "yes" }), "crisis_route");
   assert.equal(spiritual.screenAnswers({ safety_screening: "unsafe" }).action, "crisis_route");
+});
+
+test("free mode: approval releases the full report with no payment step", async () => {
+  const released = [];
+  const { svc } = service({ prices: () => ({ reportEtb: 0, consultationEtb: 0 }), released });
+  const view = await runToApproval(svc, "career");
+  assert.equal(view.stage, "full_report_released");
+  assert.equal(view.report.unlocked, true);
+  assert.equal(view.payment.method, "free");
+  assert.equal(view.pricing.reportEtb, 0);
+  assert.equal(released.length, 1, "the owner is told the report is ready");
+  await assert.rejects(svc.purchase(owner, view.id, "chapa"), (e) => e.status === 409, "nothing left to buy");
+  const consult = await svc.requestConsultation(owner, view.id, { format: DOMAIN_CONFIGS.career.pricing.consultationFormats[0], preferredTimes: ["Monday"] });
+  assert.equal(consult.consultation.feeEtb, 0);
+});
+
+test("administrator prices override the defaults", async () => {
+  const { svc } = service({ prices: (_domain, defaults) => ({ ...defaults, reportEtb: 250 }) });
+  const approved = await runToApproval(svc, "social");
+  assert.equal(approved.pricing.reportEtb, 250);
+  const purchase = await svc.purchase(owner, approved.id, "chapa");
+  assert.equal(purchase.amountEtb, 250);
+  assert.equal(purchase.released, false);
+});
+
+test("a case switched to free after approval can be opened without paying", async () => {
+  let free = false;
+  const { svc } = service({ prices: (_d, defaults) => (free ? { reportEtb: 0, consultationEtb: 0 } : defaults) });
+  const approved = await runToApproval(svc, "legal");
+  assert.equal(approved.stage, "visible_to_user");
+  free = true;
+  const result = await svc.purchase(owner, approved.id, "chapa");
+  assert.equal(result.released, true);
+  assert.equal(result.view.stage, "full_report_released");
+});
+
+test("manual telebirr / bank payments wait for review, then settle exactly once", async () => {
+  const { svc } = service();
+  const approved = await runToApproval(svc, "career");
+  const waiting = await svc.submitManualPayment(owner, approved.id, { method: "bank_transfer", reference: "FT2601ABC" });
+  assert.equal(waiting.stage, "visible_to_user", "not released before an administrator confirms");
+  assert.equal(waiting.paymentAttempt.status, "awaiting_review");
+  await assert.rejects(svc.submitManualPayment(stranger, approved.id, { method: "telebirr", reference: "X1234" }), (e) => e.status === 404);
+
+  const purchaseId = waiting.paymentAttempt.purchaseId;
+  const settled = await svc.settlePayment(approved.id, { purchaseId, amountEtb: 500, method: "bank_transfer", provider: "manual", reference: "FT2601ABC" });
+  assert.equal(settled.stage, "full_report_released");
+  const again = await svc.settlePayment(approved.id, { purchaseId, amountEtb: 500, method: "bank_transfer", provider: "manual", reference: "FT2601ABC" });
+  assert.equal(again.payment.purchaseId, purchaseId, "repeating the same settlement is a no-op");
+  await assert.rejects(
+    svc.settlePayment(approved.id, { purchaseId: "pur_other", amountEtb: 500, method: "chapa", provider: "chapa", reference: "R" }),
+    (e) => e.status === 409,
+    "a second, different payment is refused (flagged for refund by the ledger)",
+  );
 });

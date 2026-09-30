@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { and, asc, desc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, ne, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { businessCategories, businessMembers, businesses, services, serviceKinds, users } from "@/lib/db/schema";
@@ -7,7 +7,16 @@ import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "./access";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
-import { notify } from "./notifications";
+import { notify, notifyAdmins } from "./notifications";
+import { getSettings } from "@/server/settings";
+
+const PLATFORM_ADMINS = ["admin", "super_admin"];
+
+/** Cultural (non-healing) listings are shown to administrators only unless the platform opens them to everyone. */
+export async function culturalVisibleTo(viewer: Pick<AuthenticatedUser, "role"> | null) {
+  if (viewer && PLATFORM_ADMINS.includes(viewer.role)) return true;
+  return (await getSettings("marketplace")).culturalVisibility === "everyone";
+}
 
 export const DELIVERY_MODES = ["in_person", "home_visit", "video", "voice", "chat"] as const;
 export const BUSINESS_STATUSES = ["draft", "pending_verification", "verified", "suspended"] as const;
@@ -31,6 +40,31 @@ export const businessInput = z.object({
   coverUrl: z.string().url().optional().or(z.literal("").transform(() => undefined)),
 });
 export type BusinessInput = z.infer<typeof businessInput>;
+
+const bankAccount = z.object({
+  bank: text(80).min(2, "Enter the bank name."),
+  accountName: text(120).min(2, "Enter the account holder's name."),
+  accountNumber: z.string().trim().regex(/^[0-9 -]{6,30}$/, "Enter a valid account number."),
+});
+
+/** Where clients can pay the business directly. Shown to clients on their bookings. */
+export const paymentAccountsInput = z.object({
+  telebirr: z
+    .object({ name: text(120).min(2, "Enter the telebirr account name."), phone: z.string().trim().regex(/^(\+?251|0)?[79]\d{8}$/, "Enter a valid telebirr number, e.g. 0911 234567.") })
+    .nullable()
+    .default(null),
+  banks: z.array(bankAccount).max(6).default([]),
+  acceptsCash: z.boolean().default(true),
+  instructions: text(500).optional(),
+});
+
+export async function updatePaymentAccounts(user: AuthenticatedUser, businessId: string, input: z.infer<typeof paymentAccountsInput>) {
+  await requireCapability(user, businessId, "manageProfile");
+  const [updated] = await db.update(businesses).set({ paymentAccounts: input, updatedAt: new Date() }).where(eq(businesses.id, businessId)).returning({ paymentAccounts: businesses.paymentAccounts });
+  if (!updated) throw ApiError.notFound("Business");
+  await publish(businessChannel(businessId), "business.updated", { businessId });
+  return updated.paymentAccounts;
+}
 
 export const verificationInput = z.object({
   credentials: z
@@ -126,12 +160,17 @@ export async function submitForVerification(user: AuthenticatedUser, businessId:
   if (current.status === "suspended") throw ApiError.forbidden("A suspended business cannot request verification.");
   const [activeServices] = await db.select({ n: sql<number>`count(*)::int` }).from(services).where(and(eq(services.businessId, businessId), eq(services.isActive, true)));
   if (!activeServices?.n) throw ApiError.badRequest("Add at least one service before requesting verification.");
+  if ((await getSettings("registration")).telegram === "required_for_business") {
+    const [owner] = await db.select({ verifiedAt: users.telegramVerifiedAt }).from(users).where(eq(users.id, current.ownerId)).limit(1);
+    if (!owner?.verifiedAt) throw ApiError.badRequest("Connect the owner's Telegram account (Account → Telegram) before requesting verification.", { requires: "telegram" });
+  }
 
   const [updated] = await db
     .update(businesses)
     .set({ status: "pending_verification", verification: { ...(current.verification ?? {}), credentials: input.credentials, submittedAt: new Date().toISOString() }, updatedAt: new Date() })
     .where(eq(businesses.id, businessId))
     .returning();
+  await notifyAdmins({ type: "business.verification", title: "Business to verify", body: `${current.name} asked to be listed.`, href: "/admin/marketplace" });
   return updated;
 }
 
@@ -139,7 +178,7 @@ export async function submitForVerification(user: AuthenticatedUser, businessId:
 
 export async function listForVerification(status: (typeof BUSINESS_STATUSES)[number] = "pending_verification") {
   return db
-    .select({ business: businesses, category: businessCategories.name, ownerEmail: users.email, ownerName: users.name })
+    .select({ business: businesses, category: businessCategories.name, ownerEmail: users.email, ownerName: users.name, ownerTelegramVerifiedAt: users.telegramVerifiedAt })
     .from(businesses)
     .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
     .innerJoin(users, eq(users.id, businesses.ownerId))
@@ -204,8 +243,9 @@ const publicColumns = {
   sector: businessCategories.sector,
 };
 
-export async function searchDirectory(query: z.infer<typeof directoryQuery>) {
+export async function searchDirectory(query: z.infer<typeof directoryQuery>, viewer: Pick<AuthenticatedUser, "role"> | null = null) {
   const conditions: SQL[] = [eq(businesses.status, "verified")];
+  if (!(await culturalVisibleTo(viewer))) conditions.push(ne(businessCategories.sector, "cultural"));
   if (query.q) {
     const pattern = `%${query.q}%`;
     conditions.push(or(ilike(businesses.name, pattern), ilike(businesses.nameAm, pattern), ilike(businesses.tagline, pattern), ilike(businesses.description, pattern), ilike(businesses.city, pattern))!);
@@ -240,9 +280,37 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>) {
   return { businesses: rows, total, page: query.page, limit: query.limit, totalPages: Math.max(1, Math.ceil(total / query.limit)) };
 }
 
+/**
+ * Verified businesses offering a service linked to a care pathway (e.g. readings → spiritual), so a
+ * client can book a practitioner who will review their case personally.
+ */
+export async function practitionersForPathway(domain: string, viewer: Pick<AuthenticatedUser, "role"> | null = null, limit = 6) {
+  const conditions: SQL[] = [eq(businesses.status, "verified"), eq(services.isActive, true), eq(serviceKinds.caseDomain, domain)];
+  if (!(await culturalVisibleTo(viewer))) conditions.push(ne(businessCategories.sector, "cultural"));
+  const rows = await db
+    .select({
+      ...publicColumns,
+      serviceId: services.id,
+      serviceName: services.name,
+      priceEtb: services.priceEtb,
+      durationMinutes: services.durationMinutes,
+    })
+    .from(services)
+    .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))
+    .innerJoin(businesses, eq(businesses.id, services.businessId))
+    .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
+    .where(and(...conditions))
+    .orderBy(sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(services.priceEtb))
+    .limit(limit * 3);
+  // One entry per business: its best-matching (cheapest) service.
+  const seen = new Set<string>();
+  return rows.filter((row) => !seen.has(row.id) && seen.add(row.id)).slice(0, limit);
+}
+
 /** Facets for the directory filters, computed from verified businesses (no hard-coded lists). */
-export async function directoryFacets() {
-  const [categories, regions, languages] = await Promise.all([
+export async function directoryFacets(viewer: Pick<AuthenticatedUser, "role"> | null = null) {
+  const cultural = await culturalVisibleTo(viewer);
+  const [allCategories, regions, languages] = await Promise.all([
     db
       .select({
         slug: businessCategories.slug,
@@ -267,7 +335,8 @@ export async function directoryFacets() {
       sql`select value as language, count(*)::int as count from ${businesses}, jsonb_array_elements_text(${businesses.languages}) where ${businesses.status} = 'verified' group by value order by count desc`,
     ),
   ]);
-  return { categories, regions, languages: [...languages] };
+  const categories = cultural ? allCategories : allCategories.filter((category) => category.sector !== "cultural");
+  return { categories, regions, languages: [...languages], culturalVisible: cultural };
 }
 
 export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser | null) {
@@ -279,8 +348,9 @@ export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser 
     .limit(1);
   if (!row) throw ApiError.notFound("Business");
 
-  // Unverified listings are visible only to their own team (as a preview).
-  if (row.business.status !== "verified") {
+  // Unverified listings (and hidden cultural ones) are visible only to their own team, as a preview.
+  const hidden = row.business.status !== "verified" || (row.category.sector === "cultural" && !(await culturalVisibleTo(viewer)));
+  if (hidden) {
     const isMember = viewer
       ? (await db.select({ id: businessMembers.id }).from(businessMembers).where(and(eq(businessMembers.businessId, row.business.id), eq(businessMembers.userId, viewer.id))).limit(1)).length > 0
       : false;
@@ -325,9 +395,14 @@ export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser 
 }
 
 /** Resolves a public slug to a business id (verified businesses only). */
-export async function resolvePublicBusinessId(slug: string) {
-  const [row] = await db.select({ id: businesses.id }).from(businesses).where(and(eq(businesses.slug, slug), eq(businesses.status, "verified"))).limit(1);
-  if (!row) throw ApiError.notFound("Business");
+export async function resolvePublicBusinessId(slug: string, viewer: Pick<AuthenticatedUser, "role"> | null = null) {
+  const [row] = await db
+    .select({ id: businesses.id, sector: businessCategories.sector })
+    .from(businesses)
+    .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
+    .where(and(eq(businesses.slug, slug), eq(businesses.status, "verified")))
+    .limit(1);
+  if (!row || (row.sector === "cultural" && !(await culturalVisibleTo(viewer)))) throw ApiError.notFound("Business");
   return row.id;
 }
 

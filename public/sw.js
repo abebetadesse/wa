@@ -76,13 +76,20 @@ self.addEventListener("fetch", (event) => {
   // Skip dynamic API routes (intake, report, export etc)
   if (url.pathname.startsWith("/api/")) return;
 
+  // Never intercept dev hot-reload, HMR, or chunk query versions in SW
+  if (url.pathname.includes("_next/webpack-hmr") || url.pathname.includes(".hot-update.") || (url.pathname.startsWith("/_next/") && url.searchParams.has("v"))) {
+    return;
+  }
+
   // Navigation: network-first, fallback to cache then offline page
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
         .catch(() =>
@@ -92,14 +99,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: cache-first
+  // Static assets: cache-first, but ONLY cache successful 200 responses
   event.respondWith(
     caches.match(request).then(
       (cached) =>
         cached ||
         fetch(request).then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response && response.status === 200 && (response.type === "basic" || response.type === "cors")) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
     )

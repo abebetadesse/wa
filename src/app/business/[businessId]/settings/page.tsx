@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { BadgeCheck, Plus, Send, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { BadgeCheck, Landmark, Plus, Send, Smartphone, Trash2 } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Field, Input, Select, Textarea } from "@/components/ui";
 import { useApi } from "@/features/workspace/useApi";
@@ -80,10 +81,11 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-6">
       <header>
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">Settings</h1>
-        <p className="text-muted-foreground">Your public profile and verification.</p>
+        <p className="text-muted-foreground">Your public profile, verification and how clients pay you.</p>
       </header>
 
       <Verification />
+      <PaymentAccounts />
 
       <Card>
         <CardHeader>
@@ -191,12 +193,98 @@ function Verification() {
             </div>
           ))}
           <Button variant="ghost" size="sm" className="self-start" onClick={() => setCredentials((list) => [...list, { label: "", issuer: "", reference: "" }])}><Plus className="size-4" aria-hidden="true" /> Add another</Button>
-          {error && <Alert tone="danger">{error}</Alert>}
+          {error && (
+            <Alert tone="danger">
+              {error}
+              {/Telegram/.test(error) && <> <Link href="/account" className="font-semibold text-brand underline">Connect Telegram</Link></>}
+            </Alert>
+          )}
           <Button onClick={submit} disabled={busy || !credentials.some((c) => c.label.trim().length >= 2)} className="self-end">
             <Send className="size-4" aria-hidden="true" /> {business.status === "pending_verification" ? "Update request" : "Request verification"}
           </Button>
         </CardContent>
       )}
+    </Card>
+  );
+}
+
+type Bank = { bank: string; accountName: string; accountNumber: string };
+
+/** Where clients pay this business. Clients see these on their bookings and report their transaction numbers. */
+function PaymentAccounts() {
+  const { business, reload } = useWorkspace();
+  const toast = useToast();
+  const current = business.paymentAccounts ?? {};
+  const [telebirrName, setTelebirrName] = useState(current.telebirr?.name ?? "");
+  const [telebirrPhone, setTelebirrPhone] = useState(current.telebirr?.phone ?? "");
+  const [banks, setBanks] = useState<Bank[]>(current.banks ?? []);
+  const [acceptsCash, setAcceptsCash] = useState(current.acceptsCash ?? true);
+  const [instructions, setInstructions] = useState(current.instructions ?? "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateBank = (index: number, key: keyof Bank, value: string) => setBanks((list) => list.map((bank, i) => (i === index ? { ...bank, [key]: value } : bank)));
+
+  async function save() {
+    setBusy(true);
+    setError(null);
+    try {
+      await apiFetch(`/api/workspace/businesses/${business.id}/payment-accounts`, {
+        method: "PUT",
+        json: {
+          telebirr: telebirrPhone.trim() ? { name: telebirrName.trim() || business.name, phone: telebirrPhone.replace(/\s+/g, "") } : null,
+          banks: banks.filter((bank) => bank.bank.trim() || bank.accountNumber.trim()).map((bank) => ({ ...bank, accountNumber: bank.accountNumber.trim() })),
+          acceptsCash,
+          instructions: instructions.trim() || undefined,
+        },
+      });
+      toast({ tone: "success", title: "Payment details saved", body: "Clients now see them on their bookings." });
+      reload();
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card id="payments">
+      <CardHeader>
+        <CardTitle>How clients pay you</CardTitle>
+        <CardDescription>Clients pay you directly by telebirr or bank transfer, then send you the transaction number. You confirm it under Payments. The platform never holds your money.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-5">
+        <div className="grid gap-4 rounded-2xl border border-border p-4 sm:grid-cols-2">
+          <p className="flex items-center gap-2 font-semibold text-foreground sm:col-span-2"><Smartphone className="size-4 text-brand" aria-hidden="true" /> telebirr</p>
+          <Field label="telebirr number" hint="Leave empty if you don't take telebirr.">{(control) => <Input {...control} inputMode="tel" value={telebirrPhone} onChange={(e) => setTelebirrPhone(e.target.value)} placeholder="09…" />}</Field>
+          <Field label="Name on the account">{(control) => <Input {...control} value={telebirrName} onChange={(e) => setTelebirrName(e.target.value)} />}</Field>
+        </div>
+        <div className="flex flex-col gap-3 rounded-2xl border border-border p-4">
+          <p className="flex items-center gap-2 font-semibold text-foreground"><Landmark className="size-4 text-brand" aria-hidden="true" /> Bank accounts</p>
+          {banks.map((bank, index) => (
+            <div key={index} className="grid gap-3 sm:grid-cols-[1.2fr_1.2fr_1.2fr_auto] sm:items-end">
+              <Field label="Bank">{(control) => <Input {...control} value={bank.bank} onChange={(e) => updateBank(index, "bank", e.target.value)} placeholder="e.g. Commercial Bank of Ethiopia" />}</Field>
+              <Field label="Account name">{(control) => <Input {...control} value={bank.accountName} onChange={(e) => updateBank(index, "accountName", e.target.value)} />}</Field>
+              <Field label="Account number">{(control) => <Input {...control} inputMode="numeric" value={bank.accountNumber} onChange={(e) => updateBank(index, "accountNumber", e.target.value)} />}</Field>
+              <button type="button" onClick={() => setBanks((list) => list.filter((_, i) => i !== index))} className="mb-1 rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-danger" aria-label="Remove bank account">
+                <Trash2 className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+          <Button variant="ghost" size="sm" className="self-start" onClick={() => setBanks((list) => [...list, { bank: "", accountName: business.name, accountNumber: "" }])} disabled={banks.length >= 6}>
+            <Plus className="size-4" aria-hidden="true" /> Add bank account
+          </Button>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-foreground">
+          <input type="checkbox" checked={acceptsCash} onChange={(e) => setAcceptsCash(e.target.checked)} className="size-4 accent-[var(--brand-accent)]" />
+          Clients can also pay in cash at the visit
+        </label>
+        <Field label="Payment note for clients (optional)" hint="e.g. “Please pay at least half before a home visit.”">
+          {(control) => <Textarea {...control} rows={2} maxLength={500} value={instructions} onChange={(e) => setInstructions(e.target.value)} />}
+        </Field>
+        {error && <Alert tone="danger">{error}</Alert>}
+        <Button onClick={save} disabled={busy} className="self-end">{busy ? "Saving…" : "Save payment details"}</Button>
+      </CardContent>
     </Card>
   );
 }

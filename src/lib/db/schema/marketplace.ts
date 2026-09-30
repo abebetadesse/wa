@@ -80,6 +80,13 @@ export const businesses = pgTable(
       notes?: string;
       credentials?: { label: string; issuer?: string; reference?: string }[];
     }>(),
+    /** Where clients can pay this business directly (shown on bookings). */
+    paymentAccounts: jsonb("payment_accounts").$type<{
+      telebirr?: { name: string; phone: string } | null;
+      banks?: { bank: string; accountName: string; accountNumber: string }[];
+      acceptsCash?: boolean;
+      instructions?: string;
+    }>().default({}).notNull(),
     ratingAverage: numeric("rating_average", { precision: 3, scale: 2 }),
     ratingCount: integer("rating_count").default(0).notNull(),
     ...timestamps,
@@ -222,8 +229,10 @@ export const payments = pgTable(
     method: varchar("method", { length: 30 }).notNull(),
     reference: varchar("reference", { length: 120 }),
     note: text("note"),
-    /** recorded | voided */
+    /** recorded | voided; client-submitted proofs start as pending and become recorded or rejected. */
     status: varchar("status", { length: 20 }).default("recorded").notNull(),
+    /** Set when the client reported this payment themselves (telebirr / bank transfer proof). */
+    submittedBy: uuid("submitted_by").references(() => users.id, { onDelete: "set null" }),
     receivedOn: date("received_on").notNull(),
     recordedBy: uuid("recorded_by").references(() => users.id, { onDelete: "set null" }),
     voidedBy: uuid("voided_by").references(() => users.id, { onDelete: "set null" }),

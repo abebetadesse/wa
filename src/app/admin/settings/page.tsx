@@ -456,58 +456,14 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="space-y-4">
-            {/* Self-Registration Toggle */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+            {/* Sign-up and verification moved to their own page, stored in the database. */}
+            <a href="/admin/sign-up" className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between hover:border-emerald-500/40">
               <div>
-                <p className="text-xs font-semibold text-white">Allow Public Self-Registration</p>
-                <p className="text-[11px] text-slate-400">
-                  When disabled, new accounts can only be created by administrators or health institution leads.
-                </p>
+                <p className="text-xs font-semibold text-white">Sign-up &amp; Telegram verification</p>
+                <p className="text-[11px] text-slate-400">Open or pause registration and choose how Telegram verification is used.</p>
               </div>
-              <button
-                type="button"
-                onClick={() =>
-                  setConfig({
-                    ...config,
-                    flags: { ...config.flags, allowSelfRegistration: !config.flags.allowSelfRegistration },
-                  })
-                }
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.allowSelfRegistration
-                  ? "bg-emerald-600 text-white"
-                  : "bg-white/10 text-slate-400"
-                  }`}
-              >
-                {config.flags.allowSelfRegistration ? "Enabled (Public)" : "Disabled (Invite Only)"}
-              </button>
-            </div>
-
-            {/* Email Verification */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold text-white">Require Email Verification on Registration</p>
-                <p className="text-[11px] text-slate-400">
-                  Sends automated OTP token to verify user email address prior to granting case evaluation access.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() =>
-                  setConfig({
-                    ...config,
-                    flags: {
-                      ...config.flags,
-                      requireEmailVerification: !config.flags.requireEmailVerification,
-                    },
-                  })
-                }
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.requireEmailVerification
-                  ? "bg-emerald-600 text-white"
-                  : "bg-white/10 text-slate-400"
-                  }`}
-              >
-                {config.flags.requireEmailVerification ? "Mandatory" : "Optional"}
-              </button>
-            </div>
+              <span className="text-xs font-semibold text-emerald-400">Open →</span>
+            </a>
 
             {/* Session Timeout */}
             <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
