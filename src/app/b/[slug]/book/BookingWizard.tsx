@@ -10,6 +10,7 @@ import { Alert, Button, ChoiceGroup, ErrorState, Field, LoadingState, Textarea }
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { useSession } from "@/features/session/SessionProvider";
 import { cn } from "@/lib/utils";
+import { EMPTY_INTAKE, IntakeStep, hasIntake, intakePayload, type IntakeConfig, type IntakeValue } from "@/features/intake/IntakeStep";
 
 interface Service {
   id: string;
@@ -22,6 +23,8 @@ interface Service {
   requiresSafetyScreen: boolean;
   /** Set for services that open an expert-reviewed case (e.g. readings). */
   caseDomain: string | null;
+  /** What this service asks for: dropdown, description, Ge'ez names, photos, voice, video. */
+  intake?: IntakeConfig;
 }
 
 interface Business {
@@ -33,7 +36,7 @@ interface Business {
   team: { id: string; name: string | null; title: string | null }[];
 }
 
-type Step = "service" | "how" | "time" | "safety" | "confirm";
+type Step = "service" | "how" | "time" | "details" | "safety" | "confirm";
 
 const DAYS_SHOWN = 14;
 
@@ -55,6 +58,7 @@ export function BookingWizard({ slug }: { slug: string }) {
   const [slot, setSlot] = useState<string | null>(null);
   const [safety, setSafety] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
+  const [intake, setIntake] = useState<IntakeValue>(EMPTY_INTAKE);
   const [step, setStep] = useState<Step>("service");
 
   const [slots, setSlots] = useState<string[] | null>(null);
@@ -113,12 +117,17 @@ export function BookingWizard({ slug }: { slug: string }) {
     { id: "service", label: "Service" },
     { id: "how", label: "How & who" },
     { id: "time", label: "Time" },
+    ...(hasIntake(service?.intake) ? [{ id: "details" as Step, label: "Details" }] : []),
     ...(service?.requiresSafetyScreen ? [{ id: "safety" as Step, label: "Safety" }] : []),
     { id: "confirm", label: "Confirm" },
   ];
   const stepIndex = steps.findIndex((s) => s.id === step);
   const next = () => setStep(steps[Math.min(stepIndex + 1, steps.length - 1)].id);
   const back = () => setStep(steps[Math.max(stepIndex - 1, 0)].id);
+
+  const detailsComplete =
+    !service?.intake ||
+    ((service.intake.dropdownType === "none" || !service.intake.options.length || Boolean(intake.dropdownValue)) && (!service.intake.asksGeezName || /[\u1200-\u137F]/.test(intake.nameGeez)));
 
   const safetyComplete = !service?.requiresSafetyScreen || (safety.takingMedicines && safety.pregnantOrBreastfeeding && (safety.takingMedicines !== "yes" || safety.medicines?.trim()));
 
@@ -139,6 +148,7 @@ export function BookingWizard({ slug }: { slug: string }) {
           deliveryMode: mode,
           memberId: memberId || undefined,
           note: note.trim() || undefined,
+          intake: hasIntake(service.intake) ? intakePayload(intake) : undefined,
           safety: service.requiresSafetyScreen
             ? { takingMedicines: safety.takingMedicines, medicines: safety.medicines?.trim() || undefined, pregnantOrBreastfeeding: safety.pregnantOrBreastfeeding, conditions: safety.conditions?.trim() || undefined }
             : undefined,
@@ -187,6 +197,7 @@ export function BookingWizard({ slug }: { slug: string }) {
                     <button
                       type="button"
                       onClick={() => {
+                        if (s.id !== serviceId) setIntake(EMPTY_INTAKE);
                         setServiceId(s.id);
                         setSlot(null);
                         setStep("how");
@@ -287,6 +298,10 @@ export function BookingWizard({ slug }: { slug: string }) {
             </>
           )}
 
+          {step === "details" && service?.intake && (
+            <IntakeStep serviceId={service.id} config={service.intake} value={intake} onChange={setIntake} signedIn={Boolean(user)} />
+          )}
+
           {step === "safety" && (
             <>
               <Alert tone="info" title="A few safety questions">
@@ -358,7 +373,7 @@ export function BookingWizard({ slug }: { slug: string }) {
           <Button
             size="lg"
             onClick={next}
-            disabled={(step === "service" && !service) || (step === "how" && !mode) || (step === "time" && !slot) || (step === "safety" && !safetyComplete)}
+            disabled={(step === "service" && !service) || (step === "how" && !mode) || (step === "time" && !slot) || (step === "details" && !detailsComplete) || (step === "safety" && !safetyComplete)}
           >
             Continue
           </Button>

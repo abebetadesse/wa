@@ -204,6 +204,8 @@ export const bookings = pgTable(
     clientNote: text("client_note"),
     businessNote: text("business_note"),
     safety: jsonb("safety").$type<Record<string, unknown>>(),
+    /** Client intake for the service: dropdown choice, text, Ge'ez names and attachment ids. */
+    intake: jsonb("intake").$type<Record<string, unknown>>(),
     caseId: uuid("case_id"),
     cancelledBy: varchar("cancelled_by", { length: 20 }),
     cancelReason: text("cancel_reason"),

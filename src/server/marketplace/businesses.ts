@@ -9,6 +9,7 @@ import { requireCapability } from "./access";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
 import { notify, notifyAdmins } from "./notifications";
 import { getSettings } from "@/server/settings";
+import { withPublicIntake } from "@/server/intake/settings";
 
 const PLATFORM_ADMINS = ["admin", "super_admin"];
 
@@ -388,7 +389,7 @@ export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser 
     ...business,
     verifiedAt: verification?.reviewedAt ?? null,
     category: { slug: row.category.slug, name: row.category.name, nameAm: row.category.nameAm, sector: row.category.sector },
-    services: serviceRows,
+    services: await withPublicIntake(serviceRows),
     team,
     preview: row.business.status !== "verified",
   };

@@ -17,3 +17,4 @@ export * from "./marketplace";
 export * from "./platform";
 export * from "./toolkit";
 export * from "./safety";
+export * from "./intake";

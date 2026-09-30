@@ -297,6 +297,8 @@ export const SEED_SUBSTANCES: SeedSubstance[] = [
   T("qontir", "Qontir", "Acacia abyssinica", "ቆንቲር", "Medicinal plant", "", ""),
   T("itan", "Itan (frankincense)", "Boswellia papyrifera", "ዕጣን", "Medicinal plant", "", "p", "Frankincense;Lubanj;Etan", "Mostly burned as incense and fumigant; little is swallowed."),
   T("karbe", "Karbe (myrrh)", "Commiphora myrrha", "ከርቤ", "Medicinal plant", "uterotonic hypoglycemic", "PB", "Myrrh;Kerbe", "Traditionally used to bring on menstruation; avoid in pregnancy."),
+  T("embuay", "Embuay (Sodom apple)", "Solanum incanum", "እምቧይ", "Medicinal plant", "toxic_internal gi_irritant", "PBCKLE", "Embway;Sodom apple;Bitter apple", "The fruit contains glycoalkaloids; traditionally applied to the skin, not swallowed.", "Toxicology reports; traditional topical use"),
+  T("senafich", "Senafich (black mustard)", "Brassica nigra", "ሰናፍጭ", "Spice & food plant", "gi_irritant", "p", "Mustard;Black mustard;Senafch", "Seed paste is used as a warming poultice; it can blister skin if left on too long."),
   T("kega", "Kega (wild rose)", "Rosa abyssinica", "ቀጋ", "Medicinal plant", "", "", "Wild rose;Abyssinian rose", "Petals and hips are made into tea."),
   T("yemdir-berbere", "Yemdir berbere", "Acmella caulirhiza", "የምድር በርበሬ", "Medicinal plant", "", "p", "", "Numbing toothache remedy."),
 

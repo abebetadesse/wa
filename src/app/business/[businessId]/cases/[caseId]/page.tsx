@@ -29,6 +29,7 @@ interface ExpertView {
   review: { expertId: string; claimedAt: string; approvedAt?: string; notes?: string } | null;
   checklist: { id: string; label: string }[];
   questions: { id: string; text: string; options: { value: string; label: string }[] }[];
+  bookingId?: string | null;
 }
 
 function answerText(question: ExpertView["questions"][number] | undefined, value: unknown) {
@@ -81,6 +82,11 @@ export default function CaseReviewPage() {
         <Badge tone={data.stage === "awaiting_expert" ? "warning" : data.stage === "in_review" ? "brand" : "success"}>
           {data.stage === "awaiting_expert" ? "Waiting" : data.stage === "in_review" ? (mine ? "You are reviewing" : "In review") : "Approved"}
         </Badge>
+        {data.bookingId && (
+          <Link href={`${base}/bookings/${data.bookingId}`} className="ml-auto text-sm font-semibold text-brand hover:underline">
+            Booking intake, drafts & analysis
+          </Link>
+        )}
       </header>
 
       {data.safety.action !== "proceed" && (

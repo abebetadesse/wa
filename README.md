@@ -404,6 +404,11 @@ Create a local `.env` file using the deployment configuration as a guide. Never 
 | `CHAPA_WEBHOOK_SECRET` | Optional: checks Chapa webhook signatures. Payments are always re-verified with Chapa's API |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` | Telegram verification, sign-in, notifications and password resets. Create the bot with @BotFather and link your domain with `/setdomain` (Telegram does not allow localhost) |
 
+| `UPLOAD_DIR` | Where client intake photos, voice notes and videos are stored (default `./storage/uploads`, outside the web root). Use persistent storage in production and include it in backups |
+| `PUBMED_api` or `NCBI_API_KEY` | Optional: faster PubMed lookups in the healer's analysis panel (works without a key at a lower rate) |
+
+A reference healer business (Metsehafe Fewus and Awde Negest services, intake settings, auto-response rules, remedies) can be created for an existing account with `npm run db:seed:debtera -- --owner you@example.com`. Apply `drizzle/0009_healer_intake.sql` first.
+
 In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Apply the latest migration with `npm run db:apply drizzle/0006_payments_and_telegram.sql`.
 
 ### Payments

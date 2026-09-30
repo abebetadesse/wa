@@ -3,6 +3,9 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { bookings, businessClients, businesses, businessMembers, payments, remedies, remedyIngredients, serviceKinds, services, users } from "@/lib/db/schema";
 import { screenBookingSafety } from "@/server/safety";
+import { bookingIntakeInput, validateBookingIntake } from "@/server/intake/settings";
+import { attachToBooking } from "@/server/intake/attachments";
+import { runAutoResponses } from "@/server/intake/responses";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability, roleCan, type MemberRole } from "./access";
@@ -48,10 +51,12 @@ export const bookingRequest = z.object({
   deliveryMode: z.enum(DELIVERY_MODES),
   note: z.string().trim().max(2000).optional(),
   safety: safetyAnswers.optional(),
+  /** Answers to the service's own intake (dropdown, description, Ge'ez names, uploaded media). */
+  intake: bookingIntakeInput.optional(),
 });
 
 /** Staff enter wall-clock time in the business's timezone; the server converts it. */
-export const staffBookingRequest = bookingRequest.omit({ safety: true, startsAt: true }).extend({
+export const staffBookingRequest = bookingRequest.omit({ safety: true, startsAt: true, intake: true }).extend({
   startsAtLocal: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Choose a date and time."),
   clientId: z.string().uuid(),
   status: z.enum(["requested", "confirmed"]).default("confirmed"),
@@ -142,6 +147,7 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
   if (!slots.includes(input.startsAt.toISOString())) throw ApiError.conflict("That time is no longer available. Please choose another slot.");
 
   const endsAt = new Date(input.startsAt.getTime() + service.durationMinutes * 60_000);
+  const intake = await validateBookingIntake(user, businessId, service.id, input.intake);
   const flags = safetyFlags(input.safety);
   if (input.safety && (input.safety.takingMedicines === "yes" || input.safety.pregnantOrBreastfeeding === "yes")) {
     flags.push(...(await matrixFlags(businessId, input.safety)));
@@ -170,7 +176,9 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
       priceEtb: service.priceEtb,
       clientNote: input.note,
       safety: input.safety ? { answers: input.safety, flags } : null,
+      intake: intake as Record<string, unknown> | null,
     });
+    if (intake?.attachmentIds.length) await attachToBooking(tx, user.id, businessId, created.id, intake.attachmentIds);
 
     const payload = { bookingId: created.id, reference: created.reference, status: created.status, startsAt: created.startsAt.toISOString() };
     await publish([businessChannel(businessId), userChannel(user.id)], "booking.created", payload, tx);
@@ -189,6 +197,8 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
     return created;
   });
 
+  // Criteria-based responses run after the booking is safely stored; a failure never loses the booking.
+  await runAutoResponses(booking.id).catch((error) => console.error("[intake] auto-responses failed", booking.id, error));
   return getBookingForClient(user, booking.id);
 }
 

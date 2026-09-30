@@ -13,13 +13,14 @@ export class PubMedSource {
   private readonly API_KEY = process.env.PUBMED_api || process.env.NCBI_API_KEY || "";
   private readonly BATCH_SIZE = 50; // efetch max
 
-  private async get(url: string): Promise<Response> {
+  private async get(url: string, timeoutMs = 20_000): Promise<Response> {
     // Pillar 3 P11: Token-bucket rate limiting instead of fixed sleep
     await getNcbiRateLimiter().throttle();
     const sep = url.includes("?") ? "&" : "?";
     const keySuffix = this.API_KEY ? `${sep}api_key=${this.API_KEY}` : "";
     const response = await fetch(`${url}${keySuffix}`, {
       headers: { "User-Agent": "EthioWellnessPlatform/3.0 (abebetadesse33@gmail.com)" },
+      signal: AbortSignal.timeout(timeoutMs),
     });
     if (!response.ok) {
       throw new Error(`PubMed HTTP ${response.status} for ${url}`);
@@ -40,16 +41,16 @@ export class PubMedSource {
 
   async searchArticles(
     query: string,
-    options: { maxResults?: number; dateRange?: string; meshTerms?: string[] }
+    options: { maxResults?: number; dateRange?: string; meshTerms?: string[]; restrictToEthiopia?: boolean }
   ): Promise<RawArticle[]> {
-    const { maxResults = 100, dateRange = "last 3 years", meshTerms = [] } = options;
+    const { maxResults = 100, dateRange = "last 3 years", meshTerms = [], restrictToEthiopia = true } = options;
 
     // Build the query: core topic + MeSH terms + Ethiopia filter + lang filter
     const meshPart = meshTerms.length
       ? " AND " + meshTerms.map((m) => `"${m}"`).join(" AND ")
       : "";
     const fullQuery = encodeURIComponent(
-      `(${query})${meshPart} AND Ethiopia[Title/Abstract] AND English[Language]`
+      `(${query})${meshPart}${restrictToEthiopia ? " AND Ethiopia[Title/Abstract]" : ""} AND English[Language]`
     );
 
     // ── Step 1: esearch → get PMIDs ──

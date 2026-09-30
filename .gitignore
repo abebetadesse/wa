@@ -15,3 +15,6 @@ next-env.d.ts
 # Local runtime caches (contain personal case data)
 .cases_cache/
 push_debug.log
+
+# Intake media uploaded by clients (never commit)
+/storage/

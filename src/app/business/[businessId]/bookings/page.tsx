@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Phone, Plus, ShieldAlert, Wallet } from "lucide-react";
@@ -52,7 +54,7 @@ const startOfWeek = (date: Date) => {
 };
 
 export default function BookingsPage() {
-  const { business, can } = useWorkspace();
+  const { business, can, base } = useWorkspace();
   const params = useSearchParams();
   const toast = useToast();
   const statusFilter = params.get("status") ?? "";
@@ -167,6 +169,11 @@ export default function BookingsPage() {
                       )}
                     </div>
                     <div className="flex flex-wrap gap-2">
+                      {can("viewClientNotes") && (
+                        <Link href={`${base}/bookings/${booking.id}`} className="inline-flex h-9 items-center rounded-full border border-input px-3 text-sm font-semibold text-foreground hover:bg-accent">
+                          Review intake
+                        </Link>
+                      )}
                       {(ACTIONS[booking.status] ?? []).map((action) => (
                         <Button
                           key={action.status}
