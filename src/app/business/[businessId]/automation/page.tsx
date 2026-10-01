@@ -9,7 +9,7 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { useToast } from "@/features/feedback/Toaster";
 import { cn } from "@/lib/utils";
 
-type DropdownType = "none" | "custom" | "metsehafe_fewus" | "awde_negest";
+type DropdownType = "none" | "custom" | "metsehafe_fewus" | "metsehafe_asmat" | "awde_negest";
 
 interface IntakeRow {
   serviceId: string;
@@ -34,16 +34,25 @@ interface Rule {
   priority: number;
 }
 
-interface FewusLibrary {
-  headings: { key: string; titleAm: string; titleEn: string; bookMatch: string; bookReferences: { number: number; titleGeez: string; page: number }[]; text: { geezText: string | null; amharicText: string | null; guidance: string | null } | null }[];
-  contents: { number: number; titleGeez: string; gloss: string; page: number }[];
+interface ManuscriptLibrary {
+  titleAm: string;
+  titleEn: string;
+  contents: { number: number; titleGeez: string; gloss: string; page: number; endPage?: number }[];
+  headings: {
+    heading: { key: string; titleAm: string; titleEn: string; bookMatch: string };
+    bookReferences: { number: number; titleGeez: string; page: number; endPage?: number }[];
+    subheadings: { titleGeez: string; page: number }[];
+    cautions: { form: string; level: "danger" | "caution" | "info"; label: string; en: string }[];
+    ethics: { key: string; en: string }[];
+    text: { geezText: string | null; amharicText: string | null; guidance: string | null } | null;
+  }[];
 }
 
-const DROPDOWN_LABELS: Record<DropdownType, string> = { none: "No list", custom: "My own list", metsehafe_fewus: "መጽሐፈ ፈውስ headings", awde_negest: "አውደ ነገሥት question types" };
+const DROPDOWN_LABELS: Record<DropdownType, string> = { none: "No list", custom: "My own list", metsehafe_fewus: "መጽሐፈ ፈውስ headings", metsehafe_asmat: "መጽሐፈ አስማት chapters", awde_negest: "አውደ ነገሥት question types" };
 const HUMORS = [["esat", "እሳት Fire"], ["may", "ማይ Water"], ["nifas", "ነፋስ Air"], ["afere", "አፈር Earth"]] as const;
 const VARIABLES = ["client_name", "service_name", "business_name", "booking_reference", "booking_time", "selection", "digital_root", "circle", "humor"];
 
-type Tab = "intake" | "rules" | "fewus";
+type Tab = "intake" | "rules" | "fewus" | "asmat";
 
 export default function AutomationPage() {
   const { can } = useWorkspace();
@@ -51,13 +60,13 @@ export default function AutomationPage() {
   const [tab, setTab] = useState<Tab>(manage ? "intake" : "fewus");
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Intake & automation" description="What clients share when they book, the responses that go out on their own or wait for you, and your Metsehafe Fewus texts." className="mb-0" />
+      <PageHeader title="Intake & automation" description="What clients share when they book, the responses that go out on their own or wait for you, and your own Metsehafe Fewus and Metsehafe Asmat texts." className="mb-0" />
       <div role="tablist" className="flex flex-wrap gap-2">
-        {([["intake", "Intake forms", manage], ["rules", "Auto-responses", manage], ["fewus", "Fewus library", true]] as const).filter(([, , show]) => show).map(([id, label]) => (
+        {([["intake", "Intake forms", manage], ["rules", "Auto-responses", manage], ["fewus", "Fewus library", true], ["asmat", "Asmat library", true]] as const).filter(([, , show]) => show).map(([id, label]) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("rounded-full px-4 py-2 text-sm font-semibold", tab === id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground")}>{label}</button>
         ))}
       </div>
-      {tab === "intake" ? <IntakeForms /> : tab === "rules" ? <Rules /> : <FewusTexts />}
+      {tab === "intake" ? <IntakeForms /> : tab === "rules" ? <Rules /> : <ManuscriptTexts key={tab} slug={tab} />}
     </div>
   );
 }
@@ -143,7 +152,8 @@ function IntakeEditor({ row, onClose, onSaved }: { row: IntakeRow; onClose: () =
         </Field>
         {form.dropdownType !== "none" && <Field label="Question above the list (optional)">{(c) => <Input {...c} value={form.dropdownLabel} onChange={(e) => setForm({ ...form, dropdownLabel: e.target.value })} />}</Field>}
         {form.dropdownType === "custom" && <Field label="Options, one per line" hint="At least two.">{(c) => <Textarea {...c} rows={5} value={optionsText} onChange={(e) => setOptionsText(e.target.value)} />}</Field>}
-        {form.dropdownType === "awde_negest" && <Alert tone="info">Clients will also be asked for their name (and optionally their mother&apos;s name) in Ge&apos;ez letters, with a letter picker and live name reckoning.</Alert>}
+        {(form.dropdownType === "awde_negest" || form.dropdownType === "metsehafe_asmat") && <Alert tone="info">Clients will also be asked for their name (and optionally their mother&apos;s name) in Ge&apos;ez letters, with a letter picker and live name reckoning.</Alert>}
+        {form.dropdownType === "metsehafe_asmat" && <Alert tone="warning" title="Asmat chapters">Clients pick one of the book&apos;s 13 chapters. Whatever you send for a chapter goes with its safety cautions and framing notes, and never by itself: manuscript texts always wait for your review.</Alert>}
         {form.allowText && <Field label="Prompt above the text box (optional)">{(c) => <Input {...c} value={form.textPrompt} onChange={(e) => setForm({ ...form, textPrompt: e.target.value })} placeholder="e.g. Where is the pain, and since when?" />}</Field>}
         {error && <Alert tone="danger">{error}</Alert>}
       </div>
@@ -178,7 +188,7 @@ function Rules() {
   return (
     <div className="flex flex-col gap-4">
       <Alert tone="info">
-        Rules run the moment a booking arrives. Plain acknowledgements can go out instantly; anything with remedies or Fewus texts, and any intake that mentions danger signs, is held as a draft for you to approve on the booking&apos;s review page.
+        Rules run the moment a booking arrives. Plain acknowledgements can go out instantly; anything with remedies or manuscript texts, and any intake that mentions danger signs, is held as a draft for you to approve on the booking&apos;s review page.
       </Alert>
       <div className="flex justify-end"><Button onClick={() => setEditing("new")}><Plus className="size-4" aria-hidden="true" /> New rule</Button></div>
       {rules.data.length === 0 && <EmptyState title="No rules yet" description="Start with an instant acknowledgement for every booking." />}
@@ -289,7 +299,7 @@ function RuleEditor({ rule, services, remedies, onClose, onSaved }: { rule: Rule
           <Field label="Title" required>{(c) => <Input {...c} value={form.templateTitle} onChange={(e) => setForm({ ...form, templateTitle: e.target.value })} />}</Field>
           <Field label="Message" required hint={`You can use: ${VARIABLES.map((v) => `{{${v}}}`).join(" ")}`}>{(c) => <Textarea {...c} rows={6} value={form.templateBody} onChange={(e) => setForm({ ...form, templateBody: e.target.value })} />}</Field>
           <div className="flex flex-wrap gap-4 text-sm">
-            <label className="flex items-center gap-2"><input type="checkbox" checked={form.includeFewusText} onChange={(e) => setForm({ ...form, includeFewusText: e.target.checked })} className="size-4 accent-[var(--brand-accent)]" /> Add my Fewus text for the chosen heading</label>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={form.includeFewusText} onChange={(e) => setForm({ ...form, includeFewusText: e.target.checked })} className="size-4 accent-[var(--brand-accent)]" /> Add my manuscript text (Fewus or Asmat) for the chosen heading</label>
             <label className="flex items-center gap-2"><input type="checkbox" checked={form.includeProfile} onChange={(e) => setForm({ ...form, includeProfile: e.target.checked })} className="size-4 accent-[var(--brand-accent)]" /> Add the name reckoning & Awde Negest reading</label>
           </div>
           {remedies.length > 0 && <div><p className="mb-1.5 text-xs text-muted-foreground">Remedies to suggest</p><div className="flex flex-wrap gap-1.5">{remedies.map((r) => chip(form.remedyIds.includes(r.id), r.name, () => setForm({ ...form, remedyIds: flip(form.remedyIds, r.id) })))}</div></div>}
@@ -301,7 +311,7 @@ function RuleEditor({ rule, services, remedies, onClose, onSaved }: { rule: Rule
               </Select>
             )}
           </Field>
-          {hasRemedies && <p className="text-xs text-muted-foreground">Responses with remedies or Fewus texts always wait for your approval.</p>}
+          {hasRemedies && <p className="text-xs text-muted-foreground">Responses with remedies or manuscript texts always wait for your approval.</p>}
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="size-4 accent-[var(--brand-accent)]" /> Active</label>
         </fieldset>
         {error && <Alert tone="danger">{error}</Alert>}
@@ -310,19 +320,21 @@ function RuleEditor({ rule, services, remedies, onClose, onSaved }: { rule: Rule
   );
 }
 
-// ── Fewus library ────────────────────────────────────────────────────────────
+// ── Manuscript libraries (Fewus, Asmat) ──────────────────────────────────────
 
-function FewusTexts() {
+function ManuscriptTexts({ slug }: { slug: "fewus" | "asmat" }) {
   const { business } = useWorkspace();
   const toast = useToast();
-  const { data, error, reload } = useApi<FewusLibrary>(`/api/workspace/businesses/${business.id}/fewus`);
-  const [editing, setEditing] = useState<FewusLibrary["headings"][number] | null>(null);
+  const { data, error, reload } = useApi<ManuscriptLibrary>(`/api/workspace/businesses/${business.id}/manuscripts/${slug}`, { liveTypes: ["intake.library"] });
+  const [editing, setEditing] = useState<ManuscriptLibrary["headings"][number] | null>(null);
   const [form, setForm] = useState({ geezText: "", amharicText: "", guidance: "" });
+  const asmat = slug === "asmat";
+  const pages = (r: { page: number; endPage?: number }) => (r.endPage && r.endPage !== r.page ? `${r.page}–${r.endPage}` : `${r.page}`);
 
   async function save() {
     if (!editing) return;
     try {
-      await apiFetch(`/api/workspace/businesses/${business.id}/fewus/${editing.key}`, { method: "PUT", json: form });
+      await apiFetch(`/api/workspace/businesses/${business.id}/manuscripts/${slug}/${editing.heading.key}`, { method: "PUT", json: form });
       toast({ tone: "success", title: "Saved" });
       setEditing(null);
       reload();
@@ -333,46 +345,70 @@ function FewusTexts() {
 
   if (error) return <ErrorState message={error} onRetry={reload} />;
   if (!data) return <LoadingState />;
+  const written = data.headings.filter((h) => h.text?.geezText || h.text?.amharicText).length;
   return (
     <div className="flex flex-col gap-4">
-      <Alert tone="info" title="Your own texts">
-        The platform indexes the book&apos;s table of contents only. Record the prayer, formula and remedy text you use for each heading; it fills the booking review and any rule that includes it.
+      <Alert tone="info" title={`Your own texts · ${written} of ${data.headings.length} written`}>
+        The platform indexes the book&apos;s table of contents only{asmat ? ", never its prayers, names of power, seals or procedures" : ""}. Record the text you use for each {asmat ? "chapter" : "heading"} from your own copy; it fills the booking review, the solution you deliver, and any rule that includes it.
       </Alert>
+      {asmat && (
+        <Alert tone="warning" title="Delivered with safety and framing notes">
+          Asmat chapters always go out with the physical-safety cautions for how they are carried out (smoke, anything near the eyes, anything swallowed or given to someone else) and the framing for that chapter: protection only, only with everyone&apos;s agreement, a blessing rather than a promise, and a health-centre visit where signs may be illness.
+        </Alert>
+      )}
       <div className="grid gap-3 md:grid-cols-2">
-        {data.headings.map((heading) => (
-          <Card key={heading.key}>
+        {data.headings.map((h) => (
+          <Card key={h.heading.key}>
             <CardContent className="flex flex-col gap-2 pt-5">
               <div className="flex items-start gap-2">
                 <div className="min-w-0 flex-1">
-                  <p lang="am" className="font-geez font-semibold text-foreground">{heading.titleAm}</p>
-                  <p className="text-xs text-muted-foreground">{heading.titleEn}{heading.bookReferences.length ? ` · pages ${heading.bookReferences.map((r) => r.page).join(", ")}` : " · no dedicated heading in the book"}</p>
+                  <p lang="am" className="font-geez font-semibold text-foreground">{h.heading.titleAm}</p>
+                  <p className="text-xs text-muted-foreground">{h.heading.titleEn}{h.bookReferences.length ? ` · page${h.bookReferences.some((r) => r.endPage && r.endPage !== r.page) || h.bookReferences.length > 1 ? "s" : ""} ${h.bookReferences.map(pages).join(", ")}` : " · no dedicated heading in the book"}</p>
                 </div>
-                {heading.text?.geezText || heading.text?.amharicText ? <Badge tone="success">Written</Badge> : <Badge tone="neutral">Empty</Badge>}
+                {h.text?.geezText || h.text?.amharicText ? <Badge tone="success">Written</Badge> : <Badge tone="neutral">Empty</Badge>}
               </div>
-              <Button size="sm" variant="outline" className="self-end" onClick={() => { setEditing(heading); setForm({ geezText: heading.text?.geezText ?? "", amharicText: heading.text?.amharicText ?? "", guidance: heading.text?.guidance ?? "" }); }}>
-                <Pencil className="size-4" aria-hidden="true" /> {heading.text ? "Edit" : "Write"}
+              {(h.cautions.some((c) => c.level === "danger") || h.ethics.length > 0) && (
+                <div className="flex flex-wrap gap-1.5">
+                  {h.cautions.filter((c) => c.level === "danger").map((c) => <Badge key={c.form} tone="danger">{c.label}</Badge>)}
+                  {h.ethics.map((e) => <Badge key={e.key} tone="warning">{ETHIC_BADGES[e.key] ?? e.key}</Badge>)}
+                </div>
+              )}
+              <Button size="sm" variant="outline" className="self-end" onClick={() => { setEditing(h); setForm({ geezText: h.text?.geezText ?? "", amharicText: h.text?.amharicText ?? "", guidance: h.text?.guidance ?? "" }); }}>
+                <Pencil className="size-4" aria-hidden="true" /> {h.text ? "Edit" : "Write"}
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><BookOpen className="size-4" aria-hidden="true" /> <span lang="am" className="font-geez">ማውጫ</span> · the book&apos;s table of contents</CardTitle><CardDescription>38 headings, read from the scanned edition.</CardDescription></CardHeader>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base"><BookOpen className="size-4" aria-hidden="true" /> <span lang="am" className="font-geez">{data.titleAm} · ማውጫ</span></CardTitle>
+          <CardDescription>{data.contents.length} {asmat ? "chapters, read from the edition's table of contents (page 2)" : "headings, read from the scanned edition"}.</CardDescription>
+        </CardHeader>
         <CardContent>
           <ol className="grid gap-1 text-sm sm:grid-cols-2">
-            {data.contents.map((entry) => <li key={entry.number} className="flex gap-2"><span className="w-6 text-right tabular-nums text-muted-foreground">{entry.number}.</span><span className="min-w-0 flex-1"><span lang="am" className="font-geez text-foreground">{entry.titleGeez}</span> <span className="text-xs text-muted-foreground">{entry.gloss} · p. {entry.page}</span></span></li>)}
+            {data.contents.map((entry) => <li key={entry.number} className="flex gap-2"><span className="w-6 text-right tabular-nums text-muted-foreground">{entry.number}.</span><span className="min-w-0 flex-1"><span lang="am" className="font-geez text-foreground">{entry.titleGeez}</span> <span className="text-xs text-muted-foreground">{entry.gloss} · p. {pages(entry)}</span></span></li>)}
           </ol>
         </CardContent>
       </Card>
       {editing && (
-        <Dialog open onClose={() => setEditing(null)} size="lg" title={editing.titleAm} description={editing.titleEn} footer={<><Button variant="ghost" onClick={() => setEditing(null)}>Cancel</Button><Button onClick={save}>Save</Button></>}>
+        <Dialog open onClose={() => setEditing(null)} size="lg" title={editing.heading.titleAm} description={editing.heading.titleEn} footer={<><Button variant="ghost" onClick={() => setEditing(null)}>Cancel</Button><Button onClick={save}>Save</Button></>}>
           <div className="flex flex-col gap-3">
+            {editing.subheadings.length > 0 && <p className="text-xs text-muted-foreground">In this chapter: {editing.subheadings.map((s) => `${s.titleGeez} (p. ${s.page})`).join(" · ")}</p>}
             <Field label="Ge'ez prayer or formula">{(c) => <Textarea {...c} lang="am" className="font-geez" rows={5} value={form.geezText} onChange={(e) => setForm({ ...form, geezText: e.target.value })} />}</Field>
-            <Field label="Amharic remedy text">{(c) => <Textarea {...c} lang="am" rows={5} value={form.amharicText} onChange={(e) => setForm({ ...form, amharicText: e.target.value })} />}</Field>
+            <Field label={asmat ? "Amharic explanation and what the client does" : "Amharic remedy text"}>{(c) => <Textarea {...c} lang="am" rows={5} value={form.amharicText} onChange={(e) => setForm({ ...form, amharicText: e.target.value })} />}</Field>
             <Field label="Guidance and cautions">{(c) => <Textarea {...c} rows={3} value={form.guidance} onChange={(e) => setForm({ ...form, guidance: e.target.value })} />}</Field>
+            {editing.cautions.filter((c) => c.level !== "info").map((c) => <Alert key={c.form} tone={c.level === "danger" ? "danger" : "warning"} title={c.label}>{c.en}</Alert>)}
           </div>
         </Dialog>
       )}
     </div>
   );
 }
+
+const ETHIC_BADGES: Record<string, string> = {
+  protective_only: "Protection only",
+  consent_required: "Consent required",
+  no_outcome_promise: "No promised outcome",
+  health_overlap: "May be illness",
+};

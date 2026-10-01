@@ -1,6 +1,6 @@
 /**
  * Reference setup: "Debtera Traditional Healing & Wisdom Sanctuary" (Gondar, Amhara), showing the
- * healer intake, Metsehafe Fewus, Awde Negest and auto-response features end to end.
+ * healer intake, Metsehafe Fewus, Metsehafe Asmat, Awde Negest and auto-response features end to end.
  *
  *   npm run db:seed:debtera -- --owner owner@example.com [--team herbalist@x,debtera@y,healer@z]
  *
@@ -122,6 +122,20 @@ async function main() {
   });
   await saveIntakeSettings(owner, businessId, awdeService.id, intakeSettingsInput.parse({ allowText: true, allowImage: false, allowAudio: true, allowVideo: false, dropdownType: "awde_negest", textPrompt: "What would you like to reflect on?" }));
 
+  const asmatService = await upsertService(owner, businessId, "Metsehafe Asmat Protection & Blessing", {
+    kindId: await kind("consultation"),
+    name: "Metsehafe Asmat Protection & Blessing",
+    nameAm: "የመጽሐፈ አስማት ጥበቃና በረከት",
+    description: "Choose a chapter of መጽሐፈ አስማት (release, protection, learning, trade, favour and more) and write your baptismal name. The debtera prepares the chapter for you with its safety notes. Protection and blessing only: nothing is ever directed at, or given to, another person.",
+    durationMinutes: 45,
+    priceEtb: 450,
+    deliveryModes: ["in_person", "video", "voice"],
+    bufferMinutes: 15,
+    isActive: true,
+    sortOrder: 2,
+  });
+  await saveIntakeSettings(owner, businessId, asmatService.id, intakeSettingsInput.parse({ allowText: true, allowImage: false, allowAudio: true, allowVideo: false, dropdownType: "metsehafe_asmat", textPrompt: "What is happening, and what would you like the prayer to address?" }));
+
   // ── Remedies (ingredient names are screened by the safety matrix when clients book)
   const remedyDefs = [
     { name: "Feto seed paste (for the temples)", nameAm: "የፌጦ ቅባት", form: "paste", unit: "jar", safetyNotes: "Skin use only. Not in pregnancy.", ingredients: [{ name: "Feto" }] },
@@ -165,6 +179,15 @@ async function main() {
     }));
   }
   await upsertRule(owner, businessId, ruleInput.parse({
+    name: "Asmat chapter (prepared in the client's name)",
+    serviceId: asmatService.id,
+    responseMode: "draft_for_review",
+    templateTitle: "{{selection}}",
+    templateBody: "{{client_name}}, this is the chapter we prepared in your name. Please read the safety notes below before you begin.",
+    includeFewusText: true,
+    includeProfile: true,
+  }));
+  await upsertRule(owner, businessId, ruleInput.parse({
     name: "Awde Negest reading and sacred names",
     serviceId: awdeService.id,
     responseMode: "draft_for_review",
@@ -174,7 +197,7 @@ async function main() {
   }));
 
   console.log(`✓ ${profile.name} is ready at /b/${SLUG} (business id ${businessId}).`);
-  console.log("  Next: open Intake & automation → Fewus library and write the texts you use for each heading.");
+  console.log("  Next: open Intake & automation → Fewus library and Asmat library, and write the texts you use for each heading.");
   if (!team.length) console.log(`  Tip: add your ${titles.join(", ")} with --team email1,email2,email3 (existing accounts).`);
 }
 

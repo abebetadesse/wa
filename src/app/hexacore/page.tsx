@@ -1,7 +1,7 @@
 import Link from "next/link";
 import HexacoreOrrery from "@/components/cultural/HexacoreOrrery";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
-import { Sparkles, Shield, Compass, Calendar, BookOpen, Layers } from "lucide-react";
+import { ArrowRight, BookOpen, Compass, Eye, Shield } from "lucide-react";
 
 export const metadata = {
   title: "The Hexacore Arcana: Enhanced Edition | Ethiopian Wisdom & Wellness Platform",
@@ -60,7 +60,63 @@ export default function HexacorePage() {
       </header>
 
       {/* Grand Orrery & Multi-Layer System */}
-      <HexacoreOrrery />
+      <section id="hexacore-orrery" aria-label="Interactive Hexacore Arcana">
+        <HexacoreOrrery />
+      </section>
+
+      <section aria-labelledby="hexacore-practitioner" className="space-y-4">
+        <header className="max-w-3xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-300">Practitioner toolkit</p>
+          <h2 id="hexacore-practitioner" className="mt-2 text-2xl font-bold text-white">A reflective reading, from map to meaning</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Explore the six cores, use body-sign guides as cultural reflection, or take a question into a structured spiritual pathway.
+          </p>
+        </header>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link
+            href="#hexacore-orrery"
+            className="group rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.06] p-5 transition hover:border-indigo-300/40 hover:bg-indigo-500/[0.1] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
+          >
+            <Compass className="size-6 text-indigo-300" aria-hidden="true" />
+            <h3 className="mt-4 font-bold text-white">Map the six cores</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Explore the interactive orrery, archetypes, correspondences, and profile reflections.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-200">
+              Explore the orrery <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </span>
+          </Link>
+
+          <Link
+            href="/body-reading/tongue"
+            className="group rounded-3xl border border-emerald-400/20 bg-emerald-500/[0.06] p-5 transition hover:border-emerald-300/40 hover:bg-emerald-500/[0.1] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300"
+          >
+            <Eye className="size-6 text-emerald-300" aria-hidden="true" />
+            <h3 className="mt-4 font-bold text-white">Explore body-sign guides</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Browse tongue, palm, and face references as cultural and educational reflection, not diagnosis.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200">
+              Open the reading guides <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </span>
+          </Link>
+
+          <Link
+            href="/case/workflows/new/spiritual"
+            className="group rounded-3xl border border-amber-400/20 bg-amber-500/[0.06] p-5 transition hover:border-amber-300/40 hover:bg-amber-500/[0.1] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
+          >
+            <BookOpen className="size-6 text-amber-300" aria-hidden="true" />
+            <h3 className="mt-4 font-bold text-white">Follow a guided reflection</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Bring a question to the Spiritual &amp; Life Direction pathway and shape the next steps around your context.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber-200">
+              Start the pathway <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </span>
+          </Link>
+        </div>
+      </section>
 
       {/* Connects the reflection to real practice: debteras who offer readings, and the reading pathway. */}
       <section aria-labelledby="hexacore-practice" className="grid gap-4 lg:grid-cols-[1fr_1.4fr] lg:items-start">

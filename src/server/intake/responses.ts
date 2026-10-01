@@ -1,5 +1,5 @@
 /**
- * Criteria-based auto-responses, response drafts and each business's Metsehafe Fewus texts.
+ * Criteria-based auto-responses, response drafts and each business's own manuscript texts (Fewus, Asmat).
  *
  * When a booking arrives, active rules for the business (and service) are matched against the
  * intake: dropdown choice, keywords, the Ge'ez name's digital root, the Awde Negest humour and an
@@ -17,7 +17,7 @@ import { businessMembers } from "@/lib/db/schema";
 import { notify } from "@/server/marketplace/notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
 import { calculateHealerProfile, formatHealerProfile, type HealerProfile } from "@/lib/cultural/healerProfileCalculator";
-import { FEWUS_CONTENTS, FEWUS_HEADINGS, fewusBookReferences, getFewusHeading } from "@/lib/cultural/metsehafeFewusCatalog";
+import { composeManuscriptBlock, manuscriptCatalogue, manuscriptSelectionFor, sourceForHeadingKey, type ManuscriptSource } from "./manuscripts";
 import { assessUrgency } from "@/lib/evaluation/urgencyTriage";
 import { renderTemplate, ruleMatches, sendDecision, type IntakeSignals } from "./rules";
 import type { StoredIntake } from "./settings";
@@ -52,7 +52,7 @@ export const ruleInput = z
     priority: z.number().int().min(0).max(1000).default(100),
   })
   .refine((v) => v.responseMode === "draft_for_review" || (!v.attachedRemedies.length && !v.includeFewusText), {
-    message: "Responses with remedies or Fewus texts must be reviewed before sending: choose “Draft for review”.",
+    message: "Responses with remedies or manuscript texts must be reviewed before sending: choose “Draft for review”.",
     path: ["responseMode"],
   });
 
@@ -128,21 +128,11 @@ function safeProfile(intake: StoredIntake | null): HealerProfile | null {
   }
 }
 
-async function fewusTextFor(businessId: string, headingKey: string | null) {
+/** The business's own text for a manuscript heading (Fewus or Asmat keys share one table). */
+async function manuscriptTextFor(businessId: string, headingKey: string | null) {
   if (!headingKey) return null;
   const [row] = await db.select().from(fewusTexts).where(and(eq(fewusTexts.businessId, businessId), eq(fewusTexts.headingKey, headingKey))).limit(1);
   return row ?? null;
-}
-
-function fewusBlock(headingKey: string, text: typeof fewusTexts.$inferSelect | null) {
-  const heading = getFewusHeading(headingKey);
-  if (!heading) return "";
-  const refs = fewusBookReferences(heading).map((r) => `${r.titleGeez} (ገጽ ${r.page})`).join("; ");
-  const parts = [`መጽሐፈ ፈውስ · ${heading.titleAm}${refs ? ` — ${refs}` : ""}`];
-  if (text?.geezText) parts.push(text.geezText);
-  if (text?.amharicText) parts.push(text.amharicText);
-  if (text?.guidance) parts.push(text.guidance);
-  return parts.join("\n\n");
 }
 
 export async function runAutoResponses(bookingId: string) {
@@ -183,15 +173,15 @@ export async function runAutoResponses(bookingId: string) {
     circle: profile ? `${profile.awdeNegest.circleGeez} (${profile.awdeNegest.circleName})` : "",
     humor: profile ? `${profile.humor.am} / ${profile.humor.en}` : "",
   };
-  const headingKey = intake?.dropdownType === "metsehafe_fewus" ? intake.dropdownValue : null;
-  const fewusText = matched.some((r) => r.includeFewusText) ? await fewusTextFor(booking.businessId, headingKey) : null;
+  const selection = manuscriptSelectionFor(intake);
+  const manuscriptText = selection && matched.some((r) => r.includeFewusText) ? await manuscriptTextFor(booking.businessId, selection.heading.key) : null;
 
   let sent = 0;
   let drafted = 0;
   await db.transaction(async (tx) => {
     const conversationId = await ensureConversation(tx, booking.businessId, clientUserId, booking.id);
     for (const rule of matched) {
-      const extras = [rule.includeFewusText && headingKey ? fewusBlock(headingKey, fewusText) : "", rule.includeProfile && profile ? formatHealerProfile(profile) : ""].filter(Boolean);
+      const extras = [rule.includeFewusText && selection ? composeManuscriptBlock(selection, manuscriptText, { essentialCautionsOnly: true }) : "", rule.includeProfile && profile ? formatHealerProfile(profile) : ""].filter(Boolean);
       const body = [renderTemplate(rule.templateBody, variables), ...extras].filter(Boolean).join("\n\n");
       const title = renderTemplate(rule.templateTitle, variables);
       const decision = sendDecision(rule, urgency.score);
@@ -291,29 +281,34 @@ export async function sendNow(user: AuthenticatedUser, businessId: string, booki
   return sendDraft(user, businessId, draft.id);
 }
 
-// ── Fewus texts ──────────────────────────────────────────────────────────────
+// ── Manuscript texts (each business's own, per heading) ──────────────────────
 
-export const fewusTextInput = z.object({
+export const manuscriptTextInput = z.object({
   geezText: z.string().trim().max(8000).optional(),
   amharicText: z.string().trim().max(8000).optional(),
   guidance: z.string().trim().max(4000).optional(),
 });
+/** Kept for the original Fewus routes. */
+export const fewusTextInput = manuscriptTextInput;
 
-export async function listFewusLibrary(user: AuthenticatedUser, businessId: string) {
+export async function listManuscriptLibrary(user: AuthenticatedUser, businessId: string, source: ManuscriptSource) {
   await requireCapability(user, businessId, "view");
   const texts = await db.select().from(fewusTexts).where(eq(fewusTexts.businessId, businessId));
-  return {
-    contents: FEWUS_CONTENTS,
-    headings: FEWUS_HEADINGS.map((heading) => ({ ...heading, bookReferences: fewusBookReferences(heading), text: texts.find((t) => t.headingKey === heading.key) ?? null })),
-  };
+  const catalogue = manuscriptCatalogue(source);
+  return { ...catalogue, headings: catalogue.headings.map((heading) => ({ ...heading, text: texts.find((t) => t.headingKey === heading.heading.key) ?? null })) };
 }
 
-export async function saveFewusText(user: AuthenticatedUser, businessId: string, headingKey: string, input: z.infer<typeof fewusTextInput>) {
+export const listFewusLibrary = (user: AuthenticatedUser, businessId: string) => listManuscriptLibrary(user, businessId, "metsehafe_fewus");
+
+export async function saveManuscriptText(user: AuthenticatedUser, businessId: string, headingKey: string, input: z.infer<typeof manuscriptTextInput>) {
   await requireCapability(user, businessId, "viewClientNotes");
-  if (!getFewusHeading(headingKey)) throw ApiError.notFound("Heading");
+  if (!sourceForHeadingKey(headingKey)) throw ApiError.notFound("Heading");
   const values = { geezText: input.geezText || null, amharicText: input.amharicText || null, guidance: input.guidance || null, updatedBy: user.id, updatedAt: new Date() };
   const [row] = await db.insert(fewusTexts).values({ businessId, headingKey, ...values }).onConflictDoUpdate({ target: [fewusTexts.businessId, fewusTexts.headingKey], set: values }).returning();
+  await publish(businessChannel(businessId), "intake.library", { headingKey });
   return row;
 }
 
-export { fewusTextFor, fewusBlock, safeProfile };
+export const saveFewusText = saveManuscriptText;
+
+export { manuscriptTextFor, safeProfile };

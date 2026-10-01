@@ -407,7 +407,15 @@ Create a local `.env` file using the deployment configuration as a guide. Never 
 | `UPLOAD_DIR` | Where client intake photos, voice notes and videos are stored (default `./storage/uploads`, outside the web root). Use persistent storage in production and include it in backups |
 | `PUBMED_api` or `NCBI_API_KEY` | Optional: faster PubMed lookups in the healer's analysis panel (works without a key at a lower rate) |
 
-A reference healer business (Metsehafe Fewus and Awde Negest services, intake settings, auto-response rules, remedies) can be created for an existing account with `npm run db:seed:debtera -- --owner you@example.com`. Apply `drizzle/0009_healer_intake.sql` first.
+A reference healer business (Metsehafe Fewus, Metsehafe Asmat and Awde Negest services, intake settings, auto-response rules, remedies) can be created for an existing account with `npm run db:seed:debtera -- --owner you@example.com`. Apply `drizzle/0009_healer_intake.sql` and `drizzle/0011_metsehafe_asmat.sql` first.
+
+**Manuscripts (መጽሐፈ ፈውስ, መጽሐፈ አስማት).** The platform indexes each book's table of contents only (`src/lib/cultural/metsehafeFewusCatalog.ts`, `metsehafeAsmatCatalog.ts`); prayers, seals and procedures are never reproduced. A service can offer a book's chapters as its intake list; the client picks one, and each business writes the text it uses per chapter in *Intake & automation → Fewus library / Asmat library*. On the booking's review page the healer delivers the chapter as a solution: sent to the client directly, or prepared as a draft to refine. Every delivery carries the physical-safety cautions for how the practice is carried out (`src/lib/evaluation/practiceFormSafety.ts`), a live check of the chapter's plants against the client's medicines, and the chapter's framing notes (protection only, consent, no promised outcome, possible illness). Manuscript texts never go out without a healer's approval.
+
+For local marketplace testing, `npm run db:seed:marketplace-demo -- --confirm-demo-data --approve-demo --owner owner@example.test --client client@example.test --admin admin@example.test` creates or refreshes a sample Hexacore studio. Optionally pass `--practitioner practitioner@example.test` to exercise the team invitation and acceptance flow. All accounts must already exist; use dedicated test accounts. The script refuses production and non-local database hosts, and requires both confirmation flags.
+
+The sample listing is based in Addis Ababa, serves Amharic and English, offers in-person and remote sessions, and is open Monday–Saturday. It includes Hexacore reflection (60 min, 450 ETB), tongue reading (30 min, 200 ETB), palm reading (45 min, 300 ETB), face reading (30 min, 200 ETB), and combined body-sign traditions (45 min, 350 ETB), each with a sample intake prompt.
+
+The sample is explicitly labeled as demo data and exercises business creation and approval, team access, five bookable services with client intake, opening hours, requested/confirmed/cancelled/completed bookings, a booking-linked spiritual case and practitioner review, CRM history, a demo cash payment, client review and business response, and two-way messages. Demo payments are recorded for dashboard testing only; no money is due. The sample listing is approved solely to make its public directory and booking workflows testable, not because any professional credentials were checked. Apply `drizzle/0010_hexacore_body_readings.sql` and the marketplace migrations before running the seed.
 
 In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Apply the latest migration with `npm run db:apply drizzle/0006_payments_and_telegram.sql`.
 
@@ -489,4 +497,3 @@ AI, diagnostic-adjacent, divination, numerology, astrology, body-sign, herbal, a
 ## Safety disclaimer
 
 This platform provides educational, reflective, cultural, and wellness-oriented information. It is not a substitute for emergency services or qualified professional advice. Do not delay urgent medical, mental-wellbeing, safeguarding, legal, or other professional care because of content shown by the application.
-

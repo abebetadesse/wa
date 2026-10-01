@@ -163,9 +163,9 @@ test("urgent intake: instant rules are held, the client gets a safety message an
 test("review workspace and analysis bring both domains side by side", { skip: skip() }, async () => {
   const booking = globalThis.__booking;
   const ws = await review.getBookingReview(owner, business.id, booking.id);
-  assert.equal(ws.fewus.heading.key, "fewus_headache_migraine");
-  assert.ok(ws.fewus.bookReferences.some((r) => r.page === 78));
-  assert.ok(ws.fewus.plants.items.some((p) => p.slug === "feto"));
+  assert.equal(ws.manuscript.heading.key, "fewus_headache_migraine");
+  assert.ok(ws.manuscript.bookReferences.some((r) => r.page === 78));
+  assert.ok(ws.manuscript.plants.items.some((p) => p.slug === "feto"));
   assert.equal(ws.attachments.length, 1);
   assert.equal(ws.client.region, "Amhara");
   await assert.rejects(review.getBookingReview(stranger, business.id, booking.id), (e) => e.status === 404);
@@ -195,4 +195,59 @@ test("Awde Negest intake: Ge'ez name drives the digital-root and humour criteria
   assert.match(reading.body, /Sacred names to consider/);
   const ws = await review.getBookingReview(owner, business.id, booking.id);
   assert.equal(ws.profile.sacredNames.length, 3);
+});
+
+test("Metsehafe Asmat: the client picks a chapter; the healer delivers it with cautions and framing", { skip: skip() }, async () => {
+  const kinds = await catalogue.listServiceKinds();
+  const asmatService = await catalogue.saveService(owner, business.id, null, { kindId: kinds.find((k) => k.slug === "consultation").id, name: "Asmat protection", durationMinutes: 45, priceEtb: 250, deliveryModes: ["in_person"], bufferMinutes: 0, isActive: true, sortOrder: 2 });
+  const config = await settings.saveIntakeSettings(owner, business.id, asmatService.id, settings.intakeSettingsInput.parse({ allowText: true, allowImage: false, allowAudio: true, allowVideo: false, dropdownType: "metsehafe_asmat" }));
+  assert.equal(config.options.length, 13);
+  assert.equal(config.asksGeezName, true);
+  assert.ok(config.options.some((o) => o.value === "asmat_ayne_tila" && /ስለ አይነ ጥላ መፍትሔ/.test(o.label)));
+  await assert.rejects(bookingsSvc.requestBooking(client, business.id, { serviceId: asmatService.id, startsAt: await freeSlot(asmatService.id), deliveryMode: "in_person", intake: { dropdownValue: "fewus_headache_migraine" } }), /listed options/);
+
+  await assert.rejects(responses.saveManuscriptText(owner, business.id, "asmat_nonexistent", { amharicText: "x" }), (e) => e.status === 404);
+  await responses.saveManuscriptText(owner, business.id, "asmat_ayne_tila", { amharicText: "የደብተራው የራሱ የአይነ ጥላ ጽሑፍ" });
+  const library = await responses.listManuscriptLibrary(owner, business.id, "metsehafe_asmat");
+  assert.equal(library.contents.length, 13);
+  assert.equal(library.headings.filter((h) => h.text).length, 1);
+  await responses.createRule(owner, business.id, responses.ruleInput.parse({ name: "Asmat chapter", serviceId: asmatService.id, responseMode: "draft_for_review", templateTitle: "{{selection}}", templateBody: "Prepared for you:", includeFewusText: true }));
+
+  const booking = await bookingsSvc.requestBooking(client, business.id, { serviceId: asmatService.id, startsAt: await freeSlot(asmatService.id), deliveryMode: "in_person", intake: { dropdownValue: "asmat_ayne_tila", nameGeez: "ሰላማዊት", text: "I feel a shadow over me" } });
+  const drafts = await responses.listDrafts(owner, business.id, booking.id);
+  const chapter = drafts.find((d) => d.status === "draft" && /Prepared for you/.test(d.body));
+  assert.ok(chapter, "manuscript texts always wait for the healer");
+  assert.match(chapter.body, /የደብተራው የራሱ የአይነ ጥላ ጽሑፍ/);
+  assert.match(chapter.body, /ገጽ 14–15/);
+  assert.match(chapter.body, /euphorbia/i, "the eye caution travels with the chapter");
+
+  const ws = await review.getBookingReview(owner, business.id, booking.id);
+  assert.equal(ws.manuscript.source, "metsehafe_asmat");
+  assert.equal(ws.manuscript.cautions[0].level, "danger");
+  assert.ok(ws.manuscript.plants.items.some((p) => p.slug === "kulkual" && p.toxic));
+  assert.ok(ws.manuscript.ethics.some((e) => e.key === "health_overlap"));
+  assert.match(ws.manuscript.solution.body, /Plants checked against your medicines/);
+  assert.ok(ws.profile, "the baptismal name is reckoned");
+
+  // Refine further: a draft with the healer's opening words and the name reckoning.
+  const refined = await review.deliverManuscriptSolution(owner, business.id, booking.id, { mode: "draft", includeProfile: true, includePlantScreen: true, note: "ሰላም ሰላማዊት" });
+  assert.equal(refined.status, "draft");
+  assert.match(refined.body, /^ሰላም ሰላማዊት/);
+  assert.match(refined.body, /Sacred names to consider/);
+  // Deliver directly.
+  const since = new Date();
+  const sent = await review.deliverManuscriptSolution(owner, business.id, booking.id, { mode: "send", includeProfile: false, includePlantScreen: false });
+  assert.equal(sent.status, "sent");
+  const msgs = (await messagesFor(booking.id)).filter((m) => m.createdAt >= since);
+  assert.equal(msgs.length, 1);
+  assert.match(msgs[0].body, /የደብተራው የራሱ የአይነ ጥላ ጽሑፍ/);
+  assert.match(msgs[0].body, /euphorbia/i);
+  assert.doesNotMatch(msgs[0].body, /Plants checked against your medicines/);
+  await assert.rejects(review.deliverManuscriptSolution(stranger, business.id, booking.id, { mode: "send", includeProfile: false, includePlantScreen: true }), (e) => e.status === 404);
+
+  // A chapter with no text of the healer's own cannot be sent directly without at least an opening note.
+  const empty = await bookingsSvc.requestBooking(client, business.id, { serviceId: asmatService.id, startsAt: await freeSlot(asmatService.id), deliveryMode: "in_person", intake: { dropdownValue: "asmat_mesetefaqir", nameGeez: "ሰላማዊት" } });
+  await assert.rejects(review.deliverManuscriptSolution(owner, business.id, empty.id, { mode: "send", includeProfile: false, includePlantScreen: true }), /your own text/);
+  const framed = await review.deliverManuscriptSolution(owner, business.id, empty.id, { mode: "draft", includeProfile: false, includePlantScreen: true });
+  assert.match(framed.body, /without their knowledge and agreement/);
 });

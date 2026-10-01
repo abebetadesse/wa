@@ -11,14 +11,14 @@ import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "@/server/marketplace/access";
 import { computeMatrix } from "@/server/safety";
-import { fewusBookReferences, fewusPlantSlugs, fewusSourceNotes, getFewusHeading } from "@/lib/cultural/metsehafeFewusCatalog";
+import { composeManuscriptBlock, manuscriptHeader, manuscriptSelectionFor, type ManuscriptSelection } from "./manuscripts";
 import { formatHealerProfile } from "@/lib/cultural/healerProfileCalculator";
 import { orchestrateRemedies, type OrchestratorDeps, type ScreenCondition } from "@/lib/case-workflow/remedyPharmacologyOrchestrator";
 import { ecologicalMatrixFor } from "@/lib/location/ecologicalHealthMatrix";
 import { ETHIOPIAN_REGION_PROFILES } from "@/lib/location/ethiopianDatasets";
 import { PubMedSource } from "@/lib/literature/sources/pubmedSource";
 import { attachmentsForBooking } from "./attachments";
-import { fewusTextFor, listDrafts, safeProfile } from "./responses";
+import { createDraft, listDrafts, manuscriptTextFor, safeProfile, sendDraft } from "./responses";
 import type { StoredIntake } from "./settings";
 
 function ageFrom(dateOfBirth: string | null) {
@@ -63,13 +63,9 @@ export async function getBookingReview(user: AuthenticatedUser, businessId: stri
   const age = ageFrom(row.dateOfBirth);
   const [attachments, drafts] = await Promise.all([attachmentsForBooking(bookingId), listDrafts(user, businessId, bookingId)]);
 
-  // Domain B: manuscript heading, the business's own texts, name reckoning.
-  const heading = intake?.dropdownType === "metsehafe_fewus" && intake.dropdownValue ? getFewusHeading(intake.dropdownValue) : null;
+  const selection = manuscriptSelectionFor(intake);
   const profile = safeProfile(intake);
-  // Domain A: live safety screen of the heading's plants against what the client takes.
-  const plantScreen = heading
-    ? await computeMatrix({ items: fewusPlantSlugs(heading), names: splitMedicines(safety?.answers?.medicines), profile: profileConditions(safety?.answers, age) }).catch(() => null)
-    : null;
+  const manuscript = selection ? await manuscriptWorkspace(businessId, selection, safety?.answers, age) : null;
 
   return {
     booking: { id: booking.id, reference: booking.reference, status: booking.status, startsAt: booking.startsAt, deliveryMode: booking.deliveryMode, serviceName: row.serviceName, clientNote: booking.clientNote, caseId: booking.caseId },
@@ -77,26 +73,73 @@ export async function getBookingReview(user: AuthenticatedUser, businessId: stri
     intake,
     attachments: attachments.map((a) => ({ ...a, url: `/api/intake/uploads/${a.id}` })),
     safety: { answers: safety?.answers ?? null, flags: safety?.flags ?? [] },
-    fewus: heading
+    manuscript: manuscript
       ? {
-          heading: { key: heading.key, titleAm: heading.titleAm, titleEn: heading.titleEn, bookMatch: heading.bookMatch, orientationAm: heading.orientationAm },
-          bookReferences: fewusBookReferences(heading),
-          sourceNotes: fewusSourceNotes(),
-          text: await fewusTextFor(businessId, heading.key),
-          plants: plantScreen
-            ? {
-                items: plantScreen.items.filter((item) => fewusPlantSlugs(heading).includes(item.slug)).map((item) => ({ slug: item.slug, name: item.name, amharicName: item.amharicName, scientificName: item.scientificName, toxic: item.toxic, alerts: item.alerts, notes: item.notes })),
-                pairs: plantScreen.pairs,
-                verdict: plantScreen.verdict,
-                unmatched: plantScreen.unmatched,
-              }
-            : null,
+          ...manuscript.selection,
+          text: manuscript.text,
+          plants: manuscript.plants,
+          // The composed solution, as it would go out (the healer can still refine it as a draft).
+          solution: { title: manuscriptHeader(manuscript.selection), body: composeManuscriptBlock(manuscript.selection, manuscript.text, { plantLines: manuscript.plantLines }) },
         }
       : null,
     profile: profile ? { ...profile, text: formatHealerProfile(profile) } : null,
     drafts,
     regions: Object.keys(ETHIOPIAN_REGION_PROFILES),
   };
+}
+
+/**
+ * Domain B (the chapter and the business's own text) beside Domain A (a live screen of the
+ * chapter's plants against what this client takes). Joined only here, on the server.
+ */
+async function manuscriptWorkspace(businessId: string, selection: ManuscriptSelection, answers: SafetyAnswers | undefined, age: number | null) {
+  const text = await manuscriptTextFor(businessId, selection.heading.key);
+  const screen = selection.plantSlugs.length
+    ? await computeMatrix({ items: selection.plantSlugs, names: splitMedicines(answers?.medicines), profile: profileConditions(answers, age) }).catch(() => null)
+    : null;
+  const items = screen ? screen.items.filter((item) => selection.plantSlugs.includes(item.slug)).map((item) => ({ slug: item.slug, name: item.name, amharicName: item.amharicName, scientificName: item.scientificName, toxic: item.toxic, alerts: item.alerts, notes: item.notes })) : [];
+  const pairs = screen ? screen.pairs.filter((pair) => pair.severity) : [];
+  const plantLines = [
+    ...items.map((item) => {
+      const flags = [item.toxic ? "poisonous if swallowed, outside use only" : "", ...item.alerts.map((a) => `${a.level === "avoid" ? "avoid" : "caution"}: ${a.condition}`)].filter(Boolean);
+      return `• ${[item.amharicName, item.name].filter(Boolean).join(" ")}${flags.length ? `: ${flags.join("; ")}` : ""}`;
+    }),
+    ...pairs.map((pair) => `• ${pair.a} + ${pair.b} (${pair.severity}): ${[pair.findings[0]?.effect, pair.findings[0]?.management].filter(Boolean).join(" ")}`),
+  ];
+  return {
+    selection,
+    text,
+    plantLines,
+    plants: screen ? { items, pairs: screen.pairs, verdict: screen.verdict, unmatched: screen.unmatched } : null,
+  };
+}
+
+// ── Delivering the selected chapter as a solution ─────────────────────────────
+
+export const solutionInput = z.object({
+  /** draft: prepare it for refining; send: deliver it to the client now. */
+  mode: z.enum(["draft", "send"]),
+  includeProfile: z.boolean().default(false),
+  includePlantScreen: z.boolean().default(true),
+  /** The healer's opening words, placed above the chapter block. */
+  note: z.string().trim().max(2000).optional(),
+});
+
+/** Composes the selected chapter with its enhancements, then drafts or sends it. */
+export async function deliverManuscriptSolution(user: AuthenticatedUser, businessId: string, bookingId: string, input: z.infer<typeof solutionInput>) {
+  const row = await loadBooking(user, businessId, bookingId);
+  const intake = (row.booking.intake as StoredIntake | null) ?? null;
+  const selection = manuscriptSelectionFor(intake);
+  if (!selection) throw ApiError.badRequest("The client did not choose a manuscript chapter for this booking.");
+  const answers = (row.booking.safety as { answers?: SafetyAnswers } | null)?.answers;
+  const workspace = await manuscriptWorkspace(businessId, selection, answers, ageFrom(row.dateOfBirth));
+  if (input.mode === "send" && !workspace.text?.geezText && !workspace.text?.amharicText && !input.note) {
+    throw ApiError.badRequest("Add your own text for this chapter (or an opening note) before sending it directly.");
+  }
+  const profile = input.includeProfile ? safeProfile(intake) : null;
+  const block = composeManuscriptBlock(selection, workspace.text, { plantLines: input.includePlantScreen ? workspace.plantLines : [], profileText: profile ? formatHealerProfile(profile) : null, lead: input.note });
+  const draft = await createDraft(user, businessId, bookingId, { title: manuscriptHeader(selection).slice(0, 200), body: block, remedies: [] });
+  return input.mode === "send" ? sendDraft(user, businessId, draft.id) : draft;
 }
 
 // ── Heavier analysis: remedies, literature, ecology, biochemistry ────────────
@@ -139,7 +182,7 @@ export async function analyseBooking(user: AuthenticatedUser, businessId: string
   const age = input.age !== undefined ? input.age : ageFrom(row.dateOfBirth);
   const region = input.region || row.region || "Addis Ababa";
 
-  const heading = intake?.dropdownType === "metsehafe_fewus" && intake.dropdownValue ? getFewusHeading(intake.dropdownValue) : null;
+  const selection = manuscriptSelectionFor(intake);
   const profile = safeProfile(intake);
   const ecology = await ecologicalMatrixFor({ region });
   const nutrientGaps = ecology.deficiencies.map((d) => d.nutrient.toLowerCase()).filter((n): n is "iron" | "zinc" => n === "iron" || n === "zinc");
@@ -147,8 +190,8 @@ export async function analyseBooking(user: AuthenticatedUser, businessId: string
   const remedies = await orchestrateRemedies(
     {
       symptomsText: [intake?.text, row.booking.clientNote, safety?.answers?.conditions].filter(Boolean).join("\n"),
-      categories: heading ? [heading.symptomCategory] : [],
-      extraPlantSlugs: heading ? fewusPlantSlugs(heading) : [],
+      categories: selection ? [selection.symptomCategory] : [],
+      extraPlantSlugs: selection?.plantSlugs ?? [],
       age,
       pregnant: safety?.answers?.pregnantOrBreastfeeding === "yes",
       medicinesText: safety?.answers?.medicines,

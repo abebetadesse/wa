@@ -31,9 +31,18 @@ interface Review {
   intake: { dropdownType: string; dropdownValue: string | null; dropdownLabel: string | null; text: string | null; nameGeez: string | null; motherNameGeez: string | null } | null;
   attachments: { id: string; kind: "image" | "audio" | "video"; mimeType: string; originalName: string | null; url: string }[];
   safety: { answers: Record<string, string> | null; flags: string[] };
-  fewus: {
-    heading: { key: string; titleAm: string; titleEn: string; bookMatch: string; orientationAm: string };
-    bookReferences: { number: number; titleGeez: string; gloss: string; page: number }[];
+  manuscript: {
+    source: "metsehafe_fewus" | "metsehafe_asmat";
+    bookTitleAm: string;
+    bookTitleEn: string;
+    heading: { key: string; titleAm: string; titleEn: string; bookMatch: string; orientation: string };
+    bookReferences: { number: number; titleGeez: string; gloss: string; page: number; endPage?: number }[];
+    subheadings: { titleGeez: string; page: number }[];
+    sealPages: number[];
+    materials: { amharic: string; name: string; safetySlug: string | null }[];
+    practiceForms: { form: string; en: string; am: string }[];
+    cautions: { form: string; level: "danger" | "caution" | "info"; label: string; en: string; am: string }[];
+    ethics: { key: string; en: string; am: string }[];
     sourceNotes: { title: string; pages: string; safeUse: string }[];
     text: { geezText: string | null; amharicText: string | null; guidance: string | null } | null;
     plants: {
@@ -42,6 +51,7 @@ interface Review {
       verdict: { tone: "danger" | "warning" | "info" | "success"; title: string; body: string };
       unmatched: string[];
     } | null;
+    solution: { title: string; body: string };
   } | null;
   profile: {
     gematria: { letters: { letter: string; value: number }[]; nameTotal: number; motherTotal: number; combinedTotal: number; digitalRoot: number; virtue: string; resonance: string };
@@ -131,7 +141,7 @@ export default function BookingReviewPage() {
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-6">
           <IntakePanel review={data} />
-          {data.fewus && <FewusPanel fewus={data.fewus} api={api} onInsert={insert} onSaved={reload} />}
+          {data.manuscript && <ManuscriptPanel key={data.manuscript.heading.key} manuscript={data.manuscript} api={api} bookingId={bookingId} hasProfile={Boolean(data.profile)} onSaved={reload} />}
         </div>
         <div className="flex flex-col gap-6">
           {data.profile && <ProfileCard profile={data.profile} onInsert={insert} />}
@@ -277,22 +287,29 @@ function SafetyPanel({ safety }: { safety: Review["safety"] }) {
   );
 }
 
-// ── Metsehafe Fewus (Domain B text, Domain A plant safety) ───────────────────
+// ── Manuscript chapter: Fewus or Asmat (Domain B text, Domain A safety) ──────
 
-function FewusPanel({ fewus, api, onInsert, onSaved }: { fewus: NonNullable<Review["fewus"]>; api: string; onInsert: (title: string, body: string, sendNow?: boolean) => void; onSaved: () => void }) {
+const CAUTION_TONE = { danger: "danger", caution: "warning", info: "info" } as const;
+
+function ManuscriptPanel({ manuscript, api, bookingId, hasProfile, onSaved }: { manuscript: NonNullable<Review["manuscript"]>; api: string; bookingId: string; hasProfile: boolean; onSaved: () => void }) {
   const toast = useToast();
   const [editing, setEditing] = useState(false);
-  const [geez, setGeez] = useState(fewus.text?.geezText ?? "");
-  const [amharic, setAmharic] = useState(fewus.text?.amharicText ?? "");
-  const [guidance, setGuidance] = useState(fewus.text?.guidance ?? "");
-  const refs = fewus.bookReferences.map((r) => `${r.titleGeez} (ገጽ ${r.page})`).join("; ");
-  const safetyLines = fewus.plants?.items.map((p) => `• ${p.amharicName ?? ""} ${p.name}${p.toxic ? ": on the skin only, poisonous if swallowed" : ""}${p.alerts.length ? `: ${p.alerts.map((a) => `${a.level} (${a.condition})`).join(", ")}` : ""}`).join("\n");
-  const block = [`መጽሐፈ ፈውስ · ${fewus.heading.titleAm}${refs ? ` — ${refs}` : ""}`, fewus.text?.geezText, fewus.text?.amharicText, fewus.text?.guidance, safetyLines ? `Safety notes:\n${safetyLines}` : ""].filter(Boolean).join("\n\n");
+  const [geez, setGeez] = useState(manuscript.text?.geezText ?? "");
+  const [amharic, setAmharic] = useState(manuscript.text?.amharicText ?? "");
+  const [guidance, setGuidance] = useState(manuscript.text?.guidance ?? "");
+  const [note, setNote] = useState("");
+  const [includeProfile, setIncludeProfile] = useState(hasProfile && manuscript.source === "metsehafe_asmat");
+  const [includePlantScreen, setIncludePlantScreen] = useState(true);
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const slug = manuscript.source === "metsehafe_asmat" ? "asmat" : "fewus";
+  const hasOwnText = Boolean(manuscript.text?.geezText || manuscript.text?.amharicText);
+  const pages = (r: { page: number; endPage?: number }) => (r.endPage && r.endPage !== r.page ? `pages ${r.page}–${r.endPage}` : `page ${r.page}`);
 
   async function save() {
     try {
-      await apiFetch(`${api}/fewus/${fewus.heading.key}`, { method: "PUT", json: { geezText: geez, amharicText: amharic, guidance } });
-      toast({ tone: "success", title: "Saved to your Fewus library", body: "It fills this heading automatically next time." });
+      await apiFetch(`${api}/manuscripts/${slug}/${manuscript.heading.key}`, { method: "PUT", json: { geezText: geez, amharicText: amharic, guidance } });
+      toast({ tone: "success", title: `Saved to your ${manuscript.bookTitleEn} library`, body: "It fills this chapter automatically next time." });
       setEditing(false);
       onSaved();
     } catch (err) {
@@ -300,72 +317,146 @@ function FewusPanel({ fewus, api, onInsert, onSaved }: { fewus: NonNullable<Revi
     }
   }
 
+  async function deliver(mode: "draft" | "send") {
+    setBusy(true);
+    try {
+      await apiFetch(`${api}/bookings/${bookingId}/solution`, { method: "POST", json: { mode, note: note || undefined, includeProfile, includePlantScreen } });
+      toast({ tone: "success", title: mode === "send" ? "Sent to the client" : "Draft ready to refine", body: mode === "send" ? "It is in their messages now." : "Edit it in Review drafts above, then send." });
+      setNote("");
+      onSaved();
+    } catch (err) {
+      toast({ tone: "error", title: "Could not deliver", body: errorMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <Card className="border-gold/40">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><BookOpen className="size-5 text-gold" aria-hidden="true" /> <span lang="am" className="font-geez">መጽሐፈ ፈውስ</span> · {fewus.heading.titleAm}</CardTitle>
-        <CardDescription>{fewus.heading.titleEn}. {fewus.heading.orientationAm}</CardDescription>
+        <CardTitle className="flex items-center gap-2"><BookOpen className="size-5 text-gold" aria-hidden="true" /> <span lang="am" className="font-geez">{manuscript.bookTitleAm}</span> · {manuscript.heading.titleAm}</CardTitle>
+        <CardDescription>{manuscript.heading.titleEn}. <span lang="am">{manuscript.heading.orientation}</span></CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 text-sm">
-        {fewus.bookReferences.length > 0 ? (
+        {manuscript.bookReferences.length > 0 ? (
           <ul className="flex flex-col gap-1">
-            {fewus.bookReferences.map((r) => <li key={r.number} className="text-foreground"><span lang="am" className="font-geez">{r.titleGeez}</span> <span className="text-muted-foreground">({r.gloss}, page {r.page})</span></li>)}
+            {manuscript.bookReferences.map((r) => <li key={r.number} className="text-foreground"><span lang="am" className="font-geez">{r.titleGeez}</span> <span className="text-muted-foreground">({r.gloss}, {pages(r)})</span></li>)}
+            {manuscript.subheadings.map((s) => <li key={`${s.titleGeez}-${s.page}`} className="pl-4 text-muted-foreground"><span lang="am" className="font-geez">{s.titleGeez}</span> (page {s.page})</li>)}
           </ul>
         ) : (
           <p className="text-muted-foreground">The book&apos;s table of contents has no dedicated heading for this; see its condition sections.</p>
+        )}
+        {manuscript.sealPages.length > 0 && (
+          <p className="text-xs text-muted-foreground">Seal drawings (ጠልሰም) on page{manuscript.sealPages.length > 1 ? "s" : ""} {manuscript.sealPages.join(", ")} of your copy. The platform does not reproduce them.</p>
         )}
 
         {editing ? (
           <div className="flex flex-col gap-3">
             <Field label="Ge'ez prayer or formula (from your copy)">{(c) => <Textarea {...c} lang="am" className="font-geez" rows={4} value={geez} onChange={(e) => setGeez(e.target.value)} />}</Field>
-            <Field label="Amharic remedy text">{(c) => <Textarea {...c} lang="am" rows={4} value={amharic} onChange={(e) => setAmharic(e.target.value)} />}</Field>
+            <Field label={manuscript.source === "metsehafe_asmat" ? "Amharic explanation and what the client does" : "Amharic remedy text"}>{(c) => <Textarea {...c} lang="am" rows={4} value={amharic} onChange={(e) => setAmharic(e.target.value)} />}</Field>
             <Field label="Your guidance and cautions">{(c) => <Textarea {...c} rows={3} value={guidance} onChange={(e) => setGuidance(e.target.value)} />}</Field>
             <div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setEditing(false)}>Cancel</Button><Button onClick={save}>Save to my library</Button></div>
           </div>
-        ) : fewus.text?.geezText || fewus.text?.amharicText ? (
+        ) : hasOwnText ? (
           <div className="flex flex-col gap-2 rounded-2xl bg-gold/5 p-3">
-            {fewus.text.geezText && <p lang="am" className="whitespace-pre-wrap font-geez text-foreground">{fewus.text.geezText}</p>}
-            {fewus.text.amharicText && <p lang="am" className="whitespace-pre-wrap text-foreground">{fewus.text.amharicText}</p>}
-            {fewus.text.guidance && <p className="whitespace-pre-wrap text-muted-foreground">{fewus.text.guidance}</p>}
+            {manuscript.text?.geezText && <p lang="am" className="whitespace-pre-wrap font-geez text-foreground">{manuscript.text.geezText}</p>}
+            {manuscript.text?.amharicText && <p lang="am" className="whitespace-pre-wrap text-foreground">{manuscript.text.amharicText}</p>}
+            {manuscript.text?.guidance && <p className="whitespace-pre-wrap text-muted-foreground">{manuscript.text.guidance}</p>}
             <Button size="sm" variant="ghost" className="self-end" onClick={() => setEditing(true)}><Pencil className="size-4" aria-hidden="true" /> Edit my text</Button>
           </div>
         ) : (
-          <Alert tone="info" title="Add your text for this heading">
-            The platform does not reproduce the book&apos;s prayers or remedies. Write the text you use once; it then fills this heading and any rule that includes it.{" "}
+          <Alert tone="info" title="Add your text for this chapter">
+            The platform does not reproduce the book&apos;s prayers, seals or procedures. Write the text you use once; it then fills this chapter and any rule that includes it.{" "}
             <button type="button" className="font-semibold text-brand underline" onClick={() => setEditing(true)}>Write it now</button>
           </Alert>
         )}
 
-        {fewus.plants && (
+        {manuscript.ethics.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {manuscript.ethics.map((e) => (
+              <Alert key={e.key} tone={e.key === "health_overlap" ? "warning" : "info"} title={ETHIC_TITLES[e.key] ?? "How to offer this"}>
+                <span lang="am" className="block">{e.am}</span>
+                <span className="block">{e.en}</span>
+              </Alert>
+            ))}
+          </div>
+        )}
+
+        {manuscript.cautions.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <p className="flex items-center gap-2 font-semibold text-foreground"><AlertTriangle className="size-4 text-warning" aria-hidden="true" /> How it is carried out, and what to watch</p>
+            <div className="flex flex-wrap gap-1.5">{manuscript.practiceForms.map((p) => <Badge key={p.form} tone="neutral"><span lang="am">{p.am}</span> · {p.en}</Badge>)}</div>
+            {manuscript.cautions.filter((c) => c.level !== "info").map((c) => (
+              <Alert key={c.form} tone={CAUTION_TONE[c.level]} title={c.label}>{c.en}</Alert>
+            ))}
+          </div>
+        )}
+
+        {manuscript.plants && (
           <div className="flex flex-col gap-2">
             <p className="flex items-center gap-2 font-semibold text-foreground"><Leaf className="size-4 text-success" aria-hidden="true" /> Plants, checked against this client</p>
-            <Alert tone={fewus.plants.verdict.tone} title={fewus.plants.verdict.title}>{fewus.plants.verdict.body}</Alert>
-            {fewus.plants.items.map((p) => (
+            <Alert tone={manuscript.plants.verdict.tone} title={manuscript.plants.verdict.title}>{manuscript.plants.verdict.body}</Alert>
+            {manuscript.plants.items.map((p) => (
               <div key={p.slug} className="rounded-xl border border-border p-2.5">
                 <p className="font-semibold text-foreground"><span lang="am" className="font-geez">{p.amharicName}</span> {p.name} <span className="italic text-muted-foreground">{p.scientificName}</span></p>
-                {p.toxic && <p className="text-xs text-danger">Poisonous if swallowed: skin use only.</p>}
+                {p.toxic && <p className="text-xs text-danger">Poisonous if swallowed: outside use only.</p>}
                 {p.alerts.map((a) => <p key={a.condition} className="text-xs text-warning">{a.level === "avoid" ? "Avoid" : "Caution"}: {a.condition}{a.note ? `. ${a.note}` : ""}</p>)}
+                {p.notes && <p className="text-xs text-muted-foreground">{p.notes}</p>}
               </div>
             ))}
-            {fewus.plants.pairs.filter((pair) => pair.severity).map((pair) => (
+            {manuscript.plants.pairs.filter((pair) => pair.severity).map((pair) => (
               <p key={`${pair.a}-${pair.b}`} className="rounded-xl bg-danger/10 p-2 text-xs text-foreground">{pair.a} + {pair.b} ({pair.severity}): {pair.findings[0]?.effect} {pair.findings[0]?.management}</p>
             ))}
-            <Link href={`/safety?items=${fewus.plants.items.map((p) => p.slug).join(",")}`} className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:underline">Open in the safety matrix <ExternalLink className="size-3" aria-hidden="true" /></Link>
+            <Link href={`/safety?items=${manuscript.plants.items.map((p) => p.slug).join(",")}`} className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:underline">Open in the safety matrix <ExternalLink className="size-3" aria-hidden="true" /></Link>
           </div>
+        )}
+        {manuscript.materials.some((m) => !m.safetySlug) && (
+          <p className="text-xs text-muted-foreground">Also named in this chapter: {manuscript.materials.filter((m) => !m.safetySlug).map((m) => `${m.amharic} (${m.name})`).join(", ")}.</p>
         )}
 
         <details className="text-xs text-muted-foreground">
           <summary className="cursor-pointer">About this source</summary>
-          {fewus.sourceNotes.map((note) => <p key={note.title} className="mt-1">{note.title} (pp. {note.pages}): {note.safeUse}</p>)}
+          {manuscript.sourceNotes.map((n) => <p key={n.title} className="mt-1">{n.title} (pp. {n.pages}): {n.safeUse}</p>)}
         </details>
 
-        <div className="flex flex-wrap justify-end gap-2">
-          <Button variant="outline" onClick={() => onInsert(`መጽሐፈ ፈውስ · ${fewus.heading.titleAm}`, block)}>Insert into review</Button>
+        {/* Deliver the chapter as a solution: straight to the client, or as a draft to refine. */}
+        <div className="flex flex-col gap-3 rounded-2xl border border-border p-3">
+          <p className="flex items-center gap-2 font-semibold text-foreground"><Sparkles className="size-4 text-gold" aria-hidden="true" /> Deliver this chapter as a solution</p>
+          <Field label="Your opening words (optional)">{(c) => <Textarea {...c} rows={2} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} placeholder="ሰላም… a few words for this client" />}</Field>
+          <div className="flex flex-col gap-1.5">
+            {hasProfile && <label className="flex items-center gap-2"><input type="checkbox" checked={includeProfile} onChange={(e) => setIncludeProfile(e.target.checked)} className="size-4 accent-[var(--brand-accent)]" /> Add the client&apos;s name reckoning and sacred names</label>}
+            {manuscript.plants && <label className="flex items-center gap-2"><input type="checkbox" checked={includePlantScreen} onChange={(e) => setIncludePlantScreen(e.target.checked)} className="size-4 accent-[var(--brand-accent)]" /> Add the plant check against their medicines</label>}
+            <p className="text-xs text-muted-foreground">Safety cautions and the framing notes above are always included.</p>
+          </div>
+          <details className="text-xs">
+            <summary className="cursor-pointer font-semibold text-brand">Preview what the client receives</summary>
+            <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap rounded-xl bg-muted/40 p-3 font-sans text-foreground" lang="am">{manuscript.solution.body}</pre>
+          </details>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="outline" disabled={busy} onClick={() => deliver("draft")}><Pencil className="size-4" aria-hidden="true" /> Prepare a draft to refine</Button>
+            <Button disabled={busy || (!hasOwnText && !note)} onClick={() => setConfirming(true)} title={!hasOwnText && !note ? "Add your text or an opening note first" : undefined}><Send className="size-4" aria-hidden="true" /> Send to the client now</Button>
+          </div>
         </div>
       </CardContent>
+      <Dialog
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        title="Send this chapter to the client now?"
+        description="It goes to their messages straight away, with the safety cautions and framing notes."
+        footer={<><Button variant="ghost" onClick={() => setConfirming(false)}>Cancel</Button><Button onClick={() => { setConfirming(false); deliver("send"); }}>Send now</Button></>}
+      >
+        <p className="text-sm text-muted-foreground">To change anything first, choose &ldquo;Prepare a draft to refine&rdquo; instead.</p>
+      </Dialog>
     </Card>
   );
 }
+
+const ETHIC_TITLES: Record<string, string> = {
+  protective_only: "Protection only",
+  consent_required: "Only with everyone's agreement",
+  no_outcome_promise: "A blessing, not a promise",
+  health_overlap: "This may also be illness",
+};
 
 // ── Name reckoning & Awde Negest (Domain B) ──────────────────────────────────
 

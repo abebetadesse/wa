@@ -1,13 +1,13 @@
 /**
  * Healer intake: per-service intake modalities, uploaded intake media, criteria-based
  * auto-response rules, response drafts awaiting the healer, and each business's own
- * Metsehafe Fewus texts.
+ * manuscript texts (Metsehafe Fewus and Metsehafe Asmat).
  */
 import { boolean, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { bookings, businesses, messages, services } from "./marketplace";
 
-export const DROPDOWN_TYPES = ["none", "custom", "metsehafe_fewus", "awde_negest"] as const;
+export const DROPDOWN_TYPES = ["none", "custom", "metsehafe_fewus", "metsehafe_asmat", "awde_negest"] as const;
 export type DropdownType = (typeof DROPDOWN_TYPES)[number];
 
 export const serviceIntakeSettings = pgTable("service_intake_settings", {
@@ -17,7 +17,7 @@ export const serviceIntakeSettings = pgTable("service_intake_settings", {
   allowImage: boolean("allow_image").default(true).notNull(),
   allowAudio: boolean("allow_audio").default(true).notNull(),
   allowVideo: boolean("allow_video").default(false).notNull(),
-  /** none | custom | metsehafe_fewus | awde_negest */
+  /** none | custom | metsehafe_fewus | metsehafe_asmat | awde_negest */
   dropdownType: varchar("dropdown_type", { length: 30 }).default("none").notNull(),
   dropdownLabel: varchar("dropdown_label", { length: 160 }),
   customDropdownOptions: jsonb("custom_dropdown_options").$type<{ value: string; label: string }[]>().default([]).notNull(),
@@ -75,7 +75,7 @@ export const autoResponseRules = pgTable(
     templateTitle: varchar("template_title", { length: 200 }).notNull(),
     templateBody: text("template_body").notNull(),
     attachedRemedies: jsonb("attached_remedies").$type<{ remedyId?: string; name: string; note?: string }[]>().default([]).notNull(),
-    /** Include the Metsehafe Fewus text for the selected heading in the response. */
+    /** Include the business's manuscript text (Fewus or Asmat) for the selected heading in the response. */
     includeFewusText: boolean("include_fewus_text").default(false).notNull(),
     /** Include the Ge'ez name reckoning / Awde Negest profile in the response. */
     includeProfile: boolean("include_profile").default(false).notNull(),
@@ -113,7 +113,7 @@ export const responseDrafts = pgTable(
   (table) => [index("response_drafts_booking_idx").on(table.bookingId, table.status)],
 );
 
-/** A business's own texts for each Fewus heading (from their copy of the book or their lineage). */
+/** A business's own texts for each manuscript heading (fewus_* and asmat_* keys), from their copy of the book or their lineage. */
 export const fewusTexts = pgTable(
   "fewus_texts",
   {

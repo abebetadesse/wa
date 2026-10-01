@@ -6,8 +6,8 @@ import { intakeAttachments, serviceIntakeSettings, services, DROPDOWN_TYPES, typ
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "@/server/marketplace/access";
-import { fewusDropdownOptions, getFewusHeading } from "@/lib/cultural/metsehafeFewusCatalog";
 import { AWUDE_NEGEST_60_CATEGORIES } from "@/lib/cultural/awudeNegestEngine";
+import { isManuscriptSource, manuscriptDropdownOptions } from "./manuscripts";
 
 export interface IntakeConfig {
   allowText: boolean;
@@ -18,7 +18,7 @@ export interface IntakeConfig {
   dropdownLabel: string | null;
   textPrompt: string | null;
   options: { value: string; label: string }[];
-  /** Awde Negest readings need the client's name (and optionally mother's name) in Ge'ez. */
+  /** Awde Negest readings and Asmat work need the client's name (and optionally mother's name) in Ge'ez. */
   asksGeezName: boolean;
 }
 
@@ -36,12 +36,13 @@ const DROPDOWN_LABELS: Record<DropdownType, string | null> = {
   none: null,
   custom: "Choose what fits best",
   metsehafe_fewus: "መጽሐፈ ፈውስ · What would you like help with?",
+  metsehafe_asmat: "መጽሐፈ አስማት · Which chapter should the healer work from?",
   awde_negest: "አውደ ነገሥት · What is your question about?",
 };
 
 export function dropdownOptionsFor(type: DropdownType, custom: { value: string; label: string }[]) {
   if (type === "custom") return custom;
-  if (type === "metsehafe_fewus") return fewusDropdownOptions();
+  if (isManuscriptSource(type)) return manuscriptDropdownOptions(type);
   if (type === "awde_negest") return AWUDE_NEGEST_60_CATEGORIES.map((c) => ({ value: c.id, label: `${c.am} · ${c.en}` }));
   return [];
 }
@@ -60,7 +61,8 @@ export function toConfig(row: SettingsRow | undefined): IntakeConfig {
     dropdownLabel: base.dropdownLabel || DROPDOWN_LABELS[dropdownType],
     textPrompt: base.textPrompt ?? null,
     options: dropdownOptionsFor(dropdownType, base.customDropdownOptions ?? []),
-    asksGeezName: dropdownType === "awde_negest",
+    // Asmat work is done in the person's (baptismal) name, as Awde Negest reckoning is.
+    asksGeezName: dropdownType === "awde_negest" || dropdownType === "metsehafe_asmat",
   };
 }
 
@@ -186,8 +188,4 @@ export async function assertUploadQuota(userId: string) {
     .from(intakeAttachments)
     .where(and(eq(intakeAttachments.uploaderId, userId), isNull(intakeAttachments.bookingId), gte(intakeAttachments.createdAt, new Date(Date.now() - 86_400_000))));
   if (n >= 30) throw new ApiError(429, "Too many uploads today. Please finish your booking first.");
-}
-
-export function fewusHeadingFor(intake: StoredIntake | null) {
-  return intake?.dropdownType === "metsehafe_fewus" && intake.dropdownValue ? getFewusHeading(intake.dropdownValue) : null;
 }

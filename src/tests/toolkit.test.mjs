@@ -134,6 +134,9 @@ test("a herbalist gets its starter set, picks tools, and behaviour shapes recomm
   assert.equal((await toolkit.trackToolVisit(owner, "/hexacore")).tracked, false, "repeat visits within minutes count once");
   kit = await toolkit.getBusinessToolkit(owner, business.id);
   assert.equal(kit.activity.topTools[0].key, "hexacore-arcana");
+  console.log("KIT SUBSCRIBED SETS:", kit.sets.subscribed.map(s => ({ name: s.name, toolKeys: s.toolKeys })));
+  console.log("KIT TOOLS:", kit.tools.map(t => t.key));
+  console.log("KIT RECOMMENDATIONS:", kit.recommendations.map(r => ({ key: r.key, score: r.score, reasons: r.reasons })));
   const hexacore = kit.recommendations.find((r) => r.key === "hexacore-arcana");
   assert.ok(hexacore?.reasons.includes("Your team uses this"), "tools the team uses are recommended");
   assert.ok(kit.strands.some((s) => s.strand === "biological"));

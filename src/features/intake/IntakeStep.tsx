@@ -12,7 +12,7 @@ export interface IntakeConfig {
   allowImage: boolean;
   allowAudio: boolean;
   allowVideo: boolean;
-  dropdownType: "none" | "custom" | "metsehafe_fewus" | "awde_negest";
+  dropdownType: "none" | "custom" | "metsehafe_fewus" | "metsehafe_asmat" | "awde_negest";
   dropdownLabel: string | null;
   textPrompt: string | null;
   options: { value: string; label: string }[];
@@ -97,7 +97,7 @@ export function IntakeStep({ serviceId, config, value, onChange, signedIn }: { s
       {config.asksGeezName && (
         <div className="flex flex-col gap-3 rounded-2xl border border-border p-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Your name in Ge'ez letters" required hint="For example ሰላማዊት">{(control) => <Input {...control} lang="am" className="font-geez" value={value.nameGeez} onChange={(e) => set({ nameGeez: e.target.value })} />}</Field>
+            <Field label={config.dropdownType === "metsehafe_asmat" ? "Your baptismal name (ስመ ክርስትና) in Ge'ez letters" : "Your name in Ge'ez letters"} required hint="For example ሰላማዊት">{(control) => <Input {...control} lang="am" className="font-geez" value={value.nameGeez} onChange={(e) => set({ nameGeez: e.target.value })} />}</Field>
             <Field label="Your mother's name (optional)">{(control) => <Input {...control} lang="am" className="font-geez" value={value.motherNameGeez} onChange={(e) => set({ motherNameGeez: e.target.value })} />}</Field>
           </div>
           <div className="flex flex-wrap gap-2">

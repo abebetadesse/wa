@@ -62,8 +62,8 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
 
   return (
     <WorkspaceProvider business={data} reload={reload}>
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[15rem_1fr] lg:py-8">
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[15rem_1fr] lg:py-8">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
             {data.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
