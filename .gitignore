@@ -18,3 +18,6 @@ push_debug.log
 
 # Intake media uploaded by clients (never commit)
 /storage/
+
+push_debug.log
+*.log
