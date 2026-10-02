@@ -50,6 +50,7 @@ export interface BusinessSummary {
   categoryNameAm: string | null;
   sector: string;
   fromPriceEtb: string | null;
+  matchingServices?: string[];
 }
 
 /** Monogram shown when a business has not uploaded a logo. */
@@ -98,6 +99,17 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
           <Stars value={business.ratingAverage} count={business.ratingCount} />
         </div>
         {business.tagline && <p className="line-clamp-2 text-sm text-muted-foreground">{business.tagline}</p>}
+
+        {Boolean(business.matchingServices?.length) && (
+          <div className="flex flex-wrap gap-1 pt-1">
+            {business.matchingServices!.slice(0, 2).map((srv) => (
+              <span key={srv} className="inline-flex items-center rounded-lg bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand-strong">
+                {srv}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="mt-auto flex items-center justify-between gap-2 pt-2 text-xs text-muted-foreground">
           <span className="inline-flex min-w-0 items-center gap-1">
             <MapPin className="size-3.5 shrink-0" aria-hidden="true" />

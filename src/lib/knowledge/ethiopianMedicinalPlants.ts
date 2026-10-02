@@ -1,3 +1,5 @@
+import { INTENSIVE_TRADITIONAL_MEDICINES, toMedicinalPlant } from "./traditionalMedicineDatabase";
+
 export type PubMedEvidence = {
   pmid?: string;
   title: string;
@@ -720,13 +722,27 @@ function inferPreparationFromTraditionalUse(text: string): string {
   return "Traditional preparation recorded by local ethnobotanical practice";
 }
 
-export const ETHIOPIAN_MEDICINAL_PLANTS: MedicinalPlant[] = RAW_MEDICINAL_PLANTS.map((plant) => ({
+const mappedIntensive = INTENSIVE_TRADITIONAL_MEDICINES.map(toMedicinalPlant);
+const seenNames = new Set<string>();
+const combinedRawPlants: MedicinalPlant[] = [];
+
+for (const p of [...mappedIntensive, ...RAW_MEDICINAL_PLANTS]) {
+  const normKey = p.scientificName.toLowerCase().trim();
+  if (!seenNames.has(normKey)) {
+    seenNames.add(normKey);
+    combinedRawPlants.push(p);
+  }
+}
+
+export const ETHIOPIAN_MEDICINAL_PLANTS: MedicinalPlant[] = combinedRawPlants.map((plant) => ({
   ...plant,
   location: plant.location ?? plant.habitat,
   action: plant.action ?? plant.traditionalUse,
   modeOfPreparation: plant.modeOfPreparation ?? inferPreparationFromTraditionalUse(plant.traditionalUse),
   sourceUrl: plant.sourceUrl ?? EPHI_ETHNOBOTANICAL_SOURCE_URL,
 }));
+
+export * from "./traditionalMedicineDatabase";
 
 export const MEDICINAL_PLANT_DISEASES = [
   "Goiter",

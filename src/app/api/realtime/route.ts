@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 const HEARTBEAT_MS = 25_000;
 
 export async function GET(req: NextRequest) {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedUser({ refreshAccessCookie: true });
   if (!user) return new Response("Authentication required.", { status: 401 });
 
   const memberships = await membershipsOf(user.id);

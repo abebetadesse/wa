@@ -60,17 +60,20 @@ export async function GET(request: NextRequest) {
   const disease = searchParams.get("disease") ?? "all";
   const enrich = searchParams.get("enrich") === "1" || searchParams.get("enrich") === "true";
 
+  const limitParam = searchParams.get("limit");
+  const limit = limitParam ? parseInt(limitParam, 10) : 250;
+
   const allPlants = [...ETHIOPIAN_MEDICINAL_PLANTS, ...ETHIOPIAN_MEDICINAL_PLANTS_CUSTOM];
   const data = filterMedicinalPlants(query, disease, allPlants);
   const enriched = enrich
-    ? await Promise.all(data.slice(0, 80).map((plant) => enrichPlantWithPubMed(plant)))
-    : data.slice(0, 80);
+    ? await Promise.all(data.slice(0, Math.min(limit, 80)).map((plant) => enrichPlantWithPubMed(plant)))
+    : data.slice(0, limit);
 
   return NextResponse.json({
     success: true,
     count: enriched.length,
     total: allPlants.length,
     data: enriched,
-    source: "EPHI Etnobotanical Study by Wereda + optional PubMed enrichment",
+    source: "EPHI Ethnobotanical Study by Wereda + Intensive Traditional Medicine Pharmacopeia + optional PubMed enrichment",
   });
 }

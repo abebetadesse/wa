@@ -172,6 +172,7 @@ const SERVICES = [
     description: "A guided, non-clinical exploration of core themes, archetypes, and journaling prompts.",
     durationMinutes: 60,
     priceEtb: 450,
+    allowImage: false,
     modes: ["in_person", "video"] as const,
     prompt: "Which Hexacore theme would you like to reflect on?",
     options: [
@@ -187,6 +188,7 @@ const SERVICES = [
     description: "An educational discussion of traditional tongue-reading symbolism. Not a medical assessment.",
     durationMinutes: 30,
     priceEtb: 200,
+    allowImage: true,
     modes: ["in_person", "video"] as const,
     prompt: "What would you like to learn about the traditional symbolism?",
     options: [
@@ -201,6 +203,7 @@ const SERVICES = [
     description: "A cultural and reflective conversation about hand-line traditions, without predictive claims.",
     durationMinutes: 45,
     priceEtb: 300,
+    allowImage: true,
     modes: ["in_person", "video"] as const,
     prompt: "Which hand-reading topic would you like to explore?",
     options: [
@@ -210,13 +213,14 @@ const SERVICES = [
   },
   {
     kind: "face-reading",
-    name: "Face-Sign Cultural Reflection (Demo)",
+    name: "Face-Reading History & Ethics (Demo)",
     nameAm: "የፊት ምልክት ባህላዊ ነጸብራቅ",
-    description: "A cultural reflection guide only. Never used for identity, trustworthiness, health, or forensic assessment.",
+    description: "A discussion of history and ethical limits only. No face photos or appearance-based assessment.",
     durationMinutes: 30,
     priceEtb: 200,
+    allowImage: false,
     modes: ["video"] as const,
-    prompt: "What cultural or historical topic would you like to discuss?",
+    prompt: "What historical or ethical topic would you like to discuss?",
     options: [
       { value: "face-history", label: "Historical traditions" },
       { value: "ethical-use", label: "Ethical limits of face-reading" },
@@ -229,6 +233,7 @@ const SERVICES = [
     description: "A reflective overview of cultural body-sign traditions, with clear limits and no diagnosis.",
     durationMinutes: 45,
     priceEtb: 350,
+    allowImage: true,
     modes: ["in_person", "video"] as const,
     prompt: "Which body-sign tradition are you interested in?",
     options: [
@@ -264,7 +269,7 @@ async function ensureServices(owner: Actor, businessId: string) {
     });
     await saveIntakeSettings(owner, businessId, service.id, intakeSettingsInput.parse({
       allowText: true,
-      allowImage: false,
+      allowImage: definition.allowImage,
       allowAudio: true,
       allowVideo: false,
       dropdownType: "custom",

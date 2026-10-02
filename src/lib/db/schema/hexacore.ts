@@ -1,5 +1,6 @@
-import { pgTable, uuid, varchar, text, timestamp, jsonb, integer, boolean, primaryKey } from "../mysqlSchema";
+import { pgTable, uuid, varchar, text, timestamp, jsonb, integer, boolean, primaryKey, numeric } from "../mysqlSchema";
 import { users } from "./users";
+import { bookings } from "./marketplace";
 
 export type HexacoreCoreCode = "P" | "H" | "C" | "E" | "S" | "O";
 export type EthiopianSeason = "kiremt" | "tseday" | "bega" | "belg";
@@ -118,3 +119,182 @@ export const hexacoreCircleInvites = pgTable("hexacore_circle_invites", {
   acceptedAt: timestamp("accepted_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// ── COMMERCIAL & BUSINESS TABLES ─────────────────────────────────────────────
+
+export type HexacoreProductTier = "free" | "standard" | "premium" | "subscription" | "session";
+
+export interface HexacoreProductFeature {
+  textEn: string;
+  textAm: string;
+  highlight?: boolean;
+}
+
+export interface HexacoreCommercialProduct {
+  id?: string;
+  code: string;
+  name: string;
+  nameAm?: string | null;
+  tagline?: string | null;
+  taglineAm?: string | null;
+  description?: string | null;
+  descriptionAm?: string | null;
+  priceEtb: string | number;
+  priceUsd: string | number;
+  tier: HexacoreProductTier;
+  features: HexacoreProductFeature[];
+  badgeEn?: string | null;
+  badgeAm?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+export const hexacoreProducts = pgTable("hexacore_products", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 60 }).notNull().unique(),
+  name: varchar("name", { length: 140 }).notNull(),
+  nameAm: varchar("name_am", { length: 140 }),
+  tagline: varchar("tagline", { length: 240 }),
+  taglineAm: varchar("tagline_am", { length: 240 }),
+  description: text("description"),
+  descriptionAm: text("description_am"),
+  priceEtb: numeric("price_etb", { precision: 12, scale: 2 }).notNull(),
+  priceUsd: numeric("price_usd", { precision: 8, scale: 2 }).notNull(),
+  tier: varchar("tier", { length: 30 }).$type<HexacoreProductTier>().notNull(),
+  features: jsonb("features").$type<HexacoreProductFeature[]>().default([]).notNull(),
+  badgeEn: varchar("badge_en", { length: 60 }),
+  badgeAm: varchar("badge_am", { length: 60 }),
+  isActive: boolean("is_active").default(true).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const hexacorePurchases = pgTable("hexacore_purchases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reference: varchar("reference", { length: 30 }).notNull().unique(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  clientEmail: varchar("client_email", { length: 255 }),
+  clientName: varchar("client_name", { length: 160 }),
+  clientPhone: varchar("client_phone", { length: 40 }),
+  productId: uuid("product_id").references(() => hexacoreProducts.id, { onDelete: "restrict" }).notNull(),
+  bookingId: uuid("booking_id").references(() => bookings.id, { onDelete: "set null" }),
+  amountPaidEtb: numeric("amount_paid_etb", { precision: 12, scale: 2 }).notNull(),
+  amountPaidUsd: numeric("amount_paid_usd", { precision: 8, scale: 2 }),
+  paymentMethod: varchar("payment_method", { length: 40 }).notNull(),
+  paymentReference: varchar("payment_reference", { length: 140 }),
+  status: varchar("status", { length: 30 }).default("pending").notNull(),
+  clientIntake: jsonb("client_intake").$type<Record<string, unknown>>(),
+  unlockedPayload: jsonb("unlocked_payload").$type<Record<string, unknown>>(),
+  proofUrl: text("proof_url"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const hexacoreSubscriptions = pgTable("hexacore_subscriptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  plan: varchar("plan", { length: 40 }).notNull(),
+  status: varchar("status", { length: 30 }).default("active").notNull(),
+  amountEtb: numeric("amount_etb", { precision: 12, scale: 2 }).notNull(),
+  paymentMethod: varchar("payment_method", { length: 40 }).notNull(),
+  renewsAt: timestamp("renews_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Default Commercial Product Catalog (fallback & seeding reference)
+export const HEXACORE_DEFAULT_PRODUCTS = [
+  {
+    code: "free_preview",
+    name: "Hexacore Celestial Preview",
+    nameAm: "የሄክሳኮር መሰረታዊ እይታ",
+    tagline: "Explore the 3 outer cores & current Ethiopian seasonal shift",
+    taglineAm: "3ቱን ዋና ማዕከላት እና የወቅቱን የኢትዮጵያ ለውጥ በነጻ ይቃኙ",
+    description: "Free celestial reflection exploring primary active cores and planetary alignments.",
+    descriptionAm: "የ3ቱን ዋና ማዕከላት ሚዛንና ወቅታዊ መመሪያን በነጻ የሚቃኙበት።",
+    priceEtb: "0.00",
+    priceUsd: "0.00",
+    tier: "free" as const,
+    badgeEn: "Free Access",
+    badgeAm: "ነጻ መዳረሻ",
+    sortOrder: 1,
+    features: [
+      { textEn: "Interactive 3D Celestial Orrery (Layers 1–3)", textAm: "ተንቀሳቃሽ የኦረሪ እይታ (ደረጃ 1-3)", highlight: true },
+      { textEn: "Dominant Core & Aspect Identification", textAm: "የቀዳሚ ማዕከል መለያ" },
+      { textEn: "Current Ethiopian Season Shift (Kiremt/Tseday/Bega/Belg)", textAm: "ወቅታዊ የኢትዮጵያ ወቅት መመሪያ" },
+      { textEn: "Basic Daily Journal Prompt", textAm: "የቀን ማሰላሰያ ጥያቄ" },
+    ],
+  },
+  {
+    code: "natal_dossier",
+    name: "Complete 14-Layer Natal Arcana Dossier",
+    nameAm: "የተሟላ የ14-ደረጃ የልደት አርካና ማህደር",
+    tagline: "Full numerology, archetypes, initiation trials, and exportable PDF dossier",
+    taglineAm: "ሙሉ የቁጥር ስሌት፣ ጥንታዊ ምልክቶች፣ የህይወት ፈተናዎች እና የሚወርድ ፒዲኤፍ ማህደር",
+    description: "The definitive personal wisdom blueprint decoding all 14 layers, 6-based numerology, personal solfeggio audio frequency, and custom botanical formulations.",
+    descriptionAm: "ሁሉንም 14 የጥበብ ደረጃዎች፣ የኢትዮጵያ ዕጽዋት ቀመሞች፣ የድምፅ ፍሪኩዌንሲ እና የህይወት መንገድን የያዘ ጥልቅ ማህደር።",
+    priceEtb: "450.00",
+    priceUsd: "14.99",
+    tier: "standard" as const,
+    badgeEn: "Most Popular",
+    badgeAm: "ተመራጭ ማህደር",
+    sortOrder: 2,
+    features: [
+      { textEn: "Complete 14-Layer Arcana Analysis Unlocked", textAm: "ሙሉ 14ቱ የጥበብ ደረጃዎች ተከፍተዋል", highlight: true },
+      { textEn: "6-Based Traditional Numerology & Destiny Map", textAm: "በ6 ቁጥር ስሌት የተሰራ የዕጣ-ፈንታ ካርታ" },
+      { textEn: "Personal Solfeggio Audio Frequency (Hz)", textAm: "የግል የሶልፌጅዮ ድምፅ ፍሪኩዌንሲ (Hz)" },
+      { textEn: "Indigenous Ethiopian Botanical Formulations (Damakesse, Tena Adam)", textAm: "የሀገር በቀል ዕጽዋት ቀመሞች መመሪያ" },
+      { textEn: "Genesis Creation-Day Relational Cycles", textAm: "የስነ-ፍጥረት 6ቱ ቀናት ግንኙነቶች" },
+      { textEn: "Print-Ready Gold & Obsidian PDF Client Dossier", textAm: "በሚያምር ወርቃማ ዲዛይን የሚወርድ ፒዲኤፍ ማህደር", highlight: true },
+    ],
+  },
+  {
+    code: "guided_session",
+    name: "1-on-1 Guided Debtera Consultation + Dossier",
+    nameAm: "የግል ደብተራ/ባለሙያ የማማከር ክፍለ-ጊዜ + ማህደር",
+    tagline: "45-min private video/in-person session with certified traditional wisdom guide",
+    taglineAm: "ከባለሙያ ጋር የ45 ደቂቃ የግል ቪዲዮ ወይም በአካል የሚደረግ የንባብ ክፍለ-ጊዜ",
+    description: "Personalized reading with an authentic traditional debtera/spiritual guide to interpret your Awde Negast alignment, review family lineage, and formulate custom life direction practices.",
+    descriptionAm: "የአውደ-ነገሥት ንባብ፣ የቤተሰብ ትውልድ ጥናት እና የህይወት አቅጣጫ መመሪያዎችን ከባለሙያ ጋር በጥልቀት የሚመረምሩበት።",
+    priceEtb: "1200.00",
+    priceUsd: "39.99",
+    tier: "session" as const,
+    badgeEn: "Live Practitioner",
+    badgeAm: "የቀጥታ ባለሙያ",
+    sortOrder: 3,
+    features: [
+      { textEn: "45-Minute Private Video or In-Person Session", textAm: "የ45 ደቂቃ የግል የማማከር ክፍለ-ጊዜ", highlight: true },
+      { textEn: "Full 14-Layer Dossier Included ($14.99 Value)", textAm: "የተሟላው የ14-ደረጃ ማህደር በነጻ ተካትቷል" },
+      { textEn: "Awde Negast & Ge'ez Lineage Interpretation", textAm: "የአውደ-ነገሥትና የብራና ትርጓሜ" },
+      { textEn: "Debtera-Endorsed Botanical Formulation Guidance", textAm: "በባለሙያ የተረጋገጠ የባህላዊ ዕጽዋት ምክረ-ሀሳብ" },
+      { textEn: "Follow-up Q&A and 30-Day Practice Plan", textAm: "የ30-ቀን የልምምድ እቅድ እና የድጋፍ መመሪያ" },
+    ],
+  },
+  {
+    code: "monthly_membership",
+    name: "Hexacore Arcana Daily Biorhythm Club",
+    nameAm: "የወርሃዊ የሄክሳኮር ባዮሪዝም እና የድምፅ አባልነት",
+    tagline: "Daily 30-day journal, solfeggio audio player, and private circle access",
+    taglineAm: "ዕለታዊ ማሰላሰያ፣ የሶልፌጅዮ ድምፅ ማጫወቻ እና የህብረት ማህበር መዳረሻ",
+    description: "Continuous spiritual and cultural alignment with daily reflection prompts, audio solfeggio sound baths, seasonal shifts tracking, and access to private Hexacore Circles.",
+    descriptionAm: "ቀጣይነት ያለው የዕለት ተዕለት መንፈሳዊ ጉዞ፣ የማሰላሰያ ድምፆች፣ እና የግል የጥናት ማህበራት መዳረሻ።",
+    priceEtb: "199.00",
+    priceUsd: "4.99",
+    tier: "subscription" as const,
+    badgeEn: "Monthly SaaS",
+    badgeAm: "ወርሃዊ ምዝገባ",
+    sortOrder: 4,
+    features: [
+      { textEn: "Daily 30-Day Guided Alignment Journal & Mood Tracking", textAm: "ዕለታዊ የ30-ቀን ማሰላሰያ እና የስሜት መዝገብ", highlight: true },
+      { textEn: "Streamable Solfeggio Frequencies (396Hz–963Hz)", textAm: "የተስተካከሉ የሶልፌጅዮ ድምፆች ማጫወቻ" },
+      { textEn: "Exclusive Access to Private Hexacore Community Circles", textAm: "የግል የሄክሳኮር ማህበራት ሙሉ መዳረሻ" },
+      { textEn: "Automated Seasonal Transition & Planetary Biorhythm Alerts", textAm: "ወቅታዊ የኢትዮጵያ የአየርና የፕላኔቶች ማሳወቂያ" },
+      { textEn: "Priority Booking Discounts on Debtera Consultations", textAm: "በባለሙያ ምክክር ላይ ልዩ ቅናሽ" },
+    ],
+  },
+];

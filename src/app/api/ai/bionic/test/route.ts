@@ -12,7 +12,7 @@ import { getAuthenticatedUser } from "@/lib/auth";
  *   curl http://localhost:3000/api/ai/bionic/test
  */
 export async function GET() {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedUser({ refreshAccessCookie: true });
   if (!user) {
     return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
   }

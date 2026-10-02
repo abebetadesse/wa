@@ -63,9 +63,18 @@ export default async function HomePage() {
               </button>
             </form>
 
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
+              <span>Popular:</span>
+              <Link href="/marketplace?q=herbal" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🌿 Herbal</Link>
+              <Link href="/marketplace?q=Awde+Negest" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📜 Awde Negest</Link>
+              <Link href="/marketplace?q=bone+setting" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🦴 Bone setting</Link>
+              <Link href="/marketplace?q=ceremony" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">☕ Ceremony</Link>
+              <Link href="/marketplace?region=Addis+Ababa" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📍 Addis Ababa</Link>
+            </div>
+
             <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <li className="inline-flex items-center gap-1.5"><BadgeCheck className="size-4 text-brand" aria-hidden="true" /> Every business is verified</li>
-              <li className="inline-flex items-center gap-1.5"><ShieldCheck className="size-4 text-brand" aria-hidden="true" /> Remedy safety checks</li>
+              <li className="inline-flex items-center gap-1.5"><ShieldCheck className="size-4 text-brand" aria-hidden="true" /> Verified heritage credentials</li>
               <li className="inline-flex items-center gap-1.5"><CalendarCheck className="size-4 text-brand" aria-hidden="true" /> Live availability</li>
             </ul>
           </div>
@@ -155,7 +164,7 @@ export default async function HomePage() {
         <ol className="mt-6 grid gap-5 md:grid-cols-3">
           {[
             { icon: Search, title: "Find the right person", body: "Filter by tradition, language, region and whether they meet in person, visit your home or call." },
-            { icon: CalendarCheck, title: "Book a real time slot", body: "See live availability. Remedies ask a few safety questions first, so the practitioner can prepare safely." },
+            { icon: CalendarCheck, title: "Book a real time slot", body: "See live availability and book your appointment directly with instant confirmation." },
             { icon: MessageCircle, title: "Stay in touch", body: "Get instant updates when your booking is confirmed and message the business directly." },
           ].map((step, index) => (
             <li key={step.title} className="relative rounded-3xl border border-border bg-card p-6">

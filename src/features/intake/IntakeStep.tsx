@@ -53,7 +53,7 @@ export function intakePayload(value: IntakeValue) {
 
 const MAX_ATTACHMENTS = 10;
 
-export function IntakeStep({ serviceId, config, value, onChange, signedIn }: { serviceId: string; config: IntakeConfig; value: IntakeValue; onChange: (next: IntakeValue) => void; signedIn: boolean }) {
+export function IntakeStep({ serviceId, config, value, onChange, signedIn, imageGuidance }: { serviceId: string; config: IntakeConfig; value: IntakeValue; onChange: (next: IntakeValue) => void; signedIn: boolean; imageGuidance?: string }) {
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [typingInto, setTypingInto] = useState<"nameGeez" | "motherNameGeez" | null>(null);
@@ -124,6 +124,11 @@ export function IntakeStep({ serviceId, config, value, onChange, signedIn }: { s
       {media.length > 0 && (
         <div className="flex flex-col gap-3">
           <p className="text-sm font-semibold text-foreground">Add a photo, voice note or video (optional)</p>
+          {config.allowImage && (
+            <Alert tone="info">
+              {imageGuidance ?? "Photos are optional and shared privately with the practitioner team for this booking. Do not include anyone who has not agreed to share the image."}
+            </Alert>
+          )}
           {!signedIn ? (
             <Alert tone="info">Sign in to attach photos or recordings. You can still describe things in writing.</Alert>
           ) : (

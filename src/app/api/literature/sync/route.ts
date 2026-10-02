@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
 // ─── GET /api/literature/sync — Status & latest findings ─────────────────────
 export async function GET(req: NextRequest) {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedUser({ refreshAccessCookie: true });
   if (!user) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }

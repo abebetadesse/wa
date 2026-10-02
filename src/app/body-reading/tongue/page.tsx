@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, BookOpen, ChevronDown, ChevronUp, Info, Sparkles } from "lucide-react";
 import Link from "next/link";
+import HexacoreCameraScanner from "@/features/hexacore/HexacoreCameraScanner";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -11,86 +12,86 @@ const TONGUE_ZONES = [
     id: "tip",
     zone: "Tip",
     am: "ጫፍ",
-    organ: "Heart / Mind",
-    organAm: "ልብ / አዕምሮ",
+    organ: "Traditional symbolic association",
+    organAm: "ባህላዊ ምሳሌያዊ ግንኙነት",
     color: "rose",
     emoji: "❤️",
-    description: "The tongue tip maps to the heart and mental state. Redness, small red dots, or trembling here may reflect emotional stress, restlessness, or heat in the chest according to traditional body-sign reading.",
+    description: "Some traditional body-sign charts associate this zone with heart and mind symbolism. This is cultural interpretation only; tongue appearance cannot establish emotional state or heart health.",
     signs: [
-      { sign: "Bright red tip", reading: "Emotional heat or agitation", am: "የልብ ሙቀት ወይም ውጥረት" },
-      { sign: "Pale tip", reading: "Emotional depletion or sadness", am: "ድካም ወይም ሐዘን" },
-      { sign: "Small red dots (prickles)", reading: "Accumulated heat pattern", am: "ሙቀት መጠራቀም" },
+      { sign: "Bright red tip", reading: "Some traditional readings describe this as a symbolic 'heat' image; it is not evidence of agitation or a heart condition.", am: "በአንዳንድ ባህላዊ ንባቦች ምሳሌያዊ ሙቀት እንደሆነ ይገለጻል" },
+      { sign: "Pale tip", reading: "Some traditional readings use this as a prompt about change or restoration; it cannot establish sadness, anaemia, or another condition.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Small red dots (prickles)", reading: "This appearance has many possible explanations; traditional symbolism is not a clinical interpretation.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
     ],
   },
   {
     id: "front-sides",
     zone: "Front Sides",
     am: "የፊት ጠርዝ",
-    organ: "Lung / Upper Chest",
-    organAm: "ሳንባ / የደረት ላይ",
+    organ: "Traditional symbolic association",
+    organAm: "ባህላዊ ምሳሌያዊ ግንኙነት",
     color: "sky",
     emoji: "🫁",
-    description: "The lateral front edges of the tongue correspond to the lung and upper respiratory sphere. In Ethiopian body-sign tradition, discolouration here may relate to breathing patterns, chest tightness, or exposure to cold.",
+    description: "Some traditional charts symbolically associate the front edges with breath and air. Tongue colour or shape does not measure lung function or explain breathing symptoms.",
     signs: [
-      { sign: "Redness at front edges", reading: "Lung heat or inflammation pattern", am: "የሳንባ ሙቀት ምልክት" },
-      { sign: "Pale or white patches", reading: "Cold or damp lung pattern", am: "ቀዝቃዛ ወይም እርጥብ ምልክት" },
-      { sign: "Scalloped edges", reading: "Fluid retention or fatigue pattern", am: "ድካም ወይም ፈሳሽ ምልክት" },
+      { sign: "Redness at front edges", reading: "A traditional visual motif only; it cannot show lung heat, inflammation, or respiratory function.", am: "ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Pale or white patches", reading: "A visual description, not evidence of a lung condition. Ask a clinician about persistent or concerning changes.", am: "ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Scalloped edges", reading: "This shape has multiple possible causes; it does not establish fluid retention or fatigue.", am: "ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
     ],
   },
   {
     id: "center",
     zone: "Centre",
     am: "መሃል",
-    organ: "Stomach / Digestion",
-    organAm: "ሆድ / ምግብ መፈጨት",
+    organ: "Traditional symbolic association",
+    organAm: "ባህላዊ ምሳሌያዊ ግንኙነት",
     color: "amber",
     emoji: "🟡",
-    description: "The centre of the tongue — from front to mid-body — maps to the digestive system. Coat thickness, cracks, and colour changes here are read as indicators of digestive balance or imbalance in traditional body-sign systems.",
+    description: "Some traditional body-sign charts associate the centre with digestion symbolism. Coating, cracks, and colour vary for many reasons and cannot assess digestive health.",
     signs: [
-      { sign: "Thick yellow coat", reading: "Digestive heat or food stagnation", am: "የምግብ ሙቀት ወይም ቆሻሻ ምልክት" },
-      { sign: "Thin white coat (normal)", reading: "Healthy digestive baseline", am: "ጤናማ የምግብ ሁኔታ" },
-      { sign: "Deep midline crack", reading: "Chronic digestive dryness pattern", am: "ሥር የሰደደ ደረቅ ምልክት" },
-      { sign: "No coat at all", reading: "Depletion or chronic fatigue pattern", am: "ድካም ወይም ጉጉት" },
+      { sign: "Thick yellow coat", reading: "A traditional visual motif, not a finding of digestive heat, infection, or food stagnation.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Thin white coat", reading: "A common visual description, not a test of digestive health or a definition of normality.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Deep midline crack", reading: "A visible feature with varied possible explanations; it cannot establish chronic dryness or a digestive condition.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "No visible coat", reading: "This observation cannot establish depletion or chronic fatigue.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
     ],
   },
   {
     id: "rear-sides",
     zone: "Rear Sides",
     am: "የኋላ ጠርዝ",
-    organ: "Liver / Gallbladder",
-    organAm: "ጉበት / ሐሞት",
+    organ: "Traditional symbolic association",
+    organAm: "ባህላዊ ምሳሌያዊ ግንኙነት",
     color: "emerald",
     emoji: "💚",
-    description: "The lateral rear edges traditionally link to liver and gallbladder function. Redness, purple tinge, or swelling here is read as heat or stagnation in the body's filtration and bile systems.",
+    description: "Some charts associate the rear sides with liver symbolism. The tongue cannot show liver or gallbladder function, or diagnose a problem in either organ.",
     signs: [
-      { sign: "Red or purple tinge", reading: "Liver heat or stagnation pattern", am: "የጉበት ሙቀት ወይም ቆሰቆሰ ምልክት" },
-      { sign: "Pale sides", reading: "Liver depletion pattern", am: "የጉበት ድካም" },
-      { sign: "Raised bumps (sides)", reading: "Stress-related liver tension", am: "ከጭንቀት ጋር ተያያዥ ምልክት" },
+      { sign: "Red or purple tinge", reading: "A traditional symbolic description only; it cannot identify liver heat, stagnation, or disease.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Pale sides", reading: "A visual observation, not evidence of liver depletion or another condition.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Raised bumps (sides)", reading: "Bumps have many possible causes and cannot establish stress or liver function.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
     ],
   },
   {
     id: "root",
     zone: "Root (Back)",
     am: "ሥር",
-    organ: "Kidney / Bladder",
-    organAm: "ኩላሊት / ፊኛ",
+    organ: "Traditional symbolic association",
+    organAm: "ባህላዊ ምሳሌያዊ ግንኙነት",
     color: "indigo",
     emoji: "💧",
-    description: "The back root of the tongue corresponds to the kidney-bladder system in body-sign traditions. Coat, swelling, or discolouration at the root is read as information about water metabolism and vital energy reserves.",
+    description: "Some traditional charts assign symbolic meaning to the rear of the tongue. Appearance in this area cannot assess kidney, bladder, or water balance.",
     signs: [
-      { sign: "Thick coat at root", reading: "Damp or sluggish water metabolism", am: "ዝቅተኛ ውሃ ፍሰት ምልክት" },
-      { sign: "No coat at root", reading: "Depleted kidney essence pattern", am: "የኩላሊት ድካም" },
-      { sign: "Deep red root", reading: "Deficiency-heat pattern", am: "ድካም-ሙቀት ምልክት" },
+      { sign: "Thick coat at root", reading: "A traditional visual motif, not a measure of water metabolism or kidney function.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "No coat at root", reading: "This appearance cannot establish kidney health, depletion, or fatigue.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
+      { sign: "Deep red root", reading: "A visual description only; it cannot establish a deficiency or other condition.", am: "ባህላዊ ምሳሌያዊ ነጸብራቅ ብቻ ነው" },
     ],
   },
 ];
 
 const COAT_TYPES = [
-  { id: "thin-white", label: "Thin White", am: "ቀጭን ነጭ", note: "Considered the healthy baseline in most traditions.", color: "bg-stone-100/10 border-stone-400/40 text-stone-200" },
-  { id: "thick-white", label: "Thick White", am: "ወፍራም ነጭ", note: "Cold or damp pattern — digestive sluggishness.", color: "bg-stone-300/10 border-stone-300/40 text-stone-200" },
-  { id: "yellow", label: "Yellow Coat", am: "ቢጫ ሽፋን", note: "Heat pattern — digestive or systemic inflammation indicator.", color: "bg-yellow-500/10 border-yellow-500/40 text-yellow-200" },
-  { id: "grey-black", label: "Grey / Black", am: "ግራጫ / ጥቁር", note: "Extreme heat or cold pattern; clinically warrants investigation.", color: "bg-stone-700/30 border-stone-500/40 text-stone-300" },
-  { id: "none", label: "No Coat (Peeled)", am: "ሽፋን የለም", note: "Yin-deficiency or chronic depletion pattern.", color: "bg-rose-500/5 border-rose-500/30 text-rose-200" },
+  { id: "thin-white", label: "Thin White", am: "ቀጭን ነጭ", note: "A visual description found in some traditional references; not a health baseline or diagnostic result.", color: "bg-stone-100/10 border-stone-400/40 text-stone-200" },
+  { id: "thick-white", label: "Thick White", am: "ወፍራም ነጭ", note: "Some traditions attach symbolism to this appearance. It cannot establish a digestive or other condition.", color: "bg-stone-300/10 border-stone-300/40 text-stone-200" },
+  { id: "yellow", label: "Yellow Coat", am: "ቢጫ ሽፋን", note: "A colour description only; it cannot show inflammation, infection, or organ function.", color: "bg-yellow-500/10 border-yellow-500/40 text-yellow-200" },
+  { id: "grey-black", label: "Grey / Black", am: "ግራጫ / ጥቁር", note: "A visible change with many possible causes. Seek a qualified clinician for persistent or concerning changes.", color: "bg-stone-700/30 border-stone-500/40 text-stone-300" },
+  { id: "none", label: "No Visible Coat", am: "ሽፋን የለም", note: "A visual description only; it cannot establish deficiency, dehydration, or chronic fatigue.", color: "bg-rose-500/5 border-rose-500/30 text-rose-200" },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -126,11 +127,27 @@ export default function TongueReadingPage() {
           </span>
         </h1>
         <p className="mt-3 max-w-3xl text-sm text-stone-400 leading-relaxed">
-          In Ethiopian healing traditions, the tongue is considered a window into the body's internal balance.
-          Colour, coat, shape, and zone-specific changes are read as patterns — never as diagnoses.
-          This tool is offered as an educational and reflective reference for Hexacore practitioners.
+          This educational guide documents symbolic associations found in traditional body-sign systems.
+          Tongue appearance does not reveal organ function, diagnose illness, or establish emotional traits.
+          A practitioner may discuss an optional photo as cultural material only; no automated image analysis is performed.
         </p>
       </header>
+
+      <div role="note" className="flex items-start gap-3 rounded-2xl border border-amber-400/30 bg-amber-500/[0.08] p-4 text-sm leading-relaxed text-amber-100">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-300" aria-hidden="true" />
+        <p><strong>Important:</strong> Zone-to-organ maps and sign meanings below are traditional symbolic claims, not scientifically validated health indicators. Photos are optional, private to a booked practitioner team, and never processed by an automated diagnostic model.</p>
+      </div>
+
+      {/* ── Live Camera Tongue Scanner ─────────────────────────── */}
+      <section aria-labelledby="live-camera-scanner" className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="size-4 text-amber-400" />
+          <h2 id="live-camera-scanner" className="text-xl font-bold text-white">
+            Interactive Camera Tongue Biometric Scanner
+          </h2>
+        </div>
+        <HexacoreCameraScanner initialType="tongue" />
+      </section>
 
       {/* ── Tongue Diagram (SVG zones) + Zone Selector ─────────── */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr]">
@@ -319,11 +336,11 @@ export default function TongueReadingPage() {
         </div>
         <ul className="space-y-2 text-sm text-stone-300 list-none">
           {[
-            "Always observe the tongue in natural or full-spectrum light. Artificial yellow light distorts colour readings.",
-            "Ask the client to relax the tongue naturally — a strained or curled tongue changes its appearance.",
-            "Note any recent food or drink (coffee, beetroot, turmeric) that may temporarily stain the tongue.",
-            "A single sign is never conclusive. Build a picture from multiple signs across zones over time.",
-            "Refer any sign causing clinical concern (persistent black coat, deep bleeding cracks, sudden changes) to a qualified health professional.",
+            "When discussing an optional image, use neutral light to describe what is visible; colour is not a health measurement.",
+            "Ask permission before viewing or discussing an image, and let the client decline or stop at any time.",
+            "Food, drink, oral care, lighting, and many other factors can change appearance.",
+            "Discuss the history and limits of symbolic interpretations; do not combine features into a health or personality assessment.",
+            "Encourage the client to consult a qualified health professional about persistent, painful, or concerning changes.",
           ].map((note, i) => (
             <li key={i} className="flex items-start gap-2">
               <span className="text-amber-400 font-bold shrink-0">•</span>

@@ -1,11 +1,25 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  ArrowRight,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Coffee,
+  Heart,
+  Leaf,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  Tag,
+  X,
+} from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Button, EmptyState, ErrorState, LoadingState, Select } from "@/components/ui";
-import { BusinessCard, LANGUAGE_LABELS, MODE_LABELS, type BusinessSummary } from "@/features/marketplace/shared";
+import { BusinessCard, LANGUAGE_LABELS, MODE_LABELS, formatEtb, type BusinessSummary } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
 
 interface Facets {
@@ -21,7 +35,23 @@ interface Results {
   totalPages: number;
 }
 
-const FILTER_KEYS = ["q", "category", "sector", "region", "mode", "language", "sort", "page"] as const;
+interface Suggestions {
+  popular: { label: string; category?: string; query?: string; icon: string }[];
+  businesses: { id: string; slug: string; name: string; nameAm: string | null; city: string | null; categoryName: string }[];
+  services: { id: string; name: string; nameAm: string | null; businessName: string; businessSlug: string; priceEtb: string }[];
+  categories: { slug: string; name: string; nameAm: string | null; sector: string }[];
+}
+
+const FILTER_KEYS = ["q", "category", "sector", "region", "mode", "language", "minPrice", "maxPrice", "sort", "page"] as const;
+
+const QUICK_SEARCH_PILLS = [
+  { label: "🌿 Herbal medicine", q: "herbal" },
+  { label: "📜 Awde Negest", q: "Awde Negest" },
+  { label: "🦴 Bone setting", q: "bone setting" },
+  { label: "☕ Ceremony", q: "ceremony" },
+  { label: "📍 Addis Ababa", region: "Addis Ababa" },
+  { label: "💻 Online / Video", mode: "video" },
+];
 
 export function Directory() {
   const router = useRouter();
@@ -33,6 +63,15 @@ export function Directory() {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [query, setQuery] = useState(params.get("q") ?? "");
+
+  // Autocomplete suggestions
+  const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Price input local states
+  const [minPriceInput, setMinPriceInput] = useState(params.get("minPrice") ?? "");
+  const [maxPriceInput, setMaxPriceInput] = useState(params.get("maxPrice") ?? "");
 
   const queryString = params.toString();
 
@@ -53,6 +92,7 @@ export function Directory() {
     apiFetch<Facets>("/api/marketplace/facets").then(setFacets).catch(() => setFacets({ categories: [], regions: [], languages: [] }));
   }, []);
 
+  // Fetch directory businesses whenever query string changes
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -70,11 +110,81 @@ export function Directory() {
     };
   }, [queryString]);
 
-  useEffect(() => setQuery(params.get("q") ?? ""), [params]);
+  // Keep local query input in sync with URL
+  useEffect(() => {
+    setQuery(params.get("q") ?? "");
+    setMinPriceInput(params.get("minPrice") ?? "");
+    setMaxPriceInput(params.get("maxPrice") ?? "");
+  }, [params]);
+
+  // Live debounced search
+  useEffect(() => {
+    const currentQ = params.get("q") ?? "";
+    if (query.trim() === currentQ) return;
+    const timer = setTimeout(() => {
+      setParam({ q: query.trim() || null });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [query, params, setParam]);
+
+  // Autocomplete fetcher
+  useEffect(() => {
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      apiFetch<Suggestions>(`/api/marketplace/suggestions?q=${encodeURIComponent(query.trim())}`)
+        .then((data) => !cancelled && setSuggestions(data))
+        .catch(() => !cancelled && setSuggestions(null));
+    }, 150);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function onSearch(event: FormEvent) {
     event.preventDefault();
+    setShowSuggestions(false);
     setParam({ q: query.trim() || null });
+  }
+
+  function handleClearSearch() {
+    setQuery("");
+    setShowSuggestions(false);
+    setParam({ q: null });
+  }
+
+  function handleSelectSuggestion(type: "business" | "service" | "category" | "query", value: string, extraSlug?: string) {
+    setShowSuggestions(false);
+    if (type === "business") {
+      router.push(`/b/${value}`);
+    } else if (type === "service") {
+      router.push(`/b/${extraSlug ?? value}`);
+    } else if (type === "category") {
+      setQuery("");
+      setParam({ category: value, q: null });
+    } else {
+      setQuery(value);
+      setParam({ q: value });
+    }
+  }
+
+  function applyPriceFilter(e: FormEvent) {
+    e.preventDefault();
+    setParam({
+      minPrice: minPriceInput.trim() || null,
+      maxPrice: maxPriceInput.trim() || null,
+    });
   }
 
   const active = FILTER_KEYS.filter((key) => key !== "sort" && key !== "page" && params.get(key));
@@ -84,6 +194,8 @@ export function Directory() {
     : key === "mode" ? MODE_LABELS[value]?.label ?? value
     : key === "language" ? LANGUAGE_LABELS[value] ?? value
     : key === "sector" ? (value === "cultural" ? "Cultural services" : "Healing traditions")
+    : key === "minPrice" ? `Min ${value} ETB`
+    : key === "maxPrice" ? `Max ${value} ETB`
     : key === "q" ? `“${value}”`
     : value;
 
@@ -152,6 +264,43 @@ export function Directory() {
         </div>
       </fieldset>
 
+      {/* Price budget filter */}
+      <form onSubmit={applyPriceFilter} className="flex flex-col gap-2 rounded-2xl border border-border p-3">
+        <span className="text-sm font-semibold text-foreground">Price range (ETB)</span>
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            type="number"
+            placeholder="Min"
+            value={minPriceInput}
+            onChange={(e) => setMinPriceInput(e.target.value)}
+            className="w-full rounded-xl border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          <input
+            type="number"
+            placeholder="Max"
+            value={maxPriceInput}
+            onChange={(e) => setMaxPriceInput(e.target.value)}
+            className="w-full rounded-xl border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <Button type="submit" size="sm" variant="outline" className="h-7 flex-1 text-xs">Apply</Button>
+          {(params.get("minPrice") || params.get("maxPrice")) && (
+            <button
+              type="button"
+              onClick={() => {
+                setMinPriceInput("");
+                setMaxPriceInput("");
+                setParam({ minPrice: null, maxPrice: null });
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </form>
+
       {facets && facets.languages.length > 0 && (
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-foreground">
           Language
@@ -166,6 +315,13 @@ export function Directory() {
     </div>
   );
 
+  const hasSuggestions =
+    suggestions &&
+    (suggestions.popular.length > 0 ||
+      suggestions.businesses.length > 0 ||
+      suggestions.services.length > 0 ||
+      suggestions.categories.length > 0);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="flex flex-col gap-2">
@@ -173,19 +329,156 @@ export function Directory() {
         <p className="text-muted-foreground">Every listing is a verified business. Book directly, message them, and get live updates.</p>
       </div>
 
-      <form onSubmit={onSearch} className="mt-6 flex items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-ring">
-        <Search className="ml-3 size-5 text-muted-foreground" aria-hidden="true" />
-        <label htmlFor="directory-search" className="sr-only">Search</label>
-        <input
-          id="directory-search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search by name, service or city"
-          className="h-11 min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-        />
-        <Button type="submit" className="h-11">Search</Button>
-      </form>
+      {/* Main Search Bar with Live Autocomplete */}
+      <div ref={searchContainerRef} className="relative mt-6">
+        <form
+          onSubmit={onSearch}
+          className="flex items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-sm transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-ring"
+        >
+          <Search className="ml-3 size-5 text-muted-foreground" aria-hidden="true" />
+          <label htmlFor="directory-search" className="sr-only">Search</label>
+          <input
+            id="directory-search"
+            value={query}
+            autoComplete="off"
+            onFocus={() => setShowSuggestions(true)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setShowSuggestions(true);
+            }}
+            placeholder="Search by healer name, service (e.g. Awde Negest), herb, or city…"
+            className="h-11 min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="mr-1 rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+              aria-label="Clear search text"
+            >
+              <X className="size-4" />
+            </button>
+          )}
+          <Button type="submit" className="h-11 px-6">Search</Button>
+        </form>
 
+        {/* Autocomplete Dropdown */}
+        {showSuggestions && hasSuggestions && (
+          <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-3xl border border-border bg-card p-3 shadow-2xl backdrop-blur">
+            {suggestions.popular.length > 0 && !query.trim() && (
+              <div>
+                <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Popular searches</p>
+                <div className="grid gap-1 sm:grid-cols-2">
+                  {suggestions.popular.map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(item.category ? "category" : "query", item.category ?? item.query ?? item.label)}
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent"
+                    >
+                      <Sparkles className="size-4 text-brand" />
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.categories.length > 0 && (
+              <div className="mb-2">
+                <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Tradition / Categories</p>
+                <div className="flex flex-wrap gap-1.5 px-3 py-1">
+                  {suggestions.categories.map((cat) => (
+                    <button
+                      key={cat.slug}
+                      type="button"
+                      onClick={() => handleSelectSuggestion("category", cat.slug)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground hover:border-brand hover:bg-brand/10"
+                    >
+                      <Tag className="size-3 text-brand" />
+                      <span>{cat.name}</span>
+                      {cat.nameAm && <span className="text-[11px] text-muted-foreground">({cat.nameAm})</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.businesses.length > 0 && (
+              <div className="mb-2">
+                <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Healers &amp; Businesses</p>
+                <div className="flex flex-col gap-1">
+                  {suggestions.businesses.map((biz) => (
+                    <button
+                      key={biz.id}
+                      type="button"
+                      onClick={() => handleSelectSuggestion("business", biz.slug)}
+                      className="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent"
+                    >
+                      <div>
+                        <span className="font-semibold">{biz.name}</span>
+                        {biz.nameAm && <span className="ml-1.5 text-xs text-muted-foreground">({biz.nameAm})</span>}
+                        <span className="ml-2 text-xs text-muted-foreground">· {biz.categoryName}</span>
+                      </div>
+                      {biz.city && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin className="size-3" /> {biz.city}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.services.length > 0 && (
+              <div>
+                <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Services</p>
+                <div className="flex flex-col gap-1">
+                  {suggestions.services.map((srv) => (
+                    <button
+                      key={srv.id}
+                      type="button"
+                      onClick={() => handleSelectSuggestion("service", srv.id, srv.businessSlug)}
+                      className="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent"
+                    >
+                      <div>
+                        <span className="font-semibold text-brand-strong">{srv.name}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">at {srv.businessName}</span>
+                      </div>
+                      <span className="font-display text-xs font-bold text-foreground">{formatEtb(srv.priceEtb)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Quick Search Suggestions Pills */}
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="text-muted-foreground">Try:</span>
+        {QUICK_SEARCH_PILLS.map((pill) => (
+          <button
+            key={pill.label}
+            type="button"
+            onClick={() => {
+              if (pill.region) setParam({ region: pill.region });
+              else if (pill.mode) setParam({ mode: pill.mode });
+              else if (pill.q) {
+                setQuery(pill.q);
+                setParam({ q: pill.q });
+              }
+            }}
+            className="rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand-strong"
+          >
+            {pill.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Active filters and sort */}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" className="lg:hidden" onClick={() => setShowFilters(true)}>
           <SlidersHorizontal className="size-4" aria-hidden="true" /> Filters{active.length ? ` (${active.length})` : ""}
@@ -194,21 +487,37 @@ export function Directory() {
           <button
             key={key}
             type="button"
-            onClick={() => setParam({ [key]: null })}
+            onClick={() => {
+              if (key === "q") setQuery("");
+              if (key === "minPrice") setMinPriceInput("");
+              if (key === "maxPrice") setMaxPriceInput("");
+              setParam({ [key]: null });
+            }}
             className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-strong hover:bg-brand/20"
           >
             {chipLabel(key, params.get(key)!)} <X className="size-3.5" aria-label="Remove filter" />
           </button>
         ))}
         {active.length > 0 && (
-          <button type="button" onClick={() => router.push(pathname)} className="text-xs font-semibold text-muted-foreground hover:text-foreground">
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setMinPriceInput("");
+              setMaxPriceInput("");
+              router.push(pathname);
+            }}
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+          >
             Clear all
           </button>
         )}
         <label className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
           Sort
           <Select className="h-9 w-auto py-1" value={params.get("sort") ?? "rating"} onChange={(event) => setParam({ sort: event.target.value })}>
-            <option value="rating">Top rated</option>
+            <option value="rating">{params.get("q") ? "Best match" : "Top rated"}</option>
+            <option value="price_asc">Price: Low to high</option>
+            <option value="price_desc">Price: High to low</option>
             <option value="newest">Newest</option>
             <option value="name">Name</option>
           </Select>
@@ -220,17 +529,38 @@ export function Directory() {
 
         <section aria-live="polite" aria-busy={loading}>
           {error && <ErrorState message={error} onRetry={() => router.refresh()} />}
-          {!error && loading && !results && <LoadingState label="Finding businesses…" />}
+          {!error && loading && !results && <LoadingState label="Searching verified practitioners…" />}
           {!error && results && (
             <>
-              <p className="mb-4 text-sm text-muted-foreground">
-                {results.total === 0 ? "No businesses match yet." : `${results.total} ${results.total === 1 ? "business" : "businesses"}`}
-              </p>
+              <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground">
+                <p>
+                  {results.total === 0
+                    ? "No businesses match your search."
+                    : `${results.total} ${results.total === 1 ? "business" : "businesses"} found`}
+                  {params.get("q") && <span className="font-semibold text-foreground"> for “{params.get("q")}”</span>}
+                </p>
+                {loading && <span className="text-xs font-medium text-brand animate-pulse">Updating…</span>}
+              </div>
+
               {results.total === 0 ? (
                 <EmptyState
-                  title="Nothing matches these filters"
-                  description="Try a broader search, another region or a different way of meeting."
-                  action={active.length ? <Button variant="outline" onClick={() => router.push(pathname)}>Clear filters</Button> : undefined}
+                  title="Nothing matches these search criteria"
+                  description="Try searching with a broader keyword (e.g. 'herbal', 'reading', 'massage'), another location, or clear active filters."
+                  action={
+                    active.length ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setQuery("");
+                          setMinPriceInput("");
+                          setMaxPriceInput("");
+                          router.push(pathname);
+                        }}
+                      >
+                        Clear all filters
+                      </Button>
+                    ) : undefined
+                  }
                 />
               ) : (
                 <ul className={cn("grid gap-5 sm:grid-cols-2 xl:grid-cols-3 transition-opacity", loading && "opacity-60")}>

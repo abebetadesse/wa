@@ -209,7 +209,7 @@ export interface AuthenticatedUser {
   originalUser?: { id: string; email: string; role: string };
 }
 
-export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
+export async function getAuthenticatedUser(options: { refreshAccessCookie?: boolean } = {}): Promise<AuthenticatedUser | null> {
   try {
     const jar = await cookies();
     let access = jar.get(ACCESS_COOKIE)?.value;
@@ -242,13 +242,15 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
           if (userRecord && !userRecord.isSuspended) {
             const userPermissions = await getUserPermissions(userRecord.id, userRecord.role);
             const newAccess = createAccessToken(userRecord.id, userRecord.role, userPermissions);
-            jar.set(ACCESS_COOKIE, newAccess, {
-              httpOnly: true,
-              sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
-              maxAge: ACCESS_TTL_SECONDS,
-              path: "/",
-            });
+            if (options.refreshAccessCookie) {
+              jar.set(ACCESS_COOKIE, newAccess, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+                maxAge: ACCESS_TTL_SECONDS,
+                path: "/",
+              });
+            }
             claims = verifyAccessToken(newAccess);
           }
         }

@@ -9,6 +9,7 @@ import { listPublicReviews } from "@/server/marketplace/engagement";
 import { Alert, Badge, ButtonLink } from "@/components/ui";
 import { LANGUAGE_LABELS, MODE_LABELS, Monogram, Stars, formatEtb } from "@/features/marketplace/shared";
 import { MessageButton } from "./MessageButton";
+import { HexacoreActivityGuide } from "@/features/hexacore/HexacoreActivityGuide";
 
 export const dynamic = "force-dynamic";
 
@@ -128,6 +129,8 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
                 </ul>
               )}
             </section>
+
+            {business.category.slug === "hexacore-practitioner" && <HexacoreActivityGuide />}
 
             {business.description && (
               <section aria-labelledby="about-heading">

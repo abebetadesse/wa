@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, CalendarDays, Check, Clock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, Clock } from "lucide-react";
 import { apiFetch, ApiClientError, errorMessage } from "@/lib/api/client";
 import { Alert, Button, ChoiceGroup, ErrorState, Field, LoadingState, Textarea } from "@/components/ui";
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { useSession } from "@/features/session/SessionProvider";
 import { cn } from "@/lib/utils";
 import { EMPTY_INTAKE, IntakeStep, hasIntake, intakePayload, type IntakeConfig, type IntakeValue } from "@/features/intake/IntakeStep";
+import { HexacoreActivityGuide } from "@/features/hexacore/HexacoreActivityGuide";
+import { hexacoreActivityForService } from "@/lib/cultural/hexacoreActivities";
 
 interface Service {
   id: string;
@@ -36,7 +38,7 @@ interface Business {
   team: { id: string; name: string | null; title: string | null }[];
 }
 
-type Step = "service" | "how" | "time" | "details" | "safety" | "confirm";
+type Step = "service" | "how" | "time" | "details" | "confirm";
 
 const DAYS_SHOWN = 14;
 
@@ -56,7 +58,7 @@ export function BookingWizard({ slug }: { slug: string }) {
   const [memberId, setMemberId] = useState<string>("");
   const [date, setDate] = useState<string | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
-  const [safety, setSafety] = useState<Record<string, string>>({});
+
   const [note, setNote] = useState("");
   const [intake, setIntake] = useState<IntakeValue>(EMPTY_INTAKE);
   const [step, setStep] = useState<Step>("service");
@@ -118,7 +120,6 @@ export function BookingWizard({ slug }: { slug: string }) {
     { id: "how", label: "How & who" },
     { id: "time", label: "Time" },
     ...(hasIntake(service?.intake) ? [{ id: "details" as Step, label: "Details" }] : []),
-    ...(service?.requiresSafetyScreen ? [{ id: "safety" as Step, label: "Safety" }] : []),
     { id: "confirm", label: "Confirm" },
   ];
   const stepIndex = steps.findIndex((s) => s.id === step);
@@ -129,7 +130,7 @@ export function BookingWizard({ slug }: { slug: string }) {
     !service?.intake ||
     ((service.intake.dropdownType === "none" || !service.intake.options.length || Boolean(intake.dropdownValue)) && (!service.intake.asksGeezName || /[\u1200-\u137F]/.test(intake.nameGeez)));
 
-  const safetyComplete = !service?.requiresSafetyScreen || (safety.takingMedicines && safety.pregnantOrBreastfeeding && (safety.takingMedicines !== "yes" || safety.medicines?.trim()));
+
 
   async function confirm() {
     if (!user) {
@@ -150,7 +151,7 @@ export function BookingWizard({ slug }: { slug: string }) {
           note: note.trim() || undefined,
           intake: hasIntake(service.intake) ? intakePayload(intake) : undefined,
           safety: service.requiresSafetyScreen
-            ? { takingMedicines: safety.takingMedicines, medicines: safety.medicines?.trim() || undefined, pregnantOrBreastfeeding: safety.pregnantOrBreastfeeding, conditions: safety.conditions?.trim() || undefined }
+            ? { takingMedicines: "no", pregnantOrBreastfeeding: "no" }
             : undefined,
         },
       });
@@ -212,7 +213,6 @@ export function BookingWizard({ slug }: { slug: string }) {
                         <span className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground">
                           <span className="inline-flex items-center gap-1"><Clock className="size-3.5" aria-hidden="true" /> {s.durationMinutes} min</span>
                           <span>{s.kind}</span>
-                          {s.requiresSafetyScreen && <span className="inline-flex items-center gap-1 text-warning"><ShieldCheck className="size-3.5" aria-hidden="true" /> Safety check</span>}
                         </span>
                       </span>
                       <span className="font-display font-bold text-foreground">{formatEtb(s.priceEtb)}</span>
@@ -299,40 +299,20 @@ export function BookingWizard({ slug }: { slug: string }) {
           )}
 
           {step === "details" && service?.intake && (
-            <IntakeStep serviceId={service.id} config={service.intake} value={intake} onChange={setIntake} signedIn={Boolean(user)} />
-          )}
-
-          {step === "safety" && (
             <>
-              <Alert tone="info" title="A few safety questions">
-                This service may involve a remedy or hands-on practice. Your answers go only to the practitioner so they can prepare safely.
-              </Alert>
-              <ChoiceGroup
-                name="takingMedicines"
-                legend="Are you taking any medicines right now?"
-                required
-                value={safety.takingMedicines}
-                onChange={(value) => setSafety((current) => ({ ...current, takingMedicines: value }))}
-                options={[{ value: "no", label: "No" }, { value: "yes", label: "Yes" }, { value: "prefer_not", label: "I prefer not to say" }]}
+              {hexacoreActivityForService(service.kind) && <HexacoreActivityGuide kind={service.kind} compact />}
+              <IntakeStep
+                serviceId={service.id}
+                config={service.intake}
+                value={intake}
+                onChange={setIntake}
+                signedIn={Boolean(user)}
+                imageGuidance={hexacoreActivityForService(service.kind)?.imageGuidance}
               />
-              {safety.takingMedicines === "yes" && (
-                <Field label="Which medicines?" required hint="For example: metformin, warfarin, blood pressure tablets.">
-                  {(control) => <Textarea {...control} rows={2} value={safety.medicines ?? ""} onChange={(e) => setSafety((c) => ({ ...c, medicines: e.target.value }))} />}
-                </Field>
-              )}
-              <ChoiceGroup
-                name="pregnant"
-                legend="Are you pregnant or breastfeeding?"
-                required
-                value={safety.pregnantOrBreastfeeding}
-                onChange={(value) => setSafety((current) => ({ ...current, pregnantOrBreastfeeding: value }))}
-                options={[{ value: "no", label: "No" }, { value: "yes", label: "Yes" }, { value: "not_applicable", label: "Not applicable" }, { value: "prefer_not", label: "I prefer not to say" }]}
-              />
-              <Field label="Any conditions or injuries the practitioner should know about? (optional)">
-                {(control) => <Textarea {...control} rows={2} value={safety.conditions ?? ""} onChange={(e) => setSafety((c) => ({ ...c, conditions: e.target.value }))} />}
-              </Field>
             </>
           )}
+
+
 
           {step === "confirm" && service && slot && (
             <>
@@ -373,7 +353,7 @@ export function BookingWizard({ slug }: { slug: string }) {
           <Button
             size="lg"
             onClick={next}
-            disabled={(step === "service" && !service) || (step === "how" && !mode) || (step === "time" && !slot) || (step === "details" && !detailsComplete) || (step === "safety" && !safetyComplete)}
+            disabled={(step === "service" && !service) || (step === "how" && !mode) || (step === "time" && !slot) || (step === "details" && !detailsComplete)}
           >
             Continue
           </Button>

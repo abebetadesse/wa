@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { HerbSafetyBadge } from "@/features/safety/HerbSafetyBadge";
 import {
   CREATION_DAY_MAPPINGS,
@@ -239,45 +239,6 @@ const COSMIC_PARTICLES = [
   { x: 50, y: 25, size: 2.5, delay: "0.2s", duration: "5.1s", color: "#818cf8" },
 ];
 
-const CINEMATIC_METRICS: Record<string, Array<{ icon: string; label: string; value: string; hint: string }>> = {
-  spirit: [
-    { icon: "✦", label: "Resonance", value: "963 Hz Singularity", hint: "Crown Sahasrara" },
-    { icon: "🌌", label: "Realm", value: "Celestial Temple", hint: "Ether & Pure Starlight" },
-    { icon: "👑", label: "Virtue", value: "Transcendent Grace", hint: "Universal Unity" },
-    { icon: "👁️", label: "Archetype", value: "The Mystic Sovereign", hint: "Awakened Witness" },
-  ],
-  power: [
-    { icon: "⚡", label: "Resonance", value: "396 Hz Liberation", hint: "Solar Plexus Manipura" },
-    { icon: "🦁", label: "Realm", value: "Royal Throne", hint: "Primordial Fire" },
-    { icon: "🛡️", label: "Virtue", value: "Righteous Courage", hint: "Sovereign Will" },
-    { icon: "🌋", label: "Archetype", value: "The Lion Guardian", hint: "Transmuting Force" },
-  ],
-  humanity: [
-    { icon: "◎", label: "Resonance", value: "639 Hz Connection", hint: "Heart Anahata" },
-    { icon: "🌊", label: "Realm", value: "Communal Hearth", hint: "Living Ocean" },
-    { icon: "🤝", label: "Virtue", value: "Empathic Kinship", hint: "Unconditional Love" },
-    { icon: "🌿", label: "Archetype", value: "The Compassionate Weaver", hint: "Relational Harmony" },
-  ],
-  peace: [
-    { icon: "☼", label: "Resonance", value: "528 Hz Transformation", hint: "Solar Core / Ajna" },
-    { icon: "🕊️", label: "Realm", value: "Sacred Garden", hint: "Golden Equinox" },
-    { icon: "⚖️", label: "Virtue", value: "Harmonic Serenity", hint: "Still Point in Motion" },
-    { icon: "✨", label: "Archetype", value: "The Luminous Peacemaker", hint: "Restorative Silence" },
-  ],
-  creation: [
-    { icon: "✧", label: "Resonance", value: "417 Hz Genesis", hint: "Sacral Svadhisthana" },
-    { icon: "🌱", label: "Realm", value: "Living Workshop", hint: "Fertile Earth" },
-    { icon: "🌀", label: "Virtue", value: "Generative Genius", hint: "Boundless Spontaneity" },
-    { icon: "🧬", label: "Archetype", value: "The Cosmic Originator", hint: "Artisan of Life" },
-  ],
-  order: [
-    { icon: "◈", label: "Resonance", value: "741 Hz Awakening", hint: "Throat / Third Eye" },
-    { icon: "🏛️", label: "Realm", value: "Crystal Hall of Truth", hint: "Sacred Geometry" },
-    { icon: "📐", label: "Virtue", value: "Divine Architecture", hint: "Precision & Alignment" },
-    { icon: "💎", label: "Archetype", value: "The Master Geometer", hint: "Cosmic Matrix" },
-  ],
-};
-
 const VIBRATIONAL_OCTAVES = [
   { state: "Dormant", emoji: "💤", title: "Latent Seed", desc: "Unmanifest potential resting in the subconscious root.", octaveHzMult: 0.5 },
   { state: "Awakening", emoji: "🌱", title: "Stirring Dawn", desc: "First movement of awareness breaking through inertia.", octaveHzMult: 0.75 },
@@ -384,10 +345,10 @@ export default function HexacoreOrrery() {
   const [playingFreq, setPlayingFreq] = useState<number | null>(null);
 
   // Profile Calculator State
-  const [calcName, setCalcName] = useState("Example User");
-  const [calcDate, setCalcDate] = useState("1990-12-25");
-  const [calcConsent, setCalcConsent] = useState(true);
-  const [calcAge, setCalcAge] = useState(true);
+  const [calcName, setCalcName] = useState("");
+  const [calcDate, setCalcDate] = useState("");
+  const [calcConsent, setCalcConsent] = useState(false);
+  const [calcAge, setCalcAge] = useState(false);
   const [calculatedProfile, setCalculatedProfile] = useState<HexacoreProfile | null>(null);
   const [calculatedNumerology, setCalculatedNumerology] = useState<HexacoreNumerology | null>(null);
   const [calcError, setCalcError] = useState<string | null>(null);
@@ -537,23 +498,45 @@ export default function HexacoreOrrery() {
     }
   };
 
-  const handleCalculateProfile = () => {
-    setCalcError(null);
+  const calculateProfile = useCallback((name: string, date: string, consent: boolean, ageVerified: boolean) => {
     try {
-      const profile = buildHexacoreProfile(calcDate, calcConsent, calcAge, calcName);
-      const numerology = calculate6BasedNumerology(calcDate, calcName);
+      if (!date) throw new Error("Enter a date of birth to calculate a profile.");
+      if (!consent) throw new Error("Consent is required for reflective cultural content.");
+      if (!ageVerified) throw new Error("Confirm that you are 18 or older to continue.");
+      const parsedDate = new Date(`${date}T00:00:00Z`);
+      const today = new Date();
+      let age = today.getUTCFullYear() - parsedDate.getUTCFullYear();
+      const birthdayHasPassed =
+        today.getUTCMonth() > parsedDate.getUTCMonth() ||
+        (today.getUTCMonth() === parsedDate.getUTCMonth() && today.getUTCDate() >= parsedDate.getUTCDate());
+      if (!birthdayHasPassed) age -= 1;
+      if (age < 18) throw new Error("Hexacore profile calculations are available to adults aged 18 or older.");
+
+      const profile = buildHexacoreProfile(date, consent, ageVerified, name.trim() || "Seeker");
+      const numerology = calculate6BasedNumerology(date, name.trim() || "Seeker");
       setCalculatedProfile(profile);
       setCalculatedNumerology(numerology);
-    } catch (err) {
-      setCalcError(err instanceof Error ? err.message : "Profile calculation failed.");
+      setCalcError(null);
+    } catch (error) {
+      setCalculatedProfile(null);
+      setCalculatedNumerology(null);
+      setCalcError(error instanceof Error ? error.message : "Profile calculation failed.");
     }
-  };
+  }, []);
+
+  const handleCalculateProfile = () => calculateProfile(calcName, calcDate, calcConsent, calcAge);
 
   const selectedCore = coreById(selectedCoreId);
   const selectedMeta = CORE_METADATA[selectedCoreId];
   const selectedAspects = useMemo(
     () => HEXACORE_ASPECTS.filter((aspect) => aspect.coreId === selectedCoreId),
     [selectedCoreId]
+  );
+  const selectedAspectIds = useMemo(() => new Set(selectedAspects.map((aspect) => aspect.id)), [selectedAspects]);
+  const selectedFrequencies = HEXACORE_FREQUENCIES.filter((frequency) => selectedAspectIds.has(frequency.aspectId));
+  const selectedArchetypes = HEXACORE_ARCHETYPES.filter((archetype) => archetype.coreName === selectedCore.name);
+  const selectedCorrespondences = HEXACORE_CORRESPONDENCES.filter((correspondence) =>
+    [...selectedAspectIds].some((aspectId) => correspondence.archetypeId.startsWith(`${aspectId}.`))
   );
   const currentJournalPrompt = useMemo(() => getJournalPromptForDay(activeDay), [activeDay]);
   const dayMapping = CREATION_DAY_MAPPINGS.find((m) => m.day === selectedCore.creationDay);
@@ -562,6 +545,24 @@ export default function HexacoreOrrery() {
 
   const selectedOctaveMeta = VIBRATIONAL_OCTAVES.find((o) => o.state === activeOctave) ?? VIBRATIONAL_OCTAVES[2];
   const calculatedOctaveHz = Math.round(selectedCore.soundHz * selectedOctaveMeta.octaveHzMult);
+  const selectedRealm = COSMOLOGICAL_REALMS.find((realm) => realm.core === selectedCore.name);
+  const selectedArchetype = selectedArchetypes[0];
+  const cinematicMetrics = [
+    { icon: selectedMeta.glyph, label: "Resonance", value: `${calculatedOctaveHz} Hz · ${activeOctave}`, hint: selectedOctaveMeta.title },
+    { icon: "🌌", label: "Realm", value: selectedRealm?.realm ?? "No mapped realm", hint: selectedRealm?.gateway ?? selectedCore.direction },
+    { icon: "✦", label: "Virtue", value: selectedCore.virtue, hint: `Gift: ${selectedCore.gift}` },
+    { icon: "◎", label: "Archetype", value: selectedArchetype?.name ?? selectedMeta.archetypeTitle, hint: selectedArchetype?.role ?? selectedMeta.detail },
+  ];
+
+  useEffect(() => {
+    if (!calcConsent || !calcAge || !calcDate) {
+      setCalculatedProfile(null);
+      setCalculatedNumerology(null);
+      setCalcError(null);
+      return;
+    }
+    calculateProfile(calcName, calcDate, calcConsent, calcAge);
+  }, [calcName, calcDate, calcConsent, calcAge, calculateProfile]);
 
   return (
     <div className="relative space-y-8">
@@ -1193,7 +1194,7 @@ export default function HexacoreOrrery() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {(CINEMATIC_METRICS[selectedCoreId] || []).map((item, index) => (
+                  {cinematicMetrics.map((item) => (
                     <div
                       key={item.label}
                       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-3.5 shadow-lg shadow-indigo-950/20 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/40"
@@ -1652,6 +1653,27 @@ export default function HexacoreOrrery() {
             ))}
           </div>
 
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Explore every layer by core</p>
+            <div className="flex flex-wrap gap-2">
+              {HEXACORE_CORES.map((core) => (
+                <button
+                  key={core.id}
+                  type="button"
+                  onClick={() => setSelectedCoreId(core.id)}
+                  aria-pressed={selectedCoreId === core.id}
+                  className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                    selectedCoreId === core.id
+                      ? "border-indigo-400/60 bg-indigo-500/20 text-white"
+                      : "border-white/10 bg-black/20 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {core.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Layer 1: Cores */}
           {activeLayer === 1 && (
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
@@ -1700,7 +1722,7 @@ export default function HexacoreOrrery() {
               <h3 className="text-xl font-bold text-white">Layer 2: The 36 Aspects (6 per Core)</h3>
               <p className="text-sm text-slate-300">Each Core branches into 6 distinct psychological and spiritual modes of manifestation.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                {HEXACORE_ASPECTS.map((a) => (
+                {selectedAspects.map((a) => (
                   <div key={a.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-sm text-white">{a.id}: {a.name}</span>
@@ -1724,12 +1746,12 @@ export default function HexacoreOrrery() {
           {/* Layer 3: Frequencies */}
           {activeLayer === 3 && (
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 3: The 216 Frequencies</h3>
+              <h3 className="text-xl font-bold text-white">Layer 3: {selectedCore.name} Frequencies</h3>
               <p className="text-sm text-slate-300">
                 Every aspect spans 6 vibrational stages: <strong>Dormant → Awakening → Active → Radiant → Transcendent → Eternal</strong>.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                {HEXACORE_FREQUENCIES.slice(0, 36).map((f) => (
+                {selectedFrequencies.map((f) => (
                   <div key={f.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs flex items-center justify-between">
                     <div>
                       <span className="font-bold text-white">{f.name}</span>
@@ -1745,17 +1767,17 @@ export default function HexacoreOrrery() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-slate-500 text-center pt-2">Showing 36 sample active frequencies out of 216 total system states.</p>
+              <p className="text-xs text-slate-500 text-center pt-2">Showing all {selectedFrequencies.length} frequency states for {selectedCore.name}.</p>
             </div>
           )}
 
           {/* Layer 4: Archetypes */}
           {activeLayer === 4 && (
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 4: The 216 Named Archetypes</h3>
+              <h3 className="text-xl font-bold text-white">Layer 4: {selectedCore.name} Archetypes</h3>
               <p className="text-sm text-slate-300">Personified energetic patterns acting through personal and collective psyches.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                {HEXACORE_ARCHETYPES.slice(0, 36).map((arch) => (
+                {selectedArchetypes.map((arch) => (
                   <div key={arch.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-white">{arch.name}</span>
@@ -1776,12 +1798,12 @@ export default function HexacoreOrrery() {
           {/* Layer 7: Correspondences */}
           {activeLayer === 7 && (
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 7: The 1,296 Correspondences</h3>
+              <h3 className="text-xl font-bold text-white">Layer 7: {selectedCore.name} Correspondences ({selectedCorrespondences.length})</h3>
               <p className="text-sm text-slate-300">
                 Cross-domain multidimensional mapping tying each archetype to a Planet, Herb, Sound Frequency, Sacred Geometry, Body Sign, and Creation Day.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {HEXACORE_CORRESPONDENCES.slice(0, 12).map((c) => (
+                {selectedCorrespondences.map((c) => (
                   <div key={c.archetypeId} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
                     <span className="font-bold text-white text-sm block">{c.archetypeName}</span>
                     <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
@@ -1804,7 +1826,7 @@ export default function HexacoreOrrery() {
               <h3 className="text-xl font-bold text-white">Layer 8: Temporal Cycles (6 Scales × 6 Phases)</h3>
               <p className="text-sm text-slate-300">Time mapping from the daily circadian rhythm to cosmic ages and creation days.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                {TEMPORAL_CYCLES.slice(0, 18).map((tc, idx) => (
+                {TEMPORAL_CYCLES.filter((cycle) => cycle.core === selectedCore.name).map((tc, idx) => (
                   <div key={idx} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-amber-300">{tc.phase}</span>
@@ -1824,7 +1846,7 @@ export default function HexacoreOrrery() {
               <h3 className="text-xl font-bold text-white">Layer 9: Energetic Bodies & Subtle Anatomy</h3>
               <p className="text-sm text-slate-300">The 6 subtle sheaths, chakric centers, and meridian circuits.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                {ENERGETIC_BODIES.map((eb) => (
+                {ENERGETIC_BODIES.filter((body) => body.core === selectedCore.name).map((eb) => (
                   <div key={eb.name} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
                     <span className="font-bold text-white text-sm block">{eb.name}</span>
                     <p className="text-slate-300 text-[11px]">{eb.function}</p>
@@ -1845,7 +1867,7 @@ export default function HexacoreOrrery() {
               <h3 className="text-xl font-bold text-white">Layer 11: Initiation Gates (6 Gates × 6 Trials)</h3>
               <p className="text-sm text-slate-300">Spiritual progression and ethical challenges for personal maturation.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                {INITIATION_GATES.map((gate) => (
+                {INITIATION_GATES.filter((gate) => gate.core === selectedCore.name).map((gate) => (
                   <div key={gate.gate} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-amber-300 text-sm">{gate.gate}</span>
@@ -1872,7 +1894,7 @@ export default function HexacoreOrrery() {
               <h3 className="text-xl font-bold text-white">Layer 13: The Six Creation Days</h3>
               <p className="text-sm text-slate-300">Temporal-spiritual relational map connecting Sunday through Friday to specific spiritual acts and practices.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {CREATION_DAY_MAPPINGS.map((cd) => (
+                {CREATION_DAY_MAPPINGS.filter((day) => day.primaryCore === selectedCore.name || day.secondaryCore === selectedCore.name).map((cd) => (
                   <div key={cd.day} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-amber-300 text-base">{cd.day}</span>
@@ -1912,7 +1934,7 @@ export default function HexacoreOrrery() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-slate-200">
-                      {(["Power", "Humanity", "Creation", "Peace", "Spirit", "Order"] as const).map((core) => {
+                      {[selectedCore.name].map((core) => {
                         const tr = CROSS_SYSTEM_TRADITIONS[core];
                         return (
                           <tr key={core} className="hover:bg-white/[0.02]">
@@ -1940,7 +1962,7 @@ export default function HexacoreOrrery() {
                   Traditional botanical correspondences are documented for cultural inquiry only. Each plant&apos;s status comes live from the medicine &amp; remedy safety matrix; select it to check against medicines.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                  {ETHIOPIAN_HERBAL_INTEGRATION.map((herb) => (
+                  {ETHIOPIAN_HERBAL_INTEGRATION.filter((herb) => herb.core === selectedCore.name).map((herb) => (
                     <div key={herb.scientificName} className="rounded-2xl border border-white/10 bg-[#0c0c1a] p-4 text-xs space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white text-sm">{herb.herb}</span>
@@ -1961,29 +1983,118 @@ export default function HexacoreOrrery() {
             </div>
           )}
 
-          {/* Remaining Layers (5, 6, 10, 12 fallback) */}
-          {![1, 2, 3, 4, 7, 8, 9, 11, 13, 14].includes(activeLayer) && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-xl font-bold text-white">Layer {activeLayer}</h3>
-              <p className="mt-2 text-sm text-slate-300">
-                {activeLayer === 5 && "Layer 5: The 216 Shadows — Wounded expressions requiring healing and integration."}
-                {activeLayer === 6 && "Layer 6: The 216 Gifts — Transmuted empowered expressions serving universal harmony."}
-                {activeLayer === 10 && "Layer 10: Collective Fields — Social mapping across 6 group sizes, collective shadows (War, Sterility, Dogma, Tyranny, Chaos, Corruption), and 15 dynamic pairs."}
-                {activeLayer === 12 && "Layer 12: Cosmological Realms — The 6 sacred mythic spaces (Hearth, Workshop, Temple, Throne, Garden, Hall) and their sub-realms."}
-              </p>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                {HEXACORE_CORES.map((c) => (
-                  <div key={c.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                    <span className="font-bold text-white block">{c.name}</span>
-                    <span className="text-slate-400 text-[11px] mt-1 block">
-                      {activeLayer === 5 && `Shadow: ${c.shadow}`}
-                      {activeLayer === 6 && `Gift: ${c.gift}`}
-                      {activeLayer === 10 && `Group Size: ${c.number}`}
-                      {activeLayer === 12 && `Realm: ${c.direction}`}
-                    </span>
-                  </div>
+          {activeLayer === 5 && (
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-white">Layer 5: {selectedCore.name} Shadows</h3>
+              <p className="text-sm text-slate-300">Explore the shadow and reflective balancing practice for every archetype in this core.</p>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {selectedArchetypes.map((archetype) => (
+                  <article key={archetype.id} className="rounded-2xl border border-rose-400/15 bg-rose-500/[0.03] p-4">
+                    <p className="text-[10px] font-mono text-slate-500">{archetype.id} · {archetype.aspectName}</p>
+                    <h4 className="mt-1 font-bold text-white">{archetype.name}</h4>
+                    <p className="mt-3 text-xs text-rose-200"><strong>Shadow:</strong> {archetype.shadow}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300"><strong className="text-emerald-300">Reflective practice:</strong> {archetype.remedy}</p>
+                    <p className="mt-2 text-[11px] text-slate-400">Body-sign symbolism: {archetype.bodySign}</p>
+                  </article>
                 ))}
               </div>
+            </div>
+          )}
+
+          {activeLayer === 6 && (
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-white">Layer 6: {selectedCore.name} Gifts</h3>
+              <p className="text-sm text-slate-300">See how the strengths of each archetype may be expressed in everyday life.</p>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {selectedArchetypes.map((archetype) => (
+                  <article key={archetype.id} className="rounded-2xl border border-emerald-400/15 bg-emerald-500/[0.03] p-4">
+                    <p className="text-[10px] font-mono text-slate-500">{archetype.id} · {archetype.aspectName}</p>
+                    <h4 className="mt-1 font-bold text-white">{archetype.name}</h4>
+                    <p className="mt-3 text-sm text-emerald-200">{archetype.gift}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300">{archetype.role}</p>
+                    <p className="mt-2 text-[11px] text-slate-400">Balanced expression: {archetype.remedy}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeLayer === 10 && (
+            <div className="space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                <h3 className="text-xl font-bold text-white">Layer 10: Collective Fields · {selectedCore.name}</h3>
+                <p className="mt-2 text-sm text-slate-300">Group roles, relationship pairs, and collective patterns connected to the selected core.</p>
+                <h4 className="mt-5 text-sm font-bold text-indigo-200">Group sizes and dynamics</h4>
+                <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  {COLLECTIVE_DYNAMICS.groupSizes.filter((item) => item.core === selectedCore.name).map((item) => (
+                    <article key={item.size} className="rounded-xl border border-white/10 bg-black/20 p-4 text-xs">
+                      <h5 className="font-bold text-white">Group of {item.size} · {item.dynamic}</h5>
+                      <p className="mt-2 text-slate-400">{item.example}</p>
+                      <p className="mt-2 text-emerald-300">Practice: {item.practice}</p>
+                    </article>
+                  ))}
+                </div>
+                <h4 className="mt-6 text-sm font-bold text-indigo-200">Core pairings</h4>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  {pairs.map((pair) => (
+                    <article key={pair.id} className="rounded-xl border border-white/10 bg-black/20 p-4 text-xs">
+                      <h5 className="font-bold text-white">{pair.name} · {pair.left} + {pair.right}</h5>
+                      <p className="mt-2 text-slate-300">{pair.dynamic}</p>
+                      <p className="mt-2 text-rose-300">Tension: {pair.shadow}</p>
+                      <p className="mt-1 text-emerald-300">Gift: {pair.gift}</p>
+                    </article>
+                  ))}
+                </div>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-rose-200">Collective shadows</h4>
+                    <div className="mt-2 space-y-2">
+                      {COLLECTIVE_DYNAMICS.collectiveShadows.filter((item) => item.core === selectedCore.name).map((item) => (
+                        <p key={item.shadow} className="rounded-lg bg-rose-500/[0.06] p-3 text-xs text-slate-300">
+                          <strong className="text-rose-200">{item.shadow}:</strong> {item.expression} · Balance through {item.remedy}.
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-emerald-200">Collective gifts</h4>
+                    <div className="mt-2 space-y-2">
+                      {COLLECTIVE_DYNAMICS.collectiveGifts.filter((item) => item.core === selectedCore.name).map((item) => (
+                        <p key={item.gift} className="rounded-lg bg-emerald-500/[0.06] p-3 text-xs text-slate-300">
+                          <strong className="text-emerald-200">{item.gift}:</strong> {item.expression} · Practice: {item.practice}.
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeLayer === 12 && (
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-white">Layer 12: Cosmological Realms · {selectedCore.name}</h3>
+              <p className="text-sm text-slate-300">Explore the selected core's symbolic realm and all of its sub-realms.</p>
+              {COSMOLOGICAL_REALMS.filter((realm) => realm.core === selectedCore.name).map((realm) => (
+                <article key={realm.realm} className="rounded-2xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h4 className="text-lg font-bold text-white">{realm.realm}</h4>
+                      <p className="mt-1 text-sm text-slate-300">{realm.description}</p>
+                    </div>
+                    <span className="rounded-full border border-indigo-400/20 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-200">Ruler: {realm.ruler}</span>
+                  </div>
+                  <p className="mt-3 text-xs text-slate-400">Gateway: {realm.gateway}</p>
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {realm.subRealms.map((subRealm) => (
+                      <div key={subRealm.name} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                        <h5 className="text-sm font-semibold text-amber-200">{subRealm.name}</h5>
+                        <p className="mt-1 text-xs text-slate-400">{subRealm.meaning}</p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
           )}
         </section>
@@ -2188,20 +2299,26 @@ export default function HexacoreOrrery() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Full Name</label>
+                <label htmlFor="hexacore-profile-name" className="text-xs text-slate-400 block mb-1">Full Name (optional)</label>
                 <input
+                  id="hexacore-profile-name"
                   type="text"
                   value={calcName}
                   onChange={(e) => setCalcName(e.target.value)}
+                  autoComplete="name"
+                  maxLength={120}
                   className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Date of Birth (YYYY-MM-DD)</label>
+                <label htmlFor="hexacore-profile-birth-date" className="text-xs text-slate-400 block mb-1">Date of Birth</label>
                 <input
+                  id="hexacore-profile-birth-date"
                   type="date"
                   value={calcDate}
                   onChange={(e) => setCalcDate(e.target.value)}
+                  max={new Date().toISOString().slice(0, 10)}
+                  required
                   className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
                 />
               </div>
@@ -2238,15 +2355,16 @@ export default function HexacoreOrrery() {
               </button>
               <button
                 onClick={() => {
-                  setCalcName("Example User");
-                  setCalcDate("1990-12-25");
+                  const sample = { name: "Sample User", date: "1990-12-25" };
+                  setCalcName(sample.name);
+                  setCalcDate(sample.date);
                   setCalcConsent(true);
                   setCalcAge(true);
-                  setTimeout(handleCalculateProfile, 50);
+                  calculateProfile(sample.name, sample.date, true, true);
                 }}
                 className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-white/10"
               >
-                Load Sample User (The Visionary · Core 11)
+                Load Sample Profile
               </button>
             </div>
 

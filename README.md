@@ -413,9 +413,11 @@ A reference healer business (Metsehafe Fewus, Metsehafe Asmat and Awde Negest se
 
 For local marketplace testing, `npm run db:seed:marketplace-demo -- --confirm-demo-data --approve-demo --owner owner@example.test --client client@example.test --admin admin@example.test` creates or refreshes a sample Hexacore studio. Optionally pass `--practitioner practitioner@example.test` to exercise the team invitation and acceptance flow. All accounts must already exist; use dedicated test accounts. The script refuses production and non-local database hosts, and requires both confirmation flags.
 
-The sample listing is based in Addis Ababa, serves Amharic and English, offers in-person and remote sessions, and is open Monday–Saturday. It includes Hexacore reflection (60 min, 450 ETB), tongue reading (30 min, 200 ETB), palm reading (45 min, 300 ETB), face reading (30 min, 200 ETB), and combined body-sign traditions (45 min, 350 ETB), each with a sample intake prompt.
+The sample listing is based in Addis Ababa, serves Amharic and English, offers in-person and remote sessions, and is open Monday–Saturday. It includes Hexacore reflection (60 min, 450 ETB), tongue reading (30 min, 200 ETB), palm reading (45 min, 300 ETB), face-reading history and ethics (30 min, 200 ETB), and combined body-sign traditions (45 min, 350 ETB), each with a sample intake prompt.
 
 The sample is explicitly labeled as demo data and exercises business creation and approval, team access, five bookable services with client intake, opening hours, requested/confirmed/cancelled/completed bookings, a booking-linked spiritual case and practitioner review, CRM history, a demo cash payment, client review and business response, and two-way messages. Demo payments are recorded for dashboard testing only; no money is due. The sample listing is approved solely to make its public directory and booking workflows testable, not because any professional credentials were checked. Apply `drizzle/0010_hexacore_body_readings.sql` and the marketplace migrations before running the seed.
+
+Hexacore service guides are shown on the public listing, during client intake, and in the practitioner's booking review. Tongue and palm images are optional, private booking attachments for a consent-based discussion; no automated image interpretation is performed. Face-reading is limited to cultural history and ethics: face photos and appearance-based health or personal-trait assessments are not part of the workflow. See `src/lib/cultural/hexacoreActivities.ts` for the activity guides and boundaries.
 
 In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Apply the latest migration with `npm run db:apply drizzle/0006_payments_and_telegram.sql`.
 
@@ -441,6 +443,8 @@ The configured development server runs on port `5500`:
 ```text
 http://localhost:5500
 ```
+
+Development assets are written to `.next-dev`, separately from the production build output in `.next`. This allows `npm run build` to run without invalidating a live development server.
 
 Do not start a second server on the same port. If the port is already occupied, use the running instance or stop the specific owning process intentionally.
 

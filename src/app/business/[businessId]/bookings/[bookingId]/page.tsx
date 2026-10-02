@@ -10,6 +10,7 @@ import { useApi } from "@/features/workspace/useApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { useToast } from "@/features/feedback/Toaster";
 import { cn } from "@/lib/utils";
+import { HexacoreActivityGuide } from "@/features/hexacore/HexacoreActivityGuide";
 
 // ── API shapes ───────────────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ interface Draft {
 }
 
 interface Review {
-  booking: { id: string; reference: string; status: string; startsAt: string; deliveryMode: string; serviceName: string; clientNote: string | null; caseId: string | null };
+  booking: { id: string; reference: string; status: string; startsAt: string; deliveryMode: string; serviceName: string; serviceKind: string; clientNote: string | null; caseId: string | null };
   client: { name: string; phone: string | null; region: string | null; city: string | null; age: number | null };
   intake: { dropdownType: string; dropdownValue: string | null; dropdownLabel: string | null; text: string | null; nameGeez: string | null; motherNameGeez: string | null } | null;
   attachments: { id: string; kind: "image" | "audio" | "video"; mimeType: string; originalName: string | null; url: string }[];
@@ -140,6 +141,7 @@ export default function BookingReviewPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-6">
+          <HexacoreActivityGuide kind={booking.serviceKind} compact />
           <IntakePanel review={data} />
           {data.manuscript && <ManuscriptPanel key={data.manuscript.heading.key} manuscript={data.manuscript} api={api} bookingId={bookingId} hasProfile={Boolean(data.profile)} onSaved={reload} />}
         </div>

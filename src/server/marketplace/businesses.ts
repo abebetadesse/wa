@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { and, asc, desc, eq, ilike, inArray, ne, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { businessCategories, businessMembers, businesses, services, serviceKinds, users } from "@/lib/db/schema";
+import { businessCategories, businessMembers, businesses, remedies, services, serviceKinds, users } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "./access";
@@ -219,7 +219,9 @@ export const directoryQuery = z.object({
   region: z.string().trim().max(100).optional(),
   mode: z.enum(DELIVERY_MODES).optional(),
   language: z.string().trim().max(10).optional(),
-  sort: z.enum(["rating", "name", "newest"]).default("rating"),
+  minPrice: z.coerce.number().min(0).optional(),
+  maxPrice: z.coerce.number().min(0).optional(),
+  sort: z.enum(["rating", "name", "newest", "price_asc", "price_desc"]).default("rating"),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(48).default(12),
 });
@@ -247,27 +249,107 @@ const publicColumns = {
 export async function searchDirectory(query: z.infer<typeof directoryQuery>, viewer: Pick<AuthenticatedUser, "role"> | null = null) {
   const conditions: SQL[] = [eq(businesses.status, "verified")];
   if (!(await culturalVisibleTo(viewer))) conditions.push(ne(businessCategories.sector, "cultural"));
+
   if (query.q) {
-    const pattern = `%${query.q}%`;
-    conditions.push(or(ilike(businesses.name, pattern), ilike(businesses.nameAm, pattern), ilike(businesses.tagline, pattern), ilike(businesses.description, pattern), ilike(businesses.city, pattern))!);
+    const rawQ = query.q.trim();
+    const terms = rawQ.split(/\s+/).filter(Boolean);
+
+    for (const term of terms) {
+      const termPattern = `%${term}%`;
+      conditions.push(
+        or(
+          ilike(businesses.name, termPattern),
+          ilike(businesses.nameAm, termPattern),
+          ilike(businesses.tagline, termPattern),
+          ilike(businesses.description, termPattern),
+          ilike(businesses.city, termPattern),
+          ilike(businesses.region, termPattern),
+          ilike(businesses.address, termPattern),
+          ilike(businessCategories.name, termPattern),
+          ilike(businessCategories.nameAm, termPattern),
+          ilike(businessCategories.slug, termPattern),
+          sql`exists (
+            select 1 from ${services}
+            where ${services.businessId} = ${businesses.id}
+              and ${services.isActive}
+              and (${services.name} ilike ${termPattern} or ${services.nameAm} ilike ${termPattern} or ${services.description} ilike ${termPattern})
+          )`,
+          sql`exists (
+            select 1 from ${services}
+            inner join ${serviceKinds} on ${serviceKinds.id} = ${services.kindId}
+            where ${services.businessId} = ${businesses.id}
+              and ${services.isActive}
+              and (${serviceKinds.name} ilike ${termPattern} or ${serviceKinds.nameAm} ilike ${termPattern} or ${serviceKinds.slug} ilike ${termPattern})
+          )`,
+          sql`exists (
+            select 1 from ${remedies}
+            where ${remedies.businessId} = ${businesses.id}
+              and ${remedies.isActive}
+              and (${remedies.name} ilike ${termPattern} or ${remedies.nameAm} ilike ${termPattern} or ${remedies.description} ilike ${termPattern} or ${remedies.form} ilike ${termPattern})
+          )`
+        )!
+      );
+    }
   }
+
   if (query.category) conditions.push(eq(businessCategories.slug, query.category));
   if (query.sector) conditions.push(eq(businessCategories.sector, query.sector));
   if (query.region) conditions.push(eq(businesses.region, query.region));
   if (query.mode) conditions.push(sql`${businesses.deliveryModes} @> ${JSON.stringify([query.mode])}::jsonb`);
   if (query.language) conditions.push(sql`${businesses.languages} @> ${JSON.stringify([query.language])}::jsonb`);
+  if (query.minPrice !== undefined) {
+    conditions.push(sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) >= ${query.minPrice}`);
+  }
+  if (query.maxPrice !== undefined) {
+    conditions.push(sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) <= ${query.maxPrice}`);
+  }
+
   const where = and(...conditions);
 
-  const order =
-    query.sort === "name" ? [asc(businesses.name)]
-    : query.sort === "newest" ? [desc(businesses.createdAt)]
-    : [sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(businesses.name)];
+  let order: SQL[];
+  if (query.sort === "name") {
+    order = [asc(businesses.name)];
+  } else if (query.sort === "newest") {
+    order = [desc(businesses.createdAt)];
+  } else if (query.sort === "price_asc") {
+    order = [sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) ASC NULLS LAST`];
+  } else if (query.sort === "price_desc") {
+    order = [sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) DESC NULLS LAST`];
+  } else {
+    if (query.q) {
+      const rawQ = query.q.trim();
+      const relevance = sql<number>`(
+        case 
+          when ${businesses.name} ilike ${`%${rawQ}%`} then 100
+          when ${businesses.nameAm} ilike ${`%${rawQ}%`} then 90
+          when ${businessCategories.name} ilike ${`%${rawQ}%`} then 80
+          when ${businesses.tagline} ilike ${`%${rawQ}%`} then 70
+          when exists (select 1 from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive} and ${services.name} ilike ${`%${rawQ}%`}) then 60
+          when ${businesses.city} ilike ${`%${rawQ}%`} then 50
+          else 30
+        end
+      )`;
+      order = [desc(relevance), sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(businesses.name)];
+    } else {
+      order = [sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(businesses.name)];
+    }
+  }
 
   const [rows, [{ total }]] = await Promise.all([
     db
       .select({
         ...publicColumns,
         fromPriceEtb: sql<string | null>`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive})`,
+        matchingServices: sql<string[]>`coalesce((
+          select json_agg(s.name) from (
+            select distinct ${services.name} 
+            from ${services}
+            where ${services.businessId} = ${businesses.id} 
+              and ${services.isActive}
+              ${query.q ? sql`and (${services.name} ilike ${`%${query.q.trim()}%`} or ${services.description} ilike ${`%${query.q.trim()}%`})` : sql``}
+            limit 3
+          ) s
+        ), '[]'::json)`,
       })
       .from(businesses)
       .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
@@ -279,6 +361,121 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
   ]);
 
   return { businesses: rows, total, page: query.page, limit: query.limit, totalPages: Math.max(1, Math.ceil(total / query.limit)) };
+}
+
+/** Instant autocomplete search suggestions across verified businesses, services, and categories. */
+export async function searchSuggestions(queryText: string, viewer: Pick<AuthenticatedUser, "role"> | null = null) {
+  const q = queryText.trim();
+  const cultural = await culturalVisibleTo(viewer);
+
+  if (!q) {
+    return {
+      popular: [
+        { label: "Awde Negest Astrology", category: "astrology", icon: "sparkles" },
+        { label: "Traditional Herbal Remedies", category: "herbalist", icon: "leaf" },
+        { label: "Bone Setting & Massage", category: "bone_setting", icon: "heart" },
+        { label: "Debtera & Spiritual Guidance", category: "debtera", icon: "book" },
+        { label: "Coffee Ceremony & Ritual", query: "Coffee ceremony", icon: "coffee" },
+        { label: "Healers in Addis Ababa", query: "Addis Ababa", icon: "map-pin" },
+      ],
+      businesses: [],
+      services: [],
+      categories: [],
+    };
+  }
+
+  const terms = q.split(/\s+/).filter(Boolean);
+  const bizConditions: SQL[] = [
+    eq(businesses.status, "verified"),
+    cultural ? sql`true` : ne(businessCategories.sector, "cultural"),
+  ];
+  for (const t of terms) {
+    const p = `%${t}%`;
+    bizConditions.push(
+      or(
+        ilike(businesses.name, p),
+        ilike(businesses.nameAm, p),
+        ilike(businesses.city, p),
+        ilike(businessCategories.name, p)
+      )!
+    );
+  }
+
+  const srvConditions: SQL[] = [
+    eq(businesses.status, "verified"),
+    eq(services.isActive, true),
+    cultural ? sql`true` : ne(businessCategories.sector, "cultural"),
+  ];
+  for (const t of terms) {
+    const p = `%${t}%`;
+    srvConditions.push(
+      or(
+        ilike(services.name, p),
+        ilike(services.nameAm, p),
+        ilike(businesses.name, p)
+      )!
+    );
+  }
+
+  const pattern = `%${q}%`;
+
+  const [matchedBusinesses, matchedServices, matchedCategories] = await Promise.all([
+    db
+      .select({
+        id: businesses.id,
+        slug: businesses.slug,
+        name: businesses.name,
+        nameAm: businesses.nameAm,
+        city: businesses.city,
+        categoryName: businessCategories.name,
+      })
+      .from(businesses)
+      .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
+      .where(and(...bizConditions))
+      .limit(5),
+
+    db
+      .select({
+        id: services.id,
+        name: services.name,
+        nameAm: services.nameAm,
+        businessName: businesses.name,
+        businessSlug: businesses.slug,
+        priceEtb: services.priceEtb,
+      })
+      .from(services)
+      .innerJoin(businesses, eq(businesses.id, services.businessId))
+      .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
+      .where(and(...srvConditions))
+      .limit(5),
+
+    db
+      .select({
+        slug: businessCategories.slug,
+        name: businessCategories.name,
+        nameAm: businessCategories.nameAm,
+        sector: businessCategories.sector,
+      })
+      .from(businessCategories)
+      .where(
+        and(
+          cultural ? sql`true` : ne(businessCategories.sector, "cultural"),
+          or(
+            ilike(businessCategories.name, pattern),
+            ilike(businessCategories.nameAm, pattern),
+            ilike(businessCategories.slug, pattern)
+          )
+        )
+      )
+      .limit(4),
+  ]);
+
+  return {
+    popular: [],
+    businesses: matchedBusinesses,
+    services: matchedServices,
+    categories: matchedCategories,
+  };
 }
 
 /**

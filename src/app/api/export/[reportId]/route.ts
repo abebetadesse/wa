@@ -25,7 +25,7 @@ interface ReportPageProps {
 }
 
 export async function GET(request: NextRequest, { params }: ReportPageProps) {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await getAuthenticatedUser({ refreshAccessCookie: true });
   if (!authenticatedUser) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }

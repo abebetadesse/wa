@@ -152,7 +152,7 @@ export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined,
           );
         }
       }
-      const user = checkAccess(def.access, await getAuthenticatedUser());
+      const user = checkAccess(def.access, await getAuthenticatedUser({ refreshAccessCookie: true }));
       const rawParams = (await segment?.params) ?? {};
       const params = (def.params ? def.params.parse(rawParams) : rawParams) as P;
       const body = (def.body ? await readBody(req, def.body) : undefined) as B;

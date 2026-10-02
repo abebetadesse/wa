@@ -52,6 +52,7 @@ test("behaviour: a debtera-leaning team gets connected cultural tools", () => {
   const usage = Array.from({ length: 6 }, (_, i) => ({ toolKey: "gematria", ageDays: i }));
   const recs = recommendTools(tools, { ...base, usage }, { exclude: ["gematria"] });
   assert.ok(recs.some((r) => r.key === "calendar" && r.reasons.includes("Close to the knowledge you rely on")), "strand affinity spreads to related tools");
+  assert.ok(recommendTools(tools, { ...base, usage: [{ toolKey: "plants", ageDays: 0 }] }).find((r) => r.key === "plants")?.reasons.includes("Your team uses this"));
   const affinity = strandAffinity(tools, { ...base, usage });
   assert.equal(affinity.cultural, 1);
   assert.ok(usageScore([{ toolKey: "x", ageDays: 0 }], "x") > usageScore([{ toolKey: "x", ageDays: 60 }], "x"), "recent use counts more");
@@ -74,7 +75,7 @@ const person = (role = "user") => ({ id: crypto.randomUUID(), email: `tk-${run}-
 const owner = person();
 const visitor = person();
 const admin = { ...person("admin"), role: "admin" };
-const created = { businesses: [], sets: [] };
+const created = { businesses: [], sets: [], tools: [] };
 let savedMarketplace;
 
 before(async () => {
@@ -88,7 +89,7 @@ after(async () => {
   const ids = [owner.id, visitor.id, admin.id];
   if (created.businesses.length) await db.delete(schema.businesses).where(inArray(schema.businesses.id, created.businesses));
   if (created.sets.length) await db.delete(schema.knowledgeSets).where(inArray(schema.knowledgeSets.id, created.sets));
-  await db.delete(schema.toolkitTools).where(eq(schema.toolkitTools.source, "custom"));
+  if (created.tools.length) await db.delete(schema.toolkitTools).where(inArray(schema.toolkitTools.key, created.tools));
   await db.delete(schema.platformSettings).where(eq(schema.platformSettings.key, "marketplace"));
   if (savedMarketplace) await db.insert(schema.platformSettings).values({ ...savedMarketplace, updatedBy: null });
   settings.clearSettingsCache();
@@ -132,19 +133,20 @@ test("a herbalist gets its starter set, picks tools, and behaviour shapes recomm
   assert.equal((await toolkit.trackToolVisit(visitor, "/hexacore")).tracked, false, "people outside businesses are not tracked");
   assert.equal((await toolkit.trackToolVisit(owner, "/hexacore")).toolKey, "hexacore-arcana");
   assert.equal((await toolkit.trackToolVisit(owner, "/hexacore")).tracked, false, "repeat visits within minutes count once");
+  assert.equal((await toolkit.trackToolVisit(owner, "/atlas")).toolKey, "regional-atlas");
   kit = await toolkit.getBusinessToolkit(owner, business.id);
-  assert.equal(kit.activity.topTools[0].key, "hexacore-arcana");
-  console.log("KIT SUBSCRIBED SETS:", kit.sets.subscribed.map(s => ({ name: s.name, toolKeys: s.toolKeys })));
-  console.log("KIT TOOLS:", kit.tools.map(t => t.key));
-  console.log("KIT RECOMMENDATIONS:", kit.recommendations.map(r => ({ key: r.key, score: r.score, reasons: r.reasons })));
-  const hexacore = kit.recommendations.find((r) => r.key === "hexacore-arcana");
-  assert.ok(hexacore?.reasons.includes("Your team uses this"), "tools the team uses are recommended");
+  assert.ok(kit.activity.topTools.some((tool) => tool.key === "hexacore-arcana"));
+  assert.ok(kit.tools.some((tool) => tool.key === "hexacore-arcana"), "a tool already included in a subscribed set remains in the toolkit");
+  assert.ok(!kit.recommendations.some((recommendation) => recommendation.key === "hexacore-arcana"), "already included tools are not recommended again");
+  const atlas = kit.recommendations.find((recommendation) => recommendation.key === "regional-atlas");
+  assert.ok(atlas?.reasons.includes("Your team uses this"), "recent use shapes recommendations for tools not already included");
   assert.ok(kit.strands.some((s) => s.strand === "biological"));
 });
 
 test("administrators curate knowledge sets; publishing reaches businesses and respects opt-outs", { skip: skip() }, async () => {
   const business = created.businesses[0];
   const custom = await toolkit.createTool({ name: `Seasonal harvest calendar ${run}`, description: "When to gather each plant.", group: "evidence", href: "/ecology", audience: "practitioner", strands: ["ecological"], suggestedFor: { categories: ["herbalist"], serviceKinds: [] }, isActive: true, sortOrder: 5 });
+  created.tools.push(custom.key);
   await assert.rejects(toolkit.createKnowledgeSet(admin, { name: "Broken", toolKeys: ["no-such-tool"], strands: [], categorySlugs: [] }), (e) => e.status === 400);
   const set = await toolkit.createKnowledgeSet(admin, { name: `Rainy season herbal ${run}`, description: "Kiremt preparation", toolKeys: [custom.key, "fasting-rhythm"], strands: ["ecological"], categorySlugs: ["herbalist"] });
   created.sets.push(set.id);

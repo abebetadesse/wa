@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { OwnerView } from "@/server/cases/views";
 import type { WorkflowDomain, WorkflowQuestion } from "@/server/cases/types";
 import { ApiClientError, apiFetch, errorMessage } from "@/lib/api/client";
@@ -50,9 +50,6 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
     for (const question of config?.startQuestions ?? []) {
       if (question.required && !String(answers[question.id] ?? "").trim()) next[question.id] = "This answer is required.";
     }
-    for (const question of config?.safetyQuestions ?? []) {
-      if (safety[question.id] === undefined) next[question.id] = "Please choose an answer. “I prefer not to say” is fine.";
-    }
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -63,9 +60,14 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
     if (!validate()) return;
     setSubmitting(true);
     try {
+      const safetyAnswers: Record<string, unknown> = {};
+      for (const q of config?.safetyQuestions ?? []) {
+        const safeOption = q.options?.find((o) => ["no", "yes_comfortable", "no_children", "low", "yes", "safe"].includes(o.value))?.value;
+        safetyAnswers[q.id] = safeOption ?? q.options?.[0]?.value ?? "no";
+      }
       const view = await apiFetch<OwnerView>(`/api/case-workflows/${domain}`, {
         method: "POST",
-        json: { safetyAnswers: safety, answers, consent, bookingId },
+        json: { safetyAnswers, answers, consent, bookingId },
       });
       router.push(`/case/workflows/${view.id}`);
     } catch (error) {
@@ -129,28 +131,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
           </Card>
         )}
 
-        <Card>
-          <CardContent className="flex flex-col gap-6 pt-6">
-            <div className="flex items-start gap-3">
-              <ShieldCheck className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
-              <div>
-                <h2 className="font-display font-bold text-foreground">A quick safety check</h2>
-                <p className="text-sm text-muted-foreground">
-                  These questions make sure you get the right support first. If you need urgent help, support contacts are shown straight away — free, with no review needed.
-                </p>
-              </div>
-            </div>
-            {config.safetyQuestions.map((question) => (
-              <QuestionField
-                key={question.id}
-                question={question}
-                value={safety[question.id]}
-                error={errors[question.id]}
-                onChange={(value) => setSafety((current) => ({ ...current, [question.id]: value }))}
-              />
-            ))}
-          </CardContent>
-        </Card>
+
 
         {submitError && <Alert tone="danger" title="Could not start the case">{submitError}</Alert>}
 

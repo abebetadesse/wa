@@ -5,7 +5,7 @@ import { getEnhancementCapabilities } from "@/lib/platform/enhancementCatalog";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedUser({ refreshAccessCookie: true });
   if (!user) return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
 
   const isProvider = ["admin", "super_admin", "expert", "provider", "premium"].includes(user.role);

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useRef } from "react";
+import Link from "next/link";
 import { EFCT_MASTER_FOODS } from "@/lib/nutrition/efctDatabase";
 import { RAW_CEREAL_MATERIALS } from "@/lib/nutrition/rawCerealMaterials";
 import { RECIPE_INGREDIENT_CUES } from "@/lib/nutrition/recipeIngredients";
@@ -1044,6 +1045,40 @@ export default function FoodsPageClient() {
                 <span>{icon}</span><span>{label}</span>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 rounded-2xl border border-emerald-400/25 bg-gradient-to-r from-emerald-950/40 via-stone-900/60 to-amber-950/30 p-5 backdrop-blur-xl">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                  ⚡ New Interactive Engine
+                </div>
+                <h2 className="mt-1.5 text-base font-bold text-white sm:text-lg">
+                  Composite Diet & Best Recipe Formulator (የተመጣጠነ ቅይጥ ምግብ አስሊ)
+                </h2>
+                <p className="mt-1 text-xs text-stone-300 max-w-2xl">
+                  Formulate traditional Ethiopian diets (including <strong>Yetsom Beyayinetu</strong>, Shiro Tegabino, Doro Wot, Kitfo, and Genfo)
+                  calibrated for weight loss, muscle build, diabetes, or recovery. Generates recipes <strong>per serving</strong>, <strong>per day</strong>,
+                  and <strong>per month</strong> with 12 amino acids, fatty acids, bioavailable minerals, and enzyme activation cofactors.
+                </p>
+              </div>
+              <div className="shrink-0 flex flex-wrap sm:flex-col gap-2">
+                <Link
+                  href="/foods/composite-formulator"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 px-4 py-2.5 text-xs font-bold text-black shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 hover:from-emerald-300 hover:to-teal-300"
+                >
+                  <span>100 Diets Formulator</span>
+                  <span>→</span>
+                </Link>
+                <Link
+                  href="/foods/dynamic-formulator"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-teal-400/40 bg-teal-950/40 px-4 py-2 text-xs font-bold text-teal-300 transition-all hover:bg-teal-900/60"
+                >
+                  <span>🎛️ Dynamic Formulator</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </header>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, BookOpen, ChevronDown, ChevronUp, Info, Sparkles } from "lucide-react";
 import Link from "next/link";
+import HexacoreCameraScanner from "@/features/hexacore/HexacoreCameraScanner";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -147,6 +148,17 @@ export default function PalmReadingPage() {
           not a map of fixed fate. Offered here as educational and reflective content only.
         </p>
       </header>
+
+      {/* ── Live Camera Palm Scanner ───────────────────────────── */}
+      <section aria-labelledby="live-camera-palm-scanner" className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="size-4 text-amber-400" />
+          <h2 id="live-camera-palm-scanner" className="text-xl font-bold text-white">
+            Interactive Camera Palm Line & Mount Scanner
+          </h2>
+        </div>
+        <HexacoreCameraScanner initialType="palm" />
+      </section>
 
       {/* ── Palm Diagram + Line Detail ─────────────────────────────── */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr]">

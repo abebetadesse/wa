@@ -95,9 +95,34 @@ export async function syncKnowledgeBase(): Promise<void> {
       const atlas = await atlasRes.json();
       await kbSet("atlas", "regions", atlas);
     }
+
+    // Sync traditional medicines & herbs
+    const herbsRes = await fetch("/api/traditional-medicine");
+    if (herbsRes.ok) {
+      const herbsData = await herbsRes.json();
+      await kbSet("herbs", "all", herbsData.data ?? herbsData);
+    }
   } catch {
     // Offline — silently skip; cached data remains available
   }
+}
+
+/**
+ * Get traditional medicines with offline fallback.
+ */
+export async function getTraditionalMedicinesWithFallback(): Promise<unknown[]> {
+  try {
+    const res = await fetch("/api/traditional-medicine");
+    if (res.ok) {
+      const data = await res.json();
+      const list = (data.data ?? data) as unknown[];
+      await kbSet("herbs", "all", list);
+      return list;
+    }
+  } catch {
+    // Network unavailable
+  }
+  return (await kbGet<unknown[]>("herbs", "all")) ?? [];
 }
 
 /**

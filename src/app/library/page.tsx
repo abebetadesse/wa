@@ -148,39 +148,46 @@ export default function LibraryPage() {
           </div>
         </Link>
 
-        <Link href="/library/medicinal-plants" className="group block overflow-hidden rounded-[28px] border border-emerald-500/20 bg-stone-900/80 shadow-[0_15px_60px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-emerald-400/40">
+        <Link href="/library/medicinal-plants" className="group block overflow-hidden rounded-[28px] border border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-stone-900 to-black shadow-[0_15px_60px_rgba(16,185,129,0.15)] transition hover:-translate-y-1 hover:border-emerald-400">
           <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-300">Evidence-linked atlas</p>
-                <h2 className="mt-3 text-2xl font-bold text-white">Medicinal plants</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-400">Materia medica & Fewus</p>
+                <h2 className="mt-3 text-2xl font-bold text-white font-serif">መጽሐፈ ፈውስ</h2>
+                <p className="text-xs text-emerald-300/80 mt-0.5">Traditional Medicine & Herbalism</p>
               </div>
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-emerald-300">
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-emerald-300">
                 <BookOpenText size={28} />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-stone-700 bg-gradient-to-br from-emerald-950/40 to-stone-950 p-4">
-              <div className="mb-3 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-emerald-300">
-                <span>Chapter 66996</span>
-                <span>80 species</span>
+            <div className="rounded-2xl border border-emerald-500/20 bg-stone-950/90 p-4 space-y-2">
+              <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-mono">
+                <span>መጽሐፈ ፈውስ • 38 Chapters</span>
+                <span>ገቢር (Preparation)</span>
               </div>
-              <div className="grid gap-2 text-sm text-stone-200">
-                <div className="rounded-xl border border-stone-700 bg-stone-950/60 px-3 py-2">Damakesse • headache, febrile illness</div>
-                <div className="rounded-xl border border-stone-700 bg-stone-950/60 px-3 py-2">Kosso • tapeworm</div>
-                <div className="rounded-xl border border-stone-700 bg-stone-950/60 px-3 py-2">Tikur Azmud • headache & airway relief</div>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-stone-200">
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-emerald-200">🌿 ኮሶና ጤና አዳም (ሆድ)</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-amber-200">🍵 ዳማከሴና አሪቲ (ምች)</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-blue-200">🦴 እንሰትና ፌጦ (ስብራት)</div>
+                <div className="rounded-lg bg-stone-900 border border-stone-800 px-2.5 py-1.5 text-[11px] text-purple-200">🕯️ ቀበሪቾና ከርቤ (ጭንቀት)</div>
               </div>
             </div>
 
             <div className="space-y-3 text-sm text-stone-300">
               <p>
-                Search by plant name, habitat, disease type, and part used to browse the reviewed Ethiopian traditional
-                medicinal species and their documented applications.
+                Synthesizing classical manuscript chapters of Metsehafe Fewus (መጽሐፈ ፈውስ), authentic traditional
+                preparations (ገቢሮች), and clinical safety monographs across 10 therapeutic categories.
               </p>
+              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-stone-400">
+                <span className="rounded-full border border-stone-700 px-2 py-1 text-emerald-300">60+ Remedies</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">Herb-Drug Safety</span>
+                <span className="rounded-full border border-stone-700 px-2 py-1">Dosage Traditions</span>
+              </div>
             </div>
 
             <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-emerald-300">
-              Explore medicinal atlas
+              Explore Traditional Pharmacopeia
               <ArrowRight size={16} />
             </div>
           </div>

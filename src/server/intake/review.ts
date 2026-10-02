@@ -6,7 +6,7 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { bookings, businessClients, services, users } from "@/lib/db/schema";
+import { bookings, businessClients, serviceKinds, services, users } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "@/server/marketplace/access";
@@ -32,9 +32,10 @@ function ageFrom(dateOfBirth: string | null) {
 async function loadBooking(user: AuthenticatedUser, businessId: string, bookingId: string) {
   await requireCapability(user, businessId, "viewClientNotes");
   const [row] = await db
-    .select({ booking: bookings, serviceName: services.name, clientName: businessClients.name, clientPhone: businessClients.phone, region: users.region, city: users.city, dateOfBirth: users.dateOfBirth })
+    .select({ booking: bookings, serviceName: services.name, serviceKind: serviceKinds.slug, clientName: businessClients.name, clientPhone: businessClients.phone, region: users.region, city: users.city, dateOfBirth: users.dateOfBirth })
     .from(bookings)
     .innerJoin(services, eq(services.id, bookings.serviceId))
+    .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))
     .innerJoin(businessClients, eq(businessClients.id, bookings.clientId))
     .leftJoin(users, eq(users.id, bookings.bookedByUserId))
     .where(and(eq(bookings.id, bookingId), eq(bookings.businessId, businessId)))
@@ -68,7 +69,7 @@ export async function getBookingReview(user: AuthenticatedUser, businessId: stri
   const manuscript = selection ? await manuscriptWorkspace(businessId, selection, safety?.answers, age) : null;
 
   return {
-    booking: { id: booking.id, reference: booking.reference, status: booking.status, startsAt: booking.startsAt, deliveryMode: booking.deliveryMode, serviceName: row.serviceName, clientNote: booking.clientNote, caseId: booking.caseId },
+    booking: { id: booking.id, reference: booking.reference, status: booking.status, startsAt: booking.startsAt, deliveryMode: booking.deliveryMode, serviceName: row.serviceName, serviceKind: row.serviceKind, clientNote: booking.clientNote, caseId: booking.caseId },
     client: { name: row.clientName, phone: row.clientPhone, region: row.region, city: row.city, age },
     intake,
     attachments: attachments.map((a) => ({ ...a, url: `/api/intake/uploads/${a.id}` })),
