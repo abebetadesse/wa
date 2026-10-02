@@ -7,6 +7,10 @@ Supported files:
 - biochemical_knowledge.csv
 - biological_knowledge.csv
 - medication_knowledge.csv
+
+The medication pack is intentionally expanded to include a 1,000-entry intensive reference list covering common antimalarial, antibiotic, antitubercular, diabetes, cardiovascular, pain, respiratory, gastrointestinal, endocrine, and mental-health medicines. Each row includes safe
+
+Additional Ethiopian-focused packs are included for local formulary and safety review, including a 500-entry local herb + medicine interaction list for herb-drug safety screening in community and primary care contexts.ty, pregnancy/lactation, contraindication, and monitoring fields so the knowledge import remains reviewable and usable in clinical safety workflows.
 - addiction_knowledge.csv
 - ecological_knowledge.csv
 - epidemiological_knowledge.csv
