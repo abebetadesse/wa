@@ -131,6 +131,7 @@ export function submitSocialCase(
 ): SocialCaseSession | undefined {
   const session = getSocialCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
 
   session.answers = { ...session.answers, ...answers };
   session.updatedAt = new Date().toISOString();
@@ -163,6 +164,7 @@ export function previewSocialCase(caseId: string, userId?: string): SocialCaseSe
 export function purchaseSocialReport(caseId: string, userId?: string): SocialCaseSession | undefined {
   const session = getSocialCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.paymentConfirmed = true;
   session.status = "full_report_released";
   session.updatedAt = new Date().toISOString();
@@ -177,6 +179,7 @@ export function bookSocialConsult(
 ): SocialCaseSession | undefined {
   const session = getSocialCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.consultation = {
     booked: true,
     format,

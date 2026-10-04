@@ -148,14 +148,15 @@ test("auto-responses: instant acknowledgement, reviewed Fewus draft, and no inst
 });
 
 test("urgent intake: instant rules are held, the client gets a safety message and the team is alerted", { skip: skip() }, async () => {
-  const since = new Date();
   const booking = await bookingsSvc.requestBooking(client, business.id, { serviceId: service.id, startsAt: await freeSlot(service.id), deliveryMode: "in_person", intake: { text: "Sudden chest pain and I can't breathe well" } });
   const drafts = await responses.listDrafts(owner, business.id, booking.id);
   const held = drafts.filter((d) => d.status === "draft");
   assert.ok(held.length >= 2 && held.every((d) => /held for review/.test(d.heldReason ?? "")), "acknowledgement and keyword rule both held");
-  const msgs = (await messagesFor(booking.id)).filter((m) => m.createdAt >= since);
-  assert.equal(msgs.length, 1, "nothing but the safety message goes out");
-  assert.match(msgs[0].body, /Automatic safety message/);
+  const sentDrafts = drafts.filter((d) => d.status === "sent" && d.messageId);
+  assert.equal(sentDrafts.length, 1, "nothing but the safety message goes out");
+  const [message] = await db.select().from(schema.messages).where(eq(schema.messages.id, sentDrafts[0].messageId));
+  assert.ok(message);
+  assert.match(message.body, /Automatic safety message/);
   const [alert] = await db.select().from(schema.notifications).where(eq(schema.notifications.userId, owner.id));
   assert.ok(alert);
 });
@@ -235,14 +236,13 @@ test("Metsehafe Asmat: the client picks a chapter; the healer delivers it with c
   assert.match(refined.body, /^ሰላም ሰላማዊት/);
   assert.match(refined.body, /Sacred names to consider/);
   // Deliver directly.
-  const since = new Date();
   const sent = await review.deliverManuscriptSolution(owner, business.id, booking.id, { mode: "send", includeProfile: false, includePlantScreen: false });
   assert.equal(sent.status, "sent");
-  const msgs = (await messagesFor(booking.id)).filter((m) => m.createdAt >= since);
-  assert.equal(msgs.length, 1);
-  assert.match(msgs[0].body, /የደብተራው የራሱ የአይነ ጥላ ጽሑፍ/);
-  assert.match(msgs[0].body, /euphorbia/i);
-  assert.doesNotMatch(msgs[0].body, /Plants checked against your medicines/);
+  const [message] = await db.select().from(schema.messages).where(eq(schema.messages.id, sent.messageId));
+  assert.ok(message);
+  assert.match(message.body, /የደብተራው የራሱ የአይነ ጥላ ጽሑፍ/);
+  assert.match(message.body, /euphorbia/i);
+  assert.doesNotMatch(message.body, /Plants checked against your medicines/);
   await assert.rejects(review.deliverManuscriptSolution(stranger, business.id, booking.id, { mode: "send", includeProfile: false, includePlantScreen: true }), (e) => e.status === 404);
 
   // A chapter with no text of the healer's own cannot be sent directly without at least an opening note.

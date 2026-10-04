@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { ApiError, checkAccess, errorResponse } from "../lib/api/route.ts";
+import { POST as postCausalQuery } from "../app/api/knowledge/causal/route.ts";
 
 const user = (role, permissions = []) => ({ id: "u1", email: "u@example.com", role, permissions });
 
@@ -56,4 +57,24 @@ test("errorResponse maps ApiError, ZodError and unknown errors", async () => {
 test("NextRequest is constructible in tests (sanity for route-level tests)", () => {
   const req = new NextRequest("http://localhost/api/x?a=1");
   assert.equal(req.nextUrl.searchParams.get("a"), "1");
+});
+
+test("causal route rejects missing, oversized, and malformed queries instead of defaulting to malaria", async () => {
+  const missing = await postCausalQuery(new NextRequest("http://localhost/api/knowledge/causal", {
+    method: "POST",
+    body: JSON.stringify({}),
+  }));
+  assert.equal(missing.status, 400);
+
+  const oversized = await postCausalQuery(new NextRequest("http://localhost/api/knowledge/causal", {
+    method: "POST",
+    body: JSON.stringify({ query: "x".repeat(1001) }),
+  }));
+  assert.equal(oversized.status, 400);
+
+  const invalidProfile = await postCausalQuery(new NextRequest("http://localhost/api/knowledge/causal", {
+    method: "POST",
+    body: JSON.stringify({ query: "headache", userProfile: "unknown" }),
+  }));
+  assert.equal(invalidProfile.status, 400);
 });

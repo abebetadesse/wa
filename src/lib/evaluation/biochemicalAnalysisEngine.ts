@@ -122,6 +122,14 @@ export interface BiochemicalAnalysis {
 
 export function analyseBiochemistry(input: { categories: SymptomCategory[]; plantSlugs: string[]; nutrientGaps?: ("iron" | "zinc")[] }): BiochemicalAnalysis {
   const categories: SymptomCategory[] = input.categories.length ? [...new Set(input.categories)] : ["general"];
+  const unknownCategory = categories.find((category) => !(category in CHAINS));
+  if (unknownCategory) {
+    throw new RangeError(`Unsupported symptom category: ${unknownCategory}.`);
+  }
+  const unknownPlant = input.plantSlugs.find((slug) => !(slug in PLANT_CONSTITUENTS));
+  if (unknownPlant) {
+    throw new RangeError(`Unsupported plant slug: ${unknownPlant}.`);
+  }
   const chains = categories.map((category) => CHAINS[category]);
   const relevant = new Set<Action>(chains.flatMap((chain) => chain.relevant));
   if (input.nutrientGaps?.length) relevant.add("phytate_breakdown");

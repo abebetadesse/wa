@@ -46,6 +46,8 @@ export interface CareerAdvisor {
   consultationFormats: ("video" | "voice" | "chat" | "in_person")[];
 }
 
+const careerAssignments = new Map<string, ExpertAssignmentResult>();
+
 export type CareerCaseStatus =
   | "safety_screen"
   | "name_gematria"
@@ -280,14 +282,19 @@ function scoreAdvisor(advisor: CareerAdvisor, profile: CareerProfile, needsFinan
 
 export function assignCareerAdvisor(
   profile: CareerProfile,
-  options?: { needsFinancialAdvisor?: boolean; needsMentalwellbeingReferral?: boolean }
+  options?: { needsFinancialAdvisor?: boolean; needsMentalwellbeingReferral?: boolean; assignmentKey?: string; reserve?: boolean }
 ): ExpertAssignmentResult | null {
   const needsFinancialAdvisor = options?.needsFinancialAdvisor ?? false;
   const needsMentalwellbeingReferral = options?.needsMentalwellbeingReferral ?? false;
+  const reserve = options?.reserve !== false;
 
   if (needsMentalwellbeingReferral) {
     // Return a referral notice instead of a career advisor
     return null;
+  }
+  if (reserve && options?.assignmentKey) {
+    const existing = careerAssignments.get(options.assignmentKey);
+    if (existing) return existing;
   }
 
   const scored = ADVISOR_POOL
@@ -301,20 +308,30 @@ export function assignCareerAdvisor(
   if (scored.length === 0) return null;
 
   const selected = scored[0].advisor;
-  // Increment load (in production: atomic DB update)
-  selected.current_review_load += 1;
+  if (reserve) selected.current_review_load += 1;
 
   const assignedAt = new Date().toISOString();
   const reviewWindowEnd = new Date(
     Date.now() + selected.average_review_time_minutes * 60 * 1000
   ).toISOString();
 
-  return {
+  const assignment = {
     advisor: selected,
     estimatedReviewMinutes: selected.average_review_time_minutes,
     assignedAt,
     reviewWindowEnd,
   };
+  if (reserve && options?.assignmentKey) careerAssignments.set(options.assignmentKey, assignment);
+  return assignment;
+}
+
+export function releaseCareerAdvisor(assignmentKey: string): boolean {
+  const assignment = careerAssignments.get(assignmentKey);
+  if (!assignment) return false;
+  const advisor = ADVISOR_POOL.find((candidate) => candidate.id === assignment.advisor.id);
+  if (advisor) advisor.current_review_load = Math.max(0, advisor.current_review_load - 1);
+  careerAssignments.delete(assignmentKey);
+  return true;
 }
 
 // ════════════════════════════════════════════════════════════

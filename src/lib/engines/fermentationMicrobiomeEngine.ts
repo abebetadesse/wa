@@ -80,6 +80,9 @@ export interface EnsetMicrobiomeProfile {
  * Enhancement 10: Calculates phytate degradation and bioavailability based on fermentation hours
  */
 export function calculateErshoKinetics(hours: number): ErshoFermentationStage {
+  if (!Number.isFinite(hours)) {
+    throw new TypeError("Fermentation hours must be a finite number.");
+  }
   const clampedHours = Math.max(0, Math.min(96, hours));
 
   // Find surrounding bracket

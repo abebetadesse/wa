@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
     // Assign expert advisor
     const assignment = assignCareerAdvisor(profile, {
       needsFinancialAdvisor: needsFinancialAdvisor ?? false,
+      assignmentKey: sessionId,
     });
 
     if (!assignment) {
@@ -58,10 +59,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: false,
         code: "NO_ADVISOR_AVAILABLE",
-        message:
-          "All advisors are currently at capacity. You have been added to the queue. " +
-          "You will be notified when an advisor becomes available — usually within 2 hours.",
-        queuePosition: Math.floor(Math.random() * 5) + 1,
+        message: "No advisor is currently available. No review has been booked; please try again later.",
         availableAdvisors: advisors.length,
         timingAnalysis,
       });

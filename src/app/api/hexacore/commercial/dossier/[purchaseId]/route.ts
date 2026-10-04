@@ -3,10 +3,10 @@ import { getPurchase } from "@/lib/hexacore/hexacoreCommercialStore";
 
 export async function GET(
   _request: Request,
-  { params }: { params: { purchaseId: string } }
+  { params }: { params: Promise<{ purchaseId: string }> }
 ) {
   try {
-    const { purchaseId } = params;
+    const { purchaseId } = await params;
 
     if (!purchaseId) {
       return NextResponse.json(

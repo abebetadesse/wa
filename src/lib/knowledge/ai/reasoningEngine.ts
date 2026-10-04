@@ -90,7 +90,7 @@ export class AIReasoningEngine {
     }
 
     // Medical Treatment Solutions
-    const medFindings = strandResults.medication || [];
+    const herbInteractions = (strandResults.medication || []).filter((finding) => finding.type.includes("herb_drug"));
     const epiFindings = strandResults.epidemiological || [];
     for (const epi of epiFindings.filter((e) => e.relevanceScore > 0.6).slice(0, 2)) {
       solutions.push({
@@ -116,22 +116,6 @@ export class AIReasoningEngine {
         priority: "medium",
         safetyGatePassed: true,
         sourceRef: "EFCT 2025 Standard",
-      });
-    }
-
-    // Safe Herbal & Traditional Solutions (Check against Safety Gate)
-    const herbInteractions = medFindings.filter((m) => m.type.includes("herb_drug"));
-    const hasCriticalHerbConflict = herbInteractions.some((hi) => hi.severity === "critical");
-
-    if (!hasCriticalHerbConflict && urgency.level !== "critical") {
-      solutions.push({
-        id: "sol-herbal-safe-01",
-        title: "Traditional Carminative Soothing Infusion",
-        description: "Mild infusion of Chamomile or Ginger with fresh lemon and pure honey to calm digestive motility and ease tension. Safe with current baseline.",
-        type: "herbal",
-        priority: "low",
-        safetyGatePassed: true,
-        sourceRef: "ETM-DB Certified Safe Formulary",
       });
     }
 

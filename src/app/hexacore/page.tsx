@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, Suspense } from "react";
+import Image from "next/image";
 import HexacoreOrrery from "@/components/cultural/HexacoreOrrery";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
 import HexacoreCheckoutModal from "@/features/hexacore/HexacoreCheckoutModal";
@@ -31,6 +32,61 @@ const CORE_REMEDY_PREVIEWS = [
   { core: "Spirit", coreAm: "መንፈስ", herb: "Itan", herbAm: "ጤና ሸዊ", hz: 963, color: "#9370DB" },
   { core: "Order", coreAm: "ሥርዓት", herb: "Kosso", herbAm: "ቆሶ", hz: 852, color: "#00CED1" },
 ];
+const KNOWLEDGE_DIRECTORIES = [
+  {
+    strand: "Cultural memory",
+    image: "/images/evidence/strand-cultural.svg",
+    alt: "Illustration representing Ethiopian cultural and coffee ceremony traditions",
+    description: "Community context, living heritage, ritual memory, and the traditions in which symbolic readings are interpreted.",
+    directories: [
+      { label: "Heritage atlas", href: "/heritage" },
+      { label: "Cultural knowledge", href: "/cultural" },
+      { label: "Sacred library", href: "/library" },
+    ],
+  },
+  {
+    strand: "Calendar & cycles",
+    image: "/images/evidence/strand-astrological.svg",
+    alt: "Illustration representing a traditional star chart",
+    description: "Calendar systems, seasonal cycles, and astrological traditions presented as cultural frameworks for reflection.",
+    directories: [
+      { label: "Awde Negast", href: "/awde-negast" },
+      { label: "Fasting & lunar rhythm", href: "/fasting" },
+    ],
+  },
+  {
+    strand: "Reflective psychology",
+    image: "/images/evidence/strand-psychological.svg",
+    alt: "Illustration representing reflection and emotional wellbeing",
+    description: "Self-inquiry, personal meaning, and emotional context; not a psychological assessment or mental-health diagnosis.",
+    directories: [
+      { label: "Spiritual reflection pathway", href: "/case/workflows/new/spiritual" },
+      { label: "Somatic awareness", href: "/somatics" },
+    ],
+  },
+  {
+    strand: "Body symbolism",
+    image: "/images/evidence/strand-biological.svg",
+    alt: "Illustration representing human biology and body systems",
+    description: "Observable body features are separated from symbolic interpretation; these references do not assess health or diagnose conditions.",
+    directories: [
+      { label: "Tongue reading", href: "/body-reading/tongue" },
+      { label: "Palm reading", href: "/body-reading/palm" },
+      { label: "Face reading", href: "/body-reading/face" },
+    ],
+  },
+  {
+    strand: "Ecology & herbal heritage",
+    image: "/images/evidence/strand-ecological.svg",
+    alt: "Illustration representing Ethiopian highland ecology",
+    description: "Plant habitats and ethnobotanical records as cultural and historical references, distinct from treatment advice.",
+    directories: [
+      { label: "Ecology & plant habitats", href: "/ecology" },
+      { label: "Medicinal plant atlas", href: "/library/medicinal-plants" },
+      { label: "Herb & medicine safety", href: "/safety" },
+    ],
+  },
+] as const;
 
 export default function HexacorePage() {
   const [checkoutProduct, setCheckoutProduct] = useState<(typeof HEXACORE_DEFAULT_PRODUCTS)[0] | null>(null);
@@ -314,6 +370,48 @@ export default function HexacorePage() {
       </section>
 
       {/* ── Practitioner Toolkit ─────────────────────────────────────────── */}
+      <section aria-labelledby="hexacore-strands" className="space-y-5">
+        <header className="max-w-3xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-cyan-300">Knowledge directories</p>
+          <h2 id="hexacore-strands" className="mt-2 text-2xl font-bold text-white">Explore the connected strands</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Open the source directories behind the Hexacore’s cultural, cyclical, reflective, body-symbolic, and ecological lenses. Images are illustrative; symbolic traditions are not scientific or clinical evidence.
+          </p>
+        </header>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {KNOWLEDGE_DIRECTORIES.map((entry) => (
+            <article key={entry.strand} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+              <div className="relative aspect-[16/7] border-b border-white/10 bg-slate-900">
+                <Image
+                  src={entry.image}
+                  alt={entry.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-white">{entry.strand}</h3>
+                <p className="mt-2 min-h-16 text-sm leading-relaxed text-slate-300">{entry.description}</p>
+                <nav aria-label={`${entry.strand} directories`} className="mt-4 flex flex-wrap gap-2">
+                  {entry.directories.map((directory) => (
+                    <Link
+                      key={directory.href}
+                      href={directory.href}
+                      className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:border-cyan-300/40 hover:bg-cyan-300/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                    >
+                      {directory.label}
+                      <ArrowRight className="size-3" aria-hidden="true" />
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section aria-labelledby="hexacore-practitioner" className="space-y-4">
         <header className="max-w-3xl">
           <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-300">Practitioner Toolkit</p>

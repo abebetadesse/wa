@@ -120,6 +120,10 @@ export const EATER_ARCHETYPES: Record<EaterArchetype, EaterArchetypeProfile> = {
  * Enhancement 4: Evaluates Ethiopian Orthodox Fasting status and refeeding parameters
  */
 export function evaluateFastingStatus(date: Date = new Date()): FastingStatusAssessment {
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError("Fasting status requires a valid date.");
+  }
+
   const month = date.getMonth(); // 0-indexed (0 = Jan, 7 = August, etc.)
   const dayOfWeek = date.getDay(); // 0 = Sun, 3 = Wed, 5 = Fri
 

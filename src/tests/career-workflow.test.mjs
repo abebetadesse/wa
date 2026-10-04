@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { evaluateCareerSafetyScreen } from "../lib/case-workflow/careerSafetyScreen.ts";
 import { buildCareerProfile, getCareerQuestions } from "../lib/case-workflow/careerQuestionEngine.ts";
+import { assignCareerAdvisor, releaseCareerAdvisor } from "../lib/case-workflow/careerExpertEngine.ts";
 import { CASE_STRAND_FILTERS } from "../lib/case-workflow/strandRouting.ts";
 import {
   buildReflectiveDiagnosticSolution,
@@ -75,6 +76,27 @@ test("case 3 profile builder and question generator are consistent", () => {
   assert.equal(profile.careerStage, "starting_business");
   assert.equal(profile.sector, "agriculture");
   assert.ok(getCareerQuestions("starting_business").length > 0);
+});
+
+test("career advisor matching is idempotent per case and preview matching does not reserve capacity", () => {
+  const profile = buildCareerProfile({
+    career_geez_name: "ማርያም",
+    career_mother_geez_name: "ተስፋ",
+    career_stage: "starting_business",
+    career_sector: "agriculture",
+  });
+  const preview = assignCareerAdvisor(profile, { reserve: false });
+  assert.ok(preview);
+  const priorLoad = preview.advisor.current_review_load;
+  const first = assignCareerAdvisor(profile, { assignmentKey: "case-advisor-test" });
+  assert.ok(first);
+  assert.equal(first.advisor.current_review_load, priorLoad + 1);
+  const repeated = assignCareerAdvisor(profile, { assignmentKey: "case-advisor-test" });
+  assert.equal(repeated?.advisor.id, first.advisor.id);
+  assert.equal(first.advisor.current_review_load, priorLoad + 1);
+  assert.equal(releaseCareerAdvisor("case-advisor-test"), true);
+  assert.equal(first.advisor.current_review_load, priorLoad);
+  assert.equal(releaseCareerAdvisor("case-advisor-test"), false);
 });
 
 test("money and career reflections query only cultural and astrological strands", async () => {

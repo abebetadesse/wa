@@ -78,6 +78,8 @@ test("biochemistry: four levels, causes linked to named constituents; topical-on
   assert.deepEqual(analysis.levels.map((l) => l.level), ["molecular", "pathway", "physiological", "organism"]);
   assert.ok(analysis.levels.find((l) => l.level === "pathway").solutions.some((s) => s.sources.some((src) => /Gingerol/.test(src.compound))));
   assert.ok(analysis.correlations.some((c) => c.phytochemicals.some((p) => /skin only/.test(p))));
+  assert.throws(() => analyseBiochemistry({ categories: ["unrecognized"], plantSlugs: [] }), /Unsupported symptom category/);
+  assert.throws(() => analyseBiochemistry({ categories: ["headache"], plantSlugs: ["unknown-plant"] }), /Unsupported plant slug/);
 });
 
 test("orchestrator: screens candidates, excludes unsafe ones, refers danger signs, keeps humour out of ranking", async () => {

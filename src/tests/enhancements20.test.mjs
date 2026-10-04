@@ -107,6 +107,8 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     assert.equal(evening.isDaytime, false);
     assert.equal(evening.circadianPhase, "evening_clearance");
     assert.equal(evening.macronutrientPartitioningPriority.carbohydrateTolerance, "low");
+    assert.throws(() => convertToHabeshaTime(7, 61), /minute must be an integer from 0 to 59/);
+    assert.throws(() => convertToHabeshaTime(24, 0), /hour must be an integer from 0 to 23/);
   });
 
   // Enhancement 4
@@ -116,6 +118,7 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     assert.equal(fastingProfile.isStrictVeganDay, true);
     assert.ok(fastingProfile.micronutrientVulnerabilities.some((v) => v.nutrient.includes("B12")));
     assert.ok(fastingProfile.refeedingSafeguards.contraindicatedFirstMeals.length > 0);
+    assert.throws(() => evaluateFastingStatus(new Date(Number.NaN)), /valid date/);
   });
 
   // Enhancement 5
@@ -193,6 +196,8 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     assert.ok(t72.phytateDegradationPct > 80);
     assert.ok(t72.doughPH < 4.0);
     assert.equal(t72.ironBioavailabilityMultiplier, 1.45);
+    assert.throws(() => calculateErshoKinetics(Number.NaN), /finite number/);
+    assert.throws(() => calculateErshoKinetics(Number.POSITIVE_INFINITY), /finite number/);
   });
 
   // Enhancement 11

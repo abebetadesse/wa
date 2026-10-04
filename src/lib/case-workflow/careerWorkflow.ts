@@ -1,7 +1,7 @@
 import { evaluateCareerSafetyScreen, type CareerSafetyAnswers, type CareerSafetyResult } from "./careerSafetyScreen";
 import { buildCareerProfile, getCareerQuestions, type CareerQuestion } from "./careerQuestionEngine";
 import { calculateTimingWindows, type CareerProfile } from "@/lib/cultural/careerTimingEngine";
-import { assignCareerAdvisor, buildCareerReportShell, getAvailableAdvisors } from "./careerExpertEngine";
+import { assignCareerAdvisor, buildCareerReportShell, getAvailableAdvisors, releaseCareerAdvisor } from "./careerExpertEngine";
 
 export type CareerWorkflowStage =
   | "safety_screen"
@@ -80,6 +80,9 @@ export function updateCareerCase(
   const session = getCareerCase(caseId, userId);
   if (!session) return undefined;
 
+  releaseCareerAdvisor(caseId);
+  session.expertAssignment = null;
+  session.report = undefined;
   session.answers = { ...session.answers, ...answers };
   session.profile = buildCareerProfile(session.answers);
   session.stage = "stage_specific";
@@ -101,6 +104,7 @@ export function analyzeCareerCase(caseId: string, userId?: string): CareerWorkfl
   const timingAnalysis = calculateTimingWindows(session.profile);
   const assignment = assignCareerAdvisor(session.profile, {
     needsFinancialAdvisor: Boolean(session.answers["neg_type"] || session.answers["biz_start_funding"] || session.answers["scale_partner_interest"] || session.answers["trans_bridge"]),
+    assignmentKey: caseId,
   });
 
   session.timingAnalysis = timingAnalysis;
@@ -117,6 +121,7 @@ export function purchaseCareerReport(caseId: string, userId?: string): CareerWor
   const session = getCareerCase(caseId, userId);
   if (!session) return undefined;
 
+  releaseCareerAdvisor(caseId);
   session.paymentConfirmed = true;
   session.stage = "full_report_released";
   session.updatedAt = new Date().toISOString();
@@ -133,6 +138,7 @@ export function bookCareerConsult(
   const session = getCareerCase(caseId, userId);
   if (!session) return undefined;
 
+  releaseCareerAdvisor(caseId);
   session.consultation = {
     booked: true,
     format,

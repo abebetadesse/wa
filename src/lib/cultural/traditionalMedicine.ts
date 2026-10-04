@@ -1,3 +1,5 @@
+import { INTENSIVE_TRADITIONAL_MEDICINES } from "../knowledge/traditionalMedicineDatabase";
+
 export type RemedyDosageForm = "decoction" | "infusion" | "powder" | "tincture" | "poultice" | "paste" | "juice" | "chew" | "smoke" | "bath";
 export type RemedyRoute = "oral" | "dermal" | "nasal" | "ocular" | "rectal" | "vaginal" | "inhalation";
 export type RemedyEvidence = "oral" | "manuscript" | "ethnobotanical" | "in_vitro" | "in_vivo" | "scientific" | "traditional_only";
@@ -154,7 +156,7 @@ export interface RemedySafetyRule {
   plantUid?: string;
   compoundUid?: string;
   ruleType: "contraindication" | "drug_interaction" | "pregnancy_warning" | "toxicity_threshold" | "max_duration";
-  condition?: "pregnancy" | "lactation" | "liver_disease" | "kidney_disease" | "child_under_5";
+  condition?: "pregnancy" | "lactation" | "liver_disease" | "kidney_disease" | "child_under_5" | "child";
   interactingDrugClass?: string;
   severity: "info" | "caution" | "warning" | "contraindicated";
   evidenceLevel: RemedyEvidence;
@@ -235,7 +237,8 @@ export interface ManuscriptRemedy {
 }
 
 export interface RemedySafetyCheckInput {
-  plantUid: string;
+  plantUid?: string;
+  medicineId?: string;
   pregnancy?: boolean;
   lactation?: boolean;
   ageYears?: number;
@@ -476,10 +479,121 @@ export const REMEDY_SAFETY_RULES: RemedySafetyRule[] = [
 ];
 
 export function checkRemedySafety(input: RemedySafetyCheckInput): RemedySafetyRule[] {
-  return REMEDY_SAFETY_RULES.filter((rule) => rule.plantUid === input.plantUid && (
-    (rule.condition === "pregnancy" && input.pregnancy) ||
-    (rule.condition === "lactation" && input.lactation) ||
-    (rule.condition === "child_under_5" && input.ageYears !== undefined && input.ageYears < 5) ||
-    (rule.condition && input.conditions?.includes(rule.condition))
-  ));
+  const identifier = input.medicineId?.trim() || input.plantUid?.trim();
+  if (!identifier) return [];
+
+  const matchingMedicine = findTraditionalMedicine(identifier);
+  const matchingRules = REMEDY_SAFETY_RULES.filter((rule) =>
+    rule.plantUid === identifier && ruleMatchesPatient(rule, input)
+  );
+
+  if (!matchingMedicine) return matchingRules;
+
+  const contextualWarnings = matchingMedicine.contraindications.flatMap((contraindication, index) => {
+    const condition = matchContraindicationToPatient(contraindication, input);
+    if (!condition) return [];
+    return [{
+      ruleUid: `safety:${matchingMedicine.slug}:contraindication:${index}`,
+      plantUid: identifier,
+      ruleType: condition === "pregnancy" ? "pregnancy_warning" as const : "contraindication" as const,
+      condition,
+      severity: "contraindicated" as const,
+      evidenceLevel: "traditional_only" as const,
+      sourceUid: matchingMedicine.source,
+      message: `${contraindication}. Do not use this remedy without qualified clinician review.`,
+    }];
+  });
+
+  const interactionWarnings = matchingMedicine.herbDrugInteractions.flatMap((interaction, index) => {
+    if (!medicationClassMatches(interaction.drugClass, input.medicationClasses ?? [])) return [];
+    return [{
+      ruleUid: `safety:${matchingMedicine.slug}:interaction:${index}`,
+      plantUid: identifier,
+      ruleType: "drug_interaction" as const,
+      interactingDrugClass: interaction.drugClass,
+      severity: interaction.severity === "high" ? "contraindicated" as const : interaction.severity === "moderate" ? "warning" as const : "caution" as const,
+      evidenceLevel: "traditional_only" as const,
+      sourceUid: matchingMedicine.source,
+      message: `${interaction.effect} Do not combine without qualified clinician or pharmacist review.`,
+    }];
+  });
+
+  return [...new Map(
+    [...matchingRules, ...contextualWarnings, ...interactionWarnings].map((rule) => [rule.ruleUid, rule])
+  ).values()];
+}
+
+function ruleMatchesPatient(rule: RemedySafetyRule, input: RemedySafetyCheckInput): boolean {
+  if (rule.ruleType === "drug_interaction" && rule.interactingDrugClass) {
+    return medicationClassMatches(rule.interactingDrugClass, input.medicationClasses ?? []);
+  }
+  const condition = rule.condition;
+  if (!condition) return false;
+  if (condition === "pregnancy" && input.pregnancy) return true;
+  if (condition === "lactation" && input.lactation) return true;
+  if (condition === "child_under_5" && input.ageYears !== undefined && input.ageYears < 5) return true;
+  return input.conditions?.some((value) => normalizeSafetyTerm(value) === normalizeSafetyTerm(condition)) ?? false;
+}
+
+function findTraditionalMedicine(identifier: string) {
+  const normalizedIdentifier = normalizeSafetyTerm(identifier);
+  const directMatch = INTENSIVE_TRADITIONAL_MEDICINES.find((item) =>
+    normalizeSafetyTerm(item.slug) === normalizedIdentifier ||
+    normalizeSafetyTerm(item.id) === normalizedIdentifier
+  );
+  if (directMatch) return directMatch;
+
+  const plant = MEDICINAL_PLANTS.find((item) => item.plantUid === identifier);
+  const binomial = plant ? normalizeBotanicalBinomial(plant.scientificName) : "";
+  return binomial
+    ? INTENSIVE_TRADITIONAL_MEDICINES.find((item) => normalizeBotanicalBinomial(item.scientificName) === binomial)
+    : undefined;
+}
+
+function matchContraindicationToPatient(
+  contraindication: string,
+  input: RemedySafetyCheckInput
+): NonNullable<RemedySafetyRule["condition"]> | undefined {
+  const normalized = normalizeSafetyTerm(contraindication);
+  if (/pregnan/.test(normalized) && input.pregnancy) return "pregnancy";
+  if (/(breastfeeding|breast feed|lactat)/.test(normalized) && input.lactation) return "lactation";
+
+  const childAge = normalized.match(/(?:child|children|infant|pediatric)[^.;,]*(?:under|below|less than)\s*(\d+)/);
+  if (childAge && input.ageYears !== undefined && input.ageYears < Number(childAge[1])) {
+    return childAge[1] === "5" ? "child_under_5" : "child";
+  }
+
+  if (/(liver|hepatic)[^.;,]*(?:disease|failure|impairment)/.test(normalized) &&
+      input.conditions?.some((condition) => normalizeSafetyTerm(condition).includes("liver"))) {
+    return "liver_disease";
+  }
+  if (/(kidney|renal)[^.;,]*(?:disease|failure|impairment)/.test(normalized) &&
+      input.conditions?.some((condition) => /kidney|renal/.test(normalizeSafetyTerm(condition)))) {
+    return "kidney_disease";
+  }
+  return undefined;
+}
+
+function medicationClassMatches(ruleClass: string, medicationClasses: string[]): boolean {
+  const ruleTerms = safetyTerms(ruleClass);
+  return medicationClasses.some((medicationClass) =>
+    [...safetyTerms(medicationClass)].some((term) => ruleTerms.has(term))
+  );
+}
+
+function safetyTerms(value: string): Set<string> {
+  return new Set(
+    normalizeSafetyTerm(value)
+      .split(" ")
+      .filter((term) => term.length >= 4)
+      .map((term) => term.endsWith("s") ? term.slice(0, -1) : term)
+  );
+}
+
+function normalizeSafetyTerm(value: string): string {
+  return value.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+function normalizeBotanicalBinomial(value: string): string {
+  return value.normalize("NFKC").toLowerCase().match(/[a-z]+/g)?.slice(0, 2).join(" ") ?? "";
 }

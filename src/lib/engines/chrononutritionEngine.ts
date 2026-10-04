@@ -32,6 +32,13 @@ export interface HabeshaTimeInfo {
  * Standard 24:00 (00:00) = 6:00 nighttime (እኩለ ሌሊት 6 ሰዓት)
  */
 export function convertToHabeshaTime(standardHour24: number, standardMinute: number = 0): HabeshaTimeInfo {
+  if (!Number.isInteger(standardHour24) || standardHour24 < 0 || standardHour24 > 23) {
+    throw new RangeError("Standard hour must be an integer from 0 to 23.");
+  }
+  if (!Number.isInteger(standardMinute) || standardMinute < 0 || standardMinute > 59) {
+    throw new RangeError("Standard minute must be an integer from 0 to 59.");
+  }
+
   const normHour = ((standardHour24 % 24) + 24) % 24;
   const isDaytime = normHour >= 6 && normHour < 18;
 

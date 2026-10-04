@@ -66,6 +66,10 @@ test("registry: every case domain is a care pathway and paths resolve to the mos
   assert.equal(toolForPath(registry, "/library")?.key, "sacred-library");
   assert.equal(toolForPath(registry, "/marketplace"), null);
   assert.ok(registry.every((tool) => !/diagnos|patient|clinic/i.test(`${tool.name} ${tool.description}`)), "no clinical wording");
+  const hexacore = registry.find((tool) => tool.key === "hexacore-arcana");
+  assert.ok(["cultural", "astrological", "psychological", "biological", "ecological"].every((strand) => hexacore.strands.includes(strand)), "Hexacore arcana connects its cultural, cyclical, reflective, bodily, and ecological strands");
+  const bodySigns = registry.find((tool) => tool.key === "hexacore-body-signs");
+  assert.ok(["biological", "cultural", "psychological", "astrological"].every((strand) => bodySigns.strands.includes(strand)), "Hexacore body signs span observational and interpretive strands");
 });
 
 // ── Database tests ─────────────────────────────────────────────────────────────
@@ -107,6 +111,26 @@ test("tools sync from code and are shown by audience", { skip: skip() }, async (
   assert.ok(!guestTools.some((t) => t.audience !== "public"), "visitors see public tools only");
   const adminView = await toolkit.exploreFor(admin);
   assert.ok(adminView.groups.some((g) => g.group === "governance"));
+});
+
+test("Hexacore links stay hidden from guests even if marked public", { skip: skip() }, async () => {
+  await toolkit.ensureToolsSynced(true);
+  const hexacoreKeys = ["hexacore-arcana", "hexacore-body-signs"];
+  const originals = await db.select().from(schema.toolkitTools).where(inArray(schema.toolkitTools.key, hexacoreKeys));
+
+  try {
+    for (const tool of originals) {
+      await toolkit.updateTool(tool.key, { ...tool, audience: "public" });
+    }
+
+    const guestTools = (await toolkit.exploreFor(null)).groups.flatMap((group) => group.tools);
+    assert.ok(!guestTools.some((tool) => hexacoreKeys.includes(tool.key)), "guests do not see Hexacore links");
+
+    const adminTools = (await toolkit.exploreFor(admin)).groups.flatMap((group) => group.tools);
+    assert.ok(hexacoreKeys.every((key) => adminTools.some((tool) => tool.key === key)), "administrators retain access");
+  } finally {
+    for (const key of hexacoreKeys) await toolkit.resetOrDeleteTool(key);
+  }
 });
 
 test("a herbalist gets its starter set, picks tools, and behaviour shapes recommendations", { skip: skip() }, async () => {

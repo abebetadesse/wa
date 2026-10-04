@@ -223,6 +223,19 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(pathways[0].nodes.length >= 4, "Expected >= 4 nodes in pathway");
     assert.ok(pathways[0].edges.length >= 3, "Expected >= 3 edges in pathway");
     assert.ok(pathways[0].integratedSolution.length > 0, "Expected integrated solution in pathway");
+
+    const headacheOnly = causalEngine.buildCausalPathways("headache", [], mockProfile);
+    assert.ok(!headacheOnly.some((pathway) => pathway.id === "pathway-febrile-malaria"));
+    const feverWithoutEvidence = causalEngine.buildCausalPathways("fever", [], mockProfile);
+    assert.ok(!feverWithoutEvidence.some((pathway) => pathway.id === "pathway-febrile-malaria"));
+    const feverWithEvidence = causalEngine.buildCausalPathways("fever", [{
+      strand: "epidemiological",
+      relevanceScore: 0.8,
+      name: "Malaria exposure",
+      description: "Relevant malaria transmission risk",
+      type: "risk",
+    }], mockProfile);
+    assert.ok(feverWithEvidence.some((pathway) => pathway.id === "pathway-febrile-malaria"));
   });
 
   test("7. AIReasoningEngine produces 7-step COT and 5-stage action plan with Domain B isolation", async () => {
@@ -253,6 +266,7 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.ok(solution.action_plan.immediate_actions.length > 0, "Expected immediate actions (Stage 1: NOW)");
     assert.ok(solution.action_plan.short_term.length > 0, "Expected short term actions (Stage 2)");
     assert.ok(solution.action_plan.medium_term.length > 0, "Expected medium term actions (Stage 3)");
+    assert.ok(!solution.solutions.some((item) => item.id === "sol-herbal-safe-01"), "unscreened herbs must not be presented as safe");
     assert.ok(solution.action_plan.long_term.length > 0, "Expected long term actions (Stage 4)");
     assert.ok(solution.action_plan.ongoing.length > 0, "Expected ongoing actions (Stage 5)");
 

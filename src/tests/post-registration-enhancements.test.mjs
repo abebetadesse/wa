@@ -44,6 +44,27 @@ describe("E1 – Immediate Post-Registration Location Context", () => {
     assert.ok(typeof ctx.admin.region === "string");
   });
 
+  test("resolveLocation cache keeps kebeles and precise GPS coordinates isolated", async () => {
+    const first = await resolveLocation({ region: "Amhara", zone: "North Gondar", woreda: "Debark", kebele: "Kebele A", source: "manual" });
+    first.endemicDiseases.push("caller mutation");
+    const second = await resolveLocation({ region: "Amhara", zone: "North Gondar", woreda: "Debark", kebele: "Kebele B", source: "manual" });
+    const firstAgain = await resolveLocation({ region: "Amhara", zone: "North Gondar", woreda: "Debark", kebele: "Kebele A", source: "manual" });
+    assert.equal(second.admin.kebele, "Kebele B");
+    assert.equal(firstAgain.admin.kebele, "Kebele A");
+    assert.ok(!firstAgain.endemicDiseases.includes("caller mutation"), "callers cannot mutate a cached location context");
+
+    const gpsA = await resolveLocation({ lat: 8.5001, lng: 38.5001, source: "gps" });
+    const gpsB = await resolveLocation({ lat: 8.5002, lng: 38.5002, source: "gps" });
+    assert.equal(gpsB.raw.lat, 8.5002);
+    assert.equal(gpsB.raw.lng, 38.5002);
+    assert.notStrictEqual(gpsA, gpsB);
+  });
+
+  test("resolveLocation rejects malformed GPS coordinates", async () => {
+    await assert.rejects(resolveLocation({ lat: 91, lng: 0, source: "gps" }), /valid geographic bounds/);
+    await assert.rejects(resolveLocation({ lat: 9, source: "gps" }), /requires both latitude and longitude/);
+  });
+
   test("resolveLocation with a lowland region (Afar) maps to low altitude", async () => {
     // Afar is the only lowland region defined in ETHIOPIAN_REGION_PROFILES
     const ctx = await resolveLocation({ region: "Afar", source: "manual" });

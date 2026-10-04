@@ -99,6 +99,7 @@ export async function audiencesFor(user: AuthenticatedUser | null): Promise<Tool
 }
 
 const publicTool = (tool: ToolRow) => ({ key: tool.key, name: tool.name, description: tool.description, group: tool.group, href: tool.href, audience: tool.audience, strands: tool.strands });
+const GUEST_HIDDEN_TOOL_KEYS = new Set(["hexacore-arcana", "hexacore-body-signs"]);
 
 /** What the navigation (Explore, footer) shows this viewer. */
 export async function exploreFor(user: AuthenticatedUser | null) {
@@ -110,7 +111,13 @@ export async function exploreFor(user: AuthenticatedUser | null) {
     .where(and(eq(toolkitTools.isActive, true), inArray(toolkitTools.audience, audiences)))
     .orderBy(asc(toolkitTools.sortOrder), asc(toolkitTools.name));
   return {
-    groups: TOOL_GROUPS.map((group) => ({ group, label: GROUP_LABELS[group], tools: rows.filter((row) => row.group === group).map(publicTool) })).filter((entry) => entry.tools.length),
+    groups: TOOL_GROUPS.map((group) => ({
+      group,
+      label: GROUP_LABELS[group],
+      tools: rows
+        .filter((row) => row.group === group && (user !== null || !GUEST_HIDDEN_TOOL_KEYS.has(row.key)))
+        .map(publicTool),
+    })).filter((entry) => entry.tools.length),
     culturalVisible: await culturalVisibleTo(user),
     isPractitioner: audiences.includes("practitioner"),
   };

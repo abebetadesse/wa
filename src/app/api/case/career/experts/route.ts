@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     const profile: CareerProfile = buildCareerProfile(body.answers);
     const assignment = assignCareerAdvisor(profile, {
       needsFinancialAdvisor: body.needsFinancialAdvisor ?? false,
+      reserve: false,
     });
     if (!assignment) {
       return NextResponse.json({ success: false, code: "NO_ADVISOR_AVAILABLE" }, { status: 503 });

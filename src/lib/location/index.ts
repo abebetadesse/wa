@@ -2,12 +2,33 @@ import { LocationContext, LocationInput } from "./types";
 import { ETHIOPIAN_REGION_PROFILES } from "./ethiopianDatasets";
 
 const locationCache = new Map<string, LocationContext>();
+const LOCATION_CACHE_LIMIT = 512;
 
 function getCacheKey(input: LocationInput): string {
   if (input.lat !== undefined && input.lng !== undefined && input.source === "gps") {
-    return `gps:${input.lat.toFixed(3)},${input.lng.toFixed(3)}`;
+    return `gps:${input.lat},${input.lng}`;
   }
-  return `manual:${input.region || ""}:${input.zone || ""}:${input.woreda || ""}`;
+  return [
+    input.source || "manual",
+    input.region || "",
+    input.zone || "",
+    input.woreda || "",
+    input.kebele || "",
+  ].map((value) => value.trim().toLocaleLowerCase()).join(":");
+}
+
+function copyContext(context: LocationContext): LocationContext {
+  return {
+    ...context,
+    raw: { ...context.raw },
+    admin: { ...context.admin },
+    endemicDiseases: [...context.endemicDiseases],
+    foodAvailability: {
+      staples: [...context.foodAvailability.staples],
+      seasonalGaps: [...context.foodAvailability.seasonalGaps],
+    },
+    climate: { ...context.climate, rainySeasons: [...context.climate.rainySeasons] },
+  };
 }
 
 /**
@@ -19,9 +40,18 @@ function getCacheKey(input: LocationInput): string {
  * - Resolves agro-ecological zones, altitude bands, endemic disease profile, and seasonal lean months.
  */
 export async function resolveLocation(input: LocationInput): Promise<LocationContext> {
+  if (input.source === "gps") {
+    if (input.lat === undefined || input.lng === undefined) {
+      throw new TypeError("GPS location requires both latitude and longitude.");
+    }
+    if (!Number.isFinite(input.lat) || input.lat < -90 || input.lat > 90 || !Number.isFinite(input.lng) || input.lng < -180 || input.lng > 180) {
+      throw new RangeError("GPS coordinates must be finite latitude/longitude values within valid geographic bounds.");
+    }
+  }
+
   const cacheKey = getCacheKey(input);
   const cached = locationCache.get(cacheKey);
-  if (cached) return cached;
+  if (cached) return copyContext(cached);
 
   let regionKey = input.region || "Addis Ababa";
   // Fuzzy match region if entered differently
@@ -39,6 +69,14 @@ export async function resolveLocation(input: LocationInput): Promise<LocationCon
   // Determine altitude band from elevation/lat-lng or agroecological zone
   let altitudeBand = profile.altitudeBand;
   let agroEcological = profile.agroEcological;
+
+  if (
+    regionKey === "Oromia" &&
+    input.woreda?.trim().toLowerCase() === "adama" &&
+    (!input.zone || input.zone.trim().toLowerCase() === "east shewa")
+  ) {
+    agroEcological = "rift-valley";
+  }
 
   // If GPS coordinates provided, refine zone
   if (isGps) {
@@ -79,7 +117,11 @@ export async function resolveLocation(input: LocationInput): Promise<LocationCon
     confidence,
   };
 
-  locationCache.set(cacheKey, context);
+  if (locationCache.size >= LOCATION_CACHE_LIMIT) {
+    const oldestKey = locationCache.keys().next().value;
+    if (oldestKey !== undefined) locationCache.delete(oldestKey);
+  }
+  locationCache.set(cacheKey, copyContext(context));
   return context;
 }
 

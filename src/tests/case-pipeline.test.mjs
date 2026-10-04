@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { resolveLocation } from "../lib/location/index.ts";
 import { evaluateSafetyGate } from "../lib/evaluation/stage5SafetyGate.pipeline.ts";
-import { pillarRegistry } from "../lib/knowledge/pillars/index.ts";
+import { PILLAR_REGISTRY } from "../lib/knowledge/pillars/index.ts";
 import { projectUserReport } from "../lib/reports/projectUserReport.ts";
 import {
   canTransition,
@@ -206,7 +206,7 @@ test("Unit: every pillar returns provenance and confidence", async () => {
     consentToSpiritual: true,
   };
 
-  for (const pillar of pillarRegistry) {
+  for (const pillar of Object.values(PILLAR_REGISTRY)) {
     const result = await pillar.query(dummyInput, dummyCtx);
 
     assert.ok(result, `Pillar ${pillar.id} returned null or undefined`);
@@ -433,7 +433,8 @@ test("Golden-file: snapshot User & Pro reports for Highland, Rift Valley, and Lo
     woreda: "Jigjiga",
   });
   assert.strictEqual(lowlandLoc.agroEcological, "lowland");
-  assert.ok(lowlandLoc.endemicDiseases.includes("leishmaniasis") || lowlandLoc.endemicDiseases.includes("dengue"));
+  assert.ok(lowlandLoc.endemicDiseases.includes("malaria"));
+  assert.ok(lowlandLoc.endemicDiseases.includes("cholera_seasonal"));
 
   const lowlandCase = await evaluateCase({
     caseInput: {

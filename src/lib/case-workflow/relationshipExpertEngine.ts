@@ -160,6 +160,7 @@ export function submitRelationshipCase(
 ): RelationshipCaseSession | undefined {
   const session = getRelationshipCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
 
   session.answers = { ...session.answers, ...answers };
   session.updatedAt = new Date().toISOString();
@@ -192,6 +193,7 @@ export function previewRelationshipCase(caseId: string, userId?: string): Relati
 export function purchaseRelationshipReport(caseId: string, userId?: string): RelationshipCaseSession | undefined {
   const session = getRelationshipCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.paymentConfirmed = true;
   session.status = "visible_to_user";
   session.updatedAt = new Date().toISOString();
@@ -206,6 +208,7 @@ export function bookRelationshipConsult(
 ): RelationshipCaseSession | undefined {
   const session = getRelationshipCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.consultation = {
     booked: true,
     format,

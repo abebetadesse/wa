@@ -9,8 +9,23 @@ export class CausalInferenceEngine {
     const pathways: CausalPathway[] = [];
     const normalized = query.toLowerCase();
 
+    // A general headache or fever alone is not evidence for malaria; require an explicit
+    // malaria query or a relevant epidemiological finding before showing this disease pathway.
+    const malariaEvidence = findings.some((finding) =>
+      finding.strand === "epidemiological" &&
+      finding.relevanceScore >= 0.6 &&
+      /\b(malaria|plasmodium|anopheles)\b/i.test([
+        finding.name,
+        finding.category,
+        finding.description,
+        finding.evidence,
+        ...(finding.matches ?? []),
+      ].filter(Boolean).join(" "))
+    );
+    const explicitMalariaQuery = /\bmalaria\b|ወባ/i.test(normalized);
+
     // 1. Malaria / Febrile Pathway
-    if (normalized.includes("fever") || normalized.includes("malaria") || normalized.includes("headache") || normalized.includes("ትኩሳት") || normalized.includes("ወባ")) {
+    if (explicitMalariaQuery || ((normalized.includes("fever") || normalized.includes("ትኩሳት")) && malariaEvidence)) {
       pathways.push({
         id: "pathway-febrile-malaria",
         title: "Ecology to Febrile Parasitemia Pathway",

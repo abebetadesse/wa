@@ -4,10 +4,10 @@ import { renderDossierHtml, type HexacoreDossierReport } from "@/lib/hexacore/He
 
 export async function GET(
   request: Request,
-  { params }: { params: { purchaseId: string } }
+  { params }: { params: Promise<{ purchaseId: string }> }
 ) {
   try {
-    const { purchaseId } = params;
+    const { purchaseId } = await params;
     const url = new URL(request.url);
     const lang = (url.searchParams.get("lang") || "en") as "en" | "am";
     const format = url.searchParams.get("format") || "html";

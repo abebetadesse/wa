@@ -135,6 +135,7 @@ export function submitLegalCase(
 ): LegalCaseSession | undefined {
   const session = getLegalCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
 
   session.answers = { ...session.answers, ...answers };
   session.updatedAt = new Date().toISOString();
@@ -167,6 +168,7 @@ export function previewLegalCase(caseId: string, userId?: string): LegalCaseSess
 export function purchaseLegalReport(caseId: string, userId?: string): LegalCaseSession | undefined {
   const session = getLegalCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.paymentConfirmed = true;
   session.status = "full_report_released";
   session.updatedAt = new Date().toISOString();
@@ -181,6 +183,7 @@ export function bookLegalConsult(
 ): LegalCaseSession | undefined {
   const session = getLegalCase(caseId, userId);
   if (!session) return undefined;
+  if (session.status === "crisis_routed") return session;
   session.consultation = {
     booked: true,
     format,

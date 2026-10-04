@@ -196,11 +196,33 @@ test("relationship case 2 workflow supports safety-first intake and expert revie
   });
 
   const submitted = submitRelationshipCase(session.id, { desired_outcome: "communication" });
-  assert.equal(submitted?.status, "pending_expert_review");
-  assert.ok(submitted?.compatibility?.score >= 20);
-
+  assert.equal(submitted?.status, "crisis_routed");
+  assert.equal(submitted?.assignedExpert, undefined);
+  assert.equal(submitted?.report, undefined);
   const purchased = purchaseRelationshipReport(session.id);
   const consulted = bookRelationshipConsult(session.id, "video");
-  assert.equal(purchased?.paymentConfirmed, true);
-  assert.equal(consulted?.consultation?.booked, true);
+  assert.equal(purchased?.status, "crisis_routed");
+  assert.equal(purchased?.paymentConfirmed, false);
+  assert.equal(consulted?.status, "crisis_routed");
+  assert.equal(consulted?.consultation, undefined);
+});
+
+test("crisis-routed social and legal cases cannot enter routine paid review", async () => {
+  const { startSocialCase, submitSocialCase, purchaseSocialReport, bookSocialConsult } = await import("../lib/case-workflow/socialExpertEngine.ts");
+  const social = startSocialCase({ safetyResult: { action: "crisis_route" } });
+  assert.equal(submitSocialCase(social.id, { belonging_need: "community" })?.status, "crisis_routed");
+  assert.equal(social.assignedExpert, undefined);
+  assert.equal(social.report, undefined);
+  assert.equal(purchaseSocialReport(social.id)?.paymentConfirmed, false);
+  assert.equal(bookSocialConsult(social.id, "chat")?.consultation, undefined);
+  assert.equal(social.status, "crisis_routed");
+
+  const { startLegalCase, submitLegalCase, purchaseLegalReport, bookLegalConsult } = await import("../lib/case-workflow/legalExpertEngine.ts");
+  const legal = startLegalCase({ safetyResult: { action: "crisis_route" } });
+  assert.equal(submitLegalCase(legal.id, { issue_type: "dispute" })?.status, "crisis_routed");
+  assert.equal(legal.assignedExpert, undefined);
+  assert.equal(legal.report, undefined);
+  assert.equal(purchaseLegalReport(legal.id)?.paymentConfirmed, false);
+  assert.equal(bookLegalConsult(legal.id, "chat")?.consultation, undefined);
+  assert.equal(legal.status, "crisis_routed");
 });
