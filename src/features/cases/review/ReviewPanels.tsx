@@ -139,7 +139,7 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
                     {solution.source}
                     {solution.needsProfessional && <span className="ml-2 text-amber-200">Needs a qualified professional&apos;s confirmation</span>}
                   </span>
-                  <button type="button" disabled={!mayInsert("A")} onClick={() => add(solution.title.replace(/^Plan for: /, ""), undefined, solution.steps)} className={smallButton}>Add to report</button>
+                  <button type="button" disabled={!mayInsert("A")} onClick={() => add(solution.title.replace(/^Plan for: /, "Suggested steps: "), undefined, solution.steps)} className={smallButton}>Add to report</button>
                 </div>
               </li>
             ))}

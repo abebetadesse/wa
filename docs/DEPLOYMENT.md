@@ -79,6 +79,7 @@ line in the log, when a required setting is missing.
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | recommended | the mailbox from §1. Without email (or Telegram) nobody can reset a forgotten password. |
 | `CHAPA_SECRET_KEY`, `CHAPA_WEBHOOK_SECRET` | for online payments | from the Chapa dashboard. Set the webhook URL there to `<APP_URL>/api/payments/chapa/webhook`. Without them payments are recorded by hand. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` | optional | create the bot with @BotFather, then run `npm run telegram:setup` to configure its webhook and commands. |
+| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_BUSINESS_NUMBER`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_TEMPLATE_NAME` | optional | WhatsApp updates and replies through Meta's Cloud API. Steps, including the webhook and the message template, are in `docs/MESSAGING.md`. |
 
 Generate each secret on your own computer:
 
@@ -90,11 +91,11 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 1. In Telegram, message `@BotFather`, run `/newbot`, and save its token privately.
 2. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` (without `@`), and the production HTTPS `APP_URL` to the application's `.env`.
-3. From the application root, run `npm run telegram:setup`. It verifies the token/username, generates `TELEGRAM_WEBHOOK_SECRET` in `.env` if needed, configures the `/start`, `/help`, and `/privacy` commands, and registers `<APP_URL>/api/telegram/webhook`.
+3. From the application root, run `npm run telegram:setup`. It verifies the token/username, generates `TELEGRAM_WEBHOOK_SECRET` in `.env` if needed, configures the `/start`, `/status`, `/stop`, `/help`, and `/privacy` commands, and registers `<APP_URL>/api/telegram/webhook`.
 4. Restart the application so it reads the webhook secret. In @BotFather, run `/setdomain` and select the exact public hostname used by `APP_URL`; this enables the account's Telegram Login Widget.
-5. Open `https://t.me/<TELEGRAM_BOT_USERNAME>` and send `/start`. Then sign in to the website, connect Telegram from `/account`, and enable notification forwarding if desired.
+5. Sign in to the website and connect Telegram from `/account`: **Connect Telegram** opens the bot with a one-time code (press Start), or use the login button. Case updates, reviewer messages, bookings and payments then arrive in the chat, and replies in the chat go to the reviewer.
 
-Never paste the bot token or webhook secret into chat or commit them. Telegram account linking uses the official signed login widget; one-time password reset links expire after one hour.
+Never paste the bot token or webhook secret into chat or commit them. Telegram accounts are linked with the official signed login widget or a signed one-time connect code; password reset links expire after one hour. The review loop, the reviewer's analysis and WhatsApp set-up are described in `docs/MESSAGING.md`.
 
 ## 5. Mobile installation
 

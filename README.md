@@ -140,6 +140,12 @@ For every general case, the application:
 
 This keeps cultural interpretation separate from urgent safety handling. Emergency or crisis signals must be directed to appropriate in-person, emergency, legal, safeguarding, or crisis services rather than treated as ordinary reflective content.
 
+## Review, analysis and chat delivery
+
+Requests submitted through the expert-reviewed workflows go to the role chosen under **Admin → Case routing**. On submission the platform runs every knowledge strand and the relevant engines over the request and stores a reviewer-only analysis: the factors the person described, ranked cause hypotheses quoting their own words, proposed steps, the knowledge findings their words support, and the questions that would sharpen the picture. The reviewer edits the report on `/case-review/{caseId}`, can ask the person for more information, and approves.
+
+Every notification is also delivered to the Telegram or WhatsApp account the person connected from `/account`, and they can answer their reviewer by replying in the chat. Updates about requests with a safety concern never include their content. See [`docs/MESSAGING.md`](docs/MESSAGING.md) for the flow and the Telegram and WhatsApp set-up.
+
 ## Specialized expert workflows
 
 Specialized workflows share the same principles—intake, safety screen, structured questions, analysis, expert assignment, review, and optional consultation—but each has its own question engine and safety rules.

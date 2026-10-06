@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Send, UserPlus } from "lucide-react";
+import { MessagesSquare, Send, UserPlus } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, ChoiceGroup, ErrorState, LoadingState, PageHeader, PageShell } from "@/components/ui";
 import { useApi } from "@/features/workspace/useApi";
@@ -10,7 +10,11 @@ import type { RegistrationSettings } from "@/server/settings";
 
 interface Response {
   value: RegistrationSettings;
-  status: { configured: boolean; botUsername: string | null };
+  status: {
+    configured: boolean;
+    botUsername: string | null;
+    chat: { telegramReplies: boolean; whatsapp: { sending: boolean; receiving: boolean; template: boolean } };
+  };
 }
 
 export default function SignUpSettingsPage() {
@@ -92,6 +96,33 @@ export default function SignUpSettingsPage() {
                   { value: "required_for_business", label: "Required for business owners", hint: "Owners must connect Telegram before their business can be submitted for listing. Clients stay optional." },
                 ]}
               />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessagesSquare className="size-5 text-brand" aria-hidden="true" /> Updates and replies by chat
+              </CardTitle>
+              <CardDescription>
+                Every notification a person gets in the app is also sent to the Telegram or WhatsApp they connected, and they can answer their reviewer by replying in the chat. Set-up steps are in docs/MESSAGING.md.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="flex flex-col gap-2 text-sm">
+                {[
+                  { label: "Telegram: sending updates", on: data.status.configured, fix: "Set TELEGRAM_BOT_TOKEN and TELEGRAM_BOT_USERNAME." },
+                  { label: "Telegram: connect links and replies", on: data.status.configured && data.status.chat.telegramReplies, fix: "Run npm run telegram:setup on the server." },
+                  { label: "WhatsApp: sending updates", on: data.status.chat.whatsapp.sending, fix: "Set WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID." },
+                  { label: "WhatsApp: connect links and replies", on: data.status.chat.whatsapp.receiving, fix: "Set WHATSAPP_BUSINESS_NUMBER, WHATSAPP_APP_SECRET and WHATSAPP_VERIFY_TOKEN, then register the webhook with Meta." },
+                  { label: "WhatsApp: updates after 24 hours of silence", on: data.status.chat.whatsapp.template, fix: "Set WHATSAPP_TEMPLATE_NAME to an approved template." },
+                ].map((row) => (
+                  <li key={row.label} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border px-3 py-2">
+                    <span className="font-medium text-foreground">{row.label}</span>
+                    {row.on ? <Badge tone="success">On</Badge> : <span className="flex items-center gap-2 text-muted-foreground"><Badge tone="neutral">Off</Badge> {row.fix}</span>}
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
 

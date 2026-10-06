@@ -174,15 +174,18 @@ export function groundFindings(
     const description = (finding.description ?? "").toLowerCase();
     let score = 0;
     const matchedOn: string[] = [];
+    // A stem shared by two factors ("livelihood" for work and money) supports the finding once.
+    const counted = new Set<string>();
     for (const { factor, quotes } of detected) {
       const explains = factor.strands.includes(strand as KnowledgeStrandType);
       let best = 0;
+      let bestStem = "";
       for (const stem of factor.knowledge) {
-        if (name.includes(stem)) best = Math.max(best, 3);
-        else if (kind.includes(stem)) best = Math.max(best, 1.5);
-        else if (description.includes(stem)) best = Math.max(best, 1);
+        const weight = counted.has(stem) ? 0 : name.includes(stem) ? 3 : kind.includes(stem) ? 1.5 : description.includes(stem) ? 1 : 0;
+        if (weight > best) [best, bestStem] = [weight, stem];
       }
       if (!best) continue;
+      counted.add(bestStem);
       score += explains ? best : best / 2;
       matchedOn.push(`${factor.label}: “${clip(quotes[0] ?? "", 90)}”`);
     }
@@ -300,8 +303,11 @@ export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFact
       source: "Case review protocol",
     });
   }
+  // Catalogue advice is proposed only for findings the person named or that several signals support;
+  // weaker matches stay available under "Knowledge by strand".
+  const specific = (finding: GroundedFinding) => finding.relevance >= 0.6 || finding.matchedOn.some((reason) => reason.startsWith("Mentioned:"));
   const used = new Set<string>();
-  for (const finding of kept.filter((item) => item.layer === "A" && item.steps.length).sort((a, b) => b.relevance - a.relevance)) {
+  for (const finding of kept.filter((item) => item.layer === "A" && item.steps.length && specific(item)).sort((a, b) => b.relevance - a.relevance)) {
     if (used.size >= 4 || used.has(finding.strand)) continue;
     used.add(finding.strand);
     solutions.push({
@@ -374,7 +380,7 @@ function groundedIntersections(intersections: IntersectionFinding[], keptStrands
 
 // ── Data quality ─────────────────────────────────────────────────────────────
 
-function assessData(words: number, detected: DetectedFactor[], profile: UserProfile): CaseAnalysis["dataQuality"] {
+function assessData(words: number, detected: DetectedFactor[], profile: UserProfile, asked: Set<string>): CaseAnalysis["dataQuality"] {
   const used = [`Request answers (${words} words)`];
   const gaps: string[] = [];
   const age = profile.age ?? profile.demographics?.age;
@@ -395,7 +401,8 @@ function assessData(words: number, detected: DetectedFactor[], profile: UserProf
 
   const present = fields.filter(([, value]) => value).length;
   const score = Math.round(40 * Math.min(1, words / 80) + 30 * (present / fields.length) + 30 * Math.min(1, detected.length / 3));
-  return { score, used, gaps, followUps: [...new Set(followUps)].slice(0, 5) };
+  // Questions the reviewer has already sent are not suggested again.
+  return { score, used, gaps, followUps: [...new Set(followUps)].filter((question) => !asked.has(question)).slice(0, 5) };
 }
 
 // ── Entry point ──────────────────────────────────────────────────────────────
@@ -454,6 +461,6 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     intersections: groundedIntersections(intersections, new Set(strands.filter((entry) => entry.kept > 0).map((entry) => entry.strand))),
     engines: contextEngines(detected, enriched, record, now()),
     safety: { warnings, interactions, domainBSuppressed: safetyActive },
-    dataQuality: assessData(words, detected, enriched),
+    dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body))),
   };
 }
