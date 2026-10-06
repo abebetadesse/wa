@@ -169,8 +169,21 @@ This builds the site and writes `plesk-release.zip` (about 30 MB). Then:
 
 ## 7. First set-up of the database
 
-`npm run db:setup` (run by Route A's actions, or step 3 of Route B) does two things, both safe to
-repeat on every release:
+**The application does this by itself.** Each time it starts in production it applies pending
+migrations and adds missing reference data, in the background, using the settings it is running
+with. Nothing has to be run by hand, which matters on Plesk: commands started from "Run script"
+or from Git's deployment actions do not receive the application's environment variables.
+
+- `https://your-domain/api/health` shows `pending_migration` with `"setup":{"state":"running"}`
+  while the tables are being created (about a minute the first time), `ok` when they are ready,
+  and `setup_failed` with the reason in `setup.detail` if the database refused something.
+- The log shows the same steps on lines starting with `[setup]`.
+- If the application is stopped halfway, the next start continues from the statement it reached.
+- Several application processes starting together take turns; only one does the work.
+- Set `DB_AUTO_SETUP=off` to turn this off and use the command instead.
+
+`npm run db:setup` does the same two things from the command line, both safe to repeat on every
+release:
 
 - `db:migrate` builds the schema on an empty database and applies pending MySQL migrations
   exactly once. `npm run db:status` shows what is applied and pending without changing anything.
@@ -179,7 +192,21 @@ repeat on every release:
 
 ## 8. Your administrator account
 
-Plesk → Node.js → Run script:
+Simplest on Plesk: add two settings where the application's other settings live, then restart
+the application.
+
+```
+ADMIN_EMAIL=you@your-domain
+ADMIN_PASSWORD=<12+ characters with upper and lower case, a digit and a symbol>
+```
+
+The account is created once, at start-up, if no account has that email (`ADMIN_NAME` and
+`ADMIN_ROLE=super_admin` are optional). `/api/health` then carries a `notice` saying it was
+created, or why it was not (for example a password that is too weak). An existing account is never
+changed this way. **Remove both settings after signing in.**
+
+From a command line that can see the settings (`.env` in the application folder), the script does
+the same. Plesk → Node.js → Run script:
 
 ```
 admin:create -- --email you@your-domain --name "Your Name"

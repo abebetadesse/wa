@@ -9,12 +9,15 @@
  * rerunning it. Use an empty database for the initial baseline, or set DB_TABLE_PREFIX (for example
  * wa_) to keep this application's tables beside another application's in a shared database: every
  * table is then created with that prefix and tables without it are never touched.
+ *
+ * The rules live in migrate-core.mjs, which the application also runs by itself at start-up, so on
+ * hosts whose script runner cannot see the settings this command is not needed.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import mysql from "mysql2/promise";
-import { migrationStatements, prefixLike, readTablePrefix, trackerTable } from "./table-prefix.mjs";
+import { runMigrations } from "./migrate-core.mjs";
+import { readTablePrefix } from "./table-prefix.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const migrationDir = path.join(root, "drizzle-mysql");
@@ -48,8 +51,6 @@ try {
   console.error(error.message);
   process.exit(1);
 }
-const tracker = trackerTable(prefix);
-const lockName = `ethio_wellness_schema_migrations${prefix ? `:${prefix}` : ""}`;
 const statusOnly = process.argv.includes("--status");
 const url = process.env.DATABASE_URL?.trim();
 if (!url) {
@@ -62,83 +63,10 @@ if (!/^mysql:\/\//.test(url)) {
   process.exit(1);
 }
 
-const files = fs.readdirSync(migrationDir).filter((name) => /^\d{4}_.+\.sql$/.test(name)).sort();
-if (!files.length) {
-  console.error(`No MySQL migrations found in ${migrationDir}. Generate the initial baseline with drizzle-kit.`);
-  process.exit(1);
-}
-
-const connection = await mysql.createConnection({ uri: url, connectTimeout: 20_000, timezone: "Z", charset: "utf8mb4" });
-let acquiredLock = false;
-let failed = false;
 try {
-  await connection.query("SET time_zone = '+00:00'");
-  const [versionRows] = await connection.query("SELECT VERSION() AS version");
-  const serverVersion = String(versionRows[0]?.version ?? "");
-  if (serverVersion.toLowerCase().includes("mariadb") || Number.parseInt(serverVersion, 10) < 8) {
-    throw new Error(`MySQL 8.0+ is required; connected server reports ${serverVersion || "an unknown version"}.`);
-  }
-  const [lockRows] = await connection.query("SELECT GET_LOCK(?, 30) AS acquired", [lockName]);
-  acquiredLock = Number(lockRows[0]?.acquired) === 1;
-  if (!acquiredLock) throw new Error("Could not acquire the database migration lock within 30 seconds.");
-
-  const [trackerRows] = await connection.query(
-    "SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?",
-    [tracker],
-  );
-  const trackerExists = trackerRows.length > 0;
-  const [appliedRows] = trackerExists ? await connection.query(`SELECT name FROM \`${tracker}\``) : [[]];
-  const applied = new Set(appliedRows.map((row) => row.name));
-  const pending = files.filter((name) => !applied.has(name));
-
-  if (prefix) console.log(`Table prefix: ${prefix} (tables without it are left alone).`);
-  if (statusOnly) {
-    console.log(`Applied: ${applied.size ? [...applied].sort().join(", ") : "nothing yet"}`);
-    console.log(`Pending: ${pending.length ? pending.join(", ") : "nothing — the database is up to date"}`);
-  } else if (!pending.length) {
-    console.log("The database is up to date.");
-  } else {
-    if (!applied.size) {
-      // Without a prefix the database must be empty. With one, only tables carrying it count:
-      // another application's tables may be present and are not this script's business.
-      const [tableRows] = prefix
-        ? await connection.query(
-            "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE ? AND table_name <> ?",
-            [prefixLike(prefix), tracker],
-          )
-        : await connection.query(
-            "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name <> ?",
-            [tracker],
-          );
-      if (Number(tableRows[0]?.count) > 0) {
-        throw new Error(
-          prefix
-            ? `Tables starting with "${prefix}" already exist but there is no migration history for them. Choose another DB_TABLE_PREFIX; no existing tables were changed.`
-            : "The MySQL database is not empty but has no migration history. Use a fresh dedicated database, or set DB_TABLE_PREFIX (for example wa_) to share this one; no existing tables were changed.",
-        );
-      }
-    }
-    if (!trackerExists) {
-      await connection.query(
-        `CREATE TABLE \`${tracker}\` (name VARCHAR(255) NOT NULL PRIMARY KEY, applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB`,
-      );
-    }
-
-    for (const name of pending) {
-      // Prefixing happens before anything runs, so an unsupported statement stops the file untouched.
-      const statements = migrationStatements(fs.readFileSync(path.join(migrationDir, name), "utf8"), prefix);
-      for (const statement of statements) await connection.query(statement);
-      await connection.query(`INSERT INTO \`${tracker}\` (name) VALUES (?)`, [name]);
-      console.log(`applied ${name}`);
-    }
-    console.log("The database is up to date.");
-  }
+  await runMigrations({ url, prefix, migrationDir, statusOnly });
 } catch (error) {
-  failed = true;
   console.error(`Migration stopped: ${error instanceof Error ? error.message : error}`);
-  console.error("MySQL DDL may have committed earlier statements from the failing migration; inspect and repair before retrying.");
-} finally {
-  if (acquiredLock) await connection.query("SELECT RELEASE_LOCK(?)", [lockName]).catch(() => {});
-  await connection.end();
+  console.error("If a migration had started, MySQL may have committed its earlier statements; inspect and repair before retrying.");
+  process.exitCode = 1;
 }
-process.exitCode = failed ? 1 : 0;

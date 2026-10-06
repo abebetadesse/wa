@@ -32,6 +32,7 @@ export function environmentReport(): EnvironmentReport {
   if (!appUrl) errors.push("APP_URL is not set (the public address, e.g. https://app.example.et). Links in emails, Telegram and payment returns are built from it.");
   else if (!/^https:\/\//.test(appUrl)) warnings.push("APP_URL does not use https; sign-in cookies and payments need HTTPS in production.");
 
+  if (has("ADMIN_PASSWORD")) warnings.push("ADMIN_PASSWORD is set: it creates the first administrator once. Remove ADMIN_EMAIL and ADMIN_PASSWORD after signing in.");
   if (process.env.AUTH_DEV_CODES === "true") warnings.push("AUTH_DEV_CODES is set; it is ignored in production and should be removed.");
   if (!has("SMTP_HOST") && !has("TELEGRAM_BOT_TOKEN")) warnings.push("Neither SMTP_HOST nor TELEGRAM_BOT_TOKEN is set: people cannot reset a forgotten password by themselves.");
   if (has("SMTP_HOST") && !has("MAIL_FROM") && !has("SMTP_USER")) warnings.push("SMTP_HOST is set without MAIL_FROM or SMTP_USER; email cannot be sent without a sender address.");

@@ -9,22 +9,9 @@
  */
 import "./loadEnv";
 import { dbClient } from "./index";
-import { seedRoles } from "./migrateAndSeedAuth";
-import { runSeed } from "./seed";
-import { seedMarketplaceCatalogues } from "./seedMarketplaceCatalogues";
-import { ensureSafetySynced } from "@/server/safety";
+import { setupReferenceData } from "./referenceData";
 
-async function main() {
-  const roles = await seedRoles();
-  console.log(`Roles ready (${roles.size}).`);
-  const catalogues = await seedMarketplaceCatalogues();
-  console.log(`Marketplace catalogues ready (${catalogues.categories} categories, ${catalogues.serviceKinds} service kinds).`);
-  await runSeed();
-  await ensureSafetySynced(true);
-  console.log("Safety reference ready.");
-}
-
-main()
+setupReferenceData()
   .catch((error) => {
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
