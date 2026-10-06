@@ -66,6 +66,7 @@ await esbuild.build({
 // 6. package.json: same dependencies and lockfile, production scripts only.
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 pkg.scripts = {
+  build: "node -e \"try { require('@next/env').loadEnvConfig(process.cwd(), false, { info(){}, error(){} }); if (process.env.DATABASE_URL) { console.log('[build] Pre-compiled release; running database setup...'); require('child_process').execSync('node scripts/migrate.mjs --production && node scripts/setup-reference.cjs', { stdio: 'inherit' }); } else { console.log('[build] Pre-compiled release ready.'); } } catch (e) { console.warn('[build] Note:', e.message); }\"",
   start: "node app.js",
   "db:migrate": "node scripts/migrate.mjs --production",
   "db:status": "node scripts/migrate.mjs --production --status",
