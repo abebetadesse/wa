@@ -10,7 +10,7 @@
  * RATE_LIMIT_STORE=database | memory overrides the default (database in production, memory otherwise).
  */
 import { eq, sql } from "drizzle-orm";
-import { db, dbClient } from "@/lib/db";
+import { db } from "@/lib/db";
 import { rateLimits } from "@/lib/db/schema";
 import { consumeRateLimit, type RateLimitResult } from "./rateLimit";
 
@@ -45,7 +45,7 @@ export async function consumeSharedRateLimit(key: string, limit: number, windowM
     const now = Date.now();
     if (now - lastSweep > SWEEP_EVERY_MS) {
       lastSweep = now;
-      void dbClient`DELETE FROM rate_limits WHERE reset_at < UTC_TIMESTAMP(3) - INTERVAL 1 HOUR`.catch((error) => {
+      void db.delete(rateLimits).where(sql`${rateLimits.resetAt} < UTC_TIMESTAMP(3) - INTERVAL 1 HOUR`).catch((error) => {
         console.error("[rate-limit] expired-counter cleanup failed.", error instanceof Error ? error.message : error);
       });
     }

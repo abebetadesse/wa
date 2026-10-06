@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { bookings, businessClients, businesses, businessMembers, payments, remedies, remedyIngredients, serviceKinds, services, users } from "@/lib/db/schema";
+import { bookings, businessClients, businesses, businessMembers, payments, remedies, remedyIngredients, reviews, serviceKinds, services, users } from "@/lib/db/schema";
 import { screenBookingSafety } from "@/server/safety";
 import { bookingIntakeInput, validateBookingIntake } from "@/server/intake/settings";
 import { attachToBooking } from "@/server/intake/attachments";
@@ -345,7 +345,7 @@ export async function getBookingForClient(user: AuthenticatedUser, bookingId: st
       safety: bookings.safety,
       businessAddress: businesses.address,
       cancelReason: bookings.cancelReason,
-      reviewed: sql<boolean>`exists (select 1 from reviews where reviews.booking_id = ${bookings.id})`,
+      reviewed: sql<boolean>`exists (select 1 from ${reviews} where ${reviews.bookingId} = ${bookings.id})`,
       caseId: bookings.caseId,
       caseDomain: serviceKinds.caseDomain,
     })

@@ -6,17 +6,18 @@
  *
  * MySQL DDL implicitly commits, so a failed migration can leave some statements applied. The
  * migration is only marked complete after every statement succeeds; repair a partial run before
- * rerunning it. Use an empty database for the initial baseline.
+ * rerunning it. Use an empty database for the initial baseline, or set DB_TABLE_PREFIX (for example
+ * wa_) to keep this application's tables beside another application's in a shared database: every
+ * table is then created with that prefix and tables without it are never touched.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
+import { migrationStatements, prefixLike, readTablePrefix, trackerTable } from "./table-prefix.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const migrationDir = path.join(root, "drizzle-mysql");
-const tracker = "_applied_sql";
-const lockName = "ethio_wellness_schema_migrations";
 
 function loadEnv() {
   const file = path.join(root, ".env");
@@ -28,6 +29,15 @@ function loadEnv() {
 }
 
 loadEnv();
+let prefix = "";
+try {
+  prefix = readTablePrefix();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
+const tracker = trackerTable(prefix);
+const lockName = `ethio_wellness_schema_migrations${prefix ? `:${prefix}` : ""}`;
 const statusOnly = process.argv.includes("--status");
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -68,6 +78,7 @@ try {
   const applied = new Set(appliedRows.map((row) => row.name));
   const pending = files.filter((name) => !applied.has(name));
 
+  if (prefix) console.log(`Table prefix: ${prefix} (tables without it are left alone).`);
   if (statusOnly) {
     console.log(`Applied: ${applied.size ? [...applied].sort().join(", ") : "nothing yet"}`);
     console.log(`Pending: ${pending.length ? pending.join(", ") : "nothing — the database is up to date"}`);
@@ -75,12 +86,23 @@ try {
     console.log("The database is up to date.");
   } else {
     if (!applied.size) {
-      const [tableRows] = await connection.query(
-        "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name <> ?",
-        [tracker],
-      );
+      // Without a prefix the database must be empty. With one, only tables carrying it count:
+      // another application's tables may be present and are not this script's business.
+      const [tableRows] = prefix
+        ? await connection.query(
+            "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE ? AND table_name <> ?",
+            [prefixLike(prefix), tracker],
+          )
+        : await connection.query(
+            "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name <> ?",
+            [tracker],
+          );
       if (Number(tableRows[0]?.count) > 0) {
-        throw new Error("The MySQL database is not empty but has no migration history. Use a fresh dedicated database; no existing tables were changed.");
+        throw new Error(
+          prefix
+            ? `Tables starting with "${prefix}" already exist but there is no migration history for them. Choose another DB_TABLE_PREFIX; no existing tables were changed.`
+            : "The MySQL database is not empty but has no migration history. Use a fresh dedicated database, or set DB_TABLE_PREFIX (for example wa_) to share this one; no existing tables were changed.",
+        );
       }
     }
     if (!trackerExists) {
@@ -90,8 +112,8 @@ try {
     }
 
     for (const name of pending) {
-      const sql = fs.readFileSync(path.join(migrationDir, name), "utf8");
-      const statements = sql.split(/-->\s*statement-breakpoint/).map((statement) => statement.trim()).filter(Boolean);
+      // Prefixing happens before anything runs, so an unsupported statement stops the file untouched.
+      const statements = migrationStatements(fs.readFileSync(path.join(migrationDir, name), "utf8"), prefix);
       for (const statement of statements) await connection.query(statement);
       await connection.query(`INSERT INTO \`${tracker}\` (name) VALUES (?)`, [name]);
       console.log(`applied ${name}`);

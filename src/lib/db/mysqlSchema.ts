@@ -10,6 +10,10 @@
  *   numeric     DECIMAL, returned as a string so no precision is lost
  *   date        DATE as a "YYYY-MM-DD" string
  *   bigserial   BIGINT UNSIGNED AUTO_INCREMENT
+ *
+ * Tables are declared with `mysqlTable` from this file. When DB_TABLE_PREFIX is set (for example
+ * `wa_`, to share a database with another application) every table is read and written under
+ * that prefix; the migration runner creates them the same way (scripts/table-prefix.mjs).
  */
 import { sql, type ColumnBuilderBase, type HasDefault, type HasRuntimeDefault } from "drizzle-orm";
 import {
@@ -23,7 +27,7 @@ import {
   float,
   index,
   int,
-  mysqlTable,
+  mysqlTableCreator,
   primaryKey,
   smallint,
   text,
@@ -31,6 +35,19 @@ import {
   uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
+
+/** The validated DB_TABLE_PREFIX, or "" when the application has a database to itself. */
+export function tablePrefix(): string {
+  const prefix = (process.env.DB_TABLE_PREFIX ?? "").trim();
+  if (!prefix) return "";
+  // The same rule as scripts/table-prefix.mjs: the two must always agree on table names.
+  if (!/^[a-z][a-z0-9]{0,10}_$/.test(prefix)) {
+    throw new Error(`DB_TABLE_PREFIX "${prefix}" is not valid. Use 1–11 lowercase letters or digits followed by one underscore, for example wa_.`);
+  }
+  return prefix;
+}
+
+export const mysqlTable = mysqlTableCreator((name) => `${tablePrefix()}${name}`);
 
 /** A new row id. Ids are created here rather than by the database, so inserts know them up front. */
 export const newId = () => globalThis.crypto.randomUUID();
@@ -91,4 +108,4 @@ export const numeric = decimal;
 export const real = float;
 export const doublePrecision = double;
 
-export { boolean, decimal, index, mysqlTable, primaryKey, smallint, text, unique, uniqueIndex, varchar };
+export { boolean, decimal, index, primaryKey, smallint, text, unique, uniqueIndex, varchar };

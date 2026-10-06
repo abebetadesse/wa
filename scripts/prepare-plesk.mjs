@@ -42,7 +42,7 @@ fs.writeFileSync(path.join(out, "next.config.mjs"), config.outputText);
 
 // 4. Database: migrations and the runner (plain Node, production dependencies only).
 fs.cpSync(path.join(root, "drizzle-mysql"), path.join(out, "drizzle-mysql"), { recursive: true, filter: (source) => path.basename(source) !== "meta" });
-fs.copyFileSync(path.join(root, "scripts", "migrate.mjs"), path.join(out, "scripts", "migrate.mjs"));
+for (const file of ["migrate.mjs", "table-prefix.mjs"]) fs.copyFileSync(path.join(root, "scripts", file), path.join(out, "scripts", file));
 
 // 5. Set-up scripts, compiled from TypeScript with their application imports bundled in.
 const esbuild = await import("esbuild");

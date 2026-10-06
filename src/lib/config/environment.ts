@@ -19,6 +19,9 @@ export function environmentReport(): EnvironmentReport {
   if (!database) errors.push("DATABASE_URL is not set (mysql://user:password@host:3306/database).");
   else if (!/^mysql:\/\//.test(database)) errors.push("DATABASE_URL must be a MySQL address (mysql://…).");
 
+  const tablePrefix = process.env.DB_TABLE_PREFIX?.trim() ?? "";
+  if (tablePrefix && !/^[a-z][a-z0-9]{0,10}_$/.test(tablePrefix)) errors.push("DB_TABLE_PREFIX is not valid. Use 1–11 lowercase letters or digits followed by one underscore, for example wa_ (or leave it empty when the application has a database to itself).");
+
   for (const name of ["AUTH_SECRET", "DATA_ENCRYPTION_KEY"]) {
     const value = process.env[name]?.trim() ?? "";
     if (!value) errors.push(`${name} is not set. Generate one with: node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`);

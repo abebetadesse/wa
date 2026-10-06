@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
+import { migrationStatements, readTablePrefix, trackerTable } from "./table-prefix.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const migrationDir = path.join(root, "drizzle-mysql");
@@ -38,24 +39,32 @@ if (files.some((file) => !file.startsWith(`${migrationDir}${path.sep}`) || !fs.e
   process.exit(1);
 }
 
+let prefix = "";
+try {
+  prefix = readTablePrefix();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
+const tracker = trackerTable(prefix);
+
 const connection = await mysql.createConnection({ uri: process.env.DATABASE_URL, connectTimeout: 20_000, timezone: "Z", charset: "utf8mb4" });
 try {
   await connection.query("SET time_zone = '+00:00'");
   await connection.query(
-    "CREATE TABLE IF NOT EXISTS `_applied_sql` (name VARCHAR(255) NOT NULL PRIMARY KEY, applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB",
+    `CREATE TABLE IF NOT EXISTS \`${tracker}\` (name VARCHAR(255) NOT NULL PRIMARY KEY, applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB`,
   );
   for (const file of files) {
     const name = path.basename(file);
-    const [rows] = await connection.query("SELECT 1 FROM `_applied_sql` WHERE name = ?", [name]);
+    const [rows] = await connection.query(`SELECT 1 FROM \`${tracker}\` WHERE name = ?`, [name]);
     if (rows.length) {
       console.log(`skip ${name} (already applied)`);
       continue;
     }
-    const text = fs.readFileSync(file, "utf8");
-    for (const statement of text.split(/-->\s*statement-breakpoint/).map((part) => part.trim()).filter(Boolean)) {
+    for (const statement of migrationStatements(fs.readFileSync(file, "utf8"), prefix)) {
       await connection.query(statement);
     }
-    await connection.query("INSERT INTO `_applied_sql` (name) VALUES (?)", [name]);
+    await connection.query(`INSERT INTO \`${tracker}\` (name) VALUES (?)`, [name]);
     console.log(`applied ${name}`);
   }
 } catch (error) {

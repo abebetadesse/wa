@@ -13,7 +13,7 @@ control). What has not: the Plesk server itself. Steps that depend on that serve
 
 | You need | Notes |
 |---|---|
-| **MySQL 8.0+** | Required. Use a dedicated, initially empty database. The app does not support MariaDB or PostgreSQL. |
+| **MySQL 8.0+** | Required. Use a dedicated, initially empty database, or share one with another application through a table prefix (§2). The app does not support MariaDB or PostgreSQL. |
 | Node.js 20.9+ | Plesk → Node.js shows 22.x: fine. |
 | HTTPS | Plesk → SSL/TLS Certificates → install a free Let's Encrypt certificate and turn on "Redirect from http to https". Sign-in cookies are only sent over HTTPS. |
 | Two secrets | `AUTH_SECRET` and `DATA_ENCRYPTION_KEY`, generated in §4. |
@@ -35,6 +35,33 @@ Run the first deployment against an empty database. The checked-in MySQL baselin
 application's tables; it will not import or convert data from the former PostgreSQL database.
 Before cutover, export any data separately, transform and validate it in a staging database, and
 keep the PostgreSQL backup until the MySQL deployment has been verified.
+
+### Sharing a database with another application
+
+When only one database is available, set a table prefix in `.env` **before the first
+`npm run db:setup`**:
+
+```
+DB_TABLE_PREFIX=wa_
+```
+
+Every table of this application is then created and used under that prefix (`wa_users`,
+`wa_bookings`, …, about 100 tables), together with its foreign keys and its migration history
+(`wa__applied_sql`). Tables without the prefix belong to the other application: the set-up, the
+running application and `npm run db:backup` never read, change or copy them. The set-up refuses to
+start if tables with the chosen prefix already exist without a migration history.
+
+What sharing still means:
+
+- Never change or remove the prefix once the application holds data: it would look for its tables
+  under the new names and find none.
+- The two applications share one database user, one storage quota and one restore. Restoring a
+  full-database backup rewinds both; restore this application alone from a `db:backup` file.
+- The other application's own tools (upgrade scripts, "drop all tables" options, importers) are
+  outside this application's control. Check that it does not use the same prefix.
+- Generate new migrations (`npm run db:generate`) without a prefix set; the prefix is applied when a
+  migration runs. A migration containing a kind of statement the prefixer does not know is refused
+  rather than run unprefixed.
 
 ## 3. Folders in Plesk
 
@@ -72,6 +99,7 @@ line in the log, when a required setting is missing.
 |---|---|---|
 | `NODE_ENV` | yes | `production` |
 | `DATABASE_URL` | yes | `mysql://USER:PASSWORD@HOST:3306/DATABASE` |
+| `DB_TABLE_PREFIX` | only for a shared database | e.g. `wa_` (see §2). Leave unset when the database is this application's alone. |
 | `AUTH_SECRET` | yes | random, 32+ characters |
 | `DATA_ENCRYPTION_KEY` | yes | a different random value, 32+ characters. **Keep a copy offline**: data encrypted with it cannot be read without it. |
 | `APP_URL` | yes | `https://app.wisdomcourse.com.et` (no trailing slash) |
