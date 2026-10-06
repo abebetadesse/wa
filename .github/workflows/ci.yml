@@ -14,20 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     services:
-      postgres:
-        image: postgres:16
+      # A throwaway MySQL 8 that exists only for this run.
+      mysql:
+        image: mysql:8.0
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: ethio_wellness
-        ports: ["5432:5432"]
+          MYSQL_ROOT_PASSWORD: ci-only
+          MYSQL_DATABASE: ethio_wellness
+        ports: ["3306:3306"]
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -pci-only --silent"
           --health-interval 5s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 20
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ethio_wellness
+      DATABASE_URL: mysql://root:ci-only@127.0.0.1:3306/ethio_wellness
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,3 +47,24 @@ jobs:
         run: npm test
       - name: Production build
         run: npm run build
+
+  # Asks Plesk to pull and deploy, only after every check above has passed on main.
+  # Needs one repository secret, PLESK_DEPLOY_WEBHOOK (the "Webhook URL" shown in Plesk → Git →
+  # repository settings). Without it this job does nothing. Production settings such as
+  # DATABASE_URL or AUTH_SECRET never belong here: they live in .env on the server.
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the Plesk deployment
+        env:
+          PLESK_DEPLOY_WEBHOOK: ${{ secrets.PLESK_DEPLOY_WEBHOOK }}
+        run: |
+          if [ -z "$PLESK_DEPLOY_WEBHOOK" ]; then
+            echo "PLESK_DEPLOY_WEBHOOK is not set: skipping. Deploy from Plesk → Git instead."
+            exit 0
+          fi
+          curl --fail --silent --show-error --max-time 60 --request POST --output /dev/null "$PLESK_DEPLOY_WEBHOOK"
+          echo "Plesk was asked to deploy ${GITHUB_SHA::7}. Follow the result in Plesk → Git."
