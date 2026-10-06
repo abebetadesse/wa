@@ -128,7 +128,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/_next/") || pathname === "/favicon.ico" || pathname === "/manifest.webmanifest") {
+  if (pathname.startsWith("/_next/") || pathname === "/favicon.ico" || pathname === "/manifest.webmanifest" || pathname.startsWith("/app-icons/")) {
     return NextResponse.next();
   }
 
@@ -158,6 +158,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icons/).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icons/|app-icons/).*)",
   ],
 };
