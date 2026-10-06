@@ -20,11 +20,23 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const migrationDir = path.join(root, "drizzle-mysql");
 
 function loadEnv() {
-  const file = path.join(root, ".env");
-  if (!fs.existsSync(file)) return;
-  for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
-    const match = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (match && process.env[match[1]] === undefined) process.env[match[1]] = match[2].replace(/^(["'])(.*)\1$/, "$2");
+  const searchedDirs = [root, process.cwd(), path.resolve(root, ".."), path.resolve(process.cwd(), "..")];
+  const fileNames = [".env", ".env.production", ".env.local"];
+  for (const dir of new Set(searchedDirs)) {
+    for (const name of fileNames) {
+      const file = path.join(dir, name);
+      if (!fs.existsSync(file)) continue;
+      for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+        const match = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)\s*$/);
+        if (match) {
+          const key = match[1];
+          const val = match[2].replace(/^(["'])(.*)\1$/, "$2").trim();
+          if ((process.env[key] === undefined || process.env[key].trim() === "") && val) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -39,9 +51,10 @@ try {
 const tracker = trackerTable(prefix);
 const lockName = `ethio_wellness_schema_migrations${prefix ? `:${prefix}` : ""}`;
 const statusOnly = process.argv.includes("--status");
-const url = process.env.DATABASE_URL;
+const url = process.env.DATABASE_URL?.trim();
 if (!url) {
-  console.error("DATABASE_URL is not set. Configure a MySQL connection string in .env or the environment.");
+  console.error("DATABASE_URL is not set. Configure a MySQL connection string in .env or pass it directly:");
+  console.error('  DATABASE_URL="mysql://USER:PASSWORD@127.0.0.1:3306/DATABASE" npm run db:setup');
   process.exit(1);
 }
 if (!/^mysql:\/\//.test(url)) {
