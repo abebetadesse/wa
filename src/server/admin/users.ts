@@ -14,6 +14,7 @@ import {
   statusFlags,
   type UserStatus,
 } from "./userPolicy";
+import { insertReturning } from "@/lib/db/write";
 
 /** Columns safe to return to administrators. Never includes password hashes or lockout internals. */
 const adminUserColumns = {
@@ -154,9 +155,7 @@ export async function createUser(actor: AuthenticatedUser, input: CreateUserInpu
   const password = input.password ?? temporaryPassword!;
   assertStrongPassword(password);
 
-  const [created] = await db
-    .insert(users)
-    .values({
+  const [created] = await insertReturning(db, users, {
       email: input.email,
       name: input.name,
       passwordHash: hashPassword(password),
@@ -173,8 +172,7 @@ export async function createUser(actor: AuthenticatedUser, input: CreateUserInpu
       notes: input.notes || null,
       tags: input.tags,
       createdBy: actor.id,
-    })
-    .returning({ id: users.id });
+    }, { fields: { id: users.id } });
 
   await logUserActivity({
     userId: created.id,

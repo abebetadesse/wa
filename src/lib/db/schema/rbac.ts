@@ -35,6 +35,7 @@ export const ALL_PERMISSIONS = [
   { key: "cases:create", label: "Create Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
   { key: "cases:view", label: "View Own Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
   { key: "cases:edit", label: "Edit Own Wellbeing Cases", category: PERMISSION_CATEGORIES.CASES },
+  { key: "cases:review", label: "Review Assigned Case Requests", category: PERMISSION_CATEGORIES.CASES },
 
   // Premium Features
   { key: "ai:chat", label: "Advanced AI Chat Engine", category: PERMISSION_CATEGORIES.PREMIUM_FEATURES },
@@ -85,7 +86,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, PermissionKey[]> = {
   super_admin: ["*"],
   admin: [
     "public:view", "auth:register", "profile:view", "profile:edit",
-    "cases:create", "cases:view", "cases:edit", "reports:basic", "reports:full",
+    "cases:create", "cases:view", "cases:edit", "cases:review", "reports:basic", "reports:full",
     "ai:chat", "data:export",
     "content:view", "content:edit", "content:submit", "content:review", "content:approve", "content:publish",
     "users:view", "users:create", "users:edit", "users:delete", "users:suspend",
@@ -110,13 +111,13 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, PermissionKey[]> = {
   ],
   reviewer: [
     "public:view", "auth:register", "profile:view", "profile:edit",
-    "cases:create", "cases:view", "cases:edit", "reports:basic", "reports:full",
+    "cases:create", "cases:view", "cases:edit", "cases:review", "reports:basic", "reports:full",
     "ai:chat", "data:export",
     "content:view", "content:review", "content:approve",
   ],
   practitioner: [
     "public:view", "auth:register", "profile:view", "profile:edit",
-    "cases:create", "cases:view", "cases:edit", "reports:basic", "reports:full",
+    "cases:create", "cases:view", "cases:edit", "cases:review", "reports:basic", "reports:full",
     "ai:chat", "data:export",
     "practitioner:profile:manage", "practitioner:consult",
   ],

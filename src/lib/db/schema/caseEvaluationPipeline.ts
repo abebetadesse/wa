@@ -1,7 +1,7 @@
-import { pgTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
 import { users } from "./users";
 
-export const pipelineProfiles = pgTable("pipeline_profiles", {
+export const pipelineProfiles = mysqlTable("pipeline_profiles", {
   id: varchar("id", { length: 120 }).primaryKey(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   userIdString: varchar("user_id_string", { length: 120 }).notNull(),
@@ -22,7 +22,7 @@ export const pipelineProfiles = pgTable("pipeline_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const pipelinePreliminaryAnalyses = pgTable("pipeline_preliminary_analyses", {
+export const pipelinePreliminaryAnalyses = mysqlTable("pipeline_preliminary_analyses", {
   id: varchar("id", { length: 120 }).primaryKey(),
   profileId: varchar("profile_id", { length: 120 }).notNull(),
   locationCtx: jsonb("location_ctx").notNull(),
@@ -31,7 +31,7 @@ export const pipelinePreliminaryAnalyses = pgTable("pipeline_preliminary_analyse
   generatedAt: timestamp("generated_at").defaultNow().notNull(),
 });
 
-export const pipelineCases = pgTable("pipeline_cases", {
+export const pipelineCases = mysqlTable("pipeline_cases", {
   id: varchar("id", { length: 120 }).primaryKey(),
   userId: varchar("user_id", { length: 120 }).notNull(),
   profileId: varchar("profile_id", { length: 120 }).notNull(),
@@ -48,7 +48,7 @@ export const pipelineCases = pgTable("pipeline_cases", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const pipelineReports = pgTable("pipeline_reports", {
+export const pipelineReports = mysqlTable("pipeline_reports", {
   id: varchar("id", { length: 120 }).primaryKey(),
   caseId: varchar("case_id", { length: 120 }).notNull(),
   kind: varchar("kind", { length: 20 }).notNull(), // USER | PROFESSIONAL
@@ -65,7 +65,7 @@ export const pipelineReports = pgTable("pipeline_reports", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const pipelineCaseEvents = pgTable("pipeline_case_events", {
+export const pipelineCaseEvents = mysqlTable("pipeline_case_events", {
   id: varchar("id", { length: 120 }).primaryKey(),
   caseId: varchar("case_id", { length: 120 }).notNull(),
   actorId: varchar("actor_id", { length: 120 }).notNull(),
@@ -77,7 +77,7 @@ export const pipelineCaseEvents = pgTable("pipeline_case_events", {
   at: timestamp("at").defaultNow().notNull(),
 });
 
-export const pipelineAssignments = pgTable("pipeline_assignments", {
+export const pipelineAssignments = mysqlTable("pipeline_assignments", {
   id: varchar("id", { length: 120 }).primaryKey(),
   caseId: varchar("case_id", { length: 120 }).notNull(),
   professionalId: varchar("professional_id", { length: 120 }).notNull(),

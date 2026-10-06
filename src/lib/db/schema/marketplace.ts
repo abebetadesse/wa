@@ -6,7 +6,7 @@
  * All catalogues (categories, service kinds) are data managed by administrators, not code.
  */
 import { sql } from "drizzle-orm";
-import { bigserial, index, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex, uuid, varchar, boolean, smallint, date } from "drizzle-orm/pg-core";
+import { bigserial, index, integer, jsonb, numeric, mysqlTable, text, timestamp, uniqueIndex, uuid, varchar, boolean, smallint, date } from "../mysqlSchema";
 import { users } from "./users";
 import { herbs } from "./herbs";
 
@@ -18,7 +18,7 @@ const timestamps = {
 // ── Catalogues ───────────────────────────────────────────────────────────────
 
 /** Kinds of business, e.g. herbalist, debtera, bone-setter, artisan, ceremony service. */
-export const businessCategories = pgTable("business_categories", {
+export const businessCategories = mysqlTable("business_categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 80 }).notNull().unique(),
   name: varchar("name", { length: 120 }).notNull(),
@@ -33,7 +33,7 @@ export const businessCategories = pgTable("business_categories", {
 });
 
 /** Kinds of service a business can offer, e.g. consultation, reading, remedy preparation, ceremony, class. */
-export const serviceKinds = pgTable("service_kinds", {
+export const serviceKinds = mysqlTable("service_kinds", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 80 }).notNull().unique(),
   name: varchar("name", { length: 120 }).notNull(),
@@ -50,7 +50,7 @@ export const serviceKinds = pgTable("service_kinds", {
 
 // ── Businesses ───────────────────────────────────────────────────────────────
 
-export const businesses = pgTable(
+export const businesses = mysqlTable(
   "businesses",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -99,7 +99,7 @@ export const businesses = pgTable(
 );
 
 /** People who work in a business workspace. */
-export const businessMembers = pgTable(
+export const businessMembers = mysqlTable(
   "business_members",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -114,7 +114,7 @@ export const businessMembers = pgTable(
   (table) => [uniqueIndex("business_members_unique").on(table.businessId, table.userId)],
 );
 
-export const services = pgTable(
+export const services = mysqlTable(
   "services",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -136,7 +136,7 @@ export const services = pgTable(
 );
 
 /** Weekly opening hours (per business, optionally per practitioner). Minutes since midnight. */
-export const availabilityRules = pgTable(
+export const availabilityRules = mysqlTable(
   "availability_rules",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -150,7 +150,7 @@ export const availabilityRules = pgTable(
   (table) => [index("availability_business_idx").on(table.businessId)],
 );
 
-export const timeOff = pgTable("time_off", {
+export const timeOff = mysqlTable("time_off", {
   id: uuid("id").primaryKey().defaultRandom(),
   businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),
   memberId: uuid("member_id").references(() => businessMembers.id, { onDelete: "cascade" }),
@@ -163,7 +163,7 @@ export const timeOff = pgTable("time_off", {
 // ── Clients, bookings, payments ──────────────────────────────────────────────
 
 /** A business's own client record (CRM). May be linked to a platform account. */
-export const businessClients = pgTable(
+export const businessClients = mysqlTable(
   "business_clients",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -184,7 +184,7 @@ export const businessClients = pgTable(
   ],
 );
 
-export const bookings = pgTable(
+export const bookings = mysqlTable(
   "bookings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -220,7 +220,7 @@ export const bookings = pgTable(
 );
 
 /** Manually recorded payments (cash, bank transfer, mobile money reference). */
-export const payments = pgTable(
+export const payments = mysqlTable(
   "payments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -246,7 +246,7 @@ export const payments = pgTable(
 
 // ── Remedies and inventory ───────────────────────────────────────────────────
 
-export const remedies = pgTable(
+export const remedies = mysqlTable(
   "remedies",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -269,7 +269,7 @@ export const remedies = pgTable(
 );
 
 /** Remedy ingredients link to the herb knowledge base so the herb-drug safety gate can check them. */
-export const remedyIngredients = pgTable(
+export const remedyIngredients = mysqlTable(
   "remedy_ingredients",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -281,7 +281,7 @@ export const remedyIngredients = pgTable(
   (table) => [index("remedy_ingredients_remedy_idx").on(table.remedyId)],
 );
 
-export const stockMovements = pgTable("stock_movements", {
+export const stockMovements = mysqlTable("stock_movements", {
   id: uuid("id").primaryKey().defaultRandom(),
   remedyId: uuid("remedy_id").references(() => remedies.id, { onDelete: "cascade" }).notNull(),
   /** Positive for restock, negative for dispensing or waste. */
@@ -295,7 +295,7 @@ export const stockMovements = pgTable("stock_movements", {
 
 // ── Reviews and messages ─────────────────────────────────────────────────────
 
-export const reviews = pgTable(
+export const reviews = mysqlTable(
   "reviews",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -313,7 +313,7 @@ export const reviews = pgTable(
   (table) => [index("reviews_business_idx").on(table.businessId)],
 );
 
-export const conversations = pgTable(
+export const conversations = mysqlTable(
   "conversations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -326,7 +326,7 @@ export const conversations = pgTable(
   (table) => [uniqueIndex("conversations_unique").on(table.businessId, table.clientUserId)],
 );
 
-export const messages = pgTable(
+export const messages = mysqlTable(
   "messages",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -345,9 +345,9 @@ export const messages = pgTable(
 
 /**
  * Event outbox for realtime updates. Rows are written in the same request as the change and
- * announced with NOTIFY; SSE clients resume from their last event id after reconnecting.
+ * picked up by the MySQL event poller; SSE clients resume from their last event id after reconnecting.
  */
-export const realtimeEvents = pgTable(
+export const realtimeEvents = mysqlTable(
   "realtime_events",
   {
     id: bigserial("id", { mode: "number" }).primaryKey(),
@@ -355,12 +355,15 @@ export const realtimeEvents = pgTable(
     channel: varchar("channel", { length: 80 }).notNull(),
     type: varchar("type", { length: 60 }).notNull(),
     payload: jsonb("payload").$type<Record<string, unknown>>().default({}).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [index("realtime_events_channel_idx").on(table.channel, table.id)],
+  (table) => [
+    index("realtime_events_channel_idx").on(table.channel, table.id),
+    index("realtime_events_created_idx").on(table.createdAt),
+  ],
 );
 
-export const notifications = pgTable(
+export const notifications = mysqlTable(
   "notifications",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -381,7 +384,7 @@ export const notifications = pgTable(
  * An invitation to join a business team. Only a SHA-256 digest of the token is stored; the link
  * is shown once to the inviter (and sent in-app when the invitee already has an account).
  */
-export const businessInvitations = pgTable(
+export const businessInvitations = mysqlTable(
   "business_invitations",
   {
     id: uuid("id").primaryKey().defaultRandom(),

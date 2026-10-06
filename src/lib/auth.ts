@@ -5,6 +5,7 @@ import { authSessions, users, roles } from "@/lib/db/schema";
 import { eq, and, isNull, gt, desc } from "drizzle-orm";
 import { getAuthSecret } from "./auth/secret";
 import { DEFAULT_ROLE_PERMISSIONS, roleHasPermission, RoleName } from "./db/schema/rbac";
+import { insertReturning } from "@/lib/db/write";
 
 const ACCESS_COOKIE = "ethio_access";
 const REFRESH_COOKIE = "ethio_refresh";
@@ -130,12 +131,11 @@ export async function establishAuth(
   // Resolve user permissions
   const permissions = await getUserPermissions(user.id, user.role);
 
-  const ipAddress = options.request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+  const forwarded = options.request?.headers;
+  const ipAddress = forwarded?.get("x-real-ip")?.trim() || forwarded?.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
   const userAgent = options.request?.headers.get("user-agent") || "Browser Client";
 
-  const [session] = await db
-    .insert(authSessions)
-    .values({
+  const [session] = await insertReturning(db, authSessions, {
       userId: user.id,
       refreshTokenHash: crypto.createHash("sha256").update(refreshToken).digest("hex"),
       ipAddress,
@@ -143,8 +143,7 @@ export async function establishAuth(
       deviceInfo: options.deviceInfo || {},
       expiresAt,
       isActive: true,
-    })
-    .returning({ id: authSessions.id });
+    }, { fields: { id: authSessions.id } });
 
   const accessToken = createAccessToken(user.id, user.role, permissions);
 

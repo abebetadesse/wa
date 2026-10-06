@@ -1,9 +1,9 @@
-import { pgTable, uuid, varchar, timestamp, jsonb, date, integer, boolean, text } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, timestamp, jsonb, date, integer, boolean, text } from "../mysqlSchema";
 
 /**
  * Enterprise Roles table defining granular RBAC privileges.
  */
-export const roles = pgTable("roles", {
+export const roles = mysqlTable("roles", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 50 }).notNull().unique(), // 'super_admin' | 'admin' | 'premium' | 'user' | etc.
   description: text("description"),
@@ -17,7 +17,7 @@ export const roles = pgTable("roles", {
 /**
  * Enterprise Users table extended with Ethiopian demographic and access control fields.
  */
-export const users = pgTable("users", {
+export const users = mysqlTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   phone: varchar("phone", { length: 30 }).unique(),
@@ -57,6 +57,13 @@ export const users = pgTable("users", {
   telegramVerifiedAt: timestamp("telegram_verified_at"),
   /** Forward in-app notifications to Telegram. */
   telegramNotify: boolean("telegram_notify").default(true).notNull(),
+  /** WhatsApp number (digits, international format) linked by messaging the platform's WhatsApp bot. */
+  whatsappPhone: varchar("whatsapp_phone", { length: 20 }).unique(),
+  whatsappVerifiedAt: timestamp("whatsapp_verified_at"),
+  /** Forward in-app notifications to WhatsApp. */
+  whatsappNotify: boolean("whatsapp_notify").default(true).notNull(),
+  /** Last message received from this number: WhatsApp allows free-form replies for 24 hours after it. */
+  whatsappLastInboundAt: timestamp("whatsapp_last_inbound_at"),
   isActive: boolean("is_active").default(true).notNull(),
   isSuspended: boolean("is_suspended").default(false).notNull(),
   suspensionReason: text("suspension_reason"),
@@ -73,7 +80,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const profileFieldDefinitions = pgTable("profile_field_definitions", {
+export const profileFieldDefinitions = mysqlTable("profile_field_definitions", {
   id: uuid("id").primaryKey().defaultRandom(),
   section: varchar("section", { length: 100 }).notNull(),
   label: varchar("label", { length: 255 }).notNull(),
@@ -95,7 +102,7 @@ export const profileFieldDefinitions = pgTable("profile_field_definitions", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const userProfiles = pgTable("user_profiles", {
+export const userProfiles = mysqlTable("user_profiles", {
   userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
   primaryName: varchar("primary_name", { length: 255 }),
   birthDate: date("birth_date"),
@@ -141,7 +148,7 @@ export const userProfiles = pgTable("user_profiles", {
 /**
  * Active Session management table for tracking devices, IP addresses, and JWT refresh tokens.
  */
-export const authSessions = pgTable("auth_sessions", {
+export const authSessions = mysqlTable("auth_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   refreshTokenHash: varchar("refresh_token_hash", { length: 128 }).notNull().unique(),
@@ -158,7 +165,7 @@ export const authSessions = pgTable("auth_sessions", {
 /**
  * Email verification codes & OTP tokens.
  */
-export const emailVerifications = pgTable("email_verifications", {
+export const emailVerifications = mysqlTable("email_verifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   token: varchar("token", { length: 255 }).notNull(),
@@ -171,7 +178,7 @@ export const emailVerifications = pgTable("email_verifications", {
 /**
  * Password reset tokens.
  */
-export const passwordResets = pgTable("password_resets", {
+export const passwordResets = mysqlTable("password_resets", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   token: varchar("token", { length: 255 }).notNull(),
@@ -183,7 +190,7 @@ export const passwordResets = pgTable("password_resets", {
 /**
  * User Activities log for user timeline and personal history.
  */
-export const userActivities = pgTable("user_activities", {
+export const userActivities = mysqlTable("user_activities", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   activityType: varchar("activity_type", { length: 50 }).notNull(), // 'login', 'case_created', 'report_saved', etc.
@@ -195,7 +202,7 @@ export const userActivities = pgTable("user_activities", {
 /**
  * Login history log for enterprise security monitoring & lockout diagnostics.
  */
-export const loginHistory = pgTable("login_history", {
+export const loginHistory = mysqlTable("login_history", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   email: varchar("email", { length: 255 }).notNull(),
@@ -207,7 +214,7 @@ export const loginHistory = pgTable("login_history", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const wellbeingProfiles = pgTable("wellbeing_profiles", {
+export const wellbeingProfiles = mysqlTable("wellbeing_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   age: integer("age"),
@@ -226,7 +233,7 @@ export const wellbeingProfiles = pgTable("wellbeing_profiles", {
 // Domain B — Firewalled table. Structurally separated from scientific wellbeing fields.
 // No foreign keys into scientific intake, gap causes, or solutions.
 // CI linting and architectural boundaries prevent this from entering evaluation queries.
-export const culturalProfiles = pgTable("cultural_profiles", {
+export const culturalProfiles = mysqlTable("cultural_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   fullName: varchar("full_name", { length: 255 }),
@@ -243,7 +250,7 @@ export const culturalProfiles = pgTable("cultural_profiles", {
 // Stores AI-generated bio-narrative reports. Flows through:
 //   draft → pending_endorsement → endorsed → published
 // Admin/professional may edit sections before publishing.
-export const bioNarrativeReports = pgTable("bio_narrative_reports", {
+export const bioNarrativeReports = mysqlTable("bio_narrative_reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   // draft | pending_endorsement | endorsed | published
@@ -269,7 +276,7 @@ export const bioNarrativeReports = pgTable("bio_narrative_reports", {
 // ─── Enhancement: Case Summary Cards ────────────────────────────────────────
 // Created by the AI Case Summary Engine after free-expression intake.
 // Presented to the user for endorsement before the formal session starts.
-export const caseSummaryCards = pgTable("case_summary_cards", {
+export const caseSummaryCards = mysqlTable("case_summary_cards", {
   id: uuid("id").primaryKey().defaultRandom(),
   sessionId: uuid("session_id"),  // linked after session start
   userId: uuid("user_id").notNull().references(() => users.id),
@@ -294,7 +301,7 @@ export const caseSummaryCards = pgTable("case_summary_cards", {
 
 // ─── Enhancement: Publishing Criteria ───────────────────────────────────────
 // Admin-controlled singleton config defining auto-publish rules and review gates.
-export const publishingCriteria = pgTable("publishing_criteria", {
+export const publishingCriteria = mysqlTable("publishing_criteria", {
   id: uuid("id").primaryKey().defaultRandom(),
   allowAutoPublishBioNarrative: boolean("allow_auto_publish_bio_narrative").default(false).notNull(),
   allowAutoPublishCases: boolean("allow_auto_publish_cases").default(false).notNull(),

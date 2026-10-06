@@ -17,6 +17,7 @@ import {
   foodNutrients as foodNutrientsTable,
 } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { insertReturning } from "@/lib/db/write";
 
 export const ENGINE_MODEL_VERSION = "eval-v3.0.0-deterministic+rules-2025";
 
@@ -145,24 +146,19 @@ export async function runEvaluationAndPersist(submissionId: string, userId: stri
     const reportResult = evaluateProfileInMemory(payload, dietLog, nutrientRefs, foodNutrientsLookup);
 
     // 5. Persist report
-    const [reportRow] = await db
-      .insert(wellbeingGapReports)
-      .values({
+    const [reportRow] = await insertReturning(db, wellbeingGapReports, {
         submissionId,
         userId,
         modelVersion: ENGINE_MODEL_VERSION,
         summaryNarrative: reportResult.summaryNarrative,
         safetyGateVerified: true,
-      })
-      .returning({ id: wellbeingGapReports.id });
+      }, { fields: { id: wellbeingGapReports.id } });
 
     const reportId = reportRow.id;
 
     // 6. Persist identified gaps and build map
     for (const gap of reportResult.gaps) {
-      const [gapRow] = await db
-        .insert(identifiedGaps)
-        .values({
+      const [gapRow] = await insertReturning(db, identifiedGaps, {
           reportId,
           nutrientId: gap.nutrientId,
           gapType: gap.gapType,
@@ -171,8 +167,7 @@ export async function runEvaluationAndPersist(submissionId: string, userId: stri
           targetRda: gap.targetRda.toString(),
           calculatedDailyIntake: gap.calculatedDailyIntake.toString(),
           sourceRef: gap.sourceRef,
-        })
-        .returning({ id: identifiedGaps.id });
+        }, { fields: { id: identifiedGaps.id } });
 
       const gapId = gapRow.id;
 

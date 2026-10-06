@@ -2,15 +2,14 @@
  * Realtime delivery.
  *
  *   publish()  → INSERT into realtime_events (in the caller's transaction when given one)
- *   trigger    → pg_notify('realtime_events', {id, channel})           (see drizzle/0004_marketplace.sql)
- *   listener   → one LISTEN connection per server instance → in-process fan-out
+ *   listener   → a MySQL event-table poller per server instance → in-process fan-out
  *   /api/realtime (SSE) → replays missed events by id, then streams live ones
  *
  * Channels: "user:<uuid>" for a person, "business:<uuid>" for everyone working in a business.
  */
 import { EventEmitter } from "node:events";
-import { and, asc, eq, gt, inArray, lt } from "drizzle-orm";
-import { db, pgClient } from "@/lib/db";
+import { and, asc, eq, gt, gte, inArray, lte, lt, or, sql } from "drizzle-orm";
+import { db } from "@/lib/db";
 import { realtimeEvents } from "@/lib/db/schema";
 
 export type RealtimeChannel = `user:${string}` | `business:${string}`;
@@ -42,32 +41,73 @@ export async function publish(
 
 // ── Listener (one per process) ───────────────────────────────────────────────
 
-const globalForRealtime = globalThis as unknown as { realtimeBus?: EventEmitter; realtimeListening?: Promise<void> };
+const globalForRealtime = globalThis as unknown as {
+  realtimeBus?: EventEmitter;
+  realtimeListening?: Promise<void>;
+  realtimePolling?: ReturnType<typeof setInterval>;
+  realtimeLastSeenId?: number;
+  realtimePollRunning?: boolean;
+  realtimeSeenIds?: Set<number>;
+};
 const bus = globalForRealtime.realtimeBus ?? new EventEmitter();
 bus.setMaxListeners(0);
 globalForRealtime.realtimeBus = bus;
 
 const RETENTION_DAYS = 7;
+const LATE_COMMIT_WINDOW_MS = 60_000;
+const MAX_SEEN_IDS = 10_000;
 
 function ensureListening() {
   globalForRealtime.realtimeListening ??= (async () => {
-    await pgClient.listen("realtime_events", async (raw) => {
+    const [latest] = await db.select({ id: sql<number>`COALESCE(MAX(${realtimeEvents.id}), 0)` }).from(realtimeEvents);
+    globalForRealtime.realtimeLastSeenId ??= Number(latest.id);
+    globalForRealtime.realtimeSeenIds ??= new Set();
+    const recentRows = await db
+      .select({ id: realtimeEvents.id })
+      .from(realtimeEvents)
+      .where(and(lte(realtimeEvents.id, globalForRealtime.realtimeLastSeenId), gte(realtimeEvents.createdAt, new Date(Date.now() - LATE_COMMIT_WINDOW_MS))))
+      .orderBy(asc(realtimeEvents.id))
+      .limit(MAX_SEEN_IDS);
+    for (const row of recentRows) globalForRealtime.realtimeSeenIds.add(row.id);
+    const poll = async () => {
+      if (globalForRealtime.realtimePollRunning) return;
+      globalForRealtime.realtimePollRunning = true;
       try {
-        const { id, channel } = JSON.parse(raw) as { id: number; channel: string };
-        if (bus.listenerCount(channel) === 0) return;
-        const [row] = await db.select().from(realtimeEvents).where(eq(realtimeEvents.id, id)).limit(1);
-        if (row) bus.emit(channel, toEvent(row));
+        const rows = await db
+          .select()
+          .from(realtimeEvents)
+          .where(or(
+            gt(realtimeEvents.id, globalForRealtime.realtimeLastSeenId ?? 0),
+            and(
+              lte(realtimeEvents.id, globalForRealtime.realtimeLastSeenId ?? 0),
+              gte(realtimeEvents.createdAt, new Date(Date.now() - LATE_COMMIT_WINDOW_MS)),
+            ),
+          ))
+          .orderBy(asc(realtimeEvents.id))
+          .limit(MAX_SEEN_IDS);
+        for (const row of rows) {
+          globalForRealtime.realtimeLastSeenId = Math.max(globalForRealtime.realtimeLastSeenId ?? 0, row.id);
+          const seen = globalForRealtime.realtimeSeenIds!;
+          if (seen.has(row.id)) continue;
+          seen.add(row.id);
+          if (seen.size > MAX_SEEN_IDS) seen.delete(seen.values().next().value!);
+          if (bus.listenerCount(row.channel) > 0) bus.emit(row.channel, toEvent(row));
+        }
       } catch (error) {
-        console.error("[realtime] failed to dispatch notification:", error);
+        console.error("[realtime] database polling failed:", error);
+      } finally {
+        globalForRealtime.realtimePollRunning = false;
       }
-    });
+    };
+    globalForRealtime.realtimePolling ??= setInterval(() => void poll(), 1_000);
+    globalForRealtime.realtimePolling.unref?.();
     // Housekeeping: drop events older than the retention window once per day.
     const prune = () =>
       db
         .delete(realtimeEvents)
         .where(lt(realtimeEvents.createdAt, new Date(Date.now() - RETENTION_DAYS * 86_400_000)))
         .catch((error) => console.error("[realtime] prune failed:", error));
-    prune();
+    void prune();
     setInterval(prune, 86_400_000).unref?.();
   })().catch((error) => {
     globalForRealtime.realtimeListening = undefined;

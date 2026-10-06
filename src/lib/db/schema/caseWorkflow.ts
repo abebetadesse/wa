@@ -1,7 +1,7 @@
-import { pgTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
 import { users } from "./users";
 
-export const caseCategories = pgTable("case_categories", {
+export const caseCategories = mysqlTable("case_categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 120 }).notNull(),
   description: text("description").notNull(),
@@ -14,7 +14,7 @@ export const caseCategories = pgTable("case_categories", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const caseQuestions = pgTable("case_questions", {
+export const caseQuestions = mysqlTable("case_questions", {
   id: uuid("id").primaryKey().defaultRandom(),
   questionSetId: varchar("question_set_id", { length: 120 }).notNull(),
   fieldId: varchar("field_id", { length: 120 }).notNull(),
@@ -28,7 +28,7 @@ export const caseQuestions = pgTable("case_questions", {
   knowledgeMappings: jsonb("knowledge_mappings").default([]).notNull(),
 });
 
-export const caseSessions = pgTable("case_sessions", {
+export const caseSessions = mysqlTable("case_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   caseId: varchar("case_id", { length: 120 }).notNull(),
@@ -39,7 +39,7 @@ export const caseSessions = pgTable("case_sessions", {
   lastUpdated: timestamp("last_updated").defaultNow().notNull(),
 });
 
-export const caseCauses = pgTable("case_causes", {
+export const caseCauses = mysqlTable("case_causes", {
   id: uuid("id").primaryKey().defaultRandom(),
   sessionId: uuid("session_id").references(() => caseSessions.id, { onDelete: "cascade" }).notNull(),
   description: text("description").notNull(),
@@ -49,7 +49,7 @@ export const caseCauses = pgTable("case_causes", {
   isSelected: boolean("is_selected").default(true).notNull(),
 });
 
-export const caseSolutions = pgTable("case_solutions", {
+export const caseSolutions = mysqlTable("case_solutions", {
   id: uuid("id").primaryKey().defaultRandom(),
   sessionId: uuid("session_id").references(() => caseSessions.id, { onDelete: "cascade" }).notNull(),
   title: text("title").notNull(),
@@ -65,7 +65,7 @@ export const caseSolutions = pgTable("case_solutions", {
  * Expert-reviewed case workflows (career, legal, relationship, social, spiritual).
  * One row per case; structured sub-records are JSON (see src/server/cases/types.ts).
  */
-export const workflowCases = pgTable("workflow_cases", {
+export const workflowCases = mysqlTable("workflow_cases", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   domain: varchar("domain", { length: 30 }).notNull(),

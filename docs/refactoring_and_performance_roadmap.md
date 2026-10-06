@@ -1,5 +1,8 @@
 # Enterprise Refactoring & Performance Optimization Roadmap: 20 Architectural Pillars
 
+> Historical planning document. Its PostgreSQL, pgvector, and `postgres-js` references predate the
+> MySQL 8 port and do not describe the current database implementation.
+
 Based on benchmark architectures from global and regional leaders in clinical decision support, holistic telehealth, high-concurrency cultural platforms, and mobile-first African digital infrastructure (e.g., Teladoc, Noom, Ping An Good Doctor, Co-Star, Consensus.app, and Telebirr/Ethio Telecom rails), this roadmap outlines **20 strategic refactoring points** to elevate the **Ethiopian Wisdom Platform** to premier performance, low-latency responsiveness, and high-availability standards.
 
 ---

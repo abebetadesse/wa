@@ -1,7 +1,7 @@
-import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, varchar } from "../mysqlSchema";
+import { boolean, integer, jsonb, mysqlTable, text, timestamp, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 
-export const knowledgeStrands = pgTable("knowledge_strands", {
+export const knowledgeStrands = mysqlTable("knowledge_strands", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   description: text("description").default("").notNull(),
@@ -14,7 +14,7 @@ export const knowledgeStrands = pgTable("knowledge_strands", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const knowledgeCategories = pgTable("knowledge_categories", {
+export const knowledgeCategories = mysqlTable("knowledge_categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   strandId: uuid("strand_id").references(() => knowledgeStrands.id, { onDelete: "cascade" }).notNull(),
   name: varchar("name", { length: 120 }).notNull(),
@@ -26,7 +26,7 @@ export const knowledgeCategories = pgTable("knowledge_categories", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const knowledgeItems = pgTable("knowledge_items", {
+export const knowledgeItems = mysqlTable("knowledge_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   categoryId: uuid("category_id").references(() => knowledgeCategories.id, { onDelete: "cascade" }).notNull(),
   data: jsonb("data").default({}).notNull(),
@@ -40,7 +40,7 @@ export const knowledgeItems = pgTable("knowledge_items", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const knowledgeVersions = pgTable("knowledge_versions", {
+export const knowledgeVersions = mysqlTable("knowledge_versions", {
   id: uuid("id").primaryKey().defaultRandom(),
   itemId: uuid("item_id").references(() => knowledgeItems.id, { onDelete: "cascade" }).notNull(),
   data: jsonb("data").notNull(),

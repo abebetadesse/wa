@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { caseSummaryCards } from "@/lib/db/schema";
 import { validateSummaryCardForSession, type SuggestedStrandDetail } from "@/lib/case-workflow/caseSummaryEngine";
 import { eq, and } from "drizzle-orm";
+import { updateReturning } from "@/lib/db/write";
 
 // ─── POST /api/case/summary/[id]/endorse ─────────────────────────────────────
 // User confirms that the AI-generated case summary card accurately represents
@@ -81,11 +82,7 @@ export const POST = defineRoute({
 
     // Mark as endorsed
     const now = new Date();
-    const [updated] = await db
-      .update(caseSummaryCards)
-      .set({ endorsedByUser: true, endorsedAt: now })
-      .where(eq(caseSummaryCards.id, params.id))
-      .returning();
+    const [updated] = await updateReturning(db, caseSummaryCards, { endorsedByUser: true, endorsedAt: now }, eq(caseSummaryCards.id, params.id));
 
     return {
       cardId: updated.id,

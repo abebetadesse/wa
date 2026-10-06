@@ -9,6 +9,7 @@ import { requireCapability } from "./access";
 import { DELIVERY_MODES } from "./businesses";
 import { addDays, computeSlots, localToUtc, todayIn, weekdayOf } from "./time";
 import { businessChannel, publish } from "@/server/realtime";
+import { insertReturning, updateReturning } from "@/lib/db/write";
 
 const MIN = 60_000;
 /** Earliest a client can book, and how far ahead. Businesses can tune these later. */
@@ -50,22 +51,22 @@ export const serviceKindInput = z.object({
 
 export async function upsertCategory(id: string | null, input: z.infer<typeof categoryInput>) {
   if (id) {
-    const [row] = await db.update(businessCategories).set({ ...input, updatedAt: new Date() }).where(eq(businessCategories.id, id)).returning();
+    const [row] = await updateReturning(db, businessCategories, { ...input, updatedAt: new Date() }, eq(businessCategories.id, id));
     if (!row) throw ApiError.notFound("Category");
     return row;
   }
-  const [row] = await db.insert(businessCategories).values(input).onConflictDoNothing().returning();
+  const [row] = await insertReturning(db, businessCategories, input, { ifAbsent: true });
   if (!row) throw ApiError.conflict(`A category with slug '${input.slug}' already exists.`);
   return row;
 }
 
 export async function upsertServiceKind(id: string | null, input: z.infer<typeof serviceKindInput>) {
   if (id) {
-    const [row] = await db.update(serviceKinds).set({ ...input, updatedAt: new Date() }).where(eq(serviceKinds.id, id)).returning();
+    const [row] = await updateReturning(db, serviceKinds, { ...input, updatedAt: new Date() }, eq(serviceKinds.id, id));
     if (!row) throw ApiError.notFound("Service kind");
     return row;
   }
-  const [row] = await db.insert(serviceKinds).values(input).onConflictDoNothing().returning();
+  const [row] = await insertReturning(db, serviceKinds, input, { ifAbsent: true });
   if (!row) throw ApiError.conflict(`A service kind with slug '${input.slug}' already exists.`);
   return row;
 }
@@ -102,8 +103,8 @@ export async function saveService(user: AuthenticatedUser, businessId: string, s
   if (!kind) throw ApiError.badRequest("Choose a valid service type.");
   const values = { ...input, priceEtb: input.priceEtb.toFixed(2) };
   const [row] = serviceId
-    ? await db.update(services).set({ ...values, updatedAt: new Date() }).where(and(eq(services.id, serviceId), eq(services.businessId, businessId))).returning()
-    : await db.insert(services).values({ ...values, businessId }).returning();
+    ? await updateReturning(db, services, { ...values, updatedAt: new Date() }, and(eq(services.id, serviceId), eq(services.businessId, businessId)))
+    : await insertReturning(db, services, { ...values, businessId });
   if (!row) throw ApiError.notFound("Service");
   await publish(businessChannel(businessId), "service.saved", { serviceId: row.id });
   return row;
@@ -111,7 +112,7 @@ export async function saveService(user: AuthenticatedUser, businessId: string, s
 
 export async function archiveService(user: AuthenticatedUser, businessId: string, serviceId: string) {
   await requireCapability(user, businessId, "manageServices");
-  const [row] = await db.update(services).set({ isActive: false, updatedAt: new Date() }).where(and(eq(services.id, serviceId), eq(services.businessId, businessId))).returning();
+  const [row] = await updateReturning(db, services, { isActive: false, updatedAt: new Date() }, and(eq(services.id, serviceId), eq(services.businessId, businessId)));
   if (!row) throw ApiError.notFound("Service");
   return row;
 }
@@ -157,7 +158,7 @@ export const timeOffInput = z
 
 export async function addTimeOff(user: AuthenticatedUser, businessId: string, input: z.infer<typeof timeOffInput>) {
   await requireCapability(user, businessId, "manageSchedule");
-  const [row] = await db.insert(timeOff).values({ ...input, businessId }).returning();
+  const [row] = await insertReturning(db, timeOff, { ...input, businessId });
   await publish(businessChannel(businessId), "schedule.updated", {});
   return row;
 }

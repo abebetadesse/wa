@@ -1,6 +1,6 @@
-import { pgTable, uuid, varchar, text, boolean, jsonb, decimal } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, boolean, jsonb, decimal } from "../mysqlSchema";
 
-export const herbs = pgTable("herbs", {
+export const herbs = mysqlTable("herbs", {
   id: uuid("id").primaryKey().defaultRandom(),
   nameVernacular: varchar("name_vernacular", { length: 255 }).notNull(), // e.g. "Damakesse", "Tena Adam", "Kosso", "Gesho"
   nameScientific: varchar("name_scientific", { length: 255 }).notNull(), // e.g. "Ocimum lamiifolium", "Ruta chalepensis", "Hagenia abyssinica"
@@ -24,7 +24,7 @@ export const herbs = pgTable("herbs", {
   sourceRef: varchar("source_ref", { length: 100 }).notNull(), // e.g. "ETM-DB-2025-081"
 });
 
-export const compounds = pgTable("compounds", {
+export const compounds = mysqlTable("compounds", {
   id: uuid("id").primaryKey().defaultRandom(),
   herbId: uuid("herb_id")
     .references(() => herbs.id, { onDelete: "cascade" })
@@ -34,7 +34,7 @@ export const compounds = pgTable("compounds", {
   mechanismOfAction: text("mechanism_of_action"), // CYP450 inhibition, platelet aggregation inhibition, etc.
 });
 
-export const herbDrugInteractions = pgTable("herb_drug_interactions", {
+export const herbDrugInteractions = mysqlTable("herb_drug_interactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   herbId: uuid("herb_id")
     .references(() => herbs.id, { onDelete: "cascade" })

@@ -2,6 +2,6 @@ import { defineRoute } from "@/lib/api/route";
 import { caseService } from "@/server/cases/service";
 
 export const GET = defineRoute({
-  access: { roles: ["expert", "practitioner", "admin", "super_admin"] },
+  access: "user",
   handler: ({ user }) => caseService.queue(user),
 });

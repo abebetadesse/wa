@@ -1,6 +1,6 @@
-import { pgTable, uuid, varchar, numeric, text, integer, primaryKey } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, numeric, text, integer, primaryKey } from "../mysqlSchema";
 
-export const foods = pgTable("foods", {
+export const foods = mysqlTable("foods", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(), // e.g. "Teff Injera (Fermented)", "Shiro Wot"
   nameAmharic: varchar("name_amharic", { length: 255 }), // e.g. "ጤፍ እንጀራ", "ሽሮ ወጥ"
@@ -15,7 +15,7 @@ export const foods = pgTable("foods", {
   fermentationReductionPct: integer("fermentation_reduction_pct"),
 });
 
-export const nutrients = pgTable("nutrients", {
+export const nutrients = mysqlTable("nutrients", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull(), // "Iron", "Calcium", "Zinc", "Vitamin B12", "Folate", "Vitamin D", "Magnesium"
   symbol: varchar("symbol", { length: 20 }), // "Fe", "Ca", "Zn", "B12", "B9", "VitD", "Mg"
@@ -25,7 +25,7 @@ export const nutrients = pgTable("nutrients", {
   tolerableUpperLimit: numeric("tolerable_upper_limit", { precision: 10, scale: 2 }), // UL threshold
 });
 
-export const foodNutrients = pgTable(
+export const foodNutrients = mysqlTable(
   "food_nutrients",
   {
     foodId: uuid("food_id")

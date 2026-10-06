@@ -36,6 +36,7 @@ import { culturalVisibleTo } from "@/server/marketplace/businesses";
 import { businessChannel, publish } from "@/server/realtime";
 import { builtinTools, GROUP_LABELS, TOOL_AUDIENCES, TOOL_GROUPS, toolForPath, type ToolAudience } from "./registry";
 import { recommendTools, strandAffinity, usageScore } from "./recommend";
+import { insertReturning, keepExisting, updateReturning } from "@/lib/db/write";
 
 export type ToolRow = typeof toolkitTools.$inferSelect;
 
@@ -64,7 +65,7 @@ async function syncBuiltinTools() {
   await db.transaction(async (tx) => {
     for (const tool of tools) {
       const values = { name: tool.name, description: tool.description, group: tool.group, href: tool.href, audience: tool.audience, strands: tool.strands, suggestedFor: tool.suggestedFor, sortOrder: tool.sortOrder };
-      await tx.insert(toolkitTools).values({ key: tool.key, source: "builtin", ...values }).onConflictDoNothing();
+      await tx.insert(toolkitTools).values({ key: tool.key, source: "builtin", ...values }).onDuplicateKeyUpdate({ set: keepExisting(toolkitTools) });
       // Administrators' edits win; untouched built-ins follow the code.
       await tx.update(toolkitTools).set({ ...values, updatedAt: new Date() }).where(and(eq(toolkitTools.key, tool.key), eq(toolkitTools.customized, false)));
     }
@@ -72,7 +73,7 @@ async function syncBuiltinTools() {
       .update(toolkitTools)
       .set({ isActive: false, updatedAt: new Date() })
       .where(and(eq(toolkitTools.source, "builtin"), notInArray(toolkitTools.key, tools.map((tool) => tool.key))));
-    const [{ count }] = await tx.select({ count: sql<number>`count(*)::int` }).from(knowledgeSets);
+    const [{ count }] = await tx.select({ count: sql<number>`count(*)` }).from(knowledgeSets);
     if (count === 0) await seedStarterSets(tx);
   });
 }
@@ -86,7 +87,7 @@ async function seedStarterSets(tx: Pick<typeof db, "insert">) {
     { slug: "bodywork-bone-setting", name: "Bodywork & bone-setting", description: "Body patterns and safety for hands-on sessions.", toolKeys: ["energy-pattern", "body-awareness", "herb-medicine-safety", "regional-atlas", "emergency-support"], strands: ["biological", "psychological"], categorySlugs: ["bodywork", "bone-setter"] },
     { slug: "ceremony-heritage", name: "Ceremony & heritage", description: "Ritual memory, food traditions and the festival calendar.", toolKeys: ["heritage-atlas", "fasting-rhythm", "food-knowledge", "sacred-library"], strands: ["cultural", "dietary"], categorySlugs: ["coffee-ceremony", "ceremony-events", "music-dance", "heritage-tours", "artisan", "language-manuscripts"] },
   ];
-  await tx.insert(knowledgeSets).values(starter.map((set) => ({ ...set, status: "published", version: 1, publishedAt: now, guidance: null }))).onConflictDoNothing();
+  await tx.insert(knowledgeSets).values(starter.map((set) => ({ ...set, status: "published", version: 1, publishedAt: now, guidance: null }))).onDuplicateKeyUpdate({ set: keepExisting(knowledgeSets) });
 }
 
 // ── Audiences ────────────────────────────────────────────────────────────────
@@ -146,7 +147,7 @@ export async function listAllTools() {
   const [tools, usage] = await Promise.all([
     db.select().from(toolkitTools).orderBy(asc(toolkitTools.sortOrder), asc(toolkitTools.name)),
     db
-      .select({ toolKey: toolkitUsage.toolKey, opens: sql<number>`count(*)::int`, businesses: sql<number>`count(distinct ${toolkitUsage.businessId})::int` })
+      .select({ toolKey: toolkitUsage.toolKey, opens: sql<number>`count(*)`, businesses: sql<number>`count(distinct ${toolkitUsage.businessId})` })
       .from(toolkitUsage)
       .where(gte(toolkitUsage.createdAt, since))
       .groupBy(toolkitUsage.toolKey),
@@ -160,12 +161,12 @@ function toolKey(name: string) {
 }
 
 export async function createTool(input: z.infer<typeof toolInput>) {
-  const [row] = await db.insert(toolkitTools).values({ key: toolKey(input.name), source: "custom", customized: true, ...input }).returning();
+  const [row] = await insertReturning(db, toolkitTools, { key: toolKey(input.name), source: "custom", customized: true, ...input });
   return row;
 }
 
 export async function updateTool(key: string, input: z.infer<typeof toolInput>) {
-  const [row] = await db.update(toolkitTools).set({ ...input, customized: true, updatedAt: new Date() }).where(eq(toolkitTools.key, key)).returning();
+  const [row] = await updateReturning(db, toolkitTools, { ...input, customized: true, updatedAt: new Date() }, eq(toolkitTools.key, key));
   if (!row) throw ApiError.notFound("Tool");
   return row;
 }
@@ -210,7 +211,7 @@ export async function listKnowledgeSets() {
   return db
     .select({
       set: knowledgeSets,
-      subscribers: sql<number>`(select count(*)::int from ${businessKnowledgeSets} where ${businessKnowledgeSets.setId} = ${knowledgeSets.id} and ${businessKnowledgeSets.status} = 'active')`,
+      subscribers: sql<number>`(select count(*) from ${businessKnowledgeSets} where ${businessKnowledgeSets.setId} = ${knowledgeSets.id} and ${businessKnowledgeSets.status} = 'active')`,
     })
     .from(knowledgeSets)
     .orderBy(asc(knowledgeSets.name))
@@ -219,14 +220,14 @@ export async function listKnowledgeSets() {
 
 export async function createKnowledgeSet(admin: AuthenticatedUser, input: z.infer<typeof knowledgeSetInput>) {
   await assertToolsExist(input.toolKeys);
-  const [row] = await db.insert(knowledgeSets).values({ ...input, slug: setSlug(input.name), createdBy: admin.id, updatedBy: admin.id }).returning();
+  const [row] = await insertReturning(db, knowledgeSets, { ...input, slug: setSlug(input.name), createdBy: admin.id, updatedBy: admin.id });
   return row;
 }
 
 /** Edits are saved as a draft of the next version; subscribers see them once published. */
 export async function updateKnowledgeSet(admin: AuthenticatedUser, id: string, input: z.infer<typeof knowledgeSetInput>) {
   await assertToolsExist(input.toolKeys);
-  const [row] = await db.update(knowledgeSets).set({ ...input, updatedBy: admin.id, updatedAt: new Date() }).where(eq(knowledgeSets.id, id)).returning();
+  const [row] = await updateReturning(db, knowledgeSets, { ...input, updatedBy: admin.id, updatedAt: new Date() }, eq(knowledgeSets.id, id));
   if (!row) throw ApiError.notFound("Knowledge set");
   return row;
 }
@@ -237,11 +238,7 @@ export async function updateKnowledgeSet(admin: AuthenticatedUser, id: string, i
  */
 export async function publishKnowledgeSet(admin: AuthenticatedUser, id: string, note?: string) {
   const { set, subscribers } = await db.transaction(async (tx) => {
-    const [set] = await tx
-      .update(knowledgeSets)
-      .set({ status: "published", version: sql`${knowledgeSets.version} + 1`, publishedAt: new Date(), updatedBy: admin.id, updatedAt: new Date() })
-      .where(eq(knowledgeSets.id, id))
-      .returning();
+    const [set] = await updateReturning(tx, knowledgeSets, { status: "published", version: sql`${knowledgeSets.version} + 1`, publishedAt: new Date(), updatedBy: admin.id, updatedAt: new Date() }, eq(knowledgeSets.id, id));
     if (!set) throw ApiError.notFound("Knowledge set");
     if (set.categorySlugs.length) {
       const matching = await tx
@@ -250,7 +247,7 @@ export async function publishKnowledgeSet(admin: AuthenticatedUser, id: string, 
         .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
         .where(and(inArray(businessCategories.slug, set.categorySlugs), ne(businesses.status, "suspended")));
       if (matching.length) {
-        await tx.insert(businessKnowledgeSets).values(matching.map((business) => ({ businessId: business.id, setId: set.id, origin: "auto" }))).onConflictDoNothing();
+        await tx.insert(businessKnowledgeSets).values(matching.map((business) => ({ businessId: business.id, setId: set.id, origin: "auto" }))).onDuplicateKeyUpdate({ set: keepExisting(businessKnowledgeSets) });
       }
     }
     const subscribers = await tx
@@ -268,7 +265,7 @@ export async function publishKnowledgeSet(admin: AuthenticatedUser, id: string, 
 }
 
 export async function archiveKnowledgeSet(id: string) {
-  const [row] = await db.update(knowledgeSets).set({ status: "archived", updatedAt: new Date() }).where(eq(knowledgeSets.id, id)).returning();
+  const [row] = await updateReturning(db, knowledgeSets, { status: "archived", updatedAt: new Date() }, eq(knowledgeSets.id, id));
   if (!row) throw ApiError.notFound("Knowledge set");
   return row;
 }
@@ -289,8 +286,8 @@ async function applyCategorySets(businessId: string, categorySlug: string) {
   const sets = await db
     .select({ id: knowledgeSets.id })
     .from(knowledgeSets)
-    .where(and(eq(knowledgeSets.status, "published"), sql`${knowledgeSets.categorySlugs} @> ${JSON.stringify([categorySlug])}::jsonb`));
-  if (sets.length) await db.insert(businessKnowledgeSets).values(sets.map((set) => ({ businessId, setId: set.id, origin: "auto" }))).onConflictDoNothing();
+    .where(and(eq(knowledgeSets.status, "published"), sql`JSON_CONTAINS(${knowledgeSets.categorySlugs}, JSON_ARRAY(${categorySlug}))`));
+  if (sets.length) await db.insert(businessKnowledgeSets).values(sets.map((set) => ({ businessId, setId: set.id, origin: "auto" }))).onDuplicateKeyUpdate({ set: keepExisting(businessKnowledgeSets) });
 }
 
 async function businessProfile(businessId: string) {
@@ -314,7 +311,7 @@ async function signalsFor(businessId: string, categorySlug: string) {
       .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))
       .where(and(eq(services.businessId, businessId), eq(services.isActive, true))),
     db
-      .select({ slug: serviceKinds.slug, count: sql<number>`count(*)::int` })
+      .select({ slug: serviceKinds.slug, count: sql<number>`count(*)` })
       .from(bookings)
       .innerJoin(services, eq(services.id, bookings.serviceId))
       .innerJoin(serviceKinds, eq(serviceKinds.id, services.kindId))
@@ -327,7 +324,7 @@ async function signalsFor(businessId: string, categorySlug: string) {
       .orderBy(desc(toolkitUsage.createdAt))
       .limit(2000),
     db
-      .select({ domain: workflowCases.domain, count: sql<number>`count(*)::int` })
+      .select({ domain: workflowCases.domain, count: sql<number>`count(*)` })
       .from(workflowCases)
       .where(and(eq(workflowCases.businessId, businessId), isNotNull(workflowCases.businessId)))
       .groupBy(workflowCases.domain),
@@ -435,10 +432,7 @@ export async function setBusinessTool(user: AuthenticatedUser, businessId: strin
     await db
       .insert(businessTools)
       .values({ businessId, toolKey: key, state: state ?? "added", pinned: input.pinned ?? false })
-      .onConflictDoUpdate({
-        target: [businessTools.businessId, businessTools.toolKey],
-        set: { ...(state ? { state } : {}), ...(input.pinned !== undefined ? { pinned: input.pinned } : {}), updatedAt: new Date() },
-      });
+      .onDuplicateKeyUpdate({ set: { ...(state ? { state } : {}), ...(input.pinned !== undefined ? { pinned: input.pinned } : {}), updatedAt: new Date() } });
   }
   await publish(businessChannel(businessId), "toolkit.changed", { toolKey: key });
   return { ok: true };
@@ -457,7 +451,7 @@ export async function setBusinessKnowledgeSet(user: AuthenticatedUser, businessI
     await db
       .insert(businessKnowledgeSets)
       .values({ businessId, setId, origin: "manual", status, seenVersion: set.version })
-      .onConflictDoUpdate({ target: [businessKnowledgeSets.businessId, businessKnowledgeSets.setId], set: { status, seenVersion: set.version, updatedAt: new Date() } });
+      .onDuplicateKeyUpdate({ set: { status, seenVersion: set.version, updatedAt: new Date() } });
   }
   await publish(businessChannel(businessId), "toolkit.changed", { setId });
   return { ok: true };
@@ -502,7 +496,7 @@ export async function toolkitInsights() {
   const since = new Date(Date.now() - 30 * 86_400_000);
   const [byCategory, activeBusinesses] = await Promise.all([
     db
-      .select({ category: businessCategories.name, toolKey: toolkitUsage.toolKey, name: toolkitTools.name, opens: sql<number>`count(*)::int` })
+      .select({ category: businessCategories.name, toolKey: toolkitUsage.toolKey, name: toolkitTools.name, opens: sql<number>`count(*)` })
       .from(toolkitUsage)
       .innerJoin(businesses, eq(businesses.id, toolkitUsage.businessId))
       .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
@@ -510,7 +504,7 @@ export async function toolkitInsights() {
       .where(gte(toolkitUsage.createdAt, since))
       .groupBy(businessCategories.name, toolkitUsage.toolKey, toolkitTools.name)
       .orderBy(desc(sql`count(*)`)),
-    db.select({ n: sql<number>`count(distinct ${toolkitUsage.businessId})::int` }).from(toolkitUsage).where(gte(toolkitUsage.createdAt, since)).then(([row]) => row.n),
+    db.select({ n: sql<number>`count(distinct ${toolkitUsage.businessId})` }).from(toolkitUsage).where(gte(toolkitUsage.createdAt, since)).then(([row]) => row.n),
   ]);
   const categories = new Map<string, { toolKey: string; name: string; opens: number }[]>();
   for (const row of byCategory) categories.set(row.category, [...(categories.get(row.category) ?? []), { toolKey: row.toolKey, name: row.name, opens: row.opens }].slice(0, 5));

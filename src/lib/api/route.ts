@@ -18,7 +18,8 @@ import { ZodError, type ZodType, type ZodTypeDef } from "zod";
 import { getAuthenticatedUser, type AuthenticatedUser } from "@/lib/auth";
 import { logAuditEvent } from "@/lib/audit";
 import { roleHasPermission } from "@/lib/db/schema/rbac";
-import { clientIp, consumeRateLimit } from "./rateLimit";
+import { clientIp } from "./rateLimit";
+import { consumeSharedRateLimit } from "./sharedRateLimit";
 import type { PlatformRole } from "./authGuard";
 
 export type RouteAccess =
@@ -144,7 +145,7 @@ export function defineRoute<A extends RouteAccess, B = undefined, Q = undefined,
     try {
       if (def.rateLimit) {
         const key = `${req.method} ${req.nextUrl.pathname} ${clientIp(req.headers)}`;
-        const verdict = consumeRateLimit(key, def.rateLimit.limit, def.rateLimit.windowMs);
+        const verdict = await consumeSharedRateLimit(key, def.rateLimit.limit, def.rateLimit.windowMs);
         if (!verdict.allowed) {
           return NextResponse.json(
             { success: false, error: "Too many requests. Please wait and try again." },

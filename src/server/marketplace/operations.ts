@@ -1,5 +1,5 @@
 /** Client records, manually recorded payments and the business dashboard. */
-import { and, asc, desc, eq, gte, ilike, inArray, isNull, lt, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, gte, like, inArray, isNull, lt, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { bookings, businessClients, businesses, businessMembers, payments, remedies, reviews, services } from "@/lib/db/schema";
@@ -11,6 +11,7 @@ import { getSettings } from "@/server/settings";
 import { paymentStatus } from "./bookingRules";
 import { todayIn, localToUtc, addDays } from "./time";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
+import { insertReturning, updateReturning } from "@/lib/db/write";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -34,7 +35,7 @@ export async function listClients(user: AuthenticatedUser, businessId: string, q
   const conditions: SQL[] = [eq(businessClients.businessId, businessId)];
   if (query.q) {
     const pattern = `%${query.q}%`;
-    conditions.push(or(ilike(businessClients.name, pattern), ilike(businessClients.phone, pattern), ilike(businessClients.email, pattern))!);
+    conditions.push(or(like(businessClients.name, pattern), like(businessClients.phone, pattern), like(businessClients.email, pattern))!);
   }
   const where = and(...conditions);
   const [rows, [{ total }]] = await Promise.all([
@@ -46,7 +47,7 @@ export async function listClients(user: AuthenticatedUser, businessId: string, q
         email: businessClients.email,
         tags: businessClients.tags,
         hasAccount: sql<boolean>`${businessClients.userId} is not null`,
-        visits: sql<number>`(select count(*)::int from ${bookings} where ${bookings.clientId} = ${businessClients.id} and ${bookings.status} = 'completed')`,
+        visits: sql<number>`(select count(*) from ${bookings} where ${bookings.clientId} = ${businessClients.id} and ${bookings.status} = 'completed')`,
         lastVisit: sql<string | null>`(select max(${bookings.startsAt}) from ${bookings} where ${bookings.clientId} = ${businessClients.id} and ${bookings.status} = 'completed')`,
         nextVisit: sql<string | null>`(select min(${bookings.startsAt}) from ${bookings} where ${bookings.clientId} = ${businessClients.id} and ${bookings.status} in ('requested','confirmed') and ${bookings.startsAt} > now())`,
         totalPaidEtb: sql<string>`coalesce((select sum(${payments.amountEtb}) from ${payments} where ${payments.clientId} = ${businessClients.id} and ${payments.status} = 'recorded'), 0)`,
@@ -56,7 +57,7 @@ export async function listClients(user: AuthenticatedUser, businessId: string, q
       .orderBy(asc(businessClients.name))
       .limit(PAGE)
       .offset((query.page - 1) * PAGE),
-    db.select({ total: sql<number>`count(*)::int` }).from(businessClients).where(where),
+    db.select({ total: sql<number>`count(*)` }).from(businessClients).where(where),
   ]);
   return { clients: rows, total, page: query.page, totalPages: Math.max(1, Math.ceil(total / PAGE)) };
 }
@@ -84,12 +85,8 @@ export async function saveClient(user: AuthenticatedUser, businessId: string, cl
   const { recordKeepingConsent, ...values } = input;
   const consent = recordKeepingConsent ? { recordKeeping: new Date().toISOString() } : undefined;
   const [row] = clientId
-    ? await db
-        .update(businessClients)
-        .set({ ...values, ...(consent ? { consent } : {}), updatedAt: new Date() })
-        .where(and(eq(businessClients.id, clientId), eq(businessClients.businessId, businessId)))
-        .returning()
-    : await db.insert(businessClients).values({ ...values, businessId, consent: consent ?? {} }).returning();
+    ? await updateReturning(db, businessClients, { ...values, ...(consent ? { consent } : {}), updatedAt: new Date() }, and(eq(businessClients.id, clientId), eq(businessClients.businessId, businessId)))
+    : await insertReturning(db, businessClients, { ...values, businessId, consent: consent ?? {} });
   if (!row) throw ApiError.notFound("Client");
   await publish(businessChannel(businessId), "client.saved", { clientId: row.id });
   return row;
@@ -141,10 +138,7 @@ export async function recordPayment(user: AuthenticatedUser, businessId: string,
       const [client] = await tx.select({ id: businessClients.id }).from(businessClients).where(and(eq(businessClients.id, clientId), eq(businessClients.businessId, businessId))).limit(1);
       if (!client) throw ApiError.notFound("Client");
     }
-    const [payment] = await tx
-      .insert(payments)
-      .values({ businessId, bookingId: input.bookingId ?? null, clientId, amountEtb: input.amountEtb.toFixed(2), method: input.method, reference: input.reference, receivedOn: input.receivedOn, note: input.note, recordedBy: user.id })
-      .returning();
+    const [payment] = await insertReturning(tx, payments, { businessId, bookingId: input.bookingId ?? null, clientId, amountEtb: input.amountEtb.toFixed(2), method: input.method, reference: input.reference, receivedOn: input.receivedOn, note: input.note, recordedBy: user.id });
     if (input.bookingId) await refreshBookingPayment(tx, input.bookingId);
     await publish(businessChannel(businessId), "payment.recorded", { paymentId: payment.id, amountEtb: payment.amountEtb }, tx);
     return payment;
@@ -154,11 +148,7 @@ export async function recordPayment(user: AuthenticatedUser, businessId: string,
 export async function voidPayment(user: AuthenticatedUser, businessId: string, paymentId: string, reason: string) {
   await requireCapability(user, businessId, "voidPayments");
   return db.transaction(async (tx) => {
-    const [payment] = await tx
-      .update(payments)
-      .set({ status: "voided", voidedBy: user.id, voidReason: reason, updatedAt: new Date() })
-      .where(and(eq(payments.id, paymentId), eq(payments.businessId, businessId), eq(payments.status, "recorded")))
-      .returning();
+    const [payment] = await updateReturning(tx, payments, { status: "voided", voidedBy: user.id, voidReason: reason, updatedAt: new Date() }, and(eq(payments.id, paymentId), eq(payments.businessId, businessId), eq(payments.status, "recorded")));
     if (!payment) throw ApiError.notFound("Payment");
     if (payment.bookingId) await refreshBookingPayment(tx, payment.bookingId);
     await publish(businessChannel(businessId), "payment.voided", { paymentId }, tx);
@@ -252,9 +242,7 @@ export async function submitClientPayment(user: AuthenticatedUser, bookingId: st
   if (duplicate) throw ApiError.conflict("This transaction number has already been submitted.");
 
   const payment = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .insert(payments)
-      .values({
+    const [row] = await insertReturning(tx, payments, {
         businessId: booking.businessId,
         bookingId,
         clientId: booking.clientId,
@@ -265,8 +253,7 @@ export async function submitClientPayment(user: AuthenticatedUser, bookingId: st
         status: "pending",
         receivedOn: todayIn(booking.timezone),
         submittedBy: user.id,
-      })
-      .returning();
+      });
     await publish(businessChannel(booking.businessId), "payment.submitted", { paymentId: row.id, bookingId }, tx);
     return row;
   });
@@ -285,15 +272,9 @@ export async function reviewClientPayment(user: AuthenticatedUser, businessId: s
   await requireCapability(user, businessId, "recordPayments");
   if (input.decision === "reject" && !input.reason) throw ApiError.badRequest("Tell the client why the payment wasn't found.");
   const payment = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .update(payments)
-      .set(
-        input.decision === "confirm"
+    const [row] = await updateReturning(tx, payments, input.decision === "confirm"
           ? { status: "recorded", recordedBy: user.id, updatedAt: new Date() }
-          : { status: "rejected", voidedBy: user.id, voidReason: input.reason, updatedAt: new Date() },
-      )
-      .where(and(eq(payments.id, paymentId), eq(payments.businessId, businessId), eq(payments.status, "pending")))
-      .returning();
+          : { status: "rejected", voidedBy: user.id, voidReason: input.reason, updatedAt: new Date() }, and(eq(payments.id, paymentId), eq(payments.businessId, businessId), eq(payments.status, "pending")));
     if (!row) throw ApiError.conflict("This payment was already reviewed.");
     if (row.bookingId) await refreshBookingPayment(tx, row.bookingId);
     await publish(businessChannel(businessId), input.decision === "confirm" ? "payment.recorded" : "payment.rejected", { paymentId }, tx);
@@ -353,24 +334,28 @@ export async function dashboard(user: AuthenticatedUser, businessId: string) {
   const monthStart = `${today.slice(0, 7)}-01`;
   const canSeeFinance = roleCan(membership.role, "viewFinance");
 
-  const count = (where: SQL) => db.select({ n: sql<number>`count(*)::int` }).from(bookings).where(and(eq(bookings.businessId, businessId), where)).then(([row]) => row.n);
+  const count = (where: SQL) => db.select({ n: sql<number>`count(*)` }).from(bookings).where(and(eq(bookings.businessId, businessId), where)).then(([row]) => row.n);
 
   const [todayCount, pending, weekCount, unpaidCompleted, newClients, lowStock, revenue, upcoming, latestReviews, paymentsToConfirm] = await Promise.all([
     count(and(gte(bookings.startsAt, dayStart), lt(bookings.startsAt, dayEnd), inArray(bookings.status, ["requested", "confirmed", "completed"]))!),
     count(eq(bookings.status, "requested")),
     count(and(gte(bookings.startsAt, dayStart), lt(bookings.startsAt, weekEnd), inArray(bookings.status, ["requested", "confirmed"]))!),
     count(and(eq(bookings.status, "completed"), inArray(bookings.paymentStatus, ["unpaid", "partial"]))!),
-    db.select({ n: sql<number>`count(*)::int` }).from(businessClients).where(and(eq(businessClients.businessId, businessId), gte(businessClients.createdAt, new Date(Date.now() - 30 * 86_400_000)))).then(([row]) => row.n),
-    db.select({ n: sql<number>`count(*)::int` }).from(remedies).where(and(eq(remedies.businessId, businessId), eq(remedies.isActive, true), sql`${remedies.stockQuantity} <= ${remedies.reorderLevel}`)).then(([row]) => row.n),
+    db.select({ n: sql<number>`count(*)` }).from(businessClients).where(and(eq(businessClients.businessId, businessId), gte(businessClients.createdAt, new Date(Date.now() - 30 * 86_400_000)))).then(([row]) => row.n),
+    db.select({ n: sql<number>`count(*)` }).from(remedies).where(and(eq(remedies.businessId, businessId), eq(remedies.isActive, true), sql`${remedies.stockQuantity} <= ${remedies.reorderLevel}`)).then(([row]) => row.n),
     canSeeFinance
-      ? db.execute<{ day: string; total: string }>(sql`
-          select to_char(${payments.receivedOn}, 'YYYY-MM-DD') as day, sum(${payments.amountEtb})::text as total
-          from ${payments}
-          where ${payments.businessId} = ${businessId} and ${payments.status} = 'recorded' and ${payments.receivedOn} >= ${addDays(today, -29)}
-          group by 1 order by 1`)
+      ? db
+          .select({
+            day: sql<string>`DATE_FORMAT(${payments.receivedOn}, '%Y-%m-%d')`,
+            total: sql<string>`CAST(SUM(${payments.amountEtb}) AS CHAR)`,
+          })
+          .from(payments)
+          .where(and(eq(payments.businessId, businessId), eq(payments.status, "recorded"), gte(payments.receivedOn, addDays(today, -29))))
+          .groupBy(sql`DATE_FORMAT(${payments.receivedOn}, '%Y-%m-%d')`)
+          .orderBy(sql`DATE_FORMAT(${payments.receivedOn}, '%Y-%m-%d')`)
       : Promise.resolve(null),
     db
-      .select({ id: bookings.id, reference: bookings.reference, startsAt: bookings.startsAt, endsAt: bookings.endsAt, status: bookings.status, deliveryMode: bookings.deliveryMode, serviceName: services.name, clientName: businessClients.name, flagged: sql<boolean>`${bookings.safety} is not null and jsonb_array_length(coalesce(${bookings.safety}->'flags', '[]'::jsonb)) > 0` })
+      .select({ id: bookings.id, reference: bookings.reference, startsAt: bookings.startsAt, endsAt: bookings.endsAt, status: bookings.status, deliveryMode: bookings.deliveryMode, serviceName: services.name, clientName: businessClients.name, flagged: sql<boolean>`${bookings.safety} is not null and JSON_LENGTH(COALESCE(JSON_EXTRACT(${bookings.safety}, '$.flags'), JSON_ARRAY())) > 0` })
       .from(bookings)
       .innerJoin(services, eq(services.id, bookings.serviceId))
       .innerJoin(businessClients, eq(businessClients.id, bookings.clientId))
@@ -378,7 +363,7 @@ export async function dashboard(user: AuthenticatedUser, businessId: string) {
       .orderBy(asc(bookings.startsAt))
       .limit(8),
     db.select({ id: reviews.id, rating: reviews.rating, comment: reviews.comment, createdAt: reviews.createdAt, responded: sql<boolean>`${reviews.response} is not null` }).from(reviews).where(and(eq(reviews.businessId, businessId), eq(reviews.status, "published"))).orderBy(desc(reviews.createdAt)).limit(3),
-    db.select({ n: sql<number>`count(*)::int` }).from(payments).where(and(eq(payments.businessId, businessId), eq(payments.status, "pending"))).then(([row]) => row.n),
+    db.select({ n: sql<number>`count(*)` }).from(payments).where(and(eq(payments.businessId, businessId), eq(payments.status, "pending"))).then(([row]) => row.n),
   ]);
 
   const revenueRows = revenue ? [...revenue] : [];

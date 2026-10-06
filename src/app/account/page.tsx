@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { BadgeCheck, BookOpen, Briefcase, CalendarCheck, MessageCircle, Search, Send, Wallet } from "lucide-react";
+import { BadgeCheck, BookOpen, Briefcase, CalendarCheck, ExternalLink, MessageCircle, Phone, Search, Send, Wallet } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState, LoadingState, PageHeader, PageShell } from "@/components/ui";
 import { useSession } from "@/features/session/SessionProvider";
@@ -19,6 +19,19 @@ interface TelegramState {
   username: string | null;
   verifiedAt: string | null;
   notify: boolean;
+}
+
+interface WhatsAppState {
+  available: boolean;
+  connected: boolean;
+  phone: string | null;
+  verifiedAt: string | null;
+  notify: boolean;
+}
+
+interface ChatLink {
+  url: string;
+  expiresInMinutes: number;
 }
 
 interface MyPayment {
@@ -59,6 +72,7 @@ function Account() {
       <div className="flex flex-col gap-6">
         {welcome && <WelcomeCard />}
         <TelegramCard />
+        <WhatsAppCard />
         <QuickLinks />
         <PaymentsCard />
       </div>
@@ -116,7 +130,7 @@ function TelegramCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><Send className="size-5 text-[#229ED9]" aria-hidden="true" /> Telegram</CardTitle>
-        <CardDescription>Verify your account, sign in with one tap, and get booking updates, messages and password-reset links on Telegram.</CardDescription>
+        <CardDescription>Verify your account, sign in with one tap, and get case updates, your reviewer&apos;s messages, bookings and password-reset links on Telegram. You can answer your reviewer by replying in the chat.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {error && <Alert tone="danger">{error} <button type="button" className="font-semibold underline" onClick={reload}>Retry</button></Alert>}
@@ -135,7 +149,7 @@ function TelegramCard() {
             <label className="flex items-center justify-between gap-4 rounded-2xl border border-border p-4">
               <span>
                 <span className="block font-semibold text-foreground">Send my notifications to Telegram</span>
-                <span className="text-sm text-muted-foreground">Bookings, messages, payments and case updates.</span>
+                <span className="text-sm text-muted-foreground">Case updates, your reviewer&apos;s messages, bookings and payments.</span>
               </span>
               <input type="checkbox" className="size-5 accent-[var(--brand-accent)]" checked={data.notify} disabled={busy} onChange={(e) => run(() => apiFetch<TelegramState>("/api/account/telegram", { method: "PATCH", json: { notify: e.target.checked } }))} />
             </label>
@@ -144,9 +158,105 @@ function TelegramCard() {
           <div className="flex flex-col items-start gap-3">
             <p className="text-sm text-muted-foreground">Tap the button and confirm in Telegram. We only receive your Telegram name and id.</p>
             {busy ? <p className="text-sm text-muted-foreground">Connecting…</p> : <TelegramLogin bot={data.botUsername} onAuth={connect} />}
+            <ChatConnect app="Telegram" endpoint="/api/account/telegram/link" action="press Start" intro="Or connect by opening our bot:" onRefresh={reload} />
           </div>
         ) : (
           <Alert tone="info">Telegram isn&apos;t set up on this site yet.</Alert>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Opens the chat with a one-time connect code filled in; the bot links the account when it arrives. */
+function ChatConnect({ app, endpoint, action, intro, onRefresh }: { app: string; endpoint: string; action: string; intro?: string; onRefresh: () => void }) {
+  const toast = useToast();
+  const [link, setLink] = useState<ChatLink | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function create() {
+    setBusy(true);
+    try {
+      setLink(await apiFetch<ChatLink>(endpoint, { method: "POST" }));
+    } catch (err) {
+      toast({ tone: "error", title: app, body: errorMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!link) {
+    return (
+      <div className="flex flex-wrap items-center gap-3">
+        {intro && <p className="text-sm text-muted-foreground">{intro}</p>}
+        <Button variant="outline" size="sm" disabled={busy} onClick={create}>{busy ? "Preparing…" : `Connect ${app}`}</Button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col items-start gap-3 rounded-2xl border border-border p-4">
+      <p className="text-sm text-foreground">
+        1. Open {app} with the button below and {action}. 2. Come back here and tap “I&apos;ve done it”. The link works once, for {link.expiresInMinutes} minutes.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <a href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+          <ExternalLink className="size-4" aria-hidden="true" /> Open {app}
+        </a>
+        <Button variant="outline" size="sm" onClick={() => { setLink(null); onRefresh(); }}>I&apos;ve done it</Button>
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppCard() {
+  const toast = useToast();
+  const { data, setData, error, reload } = useApi<WhatsAppState>("/api/account/whatsapp");
+  const [busy, setBusy] = useState(false);
+
+  async function run(action: () => Promise<WhatsAppState>, success?: string) {
+    setBusy(true);
+    try {
+      setData(await action());
+      if (success) toast({ tone: "success", title: success });
+    } catch (err) {
+      toast({ tone: "error", title: "WhatsApp", body: errorMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Phone className="size-5 text-[#25D366]" aria-hidden="true" /> WhatsApp</CardTitle>
+        <CardDescription>Get case updates and your reviewer&apos;s messages on WhatsApp, and answer by replying in the chat. Updates about sensitive requests never include their content.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {error && <Alert tone="danger">{error} <button type="button" className="font-semibold underline" onClick={reload}>Retry</button></Alert>}
+        {!data ? (
+          !error && <LoadingState />
+        ) : data.connected ? (
+          <>
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-success/30 bg-success/5 p-4">
+              <BadgeCheck className="size-6 text-success" aria-hidden="true" />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-foreground">Connected{data.phone ? ` · ${data.phone}` : ""}</p>
+                {data.verifiedAt && <p className="text-xs text-muted-foreground">Connected {new Date(data.verifiedAt).toLocaleDateString()}</p>}
+              </div>
+              <Button variant="ghost" size="sm" disabled={busy} onClick={() => run(() => apiFetch<WhatsAppState>("/api/account/whatsapp", { method: "DELETE" }), "WhatsApp disconnected")}>Disconnect</Button>
+            </div>
+            <label className="flex items-center justify-between gap-4 rounded-2xl border border-border p-4">
+              <span>
+                <span className="block font-semibold text-foreground">Send my notifications to WhatsApp</span>
+                <span className="text-sm text-muted-foreground">Case updates, your reviewer&apos;s messages, bookings and payments.</span>
+              </span>
+              <input type="checkbox" className="size-5 accent-[var(--brand-accent)]" checked={data.notify} disabled={busy} onChange={(e) => run(() => apiFetch<WhatsAppState>("/api/account/whatsapp", { method: "PATCH", json: { notify: e.target.checked } }))} />
+            </label>
+          </>
+        ) : data.available ? (
+          <ChatConnect app="WhatsApp" endpoint="/api/account/whatsapp" action="send the message that is already typed in" onRefresh={reload} />
+        ) : (
+          <Alert tone="info">WhatsApp isn&apos;t set up on this site yet.</Alert>
         )}
       </CardContent>
     </Card>

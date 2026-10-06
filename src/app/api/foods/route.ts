@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ilike, or } from "drizzle-orm";
+import { like, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { foods } from "@/lib/db/schema";
 import { searchRawCerealMaterials } from "@/lib/nutrition/rawCerealMaterials";
@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
       .select()
       .from(foods)
       .where(pattern ? or(
-        ilike(foods.name, pattern),
-        ilike(foods.nameAmharic, pattern),
-        ilike(foods.category, pattern),
-        ilike(foods.traditionalPreparation, pattern)
+        like(foods.name, pattern),
+        like(foods.nameAmharic, pattern),
+        like(foods.category, pattern),
+        like(foods.traditionalPreparation, pattern)
       ) : undefined)
       .limit(100);
 

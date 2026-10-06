@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { and, asc, desc, eq, ilike, inArray, ne, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, like, inArray, ne, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { businessCategories, businessMembers, businesses, remedies, services, serviceKinds, users } from "@/lib/db/schema";
@@ -10,6 +10,7 @@ import { businessChannel, publish, userChannel } from "@/server/realtime";
 import { notify, notifyAdmins } from "./notifications";
 import { getSettings } from "@/server/settings";
 import { withPublicIntake } from "@/server/intake/settings";
+import { insertReturning, updateReturning } from "@/lib/db/write";
 
 const PLATFORM_ADMINS = ["admin", "super_admin"];
 
@@ -61,7 +62,7 @@ export const paymentAccountsInput = z.object({
 
 export async function updatePaymentAccounts(user: AuthenticatedUser, businessId: string, input: z.infer<typeof paymentAccountsInput>) {
   await requireCapability(user, businessId, "manageProfile");
-  const [updated] = await db.update(businesses).set({ paymentAccounts: input, updatedAt: new Date() }).where(eq(businesses.id, businessId)).returning({ paymentAccounts: businesses.paymentAccounts });
+  const [updated] = await updateReturning(db, businesses, { paymentAccounts: input, updatedAt: new Date() }, eq(businesses.id, businessId), { paymentAccounts: businesses.paymentAccounts });
   if (!updated) throw ApiError.notFound("Business");
   await publish(businessChannel(businessId), "business.updated", { businessId });
   return updated.paymentAccounts;
@@ -105,10 +106,7 @@ export async function createBusiness(user: AuthenticatedUser, input: BusinessInp
   await requireCategory(input.categoryId);
   const slug = await uniqueSlug(input.name);
   const business = await db.transaction(async (tx) => {
-    const [created] = await tx
-      .insert(businesses)
-      .values({ ...input, slug, ownerId: user.id, status: "draft", email: input.email ?? user.email })
-      .returning();
+    const [created] = await insertReturning(tx, businesses, { ...input, slug, ownerId: user.id, status: "draft", email: input.email ?? user.email });
     await tx.insert(businessMembers).values({ businessId: created.id, userId: user.id, role: "owner", title: "Owner", isBookable: true });
     return created;
   });
@@ -148,7 +146,7 @@ export async function getWorkspaceBusiness(user: AuthenticatedUser, businessId: 
 export async function updateBusiness(user: AuthenticatedUser, businessId: string, input: BusinessInput) {
   await requireCapability(user, businessId, "manageProfile");
   await requireCategory(input.categoryId);
-  const [updated] = await db.update(businesses).set({ ...input, updatedAt: new Date() }).where(eq(businesses.id, businessId)).returning();
+  const [updated] = await updateReturning(db, businesses, { ...input, updatedAt: new Date() }, eq(businesses.id, businessId));
   await publish(businessChannel(businessId), "business.updated", { businessId });
   return updated;
 }
@@ -159,18 +157,14 @@ export async function submitForVerification(user: AuthenticatedUser, businessId:
   if (!current) throw ApiError.notFound("Business");
   if (current.status === "verified") throw ApiError.conflict("This business is already verified.");
   if (current.status === "suspended") throw ApiError.forbidden("A suspended business cannot request verification.");
-  const [activeServices] = await db.select({ n: sql<number>`count(*)::int` }).from(services).where(and(eq(services.businessId, businessId), eq(services.isActive, true)));
+  const [activeServices] = await db.select({ n: sql<number>`count(*)` }).from(services).where(and(eq(services.businessId, businessId), eq(services.isActive, true)));
   if (!activeServices?.n) throw ApiError.badRequest("Add at least one service before requesting verification.");
   if ((await getSettings("registration")).telegram === "required_for_business") {
     const [owner] = await db.select({ verifiedAt: users.telegramVerifiedAt }).from(users).where(eq(users.id, current.ownerId)).limit(1);
     if (!owner?.verifiedAt) throw ApiError.badRequest("Connect the owner's Telegram account (Account → Telegram) before requesting verification.", { requires: "telegram" });
   }
 
-  const [updated] = await db
-    .update(businesses)
-    .set({ status: "pending_verification", verification: { ...(current.verification ?? {}), credentials: input.credentials, submittedAt: new Date().toISOString() }, updatedAt: new Date() })
-    .where(eq(businesses.id, businessId))
-    .returning();
+  const [updated] = await updateReturning(db, businesses, { status: "pending_verification", verification: { ...(current.verification ?? {}), credentials: input.credentials, submittedAt: new Date().toISOString() }, updatedAt: new Date() }, eq(businesses.id, businessId));
   await notifyAdmins({ type: "business.verification", title: "Business to verify", body: `${current.name} asked to be listed.`, href: "/admin/marketplace" });
   return updated;
 }
@@ -190,15 +184,11 @@ export async function listForVerification(status: (typeof BUSINESS_STATUSES)[num
 export async function decideVerification(admin: AuthenticatedUser, businessId: string, decision: "verified" | "draft" | "suspended", notes?: string) {
   const [current] = await db.select().from(businesses).where(eq(businesses.id, businessId)).limit(1);
   if (!current) throw ApiError.notFound("Business");
-  const [updated] = await db
-    .update(businesses)
-    .set({
+  const [updated] = await updateReturning(db, businesses, {
       status: decision,
       verification: { ...(current.verification ?? {}), reviewedAt: new Date().toISOString(), reviewedBy: admin.id, notes },
       updatedAt: new Date(),
-    })
-    .where(eq(businesses.id, businessId))
-    .returning();
+    }, eq(businesses.id, businessId));
   const titles = { verified: "Your business is verified", draft: "Verification needs changes", suspended: "Your business was suspended" };
   await notify(current.ownerId, {
     type: `business.${decision}`,
@@ -258,34 +248,34 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
       const termPattern = `%${term}%`;
       conditions.push(
         or(
-          ilike(businesses.name, termPattern),
-          ilike(businesses.nameAm, termPattern),
-          ilike(businesses.tagline, termPattern),
-          ilike(businesses.description, termPattern),
-          ilike(businesses.city, termPattern),
-          ilike(businesses.region, termPattern),
-          ilike(businesses.address, termPattern),
-          ilike(businessCategories.name, termPattern),
-          ilike(businessCategories.nameAm, termPattern),
-          ilike(businessCategories.slug, termPattern),
+          like(businesses.name, termPattern),
+          like(businesses.nameAm, termPattern),
+          like(businesses.tagline, termPattern),
+          like(businesses.description, termPattern),
+          like(businesses.city, termPattern),
+          like(businesses.region, termPattern),
+          like(businesses.address, termPattern),
+          like(businessCategories.name, termPattern),
+          like(businessCategories.nameAm, termPattern),
+          like(businessCategories.slug, termPattern),
           sql`exists (
             select 1 from ${services}
             where ${services.businessId} = ${businesses.id}
               and ${services.isActive}
-              and (${services.name} ilike ${termPattern} or ${services.nameAm} ilike ${termPattern} or ${services.description} ilike ${termPattern})
+              and (${services.name} like ${termPattern} or ${services.nameAm} like ${termPattern} or ${services.description} like ${termPattern})
           )`,
           sql`exists (
             select 1 from ${services}
             inner join ${serviceKinds} on ${serviceKinds.id} = ${services.kindId}
             where ${services.businessId} = ${businesses.id}
               and ${services.isActive}
-              and (${serviceKinds.name} ilike ${termPattern} or ${serviceKinds.nameAm} ilike ${termPattern} or ${serviceKinds.slug} ilike ${termPattern})
+              and (${serviceKinds.name} like ${termPattern} or ${serviceKinds.nameAm} like ${termPattern} or ${serviceKinds.slug} like ${termPattern})
           )`,
           sql`exists (
             select 1 from ${remedies}
             where ${remedies.businessId} = ${businesses.id}
               and ${remedies.isActive}
-              and (${remedies.name} ilike ${termPattern} or ${remedies.nameAm} ilike ${termPattern} or ${remedies.description} ilike ${termPattern} or ${remedies.form} ilike ${termPattern})
+              and (${remedies.name} like ${termPattern} or ${remedies.nameAm} like ${termPattern} or ${remedies.description} like ${termPattern} or ${remedies.form} like ${termPattern})
           )`
         )!
       );
@@ -295,8 +285,8 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
   if (query.category) conditions.push(eq(businessCategories.slug, query.category));
   if (query.sector) conditions.push(eq(businessCategories.sector, query.sector));
   if (query.region) conditions.push(eq(businesses.region, query.region));
-  if (query.mode) conditions.push(sql`${businesses.deliveryModes} @> ${JSON.stringify([query.mode])}::jsonb`);
-  if (query.language) conditions.push(sql`${businesses.languages} @> ${JSON.stringify([query.language])}::jsonb`);
+  if (query.mode) conditions.push(sql`json_contains(${businesses.deliveryModes}, ${JSON.stringify([query.mode])})`);
+  if (query.language) conditions.push(sql`json_contains(${businesses.languages}, ${JSON.stringify([query.language])})`);
   if (query.minPrice !== undefined) {
     conditions.push(sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) >= ${query.minPrice}`);
   }
@@ -312,26 +302,28 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
   } else if (query.sort === "newest") {
     order = [desc(businesses.createdAt)];
   } else if (query.sort === "price_asc") {
-    order = [sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) ASC NULLS LAST`];
+    // Businesses without a priced service go last (MySQL sorts NULL first when ascending).
+    const lowest = sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive})`;
+    order = [sql`${lowest} is null`, sql`${lowest} asc`];
   } else if (query.sort === "price_desc") {
-    order = [sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) DESC NULLS LAST`];
+    order = [sql`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive}) desc`];
   } else {
     if (query.q) {
       const rawQ = query.q.trim();
       const relevance = sql<number>`(
         case 
-          when ${businesses.name} ilike ${`%${rawQ}%`} then 100
-          when ${businesses.nameAm} ilike ${`%${rawQ}%`} then 90
-          when ${businessCategories.name} ilike ${`%${rawQ}%`} then 80
-          when ${businesses.tagline} ilike ${`%${rawQ}%`} then 70
-          when exists (select 1 from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive} and ${services.name} ilike ${`%${rawQ}%`}) then 60
-          when ${businesses.city} ilike ${`%${rawQ}%`} then 50
+          when ${businesses.name} like ${`%${rawQ}%`} then 100
+          when ${businesses.nameAm} like ${`%${rawQ}%`} then 90
+          when ${businessCategories.name} like ${`%${rawQ}%`} then 80
+          when ${businesses.tagline} like ${`%${rawQ}%`} then 70
+          when exists (select 1 from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive} and ${services.name} like ${`%${rawQ}%`}) then 60
+          when ${businesses.city} like ${`%${rawQ}%`} then 50
           else 30
         end
       )`;
-      order = [desc(relevance), sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(businesses.name)];
+      order = [desc(relevance), desc(businesses.ratingAverage), desc(businesses.ratingCount), asc(businesses.name)];
     } else {
-      order = [sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(businesses.name)];
+      order = [desc(businesses.ratingAverage), desc(businesses.ratingCount), asc(businesses.name)];
     }
   }
 
@@ -340,16 +332,6 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
       .select({
         ...publicColumns,
         fromPriceEtb: sql<string | null>`(select min(${services.priceEtb}) from ${services} where ${services.businessId} = ${businesses.id} and ${services.isActive})`,
-        matchingServices: sql<string[]>`coalesce((
-          select json_agg(s.name) from (
-            select distinct ${services.name} 
-            from ${services}
-            where ${services.businessId} = ${businesses.id} 
-              and ${services.isActive}
-              ${query.q ? sql`and (${services.name} ilike ${`%${query.q.trim()}%`} or ${services.description} ilike ${`%${query.q.trim()}%`})` : sql``}
-            limit 3
-          ) s
-        ), '[]'::json)`,
       })
       .from(businesses)
       .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
@@ -357,10 +339,38 @@ export async function searchDirectory(query: z.infer<typeof directoryQuery>, vie
       .orderBy(...order)
       .limit(query.limit)
       .offset((query.page - 1) * query.limit),
-    db.select({ total: sql<number>`count(*)::int` }).from(businesses).innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId)).where(where),
+    db.select({ total: sql<number>`count(*)` }).from(businesses).innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId)).where(where),
   ]);
 
-  return { businesses: rows, total, page: query.page, limit: query.limit, totalPages: Math.max(1, Math.ceil(total / query.limit)) };
+  // Up to three service names per business, preferring those that match the search text.
+  const matchingServices = new Map<string, string[]>();
+  if (rows.length) {
+    const text = query.q?.trim();
+    const serviceRows = await db
+      .select({ businessId: services.businessId, name: services.name })
+      .from(services)
+      .where(
+        and(
+          inArray(services.businessId, rows.map((row) => row.id)),
+          eq(services.isActive, true),
+          text ? or(like(services.name, `%${text}%`), like(services.description, `%${text}%`)) : undefined,
+        ),
+      )
+      .orderBy(asc(services.sortOrder), asc(services.name));
+    for (const service of serviceRows) {
+      const names = matchingServices.get(service.businessId) ?? [];
+      if (names.length < 3 && !names.includes(service.name)) names.push(service.name);
+      matchingServices.set(service.businessId, names);
+    }
+  }
+
+  return {
+    businesses: rows.map((row) => ({ ...row, matchingServices: matchingServices.get(row.id) ?? [] })),
+    total,
+    page: query.page,
+    limit: query.limit,
+    totalPages: Math.max(1, Math.ceil(total / query.limit)),
+  };
 }
 
 /** Instant autocomplete search suggestions across verified businesses, services, and categories. */
@@ -393,10 +403,10 @@ export async function searchSuggestions(queryText: string, viewer: Pick<Authenti
     const p = `%${t}%`;
     bizConditions.push(
       or(
-        ilike(businesses.name, p),
-        ilike(businesses.nameAm, p),
-        ilike(businesses.city, p),
-        ilike(businessCategories.name, p)
+        like(businesses.name, p),
+        like(businesses.nameAm, p),
+        like(businesses.city, p),
+        like(businessCategories.name, p)
       )!
     );
   }
@@ -410,9 +420,9 @@ export async function searchSuggestions(queryText: string, viewer: Pick<Authenti
     const p = `%${t}%`;
     srvConditions.push(
       or(
-        ilike(services.name, p),
-        ilike(services.nameAm, p),
-        ilike(businesses.name, p)
+        like(services.name, p),
+        like(services.nameAm, p),
+        like(businesses.name, p)
       )!
     );
   }
@@ -461,9 +471,9 @@ export async function searchSuggestions(queryText: string, viewer: Pick<Authenti
         and(
           cultural ? sql`true` : ne(businessCategories.sector, "cultural"),
           or(
-            ilike(businessCategories.name, pattern),
-            ilike(businessCategories.nameAm, pattern),
-            ilike(businessCategories.slug, pattern)
+            like(businessCategories.name, pattern),
+            like(businessCategories.nameAm, pattern),
+            like(businessCategories.slug, pattern)
           )
         )
       )
@@ -498,7 +508,7 @@ export async function practitionersForPathway(domain: string, viewer: Pick<Authe
     .innerJoin(businesses, eq(businesses.id, services.businessId))
     .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
     .where(and(...conditions))
-    .orderBy(sql`${businesses.ratingAverage} DESC NULLS LAST`, desc(businesses.ratingCount), asc(services.priceEtb))
+    .orderBy(desc(businesses.ratingAverage), desc(businesses.ratingCount), asc(services.priceEtb))
     .limit(limit * 3);
   // One entry per business: its best-matching (cheapest) service.
   const seen = new Set<string>();
@@ -508,7 +518,7 @@ export async function practitionersForPathway(domain: string, viewer: Pick<Authe
 /** Facets for the directory filters, computed from verified businesses (no hard-coded lists). */
 export async function directoryFacets(viewer: Pick<AuthenticatedUser, "role"> | null = null) {
   const cultural = await culturalVisibleTo(viewer);
-  const [allCategories, regions, languages] = await Promise.all([
+  const [allCategories, regions, languageRows] = await Promise.all([
     db
       .select({
         slug: businessCategories.slug,
@@ -516,7 +526,7 @@ export async function directoryFacets(viewer: Pick<AuthenticatedUser, "role"> | 
         nameAm: businessCategories.nameAm,
         sector: businessCategories.sector,
         icon: businessCategories.icon,
-        count: sql<number>`count(${businesses.id}) filter (where ${businesses.status} = 'verified')::int`,
+        count: sql<number>`count(case when ${businesses.status} = 'verified' then ${businesses.id} end)`,
       })
       .from(businessCategories)
       .leftJoin(businesses, eq(businesses.categoryId, businessCategories.id))
@@ -524,17 +534,19 @@ export async function directoryFacets(viewer: Pick<AuthenticatedUser, "role"> | 
       .groupBy(businessCategories.id)
       .orderBy(asc(businessCategories.sortOrder)),
     db
-      .select({ region: businesses.region, count: sql<number>`count(*)::int` })
+      .select({ region: businesses.region, count: sql<number>`count(*)` })
       .from(businesses)
       .where(and(eq(businesses.status, "verified"), sql`${businesses.region} is not null`))
       .groupBy(businesses.region)
       .orderBy(asc(businesses.region)),
-    db.execute<{ language: string; count: number }>(
-      sql`select value as language, count(*)::int as count from ${businesses}, jsonb_array_elements_text(${businesses.languages}) where ${businesses.status} = 'verified' group by value order by count desc`,
-    ),
+    db.select({ languages: businesses.languages }).from(businesses).where(eq(businesses.status, "verified")),
   ]);
+  // Languages are a JSON list per business; they are counted here rather than unpacked in SQL.
+  const languageCounts = new Map<string, number>();
+  for (const row of languageRows) for (const language of row.languages ?? []) languageCounts.set(language, (languageCounts.get(language) ?? 0) + 1);
+  const languages = [...languageCounts].map(([language, count]) => ({ language, count })).sort((a, b) => b.count - a.count || a.language.localeCompare(b.language));
   const categories = cultural ? allCategories : allCategories.filter((category) => category.sector !== "cultural");
-  return { categories, regions, languages: [...languages], culturalVisible: cultural };
+  return { categories, regions, languages, culturalVisible: cultural };
 }
 
 export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser | null) {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { publishingCriteria, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { insertReturning, updateReturning } from "@/lib/db/write";
 
 // ─── GET /api/admin/publishing-criteria ──────────────────────────────────────
 // Returns the current publishing criteria singleton.
@@ -73,9 +74,7 @@ export const PUT = defineRoute({
 
     if (existing) {
       // Update existing row
-      const [updated] = await db
-        .update(publishingCriteria)
-        .set({
+      const [updated] = await updateReturning(db, publishingCriteria, {
           ...(body.allowAutoPublishBioNarrative !== undefined
             ? { allowAutoPublishBioNarrative: body.allowAutoPublishBioNarrative }
             : {}),
@@ -102,16 +101,12 @@ export const PUT = defineRoute({
             : {}),
           updatedBy: user.id,
           updatedAt: now,
-        })
-        .where(eq(publishingCriteria.id, existing.id))
-        .returning();
+        }, eq(publishingCriteria.id, existing.id));
 
       return { criteria: updated, created: false };
     } else {
       // Insert first-time singleton
-      const [created] = await db
-        .insert(publishingCriteria)
-        .values({
+      const [created] = await insertReturning(db, publishingCriteria, {
           allowAutoPublishBioNarrative:
             body.allowAutoPublishBioNarrative ?? false,
           allowAutoPublishCases: body.allowAutoPublishCases ?? false,
@@ -123,8 +118,7 @@ export const PUT = defineRoute({
           maxAutoPublishAiConfidence: body.maxAutoPublishAiConfidence ?? 90,
           updatedBy: user.id,
           updatedAt: now,
-        })
-        .returning();
+        });
 
       return { criteria: created, created: true };
     }

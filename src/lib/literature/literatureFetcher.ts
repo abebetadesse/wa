@@ -16,6 +16,7 @@ import { OpenAlexSource } from "./sources/openAlexSource";
 import { extractStructuredData } from "./processors/abstractExtractor";
 import { mapArticleToStrands, deduplicateArticles } from "./processors/strandMapper";
 import { llmBatchAugment } from "./processors/llmSummarizer";
+import { insertReturning } from "@/lib/db/write";
 
 // ─── Global singleton to prevent multiple cron registrations ─────────────────
 const globalFetcher = globalThis as unknown as {
@@ -29,7 +30,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * LiteratureFetcher — Main Orchestrator
  *
  * Fetches peer-reviewed literature from PubMed, Europe PMC, WHO GHO, and OpenAlex
- * for all 11 knowledge strands. Extracts structured data and upserts to PostgreSQL.
+ * for all 11 knowledge strands. Extracts structured data and upserts to MySQL.
  *
  * Cron schedule: configured via LITERATURE_CRON env var (default: daily at 2 AM).
  */
@@ -97,9 +98,7 @@ export class LiteratureFetcher {
     // ── Log sync start ──
     let syncLogId: string | undefined;
     if (!this.DRY_RUN) {
-      const logRows = await db
-        .insert(literatureSyncLog)
-        .values({
+      const logRows = await insertReturning(db, literatureSyncLog, {
           startedAt: new Date(),
           triggeredBy,
           articlesFound: 0,
@@ -108,8 +107,7 @@ export class LiteratureFetcher {
           errors: [],
           byStrand: {},
           bySource: {},
-        })
-        .returning({ id: literatureSyncLog.id });
+        }, { fields: { id: literatureSyncLog.id } });
       syncLogId = logRows[0]?.id;
     }
 

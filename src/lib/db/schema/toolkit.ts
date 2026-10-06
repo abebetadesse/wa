@@ -2,11 +2,11 @@
  * Healer toolkit: the platform's engines and knowledge repositories as tools that businesses pick,
  * knowledge sets curated by administrators, and the usage signals that drive recommendations.
  */
-import { bigserial, boolean, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { bigserial, boolean, index, integer, jsonb, mysqlTable, primaryKey, text, timestamp, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 import { businesses } from "./marketplace";
 
-export const toolkitTools = pgTable("toolkit_tools", {
+export const toolkitTools = mysqlTable("toolkit_tools", {
   key: varchar("key", { length: 80 }).primaryKey(),
   name: varchar("name", { length: 160 }).notNull(),
   description: text("description").notNull().default(""),
@@ -28,7 +28,7 @@ export const toolkitTools = pgTable("toolkit_tools", {
 });
 
 /** A curated bundle of tools and knowledge strands, published to businesses by administrators. */
-export const knowledgeSets = pgTable("knowledge_sets", {
+export const knowledgeSets = mysqlTable("knowledge_sets", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 100 }).notNull().unique(),
   name: varchar("name", { length: 160 }).notNull(),
@@ -49,7 +49,7 @@ export const knowledgeSets = pgTable("knowledge_sets", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const businessKnowledgeSets = pgTable(
+export const businessKnowledgeSets = mysqlTable(
   "business_knowledge_sets",
   {
     businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),
@@ -67,7 +67,7 @@ export const businessKnowledgeSets = pgTable(
 );
 
 /** Tools a business chose to keep in its toolkit (on top of those its sets provide). */
-export const businessTools = pgTable(
+export const businessTools = mysqlTable(
   "business_tools",
   {
     businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),
@@ -82,7 +82,7 @@ export const businessTools = pgTable(
 );
 
 /** One row per tool opened by someone working in a business: the behaviour signal. */
-export const toolkitUsage = pgTable(
+export const toolkitUsage = mysqlTable(
   "toolkit_usage",
   {
     id: bigserial("id", { mode: "number" }).primaryKey(),

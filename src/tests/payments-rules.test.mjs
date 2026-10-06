@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import { verifyTelegramLogin } from "../server/auth/telegram.ts";
+import { verifyTelegramWebhookSecret } from "../server/auth/telegramBot.ts";
 import { webhookSignatureValid } from "../server/payments/chapa.ts";
 import { availableOptions } from "../server/payments/index.ts";
 import { DEFAULT_SETTINGS, paymentSettings } from "../server/settings/index.ts";
@@ -23,6 +24,13 @@ test("Telegram login data is accepted only with Telegram's signature and while f
   assert.equal(verifyTelegramLogin(data, BOT, now + 2 * 86_400), false, "older than a day");
   assert.equal(verifyTelegramLogin({ ...data, hash: undefined }, BOT, now), false);
   assert.equal(verifyTelegramLogin(data, "", now), false, "not configured");
+});
+
+test("Telegram webhook is secret-guarded (bot commands are covered in messaging.test.mjs)", () => {
+  assert.equal(verifyTelegramWebhookSecret("secret", "secret"), true);
+  assert.equal(verifyTelegramWebhookSecret("secret", "secreT"), false);
+  assert.equal(verifyTelegramWebhookSecret("secret", null), false);
+  assert.equal(verifyTelegramWebhookSecret("", "secret"), false);
 });
 
 test("Chapa webhook signatures are checked when a webhook secret is set", () => {

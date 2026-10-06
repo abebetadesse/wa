@@ -8,7 +8,9 @@ import { createJob, updateJobProgress } from "@/lib/jobs/queue";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { z } from "zod";
-import { clientIp, consumeRateLimit } from "@/lib/api/rateLimit";
+import { clientIp } from "@/lib/api/rateLimit";
+import { consumeSharedRateLimit } from "@/lib/api/sharedRateLimit";
+import { insertReturning } from "@/lib/db/write";
 
 const intakeRequestSchema = z.object({
   email: z.string().email().max(255).optional(),
@@ -45,7 +47,7 @@ const intakeRequestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const rateLimit = consumeRateLimit(`intake:${clientIp(req.headers)}`, 5, 60 * 60 * 1000);
+    const rateLimit = await consumeSharedRateLimit(`intake:${clientIp(req.headers)}`, 5, 60 * 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { success: false, error: "Too many intake submissions. Please try again later." },
@@ -77,10 +79,7 @@ export async function POST(req: NextRequest) {
     if (existingUsers.length > 0) {
       userId = existingUsers[0].id;
     } else {
-      const [newUser] = await db
-        .insert(users)
-        .values({ email, name })
-        .returning({ id: users.id });
+      const [newUser] = await insertReturning(db, users, { email, name }, { fields: { id: users.id } });
       userId = newUser.id;
     }
 
@@ -119,14 +118,11 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Create intake submission
-    const [submission] = await db
-      .insert(intakeSubmissions)
-      .values({
+    const [submission] = await insertReturning(db, intakeSubmissions, {
         userId,
         payload: { ...body, normalized },
         status: "pending",
-      })
-      .returning({ id: intakeSubmissions.id });
+      }, { fields: { id: intakeSubmissions.id } });
 
     const submissionId = submission.id;
     const jobAccess = createJob(jobId, submissionId);

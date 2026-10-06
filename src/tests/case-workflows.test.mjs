@@ -9,13 +9,15 @@ import { WORKFLOW_DOMAINS } from "../server/cases/types.ts";
 const owner = { id: "user-1", role: "user", permissions: [] };
 const stranger = { id: "user-2", role: "user", permissions: [] };
 const expertUser = { id: "expert-1", role: "expert", permissions: [] };
+const reviewerUser = { id: "reviewer-1", role: "reviewer", permissions: ["cases:review"] };
+const adminUser = { id: "admin-1", role: "admin", permissions: ["cases:review"] };
 
 const experts = {
   "expert-1": { id: "expert-1", role: "expert", practitionerCredentials: { verifiedAt: "2026-01-01", domains: ["career", "spiritual", "legal", "social", "relationship"] } },
   "unverified": { id: "unverified", role: "expert", practitionerCredentials: { domains: ["career"] } },
 };
 
-function service({ paid = true, prices = null, released = [] } = {}) {
+function service({ paid = true, prices = null, released = [], defaultRole = async () => null } = {}) {
   let verifications = 0;
   let sequence = 0;
   const attempts = new Map();
@@ -48,6 +50,7 @@ function service({ paid = true, prices = null, released = [] } = {}) {
     },
     loadExpert: async (id) => experts[id] ?? { id, role: "user" },
     expertSummaries: async (ids) => new Map(ids.map((id) => [id, { id, name: "Test Expert", credential: "Debtera" }])),
+    defaultRole,
   });
   return { svc, verifications: () => verifications };
 }
@@ -124,6 +127,42 @@ test("drafts are never shown before an expert approves", async () => {
   view = await svc.get(owner, view.id);
   assert.equal(view.report, null);
   assert.equal(view.review.status, "in_review");
+});
+
+test("submitted requests route to their assigned role and return the approved response to the user", async () => {
+  const { svc } = service({ defaultRole: async () => "reviewer" });
+  let view = await svc.start(owner, "social", { safetyAnswers: safe.social, answers: {} });
+  view = await svc.answer(owner, view.id, fillRequired(view));
+  view = await svc.submit(owner, view.id);
+
+  assert.equal(view.review.assignedRole, "reviewer");
+  assert.equal((await svc.queue(reviewerUser)).waiting[0].id, view.id);
+  assert.equal((await svc.queue(expertUser)).waiting.length, 0);
+  await assert.rejects(svc.claim(expertUser, view.id), (error) => error.status === 404);
+
+  await svc.claim(reviewerUser, view.id);
+  const checklist = Object.fromEntries(DOMAIN_CONFIGS.social.reviewChecklist.map((entry) => [entry.id, true]));
+  await svc.approve(reviewerUser, view.id, { checklist, notes: "Your reviewed response." });
+  const ownerCase = await svc.get(owner, view.id);
+  assert.equal(ownerCase.stage, "visible_to_user");
+  assert.equal(ownerCase.review.notes, "Your reviewed response.");
+  assert.ok(ownerCase.report);
+});
+
+test("administrators can reassign a claimed request to a role and return it to the queue", async () => {
+  const { svc } = service({ defaultRole: async () => "reviewer" });
+  let view = await svc.start(owner, "career", { safetyAnswers: safe.career, answers: {} });
+  view = await svc.answer(owner, view.id, fillRequired(view));
+  view = await svc.submit(owner, view.id);
+  await svc.claim(reviewerUser, view.id);
+
+  await svc.assignRole(adminUser, view.id, "practitioner");
+  const reassigned = await svc.get(owner, view.id);
+  assert.equal(reassigned.stage, "awaiting_expert");
+  assert.equal(reassigned.review.assignedRole, "practitioner");
+  assert.equal((await svc.queue(reviewerUser)).waiting.length, 0);
+  assert.equal((await svc.queue(adminUser)).waiting[0].id, view.id);
+  await assert.rejects(svc.claim(reviewerUser, view.id), (error) => error.status === 404);
 });
 
 test("payment is confirmed only by the provider, never by the client", async () => {

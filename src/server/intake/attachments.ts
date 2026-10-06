@@ -1,6 +1,6 @@
 /** Intake media: clients upload before booking; the business team sees them once attached. */
 import fs from "node:fs/promises";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull, lt } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { intakeAttachments, serviceIntakeSettings, services } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
@@ -8,6 +8,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { membershipsOf, roleCan, type MemberRole } from "@/server/marketplace/access";
 import { assertUploadQuota, toConfig } from "./settings";
 import { ATTACHMENT_KINDS, pathFor, removeFile, storeFile, type AttachmentKind } from "./storage";
+import { deleteReturning, insertReturning } from "@/lib/db/write";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -25,18 +26,39 @@ export async function uploadAttachment(user: AuthenticatedUser, input: { service
   const allowed = { image: config.allowImage, audio: config.allowAudio, video: config.allowVideo }[kind];
   if (!allowed) throw ApiError.badRequest(`This service does not accept ${kind === "audio" ? "voice notes" : `${kind}s`}.`);
   await assertUploadQuota(user.id);
+  void maybeRemoveAbandonedUploads();
 
   const stored = await storeFile(input.file, kind);
   try {
-    const [attachment] = await db
-      .insert(intakeAttachments)
-      .values({ businessId: service.businessId, uploaderId: user.id, kind: stored.kind, mimeType: stored.mime, sizeBytes: stored.size, storageKey: stored.key, originalName: input.file.name?.slice(0, 200) || null, sha256: stored.sha256 })
-      .returning({ id: intakeAttachments.id, kind: intakeAttachments.kind, mimeType: intakeAttachments.mimeType, sizeBytes: intakeAttachments.sizeBytes });
+    const [attachment] = await insertReturning(db, intakeAttachments, { businessId: service.businessId, uploaderId: user.id, kind: stored.kind, mimeType: stored.mime, sizeBytes: stored.size, storageKey: stored.key, originalName: input.file.name?.slice(0, 200) || null, sha256: stored.sha256 }, { fields: { id: intakeAttachments.id, kind: intakeAttachments.kind, mimeType: intakeAttachments.mimeType, sizeBytes: intakeAttachments.sizeBytes } });
     return attachment;
   } catch (error) {
     await removeFile(stored.key).catch(() => null);
     throw error;
   }
+}
+
+// ── Abandoned uploads ────────────────────────────────────────────────────────
+
+const ABANDONED_AFTER_MS = 48 * 60 * 60 * 1000;
+const CLEANUP_EVERY_MS = 60 * 60 * 1000;
+let lastCleanup = 0;
+
+/**
+ * Removes uploads that were never attached to a booking (the client left the booking form).
+ * Rows are deleted first, so a file is only ever removed once nothing refers to it.
+ */
+export async function removeAbandonedUploads(olderThanMs = ABANDONED_AFTER_MS) {
+  const stale = await deleteReturning(db, intakeAttachments, and(isNull(intakeAttachments.bookingId), lt(intakeAttachments.createdAt, new Date(Date.now() - olderThanMs))), { storageKey: intakeAttachments.storageKey });
+  for (const row of stale) await removeFile(row.storageKey).catch(() => null);
+  return stale.length;
+}
+
+/** Runs the clean-up at most once an hour per process, piggy-backed on new uploads. */
+async function maybeRemoveAbandonedUploads() {
+  if (Date.now() - lastCleanup < CLEANUP_EVERY_MS) return;
+  lastCleanup = Date.now();
+  await removeAbandonedUploads().catch((error) => console.error("[intake] upload clean-up failed:", error instanceof Error ? error.message : error));
 }
 
 /** Links a client's validated uploads to their new booking (inside the booking transaction). */

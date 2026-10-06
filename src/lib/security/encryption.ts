@@ -1,8 +1,17 @@
 import crypto from "crypto";
 
-const ENCRYPTION_KEY =
-  process.env.DATA_ENCRYPTION_KEY ||
-  "ethio-wellness-enterprise-aes256-key-32b!"; // 32 bytes key for production
+const DEVELOPMENT_KEY = "ethio-wellness-enterprise-aes256-key-32b!";
+
+/**
+ * The key that protects restricted fields. Production must supply its own DATA_ENCRYPTION_KEY:
+ * the development key is published with the source code and protects nothing.
+ */
+function encryptionKey(): string {
+  const configured = process.env.DATA_ENCRYPTION_KEY;
+  if (configured) return configured;
+  if (process.env.NODE_ENV === "production") throw new Error("DATA_ENCRYPTION_KEY must be configured in production.");
+  return DEVELOPMENT_KEY;
+}
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
@@ -22,7 +31,7 @@ export interface EncryptedPayload {
 export function encryptRestrictedField(data: any): EncryptedPayload {
   const jsonStr = JSON.stringify(data);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
+  const key = crypto.createHash("sha256").update(encryptionKey()).digest();
 
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   let encrypted = cipher.update(jsonStr, "utf8", "hex");
@@ -49,7 +58,7 @@ export function decryptRestrictedField<T = any>(payload: EncryptedPayload | any)
   }
 
   try {
-    const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
+    const key = crypto.createHash("sha256").update(encryptionKey()).digest();
     const iv = Buffer.from(payload.iv, "hex");
     const tag = Buffer.from(payload.tag, "hex");
 

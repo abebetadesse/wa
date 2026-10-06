@@ -159,10 +159,98 @@ export interface ReviewChecklistItem {
 }
 
 export interface ReviewAuditEvent {
-  type: "created" | "claimed" | "approved";
+  type: "created" | "claimed" | "approved" | "assigned" | "draft_saved" | "message" | "reanalysed";
   actorId: string;
   at: string;
   details?: Record<string, unknown>;
+}
+
+/** Where a case message was written: the website, or a reply sent to the Telegram / WhatsApp bot. */
+export type MessageChannel = "app" | "telegram" | "whatsapp";
+
+/**
+ * One entry in the conversation between the case owner and the reviewer. A reviewer `question`
+ * waits for the owner's reply; the reply is added to the analysed narrative.
+ */
+export interface CaseMessage {
+  id: string;
+  from: "owner" | "reviewer";
+  authorId: string;
+  kind: "message" | "question";
+  body: string;
+  via: MessageChannel;
+  at: string;
+}
+
+export type AnalysisLayer = "A" | "B";
+export type AnalysisConfidence = "strong" | "moderate" | "tentative";
+
+/** A knowledge-strand finding kept because something the person said or their profile supports it. */
+export interface GroundedFinding {
+  strand: string;
+  layer: AnalysisLayer;
+  name: string;
+  summary: string;
+  /** 0–1, from the grounding below, not from the strand's own catalogue score. */
+  relevance: number;
+  /** Why it was kept, e.g. `Sleep: "I cannot sleep"` or `Profile: region Oromia`. */
+  matchedOn: string[];
+  severity?: string;
+  steps: string[];
+  source?: string;
+}
+
+export interface AnalysisCause {
+  id: string;
+  title: string;
+  explanation: string;
+  confidence: AnalysisConfidence;
+  /** The person's own words (or profile facts) that support this hypothesis. */
+  because: string[];
+  factors: string[];
+  strands: string[];
+}
+
+export interface AnalysisSolution {
+  id: string;
+  title: string;
+  steps: string[];
+  horizon: "now" | "this_week" | "ongoing";
+  addresses: string[];
+  /** Medical, medication and herbal content must be confirmed by a qualified professional. */
+  needsProfessional: boolean;
+  source: string;
+}
+
+/**
+ * The reviewer's dossier: every knowledge strand and engine run over the request, reduced to what
+ * the person's own words support. Never sent to the case owner; the reviewer decides what goes
+ * into the report.
+ */
+export interface CaseAnalysis {
+  version: 1;
+  generatedAt: string;
+  /** "reflection_only": this case type publishes cultural and spiritual reflection only. */
+  publishScope: "full" | "reflection_only";
+  narrative: { words: number; excerpt: string };
+  urgency: { level: string; score: number; signals: string[]; recommendation: string };
+  factors: Array<{ id: string; label: string; weight: number; quotes: string[] }>;
+  causes: AnalysisCause[];
+  solutions: AnalysisSolution[];
+  strands: Array<{ strand: string; layer: AnalysisLayer; considered: number; kept: number; findings: GroundedFinding[] }>;
+  /** Domain B reflections, kept apart from Domain A causes. Empty when a safety signal is active. */
+  reflections: GroundedFinding[];
+  intersections: Array<{ title: string; description: string; recommendation: string; strands: string[] }>;
+  engines: Array<{ id: string; title: string; summary: string; items: string[] }>;
+  safety: { warnings: string[]; interactions: string[]; domainBSuppressed: boolean };
+  dataQuality: {
+    /** 0–100: how much the request and profile give the analysis to work with. */
+    score: number;
+    used: string[];
+    gaps: string[];
+    /** Questions that would sharpen the analysis; the reviewer can send one with a click. */
+    followUps: string[];
+  };
 }
 
 /** The persisted case. Stored as one row in `workflow_cases`. */
@@ -172,6 +260,8 @@ export interface WorkflowCase {
   /** The marketplace business reviewing this case (null: the platform's expert pool). */
   businessId: string | null;
   bookingId: string | null;
+  /** Platform role currently responsible for this request; null keeps the legacy expert pool. */
+  assignedRole: string | null;
   domain: WorkflowDomain;
   stage: WorkflowStage;
   safetyAnswers: Record<string, unknown>;
@@ -183,6 +273,10 @@ export interface WorkflowCase {
   draft: DraftReport | null;
   review: ReviewRecord | null;
   auditTrail: ReviewAuditEvent[];
+  /** Conversation between the owner and the reviewer (also delivered over Telegram / WhatsApp). */
+  messages: CaseMessage[];
+  /** Reviewer-only analysis dossier, built on submission and refreshed when the owner adds information. */
+  analysis: CaseAnalysis | null;
   payment: PaymentRecord | null;
   consultation: ConsultationRecord | null;
   createdAt: string;

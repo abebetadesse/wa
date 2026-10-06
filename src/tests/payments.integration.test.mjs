@@ -1,6 +1,6 @@
 /**
  * Payments, admin payment controls, client-reported booking payments and registration settings,
- * against the real PostgreSQL database. Chapa is replaced by a local fake API server.
+ * against the real MySQL database. Chapa is replaced by a local fake API server.
  * Skipped automatically when the database is unreachable. Everything it creates is removed.
  */
 import { test, before, after } from "node:test";
@@ -9,7 +9,7 @@ import crypto from "node:crypto";
 import http from "node:http";
 import { eq, inArray } from "drizzle-orm";
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 const settings = await import("../server/settings/index.ts");
 const payments = await import("../server/payments/index.ts");
@@ -25,7 +25,7 @@ const { addDays, todayIn } = await import("../server/marketplace/time.ts");
 
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -94,6 +94,7 @@ before(async () => {
   }
   await settings.updateSettings("payments", paymentSettings(), admin.id);
   await settings.updateSettings("registration", { open: true, telegram: "optional" }, admin.id);
+  await settings.updateSettings("caseRouting", { domains: { career: "expert" } }, admin.id);
 });
 
 after(async () => {
@@ -115,7 +116,7 @@ after(async () => {
   await db.delete(schema.notifications).where(inArray(schema.notifications.userId, ids));
   await db.delete(schema.realtimeEvents).where(inArray(schema.realtimeEvents.channel, [...ids.map((id) => `user:${id}`), ...createdBusinesses.map((id) => `business:${id}`)]));
   await db.delete(schema.users).where(inArray(schema.users.id, ids));
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 const svc = () => caseSvc.caseService;
@@ -314,4 +315,3 @@ test("registration can be paused, and Telegram can be required before listing a 
     await settings.updateSettings("registration", { open: true, telegram: "optional" }, admin.id);
   }
 });
-

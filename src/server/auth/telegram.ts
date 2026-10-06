@@ -1,5 +1,7 @@
 /**
  * Telegram account linking via the Telegram Login Widget (https://core.telegram.org/widgets/login).
+ * Accounts can also be linked by opening the bot with a one-time code (src/server/messaging), which
+ * needs no domain registration; updates are delivered by src/server/messaging/accounts.ts.
  *
  * The widget returns the Telegram user's id, name and a hash. The hash is an HMAC-SHA256 of the
  * sorted fields keyed with SHA-256(bot token), so only Telegram can produce it. A verified link
@@ -10,7 +12,7 @@
  * the site's domain with /setdomain (the widget does not work on localhost).
  */
 import crypto from "node:crypto";
-import { and, eq, isNotNull, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -141,18 +143,4 @@ export async function sendTelegramMessage(chatId: string, text: string, link?: {
     console.warn("[telegram] sendMessage error", error instanceof Error ? error.message : error);
     return false;
   }
-}
-
-/** Forwards an in-app notification when the user connected Telegram and kept forwarding on. */
-export async function forwardNotification(userId: string, input: { title: string; body?: string; href?: string }) {
-  if (!token()) return;
-  const [row] = await db
-    .select({ telegramId: users.telegramId })
-    .from(users)
-    .where(and(eq(users.id, userId), isNotNull(users.telegramId), eq(users.telegramNotify, true)))
-    .limit(1);
-  if (!row?.telegramId) return;
-  const origin = process.env.APP_URL?.replace(/\/$/, "");
-  const link = origin && input.href ? { url: `${origin}${input.href}`, label: "Open" } : undefined;
-  await sendTelegramMessage(row.telegramId, input.body ? `${input.title}\n${input.body}` : input.title, link);
 }

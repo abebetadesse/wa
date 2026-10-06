@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CalendarClock, Save } from "lucide-react";
+import { ArrowLeft, CalendarClock, MessageCircle, Save } from "lucide-react";
 import type { OwnerView as BaseOwnerView } from "@/server/cases/views";
 import type { PaymentAttempt } from "@/server/cases/billing";
 import { PayPanel } from "@/features/payments/PayPanel";
@@ -59,6 +59,7 @@ export function CaseView({ caseId }: { caseId: string }) {
   }, [load]);
 
   // While an expert is reviewing, refresh occasionally and whenever the tab regains focus.
+  // Unsent text in the reply box is kept: it lives in ConversationCard, not in the refreshed view.
   const waiting = view?.stage === "awaiting_expert" || view?.stage === "in_review";
   useEffect(() => {
     if (!waiting) return;
@@ -94,6 +95,7 @@ export function CaseView({ caseId }: { caseId: string }) {
         />
       )}
       {view.review && <ReviewStatus review={view.review} />}
+      {view.canMessage && <ConversationCard view={view} onChange={setView} />}
       {view.auditTrail && view.auditTrail.length > 0 && (
         <Card>
           <CardHeader>
@@ -248,6 +250,67 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
         <Button type="submit" disabled={busy !== null}>{busy === "submit" ? "Submitting…" : "Submit for expert review"}</Button>
       </div>
     </form>
+  );
+}
+
+// ── Conversation with the reviewer ───────────────────────────────────────────
+
+const VIA_LABELS = { app: "", telegram: " · sent from Telegram", whatsapp: " · sent from WhatsApp" } as const;
+
+function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view: OwnerView) => void }) {
+  const [text, setText] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (!text.trim()) {
+      setError("Write a message first.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      onChange(await apiFetch<OwnerView>(`/api/case-workflows/cases/${view.id}/messages`, { method: "POST", json: { body: text.trim() } }));
+      setText("");
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><MessageCircle className="size-5 text-brand" aria-hidden="true" /> Messages with your reviewer</CardTitle>
+        <CardDescription>
+          Add anything you forgot, or answer your reviewer&apos;s questions. If you connected Telegram or WhatsApp on your <a href="/account" className="font-semibold text-brand underline">account page</a>, messages also arrive there and you can simply reply in the chat.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {view.awaitingReply && <Alert tone="warning" title="Your reviewer is waiting for your answer">Your reply helps them give you a better response.</Alert>}
+        {view.messages.length > 0 && (
+          <ol className="flex flex-col gap-2">
+            {view.messages.map((message) => (
+              <li key={message.id} className={`max-w-[85%] rounded-2xl border px-4 py-2.5 text-sm ${message.from === "owner" ? "self-end border-brand/30 bg-brand/10" : "self-start border-border bg-muted/30"}`}>
+                <p className="whitespace-pre-wrap text-foreground">{message.body}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {message.from === "owner" ? "You" : "Your reviewer"}
+                  {message.from === "owner" ? VIA_LABELS[message.via] : ""} · {new Date(message.at).toLocaleString()}
+                </p>
+              </li>
+            ))}
+          </ol>
+        )}
+        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+          <Field label={view.awaitingReply ? "Your answer" : "Write to your reviewer"} error={error}>
+            {(control) => <Textarea {...control} value={text} onChange={(event) => setText(event.target.value)} rows={3} maxLength={4000} />}
+          </Field>
+          <Button type="submit" disabled={busy} className="self-end">{busy ? "Sending…" : "Send"}</Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 

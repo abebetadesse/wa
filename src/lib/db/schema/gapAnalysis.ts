@@ -1,9 +1,9 @@
-import { pgTable, uuid, varchar, numeric, jsonb, timestamp, boolean, text } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, numeric, jsonb, timestamp, boolean, text } from "../mysqlSchema";
 import { users } from "./users";
 import { nutrients } from "./nutrition";
 import { herbs } from "./herbs";
 
-export const intakeSubmissions = pgTable("intake_submissions", {
+export const intakeSubmissions = mysqlTable("intake_submissions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   payload: jsonb("payload").notNull(), // Canonical normalized profile snapshot & diet log
@@ -12,7 +12,7 @@ export const intakeSubmissions = pgTable("intake_submissions", {
   errorMessage: text("error_message"),
 });
 
-export const wellbeingGapReports = pgTable("wellbeing_gap_reports", {
+export const wellbeingGapReports = mysqlTable("wellbeing_gap_reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   submissionId: uuid("submission_id").references(() => intakeSubmissions.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.id).notNull(),
@@ -22,7 +22,7 @@ export const wellbeingGapReports = pgTable("wellbeing_gap_reports", {
   safetyGateVerified: boolean("safety_gate_verified").default(true).notNull(),
 });
 
-export const identifiedGaps = pgTable("identified_gaps", {
+export const identifiedGaps = mysqlTable("identified_gaps", {
   id: uuid("id").primaryKey().defaultRandom(),
   reportId: uuid("report_id").references(() => wellbeingGapReports.id, { onDelete: "cascade" }).notNull(),
   nutrientId: uuid("nutrient_id").references(() => nutrients.id).notNull(),
@@ -34,7 +34,7 @@ export const identifiedGaps = pgTable("identified_gaps", {
   sourceRef: varchar("source_ref", { length: 100 }).notNull(), // "EFCT2025-EVAL-THR"
 });
 
-export const gapCauses = pgTable("gap_causes", {
+export const gapCauses = mysqlTable("gap_causes", {
   id: uuid("id").primaryKey().defaultRandom(),
   gapId: uuid("gap_id").references(() => identifiedGaps.id, { onDelete: "cascade" }).notNull(),
   causeType: varchar("cause_type", { length: 40 }).notNull(), // "dietary" | "absorption_inhibitor" | "medication" | "age_related" | "lifestyle"
@@ -44,7 +44,7 @@ export const gapCauses = pgTable("gap_causes", {
   sourceRef: varchar("source_ref", { length: 100 }).notNull(), // Traceability is required
 });
 
-export const gapSolutions = pgTable("gap_solutions", {
+export const gapSolutions = mysqlTable("gap_solutions", {
   id: uuid("id").primaryKey().defaultRandom(),
   gapId: uuid("gap_id").references(() => identifiedGaps.id, { onDelete: "cascade" }).notNull(),
   solutionType: varchar("solution_type", { length: 40 }).notNull(), // "dietary_change" | "traditional_remedy" | "lifestyle" | "referral"
@@ -57,7 +57,7 @@ export const gapSolutions = pgTable("gap_solutions", {
 });
 
 // Immutable audit trail for every evaluation, safety gate check, administrative action, and user viewing
-export const auditLog = pgTable("audit_log", {
+export const auditLog = mysqlTable("audit_log", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id),
   eventType: varchar("event_type", { length: 80 }).notNull(), // maps to action / event type

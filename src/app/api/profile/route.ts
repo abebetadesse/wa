@@ -195,10 +195,7 @@ export const PUT = defineRoute({
     await db
       .insert(userProfiles)
       .values(row)
-      .onConflictDoUpdate({
-        target: userProfiles.userId,
-        set: row,
-      });
+      .onDuplicateKeyUpdate({ set: row });
 
     return {
       data,

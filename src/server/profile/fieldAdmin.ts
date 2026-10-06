@@ -5,6 +5,7 @@ import { profileFieldDefinitions } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
 import { validateFieldInput, type ProfileFieldInput } from "@/lib/profileFields";
 import type { AuthenticatedUser } from "@/lib/auth";
+import { insertReturning } from "@/lib/db/write";
 
 /** Adapts the existing field validator into a zod schema so routes report 400s consistently. */
 export const fieldInput = z.unknown().transform((value, ctx): ProfileFieldInput => {
@@ -36,7 +37,7 @@ export async function listFields() {
 }
 
 export async function createField(user: AuthenticatedUser, input: ProfileFieldInput) {
-  const [field] = await db.insert(profileFieldDefinitions).values({ ...input, createdBy: user.id, updatedBy: user.id }).returning();
+  const [field] = await insertReturning(db, profileFieldDefinitions, { ...input, createdBy: user.id, updatedBy: user.id });
   return field;
 }
 
@@ -66,10 +67,7 @@ export async function reorderFields(user: AuthenticatedUser, ids: string[]) {
 
 export async function importFields(user: AuthenticatedUser, fields: ProfileFieldInput[]) {
   if (!fields.length) return { fields: [], imported: 0 };
-  const created = await db
-    .insert(profileFieldDefinitions)
-    .values(fields.map((field) => ({ ...field, createdBy: user.id, updatedBy: user.id })))
-    .returning();
+  const created = await insertReturning(db, profileFieldDefinitions, fields.map((field) => ({ ...field, createdBy: user.id, updatedBy: user.id })));
   return { fields: created, imported: created.length };
 }
 

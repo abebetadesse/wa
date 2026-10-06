@@ -1,11 +1,11 @@
-import { pgTable, uuid, varchar, text, timestamp, jsonb, integer, boolean, primaryKey, numeric } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, timestamp, jsonb, integer, boolean, primaryKey, numeric } from "../mysqlSchema";
 import { users } from "./users";
 import { bookings } from "./marketplace";
 
 export type HexacoreCoreCode = "P" | "H" | "C" | "E" | "S" | "O";
 export type EthiopianSeason = "kiremt" | "tseday" | "bega" | "belg";
 
-export const hexacoreAspects = pgTable("hexacore_aspects", {
+export const hexacoreAspects = mysqlTable("hexacore_aspects", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 3 }).notNull().unique(),
   coreCode: varchar("core_code", { length: 1 }).$type<HexacoreCoreCode>().notNull(),
@@ -19,7 +19,7 @@ export const hexacoreAspects = pgTable("hexacore_aspects", {
   displayOrder: integer("display_order").notNull(),
 });
 
-export const hexacorePractices = pgTable("hexacore_practices", {
+export const hexacorePractices = mysqlTable("hexacore_practices", {
   id: uuid("id").primaryKey().defaultRandom(),
   coreCode: varchar("core_code", { length: 1 }).$type<HexacoreCoreCode>().notNull(),
   aspectCode: varchar("aspect_code", { length: 3 }),
@@ -34,7 +34,7 @@ export const hexacorePractices = pgTable("hexacore_practices", {
   references: jsonb("references").$type<string[]>().default([]).notNull(),
 });
 
-export const hexacoreJournal = pgTable("hexacore_journal", {
+export const hexacoreJournal = mysqlTable("hexacore_journal", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   entryDate: timestamp("entry_date").notNull(),
@@ -48,7 +48,7 @@ export const hexacoreJournal = pgTable("hexacore_journal", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const hexacorePracticeLog = pgTable("hexacore_practice_log", {
+export const hexacorePracticeLog = mysqlTable("hexacore_practice_log", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   practiceId: uuid("practice_id").references(() => hexacorePractices.id, { onDelete: "cascade" }).notNull(),
@@ -57,7 +57,7 @@ export const hexacorePracticeLog = pgTable("hexacore_practice_log", {
   notes: text("notes"),
 });
 
-export const hexacoreFrequencyHistory = pgTable("hexacore_frequency_history", {
+export const hexacoreFrequencyHistory = mysqlTable("hexacore_frequency_history", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   recordedAt: timestamp("recorded_at").defaultNow().notNull(),
@@ -66,7 +66,7 @@ export const hexacoreFrequencyHistory = pgTable("hexacore_frequency_history", {
   source: varchar("source", { length: 50 }).notNull(),
 });
 
-export const hexacoreCircles = pgTable("hexacore_circles", {
+export const hexacoreCircles = mysqlTable("hexacore_circles", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 120 }).notNull(),
   slug: varchar("slug", { length: 140 }).notNull().unique(),
@@ -78,7 +78,7 @@ export const hexacoreCircles = pgTable("hexacore_circles", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const hexacoreCircleMembers = pgTable("hexacore_circle_members", {
+export const hexacoreCircleMembers = mysqlTable("hexacore_circle_members", {
   circleId: uuid("circle_id").references(() => hexacoreCircles.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   role: varchar("role", { length: 20 }).default("member").notNull(),
@@ -87,7 +87,7 @@ export const hexacoreCircleMembers = pgTable("hexacore_circle_members", {
   memberKey: primaryKey({ columns: [table.circleId, table.userId] }),
 }));
 
-export const hexacoreCirclePosts = pgTable("hexacore_circle_posts", {
+export const hexacoreCirclePosts = mysqlTable("hexacore_circle_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
   circleId: uuid("circle_id").references(() => hexacoreCircles.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
@@ -100,7 +100,7 @@ export const hexacoreCirclePosts = pgTable("hexacore_circle_posts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const hexacoreCircleReactions = pgTable("hexacore_circle_reactions", {
+export const hexacoreCircleReactions = mysqlTable("hexacore_circle_reactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   postId: uuid("post_id").references(() => hexacoreCirclePosts.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
@@ -108,7 +108,7 @@ export const hexacoreCircleReactions = pgTable("hexacore_circle_reactions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const hexacoreCircleInvites = pgTable("hexacore_circle_invites", {
+export const hexacoreCircleInvites = mysqlTable("hexacore_circle_invites", {
   id: uuid("id").primaryKey().defaultRandom(),
   circleId: uuid("circle_id").references(() => hexacoreCircles.id, { onDelete: "cascade" }).notNull(),
   invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "cascade" }).notNull(),
@@ -151,7 +151,7 @@ export interface HexacoreCommercialProduct {
   updatedAt?: Date | string;
 }
 
-export const hexacoreProducts = pgTable("hexacore_products", {
+export const hexacoreProducts = mysqlTable("hexacore_products", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 60 }).notNull().unique(),
   name: varchar("name", { length: 140 }).notNull(),
@@ -172,7 +172,7 @@ export const hexacoreProducts = pgTable("hexacore_products", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const hexacorePurchases = pgTable("hexacore_purchases", {
+export const hexacorePurchases = mysqlTable("hexacore_purchases", {
   id: uuid("id").primaryKey().defaultRandom(),
   reference: varchar("reference", { length: 30 }).notNull().unique(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
@@ -195,7 +195,7 @@ export const hexacorePurchases = pgTable("hexacore_purchases", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const hexacoreSubscriptions = pgTable("hexacore_subscriptions", {
+export const hexacoreSubscriptions = mysqlTable("hexacore_subscriptions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   plan: varchar("plan", { length: 40 }).notNull(),

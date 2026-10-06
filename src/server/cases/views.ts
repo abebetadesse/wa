@@ -51,6 +51,7 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
       ? {
           status: record.stage === "awaiting_expert" ? "queued" : record.stage === "in_review" ? "in_review" : "approved",
           expert: record.stage === "awaiting_expert" ? null : expert,
+          assignedRole: record.assignedRole,
           approvedAt: record.review?.approvedAt ?? null,
           notes: approved ? record.review?.notes ?? null : null,
           checklist: record.review?.checklist ?? null,
@@ -71,6 +72,10 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
     pricing: { reportEtb: config.pricing.reportEtb, consultationEtb: config.pricing.consultationEtb, consultationFormats: config.pricing.consultationFormats },
     payment: record.payment ? { status: record.payment.status, purchaseId: record.payment.purchaseId, amountEtb: record.payment.amountEtb, method: record.payment.method } : null,
     consultation: record.consultation,
+    /** The conversation with the reviewer. The reviewer's analysis is never part of this view. */
+    messages: record.messages.map(({ id, from, kind, body, via, at }) => ({ id, from, kind, body, via, at })),
+    canMessage: REVIEW_STAGES.has(record.stage) || approved,
+    awaitingReply: record.messages.length > 0 && record.messages[record.messages.length - 1].from === "reviewer" && record.messages[record.messages.length - 1].kind === "question",
   };
 }
 
@@ -95,6 +100,10 @@ export function toExpertView(record: WorkflowCase, config: DomainConfig) {
     checklist: config.reviewChecklist,
     businessId: record.businessId,
     bookingId: record.bookingId,
+    assignedRole: record.assignedRole,
+    messages: record.messages,
+    /** Reviewer-only: grounded findings, cause hypotheses and proposed steps from every strand. */
+    analysis: record.analysis,
     /** Question text for each answer, so reviewers read questions rather than ids. */
     questions: [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)].map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] })),
   };

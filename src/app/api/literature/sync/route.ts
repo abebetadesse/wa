@@ -76,8 +76,8 @@ export async function GET(req: NextRequest) {
     const strandCounts = await db
       .select({
         strand: literatureFindings.strand,
-        count: sql<number>`count(*)::int`,
-        avgRelevance: sql<number>`round(avg(relevance_score)::numeric, 3)`,
+        count: sql<number>`count(*)`,
+        avgRelevance: sql<number>`round(avg(relevance_score), 3)`,
       })
       .from(literatureFindings)
       .where(eq(literatureFindings.isActive, 1))

@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   compress: process.env.NODE_ENV === "production",
   poweredByHeader: false,
+  // The project is its own root, even when another lockfile sits in a parent folder.
+  outputFileTracingRoot: process.cwd(),
   experimental: {
     // Pillar 2 P8: Eliminate unused SVG symbols from Lucide (~150KB saved)
     optimizePackageImports: ["lucide-react", "echarts-for-react", "echarts"],
@@ -21,6 +23,8 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(self), microphone=(self), geolocation=(self)" },
+          // Browsers that have reached the site over HTTPS keep using HTTPS (ignored on plain HTTP).
+          ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=15552000" }] : []),
           {
             key: "Content-Security-Policy",
             value:

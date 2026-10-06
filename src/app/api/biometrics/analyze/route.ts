@@ -5,6 +5,7 @@ import { biometricScans } from "@/lib/db/schema";
 import { culturalTranslator } from "@/lib/dual-layer/CulturalTranslator";
 import { badRequest, ok, serverError, unauthorized } from "@/lib/api/response";
 import { requireUser } from "@/lib/api/authGuard";
+import { insertReturning } from "@/lib/db/write";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
     });
     const imageHash = createHash("sha256").update(body.image).digest("hex");
 
-    const [scan] = await db.insert(biometricScans).values({
+    const [scan] = await insertReturning(db, biometricScans, {
       userId: user.id,
       imageUrl: `pending://biometric/${imageHash}`,
       scanType: body.scanType === "PALM" ? "palm" : "tongue",
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       redFlags: [],
       imageHash,
       reviewStatus: "pending_expert_review",
-    }).returning({ id: biometricScans.id });
+    }, { fields: { id: biometricScans.id } });
 
     return ok({
       eventId: scan?.id,

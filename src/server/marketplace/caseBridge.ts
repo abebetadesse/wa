@@ -10,6 +10,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { roleCan, type MemberRole } from "./roles";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
+import { updateReturning } from "@/lib/db/write";
 
 export interface CaseBridge {
   /** Checks the booking can open a case in `domain` and returns the business that will review it. */
@@ -50,7 +51,7 @@ export const caseBridge: CaseBridge = {
   },
 
   async linkBooking(bookingId, caseId) {
-    const [booking] = await db.update(bookings).set({ caseId, updatedAt: new Date() }).where(eq(bookings.id, bookingId)).returning({ businessId: bookings.businessId });
+    const [booking] = await updateReturning(db, bookings, { caseId, updatedAt: new Date() }, eq(bookings.id, bookingId), { businessId: bookings.businessId });
     if (booking) await publish(businessChannel(booking.businessId), "booking.case_linked", { bookingId, caseId });
   },
 

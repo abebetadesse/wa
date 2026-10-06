@@ -4,6 +4,8 @@
  */
 import { ApiError } from "@/lib/api/route";
 import type {
+  CaseAnalysis,
+  CaseMessage,
   ConsultationRecord,
   ConsentRecord,
   DomainConfig,
@@ -55,6 +57,7 @@ export function createCase(input: {
     userId: input.userId,
     businessId: input.businessId ?? null,
     bookingId: input.bookingId ?? null,
+    assignedRole: null,
     domain: input.config.domain,
     stage,
     safetyAnswers: input.safetyAnswers,
@@ -72,6 +75,8 @@ export function createCase(input: {
     draft: null,
     review: null,
     auditTrail: [{ type: "created", actorId: input.userId, at: timestamp, details: { domain: input.config.domain, stage } }],
+    messages: [],
+    analysis: null,
     payment: null,
     consultation: null,
     createdAt: timestamp,
@@ -116,6 +121,26 @@ export function submitCase(record: WorkflowCase, draft: DraftReport, config: Dom
   return { ...record, draft, stage: "awaiting_expert", updatedAt: now() };
 }
 
+export function assignCaseRole(record: WorkflowCase, role: string, actorId: string): WorkflowCase {
+  assertStage(record, ["awaiting_expert", "in_review"], "assign");
+  if (record.businessId) throw ApiError.badRequest("Business cases must be assigned through the business workspace.");
+  const timestamp = now();
+  const reassigned = record.stage === "in_review";
+  return {
+    ...record,
+    assignedRole: role,
+    stage: reassigned ? "awaiting_expert" : record.stage,
+    review: reassigned ? null : record.review,
+    auditTrail: [...record.auditTrail, {
+      type: "assigned",
+      actorId,
+      at: timestamp,
+      details: { role, previousRole: record.assignedRole, reviewerReleased: reassigned },
+    }],
+    updatedAt: timestamp,
+  };
+}
+
 export function routeToCrisis(record: WorkflowCase, safety: SafetyOutcome): WorkflowCase {
   return { ...record, safety, stage: "crisis_routed", updatedAt: now() };
 }
@@ -130,6 +155,51 @@ export function claimCase(record: WorkflowCase, expertId: string): WorkflowCase 
     auditTrail: [...record.auditTrail, { type: "claimed", actorId: expertId, at: nowTs, details: { stage: "in_review" } }],
     updatedAt: nowTs,
   };
+}
+
+/** The claiming reviewer saves edits to the report without releasing it. */
+export function saveDraft(record: WorkflowCase, expertId: string, draft: DraftReport): WorkflowCase {
+  assertStage(record, ["in_review"], "edit the report");
+  if (record.review?.expertId !== expertId) throw ApiError.forbidden("This case is assigned to another expert.");
+  const timestamp = now();
+  return {
+    ...record,
+    draft,
+    auditTrail: [...record.auditTrail, { type: "draft_saved", actorId: expertId, at: timestamp, details: { sections: draft.sections.length } }],
+    updatedAt: timestamp,
+  };
+}
+
+const CONVERSATION_STAGES: WorkflowStage[] = ["awaiting_expert", "in_review", "visible_to_user", "full_report_released", "consultation_requested"];
+export const MAX_CASE_MESSAGES = 200;
+
+/** Adds a message to the owner ↔ reviewer conversation. Message text is kept out of the audit trail. */
+export function addMessage(record: WorkflowCase, message: CaseMessage): WorkflowCase {
+  assertStage(record, CONVERSATION_STAGES, "send a message");
+  if (message.from === "reviewer") {
+    if (record.stage !== "in_review") throw ApiError.conflict("Claim the request before writing to the person.");
+    if (record.review?.expertId !== message.authorId) throw ApiError.forbidden("This case is assigned to another expert.");
+  }
+  if (record.messages.length >= MAX_CASE_MESSAGES) throw ApiError.conflict("This conversation is full. Please open a new request.");
+  return {
+    ...record,
+    messages: [...record.messages, message],
+    auditTrail: [...record.auditTrail, { type: "message", actorId: message.authorId, at: message.at, details: { from: message.from, kind: message.kind, via: message.via } }],
+    updatedAt: message.at,
+  };
+}
+
+/** The reviewer's most recent question, while the owner has not answered it. */
+export function openQuestion(record: WorkflowCase): CaseMessage | null {
+  const last = record.messages[record.messages.length - 1];
+  return last && last.from === "reviewer" && last.kind === "question" ? last : null;
+}
+
+/** Stores a (re)built analysis. `actorId` is set when a reviewer asked for it, and is audited. */
+export function attachAnalysis(record: WorkflowCase, analysis: CaseAnalysis | null, actorId?: string): WorkflowCase {
+  if (!actorId) return { ...record, analysis };
+  const timestamp = now();
+  return { ...record, analysis, auditTrail: [...record.auditTrail, { type: "reanalysed", actorId, at: timestamp }], updatedAt: timestamp };
 }
 
 export function releaseClaim(record: WorkflowCase, expertId: string): WorkflowCase {

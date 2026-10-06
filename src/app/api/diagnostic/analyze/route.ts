@@ -19,6 +19,7 @@ import { diagnosticSessions, wellbeingProfiles } from "@/lib/db/schema";
 import { decryptRestrictedField } from "@/lib/security/encryption";
 import { desc, eq } from "drizzle-orm";
 import { requireAuthenticatedUser } from "@/lib/auth";
+import { insertReturning } from "@/lib/db/write";
 
 const intentClassifier = new IntentClassifier();
 const entityExtractor = new EntityExtractor();
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest) {
     try {
       if (db) {
         const isUuid = typeof userProfile.userId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userProfile.userId);
-        const [saved] = await db.insert(diagnosticSessions).values({
+        const [saved] = await insertReturning(db, diagnosticSessions, {
           userId: isUuid ? userProfile.userId : null,
           query,
           mode,
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
             intersectionsCount: intersections.length,
             causalPathwaysCount: solution.causalPathways.length,
           },
-        }).returning({ id: diagnosticSessions.id });
+        }, { fields: { id: diagnosticSessions.id } });
 
         if (saved?.id) {
           solution.id = saved.id;

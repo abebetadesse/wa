@@ -1,39 +1,39 @@
-import postgres from "postgres";
+/**
+ * Checks that the MySQL baseline tables required by the application exist.
+ * Run `npm run db:migrate` first when the database is empty.
+ */
+import mysql from "mysql2/promise";
+import fs from "node:fs";
+import path from "node:path";
 
-const sql = postgres(
-  process.env.DATABASE_URL ||
-    "postgresql://postgres:postgres@localhost:5432/ethio_wellness"
-);
-
-async function main() {
-  const dbTables = await sql`
-    SELECT table_name 
-    FROM information_schema.tables 
-    WHERE table_schema = 'public' AND table_type IN ('BASE TABLE', 'VIEW')
-  `;
-  const tableNames = new Set(dbTables.map((t) => t.table_name));
-
-  console.log("Current tables in ethio_wellness DB:");
-  console.log(Array.from(tableNames).sort());
-
-  // Check aliases that might be needed
-  const requiredAliases = [
-    { view: "wellbeing_profiles", source: "health_profiles" },
-    { view: "wellbeing_gap_reports", source: "health_gap_reports" },
-  ];
-
-  for (const { view, source } of requiredAliases) {
-    if (tableNames.has(source) && !tableNames.has(view)) {
-      console.log(`Creating view ${view} -> ${source}...`);
-      await sql.unsafe(`CREATE OR REPLACE VIEW "${view}" AS SELECT * FROM "${source}"`);
-      console.log(`Created view ${view}`);
-    }
+const envFile = path.join(process.cwd(), ".env");
+if (!process.env.DATABASE_URL && fs.existsSync(envFile)) {
+  for (const line of fs.readFileSync(envFile, "utf8").split(/\r?\n/)) {
+    const match = line.match(/^\s*DATABASE_URL\s*=\s*(.*)\s*$/);
+    if (match) process.env.DATABASE_URL = match[1].replace(/^(["'])(.*)\1$/, "$2");
   }
-
-  await sql.end();
+}
+const url = process.env.DATABASE_URL;
+if (!url || !/^mysql:\/\//.test(url)) {
+  console.error("Set DATABASE_URL to a MySQL connection string.");
+  process.exit(1);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const connection = await mysql.createConnection({ uri: url, connectTimeout: 20_000 });
+try {
+  const [rows] = await connection.query(
+    "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type IN ('BASE TABLE', 'VIEW')",
+  );
+  const tableNames = new Set(rows.map((row) => row.table_name));
+  const required = ["users", "wellbeing_profiles", "wellbeing_gap_reports", "auth_sessions", "realtime_events"];
+  const missing = required.filter((name) => !tableNames.has(name));
+  console.log(`MySQL schema in ${new URL(url).pathname.slice(1)}: ${tableNames.size} tables/views.`);
+  if (missing.length) {
+    console.error(`Missing required application tables: ${missing.join(", ")}. Run npm run db:migrate.`);
+    process.exitCode = 1;
+  } else {
+    console.log("Required MySQL tables are present.");
+  }
+} finally {
+  await connection.end();
+}

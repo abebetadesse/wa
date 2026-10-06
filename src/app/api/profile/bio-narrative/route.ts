@@ -6,6 +6,7 @@ import { eq, desc } from "drizzle-orm";
 import { generateBioNarrativeReport } from "@/lib/profiling/bioNarrative/generateBioNarrative";
 import type { BioNarrativeStatus } from "@/lib/profiling/bioNarrative/types";
 import { canAutoPublishBioNarrative } from "@/lib/profiling/bioNarrative/publishGate";
+import { insertReturning } from "@/lib/db/write";
 
 // ─── GET /api/profile/bio-narrative ──────────────────────────────────────────
 
@@ -122,9 +123,7 @@ export const POST = defineRoute({
     const publishedAt = autoPublishGate.allowed ? new Date() : null;
 
     // Save into database
-    const [saved] = await db
-      .insert(bioNarrativeReports)
-      .values({
+    const [saved] = await insertReturning(db, bioNarrativeReports, {
         userId: user.id,
         status: initialStatus,
         sections: narrative.sections,
@@ -146,8 +145,7 @@ export const POST = defineRoute({
         ],
         createdAt: new Date(),
         updatedAt: new Date(),
-      })
-      .returning();
+      });
 
     return {
       report: {

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, real, jsonb, uuid } from "../mysqlSchema";
+import { mysqlTable, text, timestamp, integer, real, jsonb, uuid } from "../mysqlSchema";
 import type { ExtractedLiteratureData } from "@/lib/literature/types";
 
 /**
@@ -8,7 +8,7 @@ import type { ExtractedLiteratureData } from "@/lib/literature/types";
  * Each row represents one article mapped to one knowledge strand.
  * A single article may have multiple rows if it maps to multiple strands.
  */
-export const literatureFindings = pgTable("literature_findings", {
+export const literatureFindings = mysqlTable("literature_findings", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   // ── Source metadata ──────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ export const literatureFindings = pgTable("literature_findings", {
 /**
  * Fetch sync log — tracks each run of the literature fetcher.
  */
-export const literatureSyncLog = pgTable("literature_sync_log", {
+export const literatureSyncLog = mysqlTable("literature_sync_log", {
   id: uuid("id").primaryKey().defaultRandom(),
   startedAt: timestamp("started_at").notNull(),
   completedAt: timestamp("completed_at"),

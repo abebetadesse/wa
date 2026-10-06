@@ -9,9 +9,9 @@
  *
  * This repository currently uses the MySQL-compatible schema adapter exposed by
  * mysqlSchema.ts. The table model is intentionally portable: JSON columns map
- * to PostgreSQL JSONB when the project is migrated to the PostgreSQL adapter.
+ * through the MySQL JSON column helper.
  */
-import { pgTable, uuid, varchar, text, jsonb, timestamp, boolean, integer } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, jsonb, timestamp, boolean, integer } from "../mysqlSchema";
 import { users } from "./users";
 
 export type PlatformCaseStatus =
@@ -25,7 +25,7 @@ export type PlatformCaseStatus =
 
 export type PlatformUserRole = "USER" | "ADMIN" | "EXPERT";
 
-export const platformCases = pgTable("cases", {
+export const platformCases = mysqlTable("cases", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   status: varchar("status", { length: 40 }).$type<PlatformCaseStatus>().default("intake").notNull(),
@@ -48,7 +48,7 @@ export const platformCases = pgTable("cases", {
  * No user-facing route should select or serialize this table. Admin/PhD
  * routes must enforce role checks before reading it.
  */
-export const scientificAnalyses = pgTable("scientific_analyses", {
+export const scientificAnalyses = mysqlTable("scientific_analyses", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => platformCases.id, { onDelete: "cascade" }).notNull().unique(),
   caloricBaseline: jsonb("caloric_baseline").$type<Record<string, unknown>>(),
@@ -69,7 +69,7 @@ export const scientificAnalyses = pgTable("scientific_analyses", {
  * This layer must not claim to diagnose, cure, or replace qualified care.
  * Expert endorsement is recorded separately from draft generation.
  */
-export const culturalReports = pgTable("cultural_reports", {
+export const culturalReports = mysqlTable("cultural_reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => platformCases.id, { onDelete: "cascade" }).notNull().unique(),
   traditionalTranslation: text("traditional_translation"),
@@ -87,7 +87,7 @@ export const culturalReports = pgTable("cultural_reports", {
 
 export type BiometricScanType = "palm" | "tongue";
 
-export const biometricScans = pgTable("biometric_scans", {
+export const biometricScans = mysqlTable("biometric_scans", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   caseId: uuid("case_id").references(() => platformCases.id, { onDelete: "set null" }),
@@ -118,7 +118,7 @@ export const biometricScans = pgTable("biometric_scans", {
  * Attunement prompts are opt-in and time-based. They must never be random
  * engagement prompts for users who have not enabled them.
  */
-export const attunementReminders = pgTable("attunement_reminders", {
+export const attunementReminders = mysqlTable("attunement_reminders", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   nextPromptAt: timestamp("next_prompt_at").notNull(),

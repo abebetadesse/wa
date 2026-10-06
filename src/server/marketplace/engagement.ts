@@ -8,6 +8,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { membershipsOf, requireCapability, roleCan, type MemberRole } from "./access";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
+import { insertReturning, updateReturning, upsertReturning } from "@/lib/db/write";
 
 // ── Reviews ──────────────────────────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ export const reviewInput = z.object({
 async function refreshRating(businessId: string) {
   await db.execute(sql`
     update ${businesses} set
-      rating_average = (select round(avg(${reviews.rating})::numeric, 2) from ${reviews} where ${reviews.businessId} = ${businessId} and ${reviews.status} = 'published'),
+      rating_average = (select round(avg(${reviews.rating}), 2) from ${reviews} where ${reviews.businessId} = ${businessId} and ${reviews.status} = 'published'),
       rating_count = (select count(*) from ${reviews} where ${reviews.businessId} = ${businessId} and ${reviews.status} = 'published')
     where ${businesses.id} = ${businessId}`);
 }
@@ -30,11 +31,7 @@ export async function createReview(user: AuthenticatedUser, input: z.infer<typeo
   const [booking] = await db.select().from(bookings).where(and(eq(bookings.id, input.bookingId), eq(bookings.bookedByUserId, user.id))).limit(1);
   if (!booking) throw ApiError.notFound("Booking");
   if (booking.status !== "completed") throw ApiError.conflict("You can review a booking after it is completed.");
-  const [review] = await db
-    .insert(reviews)
-    .values({ businessId: booking.businessId, bookingId: booking.id, authorId: user.id, rating: input.rating, comment: input.comment })
-    .onConflictDoNothing()
-    .returning();
+  const [review] = await insertReturning(db, reviews, { businessId: booking.businessId, bookingId: booking.id, authorId: user.id, rating: input.rating, comment: input.comment }, { ifAbsent: true });
   if (!review) throw ApiError.conflict("You have already reviewed this booking.");
   await refreshRating(booking.businessId);
   await publish(businessChannel(booking.businessId), "review.created", { reviewId: review.id, rating: review.rating });
@@ -58,7 +55,7 @@ export async function listBusinessReviews(user: AuthenticatedUser, businessId: s
 
 export async function respondToReview(user: AuthenticatedUser, businessId: string, reviewId: string, response: string) {
   await requireCapability(user, businessId, "respondReviews");
-  const [review] = await db.update(reviews).set({ response, respondedAt: new Date(), updatedAt: new Date() }).where(and(eq(reviews.id, reviewId), eq(reviews.businessId, businessId))).returning();
+  const [review] = await updateReturning(db, reviews, { response, respondedAt: new Date(), updatedAt: new Date() }, and(eq(reviews.id, reviewId), eq(reviews.businessId, businessId)));
   if (!review) throw ApiError.notFound("Review");
   if (review.authorId) await notify(review.authorId, { type: "review.responded", title: "The business replied to your review", body: response.slice(0, 140) });
   return review;
@@ -66,7 +63,7 @@ export async function respondToReview(user: AuthenticatedUser, businessId: strin
 
 /** Platform moderation: hide or restore a review. */
 export async function moderateReview(reviewId: string, status: "published" | "hidden") {
-  const [review] = await db.update(reviews).set({ status, updatedAt: new Date() }).where(eq(reviews.id, reviewId)).returning();
+  const [review] = await updateReturning(db, reviews, { status, updatedAt: new Date() }, eq(reviews.id, reviewId));
   if (!review) throw ApiError.notFound("Review");
   await refreshRating(review.businessId);
   return review;
@@ -117,8 +114,8 @@ export async function saveRemedy(user: AuthenticatedUser, businessId: string, re
   const record = { ...values, reorderLevel: values.reorderLevel.toFixed(2), priceEtb: values.priceEtb === undefined ? null : values.priceEtb.toFixed(2) };
   return db.transaction(async (tx) => {
     const [remedy] = remedyId
-      ? await tx.update(remedies).set({ ...record, updatedAt: new Date() }).where(and(eq(remedies.id, remedyId), eq(remedies.businessId, businessId))).returning()
-      : await tx.insert(remedies).values({ ...record, businessId }).returning();
+      ? await updateReturning(tx, remedies, { ...record, updatedAt: new Date() }, and(eq(remedies.id, remedyId), eq(remedies.businessId, businessId)))
+      : await insertReturning(tx, remedies, { ...record, businessId });
     if (!remedy) throw ApiError.notFound("Remedy");
     await tx.delete(remedyIngredients).where(eq(remedyIngredients.remedyId, remedy.id));
     if (ingredients.length) await tx.insert(remedyIngredients).values(ingredients.map((ingredient) => ({ ...ingredient, remedyId: remedy.id })));
@@ -131,11 +128,7 @@ export async function moveStock(user: AuthenticatedUser, businessId: string, rem
   await requireCapability(user, businessId, "manageInventory");
   const signed = input.reason === "restock" ? Math.abs(input.quantity) : input.reason === "correction" ? input.quantity : -Math.abs(input.quantity);
   return db.transaction(async (tx) => {
-    const [remedy] = await tx
-      .update(remedies)
-      .set({ stockQuantity: sql`${remedies.stockQuantity} + ${signed}`, updatedAt: new Date() })
-      .where(and(eq(remedies.id, remedyId), eq(remedies.businessId, businessId)))
-      .returning();
+    const [remedy] = await updateReturning(tx, remedies, { stockQuantity: sql`${remedies.stockQuantity} + ${signed}`, updatedAt: new Date() }, and(eq(remedies.id, remedyId), eq(remedies.businessId, businessId)));
     if (!remedy) throw ApiError.notFound("Remedy");
     if (Number(remedy.stockQuantity) < 0) throw ApiError.conflict(`Not enough ${remedy.name} in stock.`);
     await tx.insert(stockMovements).values({ remedyId, quantity: signed.toFixed(2), reason: input.reason, bookingId: input.bookingId, note: input.note, recordedBy: user.id });
@@ -168,11 +161,7 @@ async function staffIds(businessId: string) {
 export async function openConversation(user: AuthenticatedUser, businessId: string) {
   const [business] = await db.select({ id: businesses.id, status: businesses.status }).from(businesses).where(eq(businesses.id, businessId)).limit(1);
   if (!business || business.status !== "verified") throw ApiError.notFound("Business");
-  const [row] = await db
-    .insert(conversations)
-    .values({ businessId, clientUserId: user.id })
-    .onConflictDoUpdate({ target: [conversations.businessId, conversations.clientUserId], set: { updatedAt: new Date() } })
-    .returning();
+  const [row] = await upsertReturning(db, conversations, { businessId, clientUserId: user.id }, { target: [conversations.businessId, conversations.clientUserId], set: { updatedAt: new Date() } });
   return row;
 }
 
@@ -196,7 +185,7 @@ export async function listMessages(user: AuthenticatedUser, conversationId: stri
 export async function sendMessage(user: AuthenticatedUser, conversationId: string, body: string) {
   const { conversation, side } = await participant(user, conversationId);
   return db.transaction(async (tx) => {
-    const [message] = await tx.insert(messages).values({ conversationId, senderId: user.id, senderSide: side, body }).returning();
+    const [message] = await insertReturning(tx, messages, { conversationId, senderId: user.id, senderSide: side, body });
     await tx.update(conversations).set({ lastMessageAt: message.createdAt, updatedAt: new Date() }).where(eq(conversations.id, conversationId));
     const payload = { conversationId, message };
     await publish([businessChannel(conversation.businessId), userChannel(conversation.clientUserId)], "message.created", payload, tx);
@@ -207,7 +196,7 @@ export async function sendMessage(user: AuthenticatedUser, conversationId: strin
 /** Conversation list for a client (all businesses) or a business inbox. */
 export async function listConversations(user: AuthenticatedUser, businessId?: string) {
   const unread = (side: "client" | "business") =>
-    sql<number>`(select count(*)::int from ${messages} where ${messages.conversationId} = ${conversations.id} and ${messages.senderSide} <> ${side} and ${messages.readAt} is null)`;
+    sql<number>`(select count(*) from ${messages} where ${messages.conversationId} = ${conversations.id} and ${messages.senderSide} <> ${side} and ${messages.readAt} is null)`;
   const lastBody = sql<string | null>`(select ${messages.body} from ${messages} where ${messages.conversationId} = ${conversations.id} order by ${messages.createdAt} desc limit 1)`;
 
   if (businessId) {
@@ -217,7 +206,7 @@ export async function listConversations(user: AuthenticatedUser, businessId?: st
       .from(conversations)
       .innerJoin(users, eq(users.id, conversations.clientUserId))
       .where(eq(conversations.businessId, businessId))
-      .orderBy(sql`${conversations.lastMessageAt} desc nulls last`)
+      .orderBy(desc(conversations.lastMessageAt))
       .limit(200);
   }
   return db
@@ -225,7 +214,7 @@ export async function listConversations(user: AuthenticatedUser, businessId?: st
     .from(conversations)
     .innerJoin(businesses, eq(businesses.id, conversations.businessId))
     .where(eq(conversations.clientUserId, user.id))
-    .orderBy(sql`${conversations.lastMessageAt} desc nulls last`)
+    .orderBy(desc(conversations.lastMessageAt))
     .limit(200);
 }
 

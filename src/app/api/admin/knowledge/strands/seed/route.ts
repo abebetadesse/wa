@@ -3,6 +3,7 @@ import { SYSTEM_KNOWLEDGE_STRANDS } from "@/lib/hexacore/HexacoreVisionEngine";
 import { db } from "@/lib/db";
 import { knowledgeStrands, knowledgeCategories } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { insertReturning } from "@/lib/db/write";
 
 export async function POST() {
   try {
@@ -14,16 +15,13 @@ export async function POST() {
     for (let i = 0; i < SYSTEM_KNOWLEDGE_STRANDS.length; i++) {
       const strand = SYSTEM_KNOWLEDGE_STRANDS[i];
       if (!existingNames.has(strand.name.toLowerCase())) {
-        const [newStrand] = await db
-          .insert(knowledgeStrands)
-          .values({
+        const [newStrand] = await insertReturning(db, knowledgeStrands, {
             name: strand.name,
             description: `${strand.description} (${strand.descriptionAm})`,
             version: "1.0.0",
             displayOrder: i + 1,
             isActive: true,
-          })
-          .returning();
+          });
 
         insertedStrands.push(newStrand);
 

@@ -1,11 +1,9 @@
+import { dbClient } from "./index";
 import { migrateAndSeedAuth } from "./migrateAndSeedAuth";
 
 migrateAndSeedAuth()
-  .then(() => {
-    console.log("Migration and seed completed.");
-    process.exit(0);
+  .catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
   })
-  .catch((err) => {
-    console.error("Migration failed:", err);
-    process.exit(1);
-  });
+  .finally(() => dbClient.end({ timeout: 2 }));

@@ -3,10 +3,10 @@
  * pharmacological properties, plus curated interaction pairs. Seeded from
  * src/server/safety/seed.ts and maintained by knowledge editors.
  */
-import { boolean, index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, jsonb, mysqlTable, text, timestamp, uniqueIndex, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 
-export const safetySubstances = pgTable(
+export const safetySubstances = mysqlTable(
   "safety_substances",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -34,7 +34,7 @@ export const safetySubstances = pgTable(
   (table) => [index("safety_substances_kind_idx").on(table.kind, table.category)],
 );
 
-export const safetyInteractions = pgTable(
+export const safetyInteractions = mysqlTable(
   "safety_interactions",
   {
     id: uuid("id").primaryKey().defaultRandom(),

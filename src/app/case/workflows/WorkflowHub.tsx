@@ -27,7 +27,7 @@ export const STAGE_LABELS: Record<OwnerView["stage"], { label: string; tone: "ne
   intake: { label: "In progress", tone: "neutral" },
   referred: { label: "Referral advised", tone: "warning" },
   crisis_routed: { label: "Support first", tone: "danger" },
-  awaiting_expert: { label: "Waiting for expert", tone: "brand" },
+  awaiting_expert: { label: "Waiting for reviewer", tone: "brand" },
   in_review: { label: "In review", tone: "brand" },
   visible_to_user: { label: "Report ready", tone: "success" },
   full_report_released: { label: "Full report", tone: "success" },

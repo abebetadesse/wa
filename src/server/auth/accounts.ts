@@ -13,10 +13,13 @@ import {
 } from "@/lib/auth";
 import { logAuditEvent, logLoginAttempt, logUserActivity } from "@/lib/audit";
 import { ApiError } from "@/lib/api/route";
-import { createOtpCode, createSecretToken, deliverCode, digest } from "./codes";
+import { createOtpCode, createSecretToken, deliverCode, digest, linkBaseUrl } from "./codes";
+import { mailStatus } from "@/server/mail";
 import { resolveAndPersistLocationOnRegistration } from "@/lib/location/resolveOnRegistration";
 import { getSettings } from "@/server/settings";
 import { sendTelegramMessage, telegramStatus } from "./telegram";
+import { insertReturning } from "@/lib/db/write";
+import { isDuplicateKey } from "@/lib/db/errors";
 
 
 export const MAX_LOGIN_ATTEMPTS = 5;
@@ -188,9 +191,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
   }
 
   const [userRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "user")).limit(1);
-  const [created] = await db
-    .insert(users)
-    .values({
+  const [created] = await insertReturning(db, users, {
       email: input.email,
       name: input.name || input.email.split("@")[0],
       passwordHash: hashPassword(input.password),
@@ -204,8 +205,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
       preferredLanguage: input.preferredLanguage,
       isVerified: false,
       isActive: true,
-    })
-    .returning({ id: users.id });
+    }, { fields: { id: users.id } });
 
   await establishAuth({ id: created.id, role: "user" }, { request: meta.request });
   await logAuditEvent({
@@ -292,13 +292,16 @@ export async function resendVerification(email: string | undefined, current: Aut
 // ── Password reset & change ──────────────────────────────────────────────────
 
 /**
- * Reset links go to the account's connected Telegram (no email provider is configured). Without
- * Telegram the person is told to contact support; the response never reveals whether the account exists.
+ * Reset links go by email when SMTP is configured, and to the account's connected Telegram when it
+ * has one. With neither, the person is told to contact support. The response never reveals whether
+ * the account exists.
  */
 export async function requestPasswordReset(email: string, origin = "") {
-  const message = telegramStatus().configured
-    ? "If an account with that email has Telegram connected, we've sent a reset link there. Otherwise, please contact support."
-    : "If an account matches that email address, please contact support to reset your password.";
+  const message = mailStatus().configured
+    ? "If an account matches that email address, we've sent a reset link to it. The link expires in 1 hour."
+    : telegramStatus().configured
+      ? "If an account with that email has Telegram connected, we've sent a reset link there. Otherwise, please contact support."
+      : "If an account matches that email address, please contact support to reset your password.";
   const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (!user || !user.isActive || user.isSuspended) return { message };
 
@@ -307,12 +310,12 @@ export async function requestPasswordReset(email: string, origin = "") {
   await db.insert(passwordResets).values({ userId: user.id, token: digest(token), expiresAt: new Date(Date.now() + RESET_TTL_MS) });
   await logAuditEvent({ userId: user.id, action: "password_reset_requested", resourceType: "user", resourceId: user.id, details: { email } });
   await logUserActivity({ userId: user.id, activityType: "security", description: "Password reset token requested" });
-  if (user.telegramId) {
-    const base = (process.env.APP_URL || origin).replace(/\/$/, "");
+  const base = linkBaseUrl(origin);
+  if (user.telegramId && base) {
     const url = `${base}/auth/reset-password?token=${token}`;
     await sendTelegramMessage(user.telegramId, `Password reset requested for ${user.email}. The link works once and expires in 1 hour. If this wasn't you, ignore this message.`, { url, label: "Reset password" });
   }
-  return { message, ...(await deliverCode({ to: user.email, purpose: "password_reset", token })) };
+  return { message, ...(await deliverCode({ to: user.email, purpose: "password_reset", token, origin })) };
 }
 
 export async function resetPassword(token: string, password: string) {
@@ -400,7 +403,7 @@ export async function updateOwnAccount(user: AuthenticatedUser, input: OwnAccoun
   try {
     await db.update(users).set({ ...changes, updatedAt: new Date() }).where(eq(users.id, user.id));
   } catch (err: any) {
-    if (err.code === "23505" || err.message?.includes("users_phone_unique")) {
+    if (isDuplicateKey(err)) {
       throw ApiError.conflict("An account with this phone number already exists.");
     }
     throw err;

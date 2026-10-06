@@ -1,0 +1,1 @@
+CREATE INDEX `realtime_events_created_idx` ON `realtime_events` (`created_at`);

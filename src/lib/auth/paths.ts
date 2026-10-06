@@ -11,6 +11,7 @@ export const PUBLIC_PATHS = [
   "/b",
   "/heritage",
   "/auth",
+  "/offline",
   "/emergency",
   "/safety",
   "/discover",

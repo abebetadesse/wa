@@ -21,6 +21,7 @@ import { composeManuscriptBlock, manuscriptCatalogue, manuscriptSelectionFor, so
 import { assessUrgency } from "@/lib/evaluation/urgencyTriage";
 import { renderTemplate, ruleMatches, sendDecision, type IntakeSignals } from "./rules";
 import type { StoredIntake } from "./settings";
+import { deleteReturning, insertReturning, updateReturning, upsertReturning } from "@/lib/db/write";
 
 type Executor = Pick<typeof db, "insert" | "select" | "update">;
 
@@ -76,21 +77,21 @@ export async function listRules(user: AuthenticatedUser, businessId: string) {
 export async function createRule(user: AuthenticatedUser, businessId: string, input: z.infer<typeof ruleInput>) {
   await requireCapability(user, businessId, "manageServices");
   await assertRuleRefs(businessId, input);
-  const [row] = await db.insert(autoResponseRules).values({ ...input, businessId, createdBy: user.id }).returning();
+  const [row] = await insertReturning(db, autoResponseRules, { ...input, businessId, createdBy: user.id });
   return row;
 }
 
 export async function updateRule(user: AuthenticatedUser, businessId: string, ruleId: string, input: z.infer<typeof ruleInput>) {
   await requireCapability(user, businessId, "manageServices");
   await assertRuleRefs(businessId, input);
-  const [row] = await db.update(autoResponseRules).set({ ...input, updatedAt: new Date() }).where(and(eq(autoResponseRules.id, ruleId), eq(autoResponseRules.businessId, businessId))).returning();
+  const [row] = await updateReturning(db, autoResponseRules, { ...input, updatedAt: new Date() }, and(eq(autoResponseRules.id, ruleId), eq(autoResponseRules.businessId, businessId)));
   if (!row) throw ApiError.notFound("Rule");
   return row;
 }
 
 export async function deleteRule(user: AuthenticatedUser, businessId: string, ruleId: string) {
   await requireCapability(user, businessId, "manageServices");
-  const [row] = await db.delete(autoResponseRules).where(and(eq(autoResponseRules.id, ruleId), eq(autoResponseRules.businessId, businessId))).returning({ id: autoResponseRules.id });
+  const [row] = await deleteReturning(db, autoResponseRules, and(eq(autoResponseRules.id, ruleId), eq(autoResponseRules.businessId, businessId)), { id: autoResponseRules.id });
   if (!row) throw ApiError.notFound("Rule");
   return { deleted: true };
 }
@@ -98,17 +99,13 @@ export async function deleteRule(user: AuthenticatedUser, businessId: string, ru
 // ── Running rules on a new booking ───────────────────────────────────────────
 
 async function ensureConversation(executor: Executor, businessId: string, clientUserId: string, bookingId: string) {
-  const [row] = await executor
-    .insert(conversations)
-    .values({ businessId, clientUserId, bookingId })
-    .onConflictDoUpdate({ target: [conversations.businessId, conversations.clientUserId], set: { bookingId, updatedAt: new Date() } })
-    .returning({ id: conversations.id });
+  const [row] = await upsertReturning(executor, conversations, { businessId, clientUserId, bookingId }, { target: [conversations.businessId, conversations.clientUserId], set: { bookingId, updatedAt: new Date() }, fields: { id: conversations.id } });
   return row.id;
 }
 
 /** Inserts a business-side message (senderId null for automatic ones) and announces it. */
 async function postMessage(executor: Executor, conversationId: string, businessId: string, clientUserId: string, body: string, senderId: string | null) {
-  const [message] = await executor.insert(messages).values({ conversationId, senderId, senderSide: "business", body }).returning();
+  const [message] = await insertReturning(executor, messages, { conversationId, senderId, senderSide: "business", body });
   await executor.update(conversations).set({ lastMessageAt: message.createdAt, updatedAt: new Date() }).where(eq(conversations.id, conversationId));
   await publish([businessChannel(businessId), userChannel(clientUserId)], "message.created", { conversationId, message }, executor as typeof db);
   return message;
@@ -235,18 +232,14 @@ export async function listDrafts(user: AuthenticatedUser, businessId: string, bo
 export async function createDraft(user: AuthenticatedUser, businessId: string, bookingId: string, input: z.infer<typeof draftInput>) {
   await requireCapability(user, businessId, "viewClientNotes");
   await bookingOf(businessId, bookingId);
-  const [row] = await db.insert(responseDrafts).values({ businessId, bookingId, source: "manual", ...input, createdBy: user.id }).returning();
+  const [row] = await insertReturning(db, responseDrafts, { businessId, bookingId, source: "manual", ...input, createdBy: user.id });
   await publish(businessChannel(businessId), "intake.responses", { bookingId });
   return row;
 }
 
 export async function updateDraft(user: AuthenticatedUser, businessId: string, draftId: string, input: z.infer<typeof draftInput>) {
   await requireCapability(user, businessId, "viewClientNotes");
-  const [row] = await db
-    .update(responseDrafts)
-    .set({ ...input, updatedAt: new Date() })
-    .where(and(eq(responseDrafts.id, draftId), eq(responseDrafts.businessId, businessId), eq(responseDrafts.status, "draft")))
-    .returning();
+  const [row] = await updateReturning(db, responseDrafts, { ...input, updatedAt: new Date() }, and(eq(responseDrafts.id, draftId), eq(responseDrafts.businessId, businessId), eq(responseDrafts.status, "draft")));
   if (!row) throw ApiError.conflict("This draft was already sent or dismissed.");
   return row;
 }
@@ -262,7 +255,7 @@ export async function sendDraft(user: AuthenticatedUser, businessId: string, dra
     const conversationId = await ensureConversation(tx, businessId, booking.bookedByUserId, booking.id);
     const remedyLines = draft.remedies.length ? `\n\n${draft.remedies.map((r) => `• ${r.name}${r.note ? `: ${r.note}` : ""}`).join("\n")}` : "";
     const message = await postMessage(tx, conversationId, businessId, booking.bookedByUserId, `${draft.body}${remedyLines}`, user.id);
-    const [updated] = await tx.update(responseDrafts).set({ status: "sent", messageId: message.id, sentBy: user.id, sentAt: new Date(), updatedAt: new Date() }).where(eq(responseDrafts.id, draftId)).returning();
+    const [updated] = await updateReturning(tx, responseDrafts, { status: "sent", messageId: message.id, sentBy: user.id, sentAt: new Date(), updatedAt: new Date() }, eq(responseDrafts.id, draftId));
     await publish(businessChannel(businessId), "intake.responses", { bookingId: booking.id }, tx);
     return updated;
   });
@@ -270,7 +263,7 @@ export async function sendDraft(user: AuthenticatedUser, businessId: string, dra
 
 export async function dismissDraft(user: AuthenticatedUser, businessId: string, draftId: string) {
   await requireCapability(user, businessId, "viewClientNotes");
-  const [row] = await db.update(responseDrafts).set({ status: "dismissed", updatedAt: new Date() }).where(and(eq(responseDrafts.id, draftId), eq(responseDrafts.businessId, businessId), eq(responseDrafts.status, "draft"))).returning();
+  const [row] = await updateReturning(db, responseDrafts, { status: "dismissed", updatedAt: new Date() }, and(eq(responseDrafts.id, draftId), eq(responseDrafts.businessId, businessId), eq(responseDrafts.status, "draft")));
   if (!row) throw ApiError.conflict("This draft was already sent or dismissed.");
   return row;
 }
@@ -304,7 +297,7 @@ export async function saveManuscriptText(user: AuthenticatedUser, businessId: st
   await requireCapability(user, businessId, "viewClientNotes");
   if (!sourceForHeadingKey(headingKey)) throw ApiError.notFound("Heading");
   const values = { geezText: input.geezText || null, amharicText: input.amharicText || null, guidance: input.guidance || null, updatedBy: user.id, updatedAt: new Date() };
-  const [row] = await db.insert(fewusTexts).values({ businessId, headingKey, ...values }).onConflictDoUpdate({ target: [fewusTexts.businessId, fewusTexts.headingKey], set: values }).returning();
+  const [row] = await upsertReturning(db, fewusTexts, { businessId, headingKey, ...values }, { target: [fewusTexts.businessId, fewusTexts.headingKey], set: values });
   await publish(businessChannel(businessId), "intake.library", { headingKey });
   return row;
 }

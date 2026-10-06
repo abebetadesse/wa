@@ -283,7 +283,7 @@ graph TD
     F -->|Fallback| H[Google Gemini API]
     F -->|Offline| I[Rule-Based Extraction]
     
-    G --> J[PostgreSQL: literature_findings Table]
+    G --> J[MySQL: literature_findings Table]
     H --> J
     I --> J
     
@@ -316,7 +316,7 @@ graph TD
   $$\text{BionicGPT} \xrightarrow{\text{if unreachable}} \text{Google Gemini API} \xrightarrow{\text{if unreachable}} \text{Deterministic Regex Engine}$$
   Ensures that background ingestion never stalls if an external cloud AI endpoint experiences latency or downtime.
 - **Database Persistence**:
-  - Extracted findings are stored in the PostgreSQL `literature_findings` table with relevance scores ($0.0$ to $1.0$). Records are refreshed every 7 days to maintain current medical evidence.
+  - Extracted findings are stored in the MySQL `literature_findings` table with relevance scores ($0.0$ to $1.0$). Records are refreshed every 7 days to maintain current medical evidence.
 
 ---
 

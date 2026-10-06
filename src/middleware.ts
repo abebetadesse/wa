@@ -26,6 +26,12 @@ const PUBLIC_API_PATHS = [
   "/api/toolkit/explore",
   // The medicine & remedy safety matrix is a public reference.
   "/api/safety/",
+  // Uptime probe: reports only whether the app can reach its database.
+  "/api/health",
+  // Telegram delivers signed-in bot commands server-to-server.
+  "/api/telegram/webhook",
+  // Meta delivers WhatsApp messages server-to-server; each delivery is signed with the app secret.
+  "/api/whatsapp/webhook",
 ];
 
 const PUBLIC_PAGE_PATHS = [
@@ -34,6 +40,7 @@ const PUBLIC_PAGE_PATHS = [
   "/b",
   "/heritage",
   "/auth",
+  "/offline",
   "/emergency",
   "/safety",
   "/discover",

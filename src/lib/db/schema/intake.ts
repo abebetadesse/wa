@@ -3,14 +3,14 @@
  * auto-response rules, response drafts awaiting the healer, and each business's own
  * manuscript texts (Metsehafe Fewus and Metsehafe Asmat).
  */
-import { boolean, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, mysqlTable, primaryKey, text, timestamp, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 import { bookings, businesses, messages, services } from "./marketplace";
 
 export const DROPDOWN_TYPES = ["none", "custom", "metsehafe_fewus", "metsehafe_asmat", "awde_negest"] as const;
 export type DropdownType = (typeof DROPDOWN_TYPES)[number];
 
-export const serviceIntakeSettings = pgTable("service_intake_settings", {
+export const serviceIntakeSettings = mysqlTable("service_intake_settings", {
   serviceId: uuid("service_id").primaryKey().references(() => services.id, { onDelete: "cascade" }),
   businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),
   allowText: boolean("allow_text").default(true).notNull(),
@@ -26,7 +26,7 @@ export const serviceIntakeSettings = pgTable("service_intake_settings", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const intakeAttachments = pgTable(
+export const intakeAttachments = mysqlTable(
   "intake_attachments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -60,7 +60,7 @@ export interface TriggerCriteria {
   maxUrgency?: number;
 }
 
-export const autoResponseRules = pgTable(
+export const autoResponseRules = mysqlTable(
   "auto_response_rules",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -87,7 +87,7 @@ export const autoResponseRules = pgTable(
   (table) => [index("auto_response_rules_business_idx").on(table.businessId, table.isActive)],
 );
 
-export const responseDrafts = pgTable(
+export const responseDrafts = mysqlTable(
   "response_drafts",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -114,7 +114,7 @@ export const responseDrafts = pgTable(
 );
 
 /** A business's own texts for each manuscript heading (fewus_* and asmat_* keys), from their copy of the book or their lineage. */
-export const fewusTexts = pgTable(
+export const fewusTexts = mysqlTable(
   "fewus_texts",
   {
     businessId: uuid("business_id").references(() => businesses.id, { onDelete: "cascade" }).notNull(),

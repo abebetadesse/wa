@@ -1,5 +1,5 @@
 /**
- * Healer intake end to end against PostgreSQL: per-service modalities, uploads, criteria-based
+ * Healer intake end to end against MySQL: per-service modalities, uploads, criteria-based
  * auto-responses (instant vs. held for review), drafts, the review workspace and analysis.
  * Skipped when the database is unreachable; everything created is removed.
  */
@@ -14,11 +14,11 @@ import { eq, inArray } from "drizzle-orm";
 const uploadDir = fs.mkdtempSync(path.join(os.tmpdir(), "intake-test-"));
 process.env.UPLOAD_DIR = uploadDir;
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -69,7 +69,7 @@ after(async () => {
   await db.delete(schema.realtimeEvents).where(inArray(schema.realtimeEvents.channel, [...ids.map((id) => `user:${id}`), ...(business ? [`business:${business.id}`] : [])]));
   await db.delete(schema.users).where(inArray(schema.users.id, ids));
   fs.rmSync(uploadDir, { recursive: true, force: true });
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 /** A free slot on day 3–5, fetched fresh so earlier bookings in this file never collide. */
@@ -250,4 +250,17 @@ test("Metsehafe Asmat: the client picks a chapter; the healer delivers it with c
   await assert.rejects(review.deliverManuscriptSolution(owner, business.id, empty.id, { mode: "send", includeProfile: false, includePlantScreen: true }), /your own text/);
   const framed = await review.deliverManuscriptSolution(owner, business.id, empty.id, { mode: "draft", includeProfile: false, includePlantScreen: true });
   assert.match(framed.body, /without their knowledge and agreement/);
+});
+
+test("abandoned uploads are removed with their files; attached ones are kept", { skip: skip() }, async () => {
+  const stray = await attachments.uploadAttachment(client, { serviceId: service.id, kind: "image", file: new File([PNG], "left-behind.png") });
+  const [row] = await db.select().from(schema.intakeAttachments).where(eq(schema.intakeAttachments.id, stray.id));
+  const file = path.join(uploadDir, row.storageKey);
+  assert.ok(fs.existsSync(file));
+  assert.equal(await attachments.removeAbandonedUploads(), 0, "recent uploads are left for the client to finish booking");
+  await db.update(schema.intakeAttachments).set({ createdAt: new Date(Date.now() - 3 * 86_400_000) }).where(inArray(schema.intakeAttachments.id, [stray.id, globalThis.__upload.id]));
+  assert.equal(await attachments.removeAbandonedUploads(), 1);
+  assert.equal(fs.existsSync(file), false, "the file goes with the row");
+  const [kept] = await db.select().from(schema.intakeAttachments).where(eq(schema.intakeAttachments.id, globalThis.__upload.id));
+  assert.ok(kept?.bookingId, "an upload attached to a booking is never removed, however old");
 });

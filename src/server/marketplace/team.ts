@@ -9,6 +9,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { requireCapability } from "./access";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
+import { insertReturning, keepExisting, updateReturning } from "@/lib/db/write";
 
 export const ASSIGNABLE_ROLES = ["manager", "practitioner", "staff"] as const;
 export type AssignableRole = (typeof ASSIGNABLE_ROLES)[number];
@@ -94,10 +95,7 @@ export async function inviteMember(user: AuthenticatedUser, businessId: string, 
       .update(businessInvitations)
       .set({ revokedAt: new Date(), updatedAt: new Date() })
       .where(and(eq(businessInvitations.businessId, businessId), eq(businessInvitations.email, input.email), isNull(businessInvitations.acceptedAt), isNull(businessInvitations.revokedAt)));
-    const [row] = await tx
-      .insert(businessInvitations)
-      .values({ ...input, businessId, tokenHash: digestToken(token), invitedBy: user.id, expiresAt: new Date(Date.now() + INVITE_TTL_DAYS * 86_400_000) })
-      .returning();
+    const [row] = await insertReturning(tx, businessInvitations, { ...input, businessId, tokenHash: digestToken(token), invitedBy: user.id, expiresAt: new Date(Date.now() + INVITE_TTL_DAYS * 86_400_000) });
     const [invitee] = await tx.select({ id: users.id }).from(users).where(sql`lower(${users.email}) = ${input.email}`).limit(1);
     if (invitee) {
       await notify(invitee.id, { type: "team.invited", title: `You're invited to join ${business.name}`, body: `As ${input.role}. The invitation expires in ${INVITE_TTL_DAYS} days.`, href: `/invitations/${token}` }, tx);
@@ -111,11 +109,7 @@ export async function inviteMember(user: AuthenticatedUser, businessId: string, 
 
 export async function revokeInvitation(user: AuthenticatedUser, businessId: string, invitationId: string) {
   await requireCapability(user, businessId, "manageTeam");
-  const [row] = await db
-    .update(businessInvitations)
-    .set({ revokedAt: new Date(), updatedAt: new Date() })
-    .where(and(eq(businessInvitations.id, invitationId), eq(businessInvitations.businessId, businessId), isNull(businessInvitations.acceptedAt)))
-    .returning({ id: businessInvitations.id });
+  const [row] = await updateReturning(db, businessInvitations, { revokedAt: new Date(), updatedAt: new Date() }, and(eq(businessInvitations.id, invitationId), eq(businessInvitations.businessId, businessId), isNull(businessInvitations.acceptedAt)), { id: businessInvitations.id });
   if (!row) throw ApiError.notFound("Invitation");
   await publish(businessChannel(businessId), "team.updated", {});
   return row;
@@ -135,11 +129,7 @@ export async function updateMember(user: AuthenticatedUser, businessId: string, 
     const error = teamActionError({ kind: "update", actorId: user.id, target });
     if (error) throw ApiError.forbidden(error);
   }
-  const [updated] = await db
-    .update(businessMembers)
-    .set({ ...(input.role ? { role: input.role } : {}), ...(input.title !== undefined ? { title: input.title } : {}), ...(input.isBookable !== undefined ? { isBookable: input.isBookable } : {}), updatedAt: new Date() })
-    .where(eq(businessMembers.id, memberId))
-    .returning();
+  const [updated] = await updateReturning(db, businessMembers, { ...(input.role ? { role: input.role } : {}), ...(input.title !== undefined ? { title: input.title } : {}), ...(input.isBookable !== undefined ? { isBookable: input.isBookable } : {}), updatedAt: new Date() }, eq(businessMembers.id, memberId));
   await publish([businessChannel(businessId), userChannel(target.userId)], "team.updated", { memberId });
   return updated;
 }
@@ -195,7 +185,7 @@ export async function acceptInvitation(user: AuthenticatedUser, token: string) {
     await tx
       .insert(businessMembers)
       .values({ businessId: invitation.businessId, userId: user.id, role: invitation.role, title: invitation.title, isBookable: invitation.isBookable })
-      .onConflictDoNothing();
+      .onDuplicateKeyUpdate({ set: keepExisting(businessMembers) });
     await tx.update(businessInvitations).set({ acceptedAt: new Date(), acceptedBy: user.id, updatedAt: new Date() }).where(eq(businessInvitations.id, invitation.id));
     if (invitation.invitedBy) {
       await notify(invitation.invitedBy, { type: "team.joined", title: `${user.name ?? user.email} joined ${businessName}`, body: `As ${invitation.role}.`, href: `/business/${invitation.businessId}/team` }, tx);

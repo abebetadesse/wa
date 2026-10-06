@@ -3,10 +3,10 @@
  * Stores emergency contacts, conditions, and alert logs for each user.
  * This data is also cached in the offline knowledge base (IndexedDB).
  */
-import { pgTable, uuid, varchar, timestamp, jsonb, boolean, text } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, timestamp, jsonb, boolean, text } from "../mysqlSchema";
 import { users } from "./users";
 
-export const emergencyProfiles = pgTable("emergency_profiles", {
+export const emergencyProfiles = mysqlTable("emergency_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull().unique(),
   // Emergency contacts
@@ -36,7 +36,7 @@ export const emergencyProfiles = pgTable("emergency_profiles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const emergencyAlerts = pgTable("emergency_alerts", {
+export const emergencyAlerts = mysqlTable("emergency_alerts", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   alertType: varchar("alert_type", { length: 50 }).notNull(),

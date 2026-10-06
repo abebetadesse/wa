@@ -8,13 +8,14 @@
  * Safe to run more than once: the business, services, rules and remedies are updated in place.
  */
 import { and, eq } from "drizzle-orm";
-import { db, pgClient } from "./index";
+import { db, dbClient } from "./index";
 import { autoResponseRules, businessCategories, businessMembers, businesses, remedies, services, serviceKinds, users } from "./schema";
 import type { AuthenticatedUser } from "@/lib/auth";
 import { replaceHours, saveService } from "@/server/marketplace/catalogue";
 import { remedyInput, saveRemedy } from "@/server/marketplace/engagement";
 import { intakeSettingsInput, saveIntakeSettings } from "@/server/intake/settings";
 import { ruleInput } from "@/server/intake/responses";
+import { insertReturning } from "@/lib/db/write";
 
 const SLUG = "debtera-sanctuary";
 
@@ -67,10 +68,7 @@ async function main() {
   };
   let [business] = await db.select().from(businesses).where(eq(businesses.slug, SLUG)).limit(1);
   if (!business) {
-    [business] = await db
-      .insert(businesses)
-      .values({ ...profile, slug: SLUG, ownerId: owner.id, email: owner.email, status: "verified", verification: { reviewedAt: new Date().toISOString(), notes: "Reference business created by the seed script." } })
-      .returning();
+    [business] = await insertReturning(db, businesses, { ...profile, slug: SLUG, ownerId: owner.id, email: owner.email, status: "verified", verification: { reviewedAt: new Date().toISOString(), notes: "Reference business created by the seed script." } });
     await db.insert(businessMembers).values({ businessId: business.id, userId: owner.id, role: "owner", title: "Debtera", isBookable: true });
   } else {
     await db.update(businesses).set({ ...profile, updatedAt: new Date() }).where(eq(businesses.id, business.id));
@@ -85,7 +83,7 @@ async function main() {
     await db
       .insert(businessMembers)
       .values({ businessId, userId: member.id, role: "practitioner", title: titles[index] ?? "Practitioner", isBookable: true })
-      .onConflictDoUpdate({ target: [businessMembers.businessId, businessMembers.userId], set: { title: titles[index] ?? "Practitioner", updatedAt: new Date() } });
+      .onDuplicateKeyUpdate({ set: { title: titles[index] ?? "Practitioner", updatedAt: new Date() } });
   }
 
   // ── Opening hours: Monday to Saturday, 08:00–17:00 Addis Ababa time
@@ -206,4 +204,4 @@ main()
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   })
-  .finally(() => pgClient.end({ timeout: 2 }));
+  .finally(() => dbClient.end({ timeout: 2 }));

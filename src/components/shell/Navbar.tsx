@@ -9,6 +9,7 @@ import {
   CalendarCheck,
   ChevronDown,
   Contrast,
+  FileText,
   LogIn,
   LogOut,
   Menu,
@@ -99,6 +100,9 @@ export default function Navbar() {
     { href: "/messages", label: "Messages", icon: MessageCircle },
     { href: "/business", label: "My business", icon: Briefcase },
     { href: "/case/workflows", label: "My cases", icon: BookOpen },
+    ...(user?.permissions?.includes("cases:review") || user?.role === "admin" || user?.role === "super_admin"
+      ? [{ href: "/case-review", label: "Case request review", icon: FileText }]
+      : []),
     { href: "/profile", label: "Profile", icon: User },
     ...(user && ADMIN_ROLES.includes(user.role) ? [{ href: "/admin", label: "Administration", icon: Shield }] : []),
   ];

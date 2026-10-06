@@ -11,7 +11,7 @@ import "../styles/globals.css";
 import "../styles/hud-effects.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.ethio-wellness.example"),
+  metadataBase: new URL("https://app.wisdomcourse.com.et"),
   title: {
     default: "Ethiopian Wisdom Atlas | Heritage, ritual memory, and evidence-aware care",
     template: "%s | Ethiopian Wisdom Atlas",
@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     "A heritage-led Ethiopian wellbeing platform for traditional healers, astrologers, numerologists, and care professionals—blending food wisdom, ritual memory, ecological context, and rigorous evidence for everyday life.",
   applicationName: "Ethiopian Wisdom Atlas",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: { capable: true, title: "Ethiopian Wellness", statusBarStyle: "default" },
   keywords: [
     "Ethiopian wisdom",
     "wellness platform",
@@ -33,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ethiopian Wisdom Atlas",
     description: "Living cultural and traditional knowledge for wellbeing, safety, and context-aware guidance.",
-    url: "https://www.ethio-wellness.example",
+    url: "https://app.wisdomcourse.com.et",
     siteName: "Ethiopian Wisdom Atlas",
     locale: "en_US",
     type: "website",
@@ -46,6 +54,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+};
+
+export const viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

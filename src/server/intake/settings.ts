@@ -116,7 +116,7 @@ export async function saveIntakeSettings(user: AuthenticatedUser, businessId: st
   await requireCapability(user, businessId, "manageServices");
   await serviceOf(businessId, serviceId);
   const values = { ...input, dropdownLabel: input.dropdownLabel || null, textPrompt: input.textPrompt || null, businessId, updatedAt: new Date() };
-  await db.insert(serviceIntakeSettings).values({ serviceId, ...values }).onConflictDoUpdate({ target: serviceIntakeSettings.serviceId, set: values });
+  await db.insert(serviceIntakeSettings).values({ serviceId, ...values }).onDuplicateKeyUpdate({ set: values });
   const [row] = await db.select().from(serviceIntakeSettings).where(eq(serviceIntakeSettings.serviceId, serviceId));
   return toConfig(row);
 }
@@ -184,7 +184,7 @@ export async function validateBookingIntake(user: AuthenticatedUser, businessId:
 /** Upload quota: an account may hold up to 30 unused uploads per day. */
 export async function assertUploadQuota(userId: string) {
   const [{ n }] = await db
-    .select({ n: sql<number>`count(*)::int` })
+    .select({ n: sql<number>`count(*)` })
     .from(intakeAttachments)
     .where(and(eq(intakeAttachments.uploaderId, userId), isNull(intakeAttachments.bookingId), gte(intakeAttachments.createdAt, new Date(Date.now() - 86_400_000))));
   if (n >= 30) throw new ApiError(429, "Too many uploads today. Please finish your booking first.");

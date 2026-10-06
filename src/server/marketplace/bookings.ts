@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, inArray, lt, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { bookings, businessClients, businesses, businessMembers, payments, remedies, remedyIngredients, serviceKinds, services, users } from "@/lib/db/schema";
@@ -15,25 +15,13 @@ import { localToUtc } from "./time";
 import { BOOKING_STATUSES, bookingReference, canTransition, type BookingStatus } from "./bookingRules";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
+import { insertReturning, updateReturning, upsertReturning } from "@/lib/db/write";
+import { isDuplicateKey, isTransientConflict } from "@/lib/db/errors";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-const EXCLUSION_VIOLATION = "23P01";
-const UNIQUE_VIOLATION = "23505";
-/** Transient conflicts between concurrent transactions; the client can simply retry. */
-const TRANSIENT = new Set(["40001", "40P01", "55P03"]);
-
-/** Postgres SQLSTATE anywhere in the error's cause chain (drizzle wraps driver errors). */
-function pgCode(error: unknown): string | undefined {
-  for (let current = error, depth = 0; current && typeof current === "object" && depth < 5; depth++) {
-    const code = (current as { code?: unknown }).code;
-    if (typeof code === "string" && /^[0-9A-Z]{5}$/.test(code)) return code;
-    current = (current as { cause?: unknown }).cause;
-  }
-  return undefined;
-}
-
-const isPgError = (error: unknown, code: string) => pgCode(error) === code;
+/** Bookings that hold a time slot. */
+const HOLDING: BookingStatus[] = ["requested", "confirmed"];
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -118,19 +106,45 @@ async function loadBookableService(businessId: string, serviceId: string) {
   return row;
 }
 
+/**
+ * No two bookings that hold a slot may overlap for the same practitioner (or for the business
+ * when no practitioner is assigned). MySQL cannot express this as a constraint, so it is enforced
+ * here: the business row is locked for the rest of the transaction, which makes concurrent
+ * bookings for one business queue up, and the overlap is checked while that lock is held.
+ */
+async function assertSlotFree(tx: Tx, slot: { businessId: string; memberId: string | null | undefined; startsAt: Date; endsAt: Date }) {
+  await tx.select({ id: businesses.id }).from(businesses).where(eq(businesses.id, slot.businessId)).for("update");
+  const [taken] = await tx
+    .select({ id: bookings.id })
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.businessId, slot.businessId),
+        slot.memberId ? eq(bookings.memberId, slot.memberId) : isNull(bookings.memberId),
+        inArray(bookings.status, HOLDING),
+        lt(bookings.startsAt, slot.endsAt),
+        gt(bookings.endsAt, slot.startsAt),
+      ),
+    )
+    .limit(1);
+  if (taken) throw ApiError.conflict("That time was just taken. Please choose another slot.");
+}
+
 async function insertBooking(tx: Tx, values: typeof bookings.$inferInsert) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      // Savepoint: a failed insert must not abort the surrounding transaction.
-      return await tx.transaction(async (savepoint) => {
-        const [row] = await savepoint.insert(bookings).values({ ...values, reference: bookingReference() }).returning();
+  try {
+    await assertSlotFree(tx, { businessId: values.businessId, memberId: values.memberId, startsAt: values.startsAt, endsAt: values.endsAt });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const [row] = await insertReturning(tx, bookings, { ...values, reference: bookingReference() });
         return row;
-      });
-    } catch (error) {
-      if (isPgError(error, EXCLUSION_VIOLATION)) throw ApiError.conflict("That time was just taken. Please choose another slot.");
-      if (TRANSIENT.has(pgCode(error) ?? "")) throw ApiError.conflict("Someone else is booking this time right now. Please try again.");
-      if (!isPgError(error, UNIQUE_VIOLATION)) throw error;
+      } catch (error) {
+        // A reference that already exists: draw another.
+        if (!isDuplicateKey(error)) throw error;
+      }
     }
+  } catch (error) {
+    if (isTransientConflict(error)) throw ApiError.conflict("Someone else is booking this time right now. Please try again.");
+    throw error;
   }
   throw new Error("Could not allocate a booking reference.");
 }
@@ -154,13 +168,7 @@ export async function requestBooking(user: AuthenticatedUser, businessId: string
   }
 
   const booking = await db.transaction(async (tx) => {
-    // Serialise concurrent requests for the same business so the slot check and insert agree.
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${businessId}))`);
-    const [client] = await tx
-      .insert(businessClients)
-      .values({ businessId, userId: user.id, name: user.name ?? user.email, email: user.email, phone: user.phone, consent: { recordKeeping: new Date().toISOString() } })
-      .onConflictDoUpdate({ target: [businessClients.businessId, businessClients.userId], set: { updatedAt: new Date() } })
-      .returning({ id: businessClients.id });
+    const [client] = await upsertReturning(tx, businessClients, { businessId, userId: user.id, name: user.name ?? user.email, email: user.email, phone: user.phone, consent: { recordKeeping: new Date().toISOString() } }, { target: [businessClients.businessId, businessClients.userId], set: { updatedAt: new Date() }, fields: { id: businessClients.id } });
 
     const created = await insertBooking(tx, {
       reference: "",
@@ -263,16 +271,12 @@ async function applyTransition(bookingId: string, actor: "client" | "business", 
     const check = canTransition({ from: row.booking.status as BookingStatus, to: input.status, actor, startsAt: row.booking.startsAt });
     if (!check.ok) throw ApiError.conflict(check.reason);
 
-    const [updated] = await tx
-      .update(bookings)
-      .set({
+    const [updated] = await updateReturning(tx, bookings, {
         status: input.status,
         updatedAt: new Date(),
         ...(input.status === "cancelled" ? { cancelledBy: actor, cancelReason: input.reason } : {}),
         ...(actor === "business" && input.reason && input.status !== "cancelled" ? { businessNote: input.reason } : {}),
-      })
-      .where(eq(bookings.id, bookingId))
-      .returning();
+      }, eq(bookings.id, bookingId));
 
     const payload = { bookingId, reference: updated.reference, status: updated.status, previous: row.booking.status };
     await publish([businessChannel(row.business.id), ...(row.clientUserId ? [userChannel(row.clientUserId)] : [])], "booking.updated", payload, tx);

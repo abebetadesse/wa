@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { roles, users } from "@/lib/db/schema";
 import { ALL_PERMISSIONS } from "@/lib/db/schema/rbac";
 import { ApiError } from "@/lib/api/route";
+import { insertReturning } from "@/lib/db/write";
 
 const KNOWN_PERMISSIONS = new Set<string>([...ALL_PERMISSIONS.map((permission) => permission.key), "*"]);
 
@@ -68,7 +69,7 @@ export async function getRole(id: string) {
 export async function createRole(input: z.infer<typeof newRole>) {
   const [existing] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, input.name)).limit(1);
   if (existing) throw ApiError.conflict(`Role '${input.name}' already exists.`);
-  const [role] = await db.insert(roles).values({ ...input, isSystemRole: false, isActive: true }).returning();
+  const [role] = await insertReturning(db, roles, { ...input, isSystemRole: false, isActive: true });
   return role;
 }
 

@@ -22,3 +22,15 @@ push_debug.log
 
 push_debug.log
 *.log
+
+# Runtime state written by the running app (maintenance mode, announcements)
+.system_config.json
+
+# Generated release bundle and verification builds
+/plesk-release/
+/.next-verify/
+/.tmp-*/
+/plesk-release.zip
+
+# Database backups made with npm run db:backup
+/backups/

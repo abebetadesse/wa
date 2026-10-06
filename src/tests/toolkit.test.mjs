@@ -1,5 +1,5 @@
 /**
- * Healer toolkit: pure recommendation rules, plus the full flow against PostgreSQL
+ * Healer toolkit: pure recommendation rules, plus the full flow against MySQL
  * (skipped when the database is unreachable; everything created is removed).
  */
 import { test, before, after } from "node:test";
@@ -12,11 +12,11 @@ import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 
 // ── Database flow ────────────────────────────────────────────────────────────
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -100,7 +100,7 @@ after(async () => {
   await db.delete(schema.notifications).where(inArray(schema.notifications.userId, ids));
   await db.delete(schema.realtimeEvents).where(inArray(schema.realtimeEvents.channel, [...ids.map((id) => `user:${id}`), ...created.businesses.map((id) => `business:${id}`)]));
   await db.delete(schema.users).where(inArray(schema.users.id, ids));
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 test("tools sync from code and are shown by audience", { skip: skip() }, async () => {
@@ -153,6 +153,10 @@ test("a herbalist gets its starter set, picks tools, and behaviour shapes recomm
   assert.ok(!kit.tools.some((t) => t.key === "ecology"), "hidden even though a set includes it");
   assert.equal(kit.tools[0].key, "energy-pattern", "pinned tools come first");
 
+  // The business adds Hexacore itself, so the checks below do not depend on which knowledge sets
+  // an administrator has curated in this database.
+  await toolkit.setBusinessTool(owner, business.id, "hexacore-arcana", { state: "added" });
+
   // Behaviour: visiting tool pages is recorded (throttled) and shows up in activity and strands.
   assert.equal((await toolkit.trackToolVisit(visitor, "/hexacore")).tracked, false, "people outside businesses are not tracked");
   assert.equal((await toolkit.trackToolVisit(owner, "/hexacore")).toolKey, "hexacore-arcana");
@@ -160,7 +164,7 @@ test("a herbalist gets its starter set, picks tools, and behaviour shapes recomm
   assert.equal((await toolkit.trackToolVisit(owner, "/atlas")).toolKey, "regional-atlas");
   kit = await toolkit.getBusinessToolkit(owner, business.id);
   assert.ok(kit.activity.topTools.some((tool) => tool.key === "hexacore-arcana"));
-  assert.ok(kit.tools.some((tool) => tool.key === "hexacore-arcana"), "a tool already included in a subscribed set remains in the toolkit");
+  assert.ok(kit.tools.some((tool) => tool.key === "hexacore-arcana"), "a tool the business already has remains in the toolkit");
   assert.ok(!kit.recommendations.some((recommendation) => recommendation.key === "hexacore-arcana"), "already included tools are not recommended again");
   const atlas = kit.recommendations.find((recommendation) => recommendation.key === "regional-atlas");
   assert.ok(atlas?.reasons.includes("Your team uses this"), "recent use shapes recommendations for tools not already included");

@@ -1,6 +1,6 @@
 # Ethiopian Wisdom & Wellness Platform
 
-An Ethiopian-centered wisdom, wellness, knowledge, and expert-review platform built with Next.js, React, TypeScript, Drizzle ORM, and PostgreSQL-compatible data access.
+An Ethiopian-centered wisdom, wellness, knowledge, and expert-review platform built with Next.js, React, TypeScript, Drizzle ORM, and MySQL 8.
 
 The application combines two intentionally separated knowledge domains:
 
@@ -59,7 +59,7 @@ The registration flow:
 7. Signs the person in straight away. There is no email-verification step.
 8. Writes audit and activity events.
 
-Administrators can pause sign-ups under **Admin → Sign-up & Telegram**. Accounts are verified by connecting Telegram from `/account` (Telegram Login Widget, verified server-side with the bot token). A connected Telegram also enables one-tap sign-in, notification forwarding and password-reset links. Administrators can require Telegram for business owners before a business is submitted for listing.
+Administrators can pause sign-ups under **Admin → Sign-up & Telegram**. Accounts are verified by connecting Telegram from `/account` (Telegram Login Widget, verified server-side with the bot token). A connected Telegram also enables one-tap sign-in, notification forwarding and password-reset links. The bot responds to `/start`, `/help`, and `/privacy`; set its HTTPS webhook with `npm run telegram:setup`. Administrators can require Telegram for business owners before a business is submitted for listing.
 
 Login is handled by `POST /api/auth/login`.
 
@@ -377,7 +377,7 @@ src/
 
 - Node.js compatible with the project toolchain
 - Bun is supported for development
-- PostgreSQL-compatible database configuration
+- MySQL database configuration and migrations
 - Dependencies installed from `package.json`
 
 ### Install dependencies
@@ -402,12 +402,16 @@ Create a local `.env` file using the deployment configuration as a guide. Never 
 | `APP_URL` | Production: public base URL for invitation, payment-return and Telegram links (e.g. `https://example.et`) |
 | `CHAPA_SECRET_KEY` | Online payments via Chapa (cards, telebirr, CBE Birr, M-Pesa). A `CHASECK_TEST-…` key runs in test mode |
 | `CHAPA_WEBHOOK_SECRET` | Optional: checks Chapa webhook signatures. Payments are always re-verified with Chapa's API |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` | Telegram verification, sign-in, notifications and password resets. Create the bot with @BotFather and link your domain with `/setdomain` (Telegram does not allow localhost) |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` | Telegram verification, sign-in, notifications, password resets, and bot commands. Create the bot with @BotFather, set the webhook using `npm run telegram:setup`, and link your domain with `/setdomain` (Telegram does not allow localhost) |
 
+The site is also an installable Progressive Web App. Use **Install app** on Android Chrome or **Share → Add to Home Screen** on iOS Safari. Offline mode keeps public reference pages available; account, booking, messaging, and submission features still need a connection.
+
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | Email for password-reset links and verification codes (any SMTP mailbox). Without it, resets go to Telegram only |
+| `RATE_LIMIT_STORE`, `DB_POOL_MAX` | Optional. Rate limits are counted in MySQL in production (`memory` to opt out); `DB_POOL_MAX` tunes the MySQL connection pool |
 | `UPLOAD_DIR` | Where client intake photos, voice notes and videos are stored (default `./storage/uploads`, outside the web root). Use persistent storage in production and include it in backups |
 | `PUBMED_api` or `NCBI_API_KEY` | Optional: faster PubMed lookups in the healer's analysis panel (works without a key at a lower rate) |
 
-A reference healer business (Metsehafe Fewus, Metsehafe Asmat and Awde Negest services, intake settings, auto-response rules, remedies) can be created for an existing account with `npm run db:seed:debtera -- --owner you@example.com`. Apply `drizzle/0009_healer_intake.sql` and `drizzle/0011_metsehafe_asmat.sql` first.
+A reference healer business (Metsehafe Fewus, Metsehafe Asmat and Awde Negest services, intake settings, auto-response rules, remedies) can be created for an existing account with `npm run db:seed:debtera -- --owner you@example.com`. Run `npm run db:migrate` first.
 
 **Manuscripts (መጽሐፈ ፈውስ, መጽሐፈ አስማት).** The platform indexes each book's table of contents only (`src/lib/cultural/metsehafeFewusCatalog.ts`, `metsehafeAsmatCatalog.ts`); prayers, seals and procedures are never reproduced. A service can offer a book's chapters as its intake list; the client picks one, and each business writes the text it uses per chapter in *Intake & automation → Fewus library / Asmat library*. On the booking's review page the healer delivers the chapter as a solution: sent to the client directly, or prepared as a draft to refine. Every delivery carries the physical-safety cautions for how the practice is carried out (`src/lib/evaluation/practiceFormSafety.ts`), a live check of the chapter's plants against the client's medicines, and the chapter's framing notes (protection only, consent, no promised outcome, possible illness). Manuscript texts never go out without a healer's approval.
 
@@ -415,11 +419,11 @@ For local marketplace testing, `npm run db:seed:marketplace-demo -- --confirm-de
 
 The sample listing is based in Addis Ababa, serves Amharic and English, offers in-person and remote sessions, and is open Monday–Saturday. It includes Hexacore reflection (60 min, 450 ETB), tongue reading (30 min, 200 ETB), palm reading (45 min, 300 ETB), face-reading history and ethics (30 min, 200 ETB), and combined body-sign traditions (45 min, 350 ETB), each with a sample intake prompt.
 
-The sample is explicitly labeled as demo data and exercises business creation and approval, team access, five bookable services with client intake, opening hours, requested/confirmed/cancelled/completed bookings, a booking-linked spiritual case and practitioner review, CRM history, a demo cash payment, client review and business response, and two-way messages. Demo payments are recorded for dashboard testing only; no money is due. The sample listing is approved solely to make its public directory and booking workflows testable, not because any professional credentials were checked. Apply `drizzle/0010_hexacore_body_readings.sql` and the marketplace migrations before running the seed.
+The sample is explicitly labeled as demo data and exercises business creation and approval, team access, five bookable services with client intake, opening hours, requested/confirmed/cancelled/completed bookings, a booking-linked spiritual case and practitioner review, CRM history, a demo cash payment, client review and business response, and two-way messages. Demo payments are recorded for dashboard testing only; no money is due. The sample listing is approved solely to make its public directory and booking workflows testable, not because any professional credentials were checked. Run `npm run db:setup` before running the seed.
 
 Hexacore service guides are shown on the public listing, during client intake, and in the practitioner's booking review. Tongue and palm images are optional, private booking attachments for a consent-based discussion; no automated image interpretation is performed. Face-reading is limited to cultural history and ethics: face photos and appearance-based health or personal-trait assessments are not part of the workflow. See `src/lib/cultural/hexacoreActivities.ts` for the activity guides and boundaries.
 
-In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Apply the latest migration with `npm run db:apply drizzle/0006_payments_and_telegram.sql`.
+In the Chapa dashboard, set the webhook URL to `<APP_URL>/api/payments/chapa/webhook`. Bring the database up to date with `npm run db:migrate`.
 
 ### Payments
 
@@ -450,13 +454,27 @@ Do not start a second server on the same port. If the port is already occupied, 
 
 ### Database commands
 
+The database is MySQL 8.0 or newer. Set `DATABASE_URL` to a MySQL connection string and run
+`npm run db:setup` against a dedicated, initially empty database. MySQL migrations live in
+[`drizzle-mysql/`](drizzle-mysql); the legacy `drizzle/` directory contains PostgreSQL SQL and must
+not be applied to MySQL.
+
 ```bash
-bun run db:push
-bun run db:migrate
-bun run db:seed
+npm run db:setup        # everything a new database needs: db:migrate, then db:reference
+npm run db:migrate      # schema: baseline on an empty database, then each numbered migration once
+npm run db:status       # what is applied and what is pending (changes nothing)
+npm run db:reference    # roles, food-composition tables, herb–medicine safety reference
+npm run admin:create -- --email you@example.com   # create or promote an administrator
+npm run db:backup       # mysqldump to backups/
 ```
 
-Use the command appropriate to the current database lifecycle. Review schema and migration changes before applying them to shared environments.
+All of these are safe to repeat. `db:seed` fills the food reference tables when they are empty (`-- --reset` replaces them); no seed touches accounts or the audit log. Passwords are never stored in the code: `admin:create` prints a one-time password or takes `ADMIN_PASSWORD` from the environment, and the local demo accounts (`SEED_DEMO_USERS=1 npx tsx src/lib/db/runAuthMigration.ts`) take `DEMO_USER_PASSWORD` and refuse non-local databases.
+
+Schema changes go in `src/lib/db/schema` and a new MySQL migration generated into `drizzle-mysql/`. Review generated SQL before applying it. `npm run db:push` is a local convenience only; `db:migrate` requires an empty database for the first baseline and will not silently adopt an existing schema.
+
+### Production
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short: `npm run deploy:plesk` builds an upload-ready release (`plesk-release.zip`) that starts with `node app.js`; the server stops at start-up with a `[config]` message if `DATABASE_URL`, `AUTH_SECRET`, `DATA_ENCRYPTION_KEY` or `APP_URL` is missing; `/api/health` is the uptime probe; unhandled server errors are logged as one JSON line each.
 
 ## Validation
 

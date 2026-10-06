@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { caseSummaryCards } from "@/lib/db/schema";
 import { parseCaseNarrative } from "@/lib/case-workflow/caseSummaryEngine";
+import { insertReturning } from "@/lib/db/write";
 
 // ─── POST /api/case/summary ───────────────────────────────────────────────────
 // Accepts a free-expression narrative and returns a structured CaseSummaryCard.
@@ -34,9 +35,7 @@ export const POST = defineRoute({
     );
 
     // Persist the card to the database so the user can review and endorse it
-    const [saved] = await db
-      .insert(caseSummaryCards)
-      .values({
+    const [saved] = await insertReturning(db, caseSummaryCards, {
         userId: user.id,
         rawNarrative: card.rawNarrative,
         aiTranslation: card.aiTranslation || null,
@@ -54,8 +53,7 @@ export const POST = defineRoute({
         suggestedStrandDetails: card.suggestedStrandDetails,
         endorsedByUser: false,
         createdAt: new Date(),
-      })
-      .returning();
+      });
 
     // Emergency flag: instruct the caller to route to crisis flow immediately
     const isCrisis = card.urgencyFlag === "emergency";

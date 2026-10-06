@@ -1,6 +1,15 @@
+/**
+ * Ethiopian food-composition reference data (foods, nutrients and their amounts).
+ *
+ *   npm run db:seed              fills the tables when they are empty (safe to repeat)
+ *   npm run db:seed -- --reset   replaces the food reference tables with the current data
+ *
+ * It never touches accounts, bookings or the audit log.
+ */
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { sql } from "drizzle-orm";
 import { db } from "./index";
 import { auditLog, foodNutrients, foods, nutrients } from "./schema";
 import { EFCT_MASTER_FOODS } from "../nutrition/efctDatabase";
@@ -20,9 +29,13 @@ const nutrientsData = [
   ["Potassium", "K", "mg", "mineral", "3400.00", null],
 ] as const;
 
-export async function runSeed() {
+export async function runSeed(options: { reset?: boolean } = {}) {
+  const [{ n }] = await db.select({ n: sql<number>`count(*)` }).from(nutrients);
+  if (n > 0 && !options.reset) {
+    console.log(`Food reference data is already present (${n} nutrients); nothing to do. Use --reset to replace it.`);
+    return { seeded: false };
+  }
   await db.transaction(async (tx) => {
-    await tx.delete(auditLog);
     await tx.delete(foodNutrients);
     await tx.delete(foods);
     await tx.delete(nutrients);
@@ -72,8 +85,9 @@ export async function runSeed() {
       payload: { foods: EFCT_MASTER_FOODS.length, nutrients: nutrientsData.length },
     });
   });
-  console.log(`Seeded ${EFCT_MASTER_FOODS.length} Ethiopian foods and ${nutrientsData.length} nutrients into MySQL.`);
+  console.log(`Seeded ${EFCT_MASTER_FOODS.length} Ethiopian foods and ${nutrientsData.length} nutrients.`);
+  return { seeded: true };
 }
 
 const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
-if (isMainModule) runSeed().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });
+if (isMainModule) runSeed({ reset: process.argv.includes("--reset") }).then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });

@@ -25,6 +25,7 @@ import {
   type SubstanceFacts,
 } from "./rules";
 import { SEED_INTERACTIONS, SEED_SUBSTANCES } from "./seed";
+import { insertReturning, keepExisting, updateReturning, upsertReturning } from "@/lib/db/write";
 
 type SubstanceRow = typeof safetySubstances.$inferSelect;
 type InteractionRow = typeof safetyInteractions.$inferSelect;
@@ -61,13 +62,13 @@ async function syncSeed() {
         notes: seed.notes ?? null,
         evidence: seed.evidence ?? null,
       };
-      await tx.insert(safetySubstances).values({ slug: seed.slug, origin: "seed", ...values }).onConflictDoNothing();
+      await tx.insert(safetySubstances).values({ slug: seed.slug, origin: "seed", ...values }).onDuplicateKeyUpdate({ set: keepExisting(safetySubstances) });
       await tx.update(safetySubstances).set({ ...values, updatedAt: new Date() }).where(and(eq(safetySubstances.slug, seed.slug), eq(safetySubstances.customized, false)));
     }
     for (const seed of SEED_INTERACTIONS) {
       const [a, b] = seed.a < seed.b ? [seed.a, seed.b] : [seed.b, seed.a];
       const values = { severity: seed.severity, mechanism: seed.mechanism, effect: seed.effect, management: seed.management, evidence: seed.evidence, source: seed.source };
-      await tx.insert(safetyInteractions).values({ substanceA: a, substanceB: b, origin: "seed", ...values }).onConflictDoNothing();
+      await tx.insert(safetyInteractions).values({ substanceA: a, substanceB: b, origin: "seed", ...values }).onDuplicateKeyUpdate({ set: keepExisting(safetyInteractions) });
       await tx
         .update(safetyInteractions)
         .set({ ...values, updatedAt: new Date() })
@@ -308,13 +309,13 @@ export async function createSubstance(user: AuthenticatedUser, input: z.infer<ty
   let slug = slugify(input.name);
   const [taken] = await db.select({ slug: safetySubstances.slug }).from(safetySubstances).where(eq(safetySubstances.slug, slug)).limit(1);
   if (taken) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
-  const [row] = await db.insert(safetySubstances).values({ ...input, slug, origin: "custom", customized: true, updatedBy: user.id }).returning();
+  const [row] = await insertReturning(db, safetySubstances, { ...input, slug, origin: "custom", customized: true, updatedBy: user.id });
   invalidate();
   return row;
 }
 
 export async function updateSubstance(user: AuthenticatedUser, slug: string, input: z.infer<typeof substanceInput>) {
-  const [row] = await db.update(safetySubstances).set({ ...input, customized: true, updatedBy: user.id, updatedAt: new Date() }).where(eq(safetySubstances.slug, slug)).returning();
+  const [row] = await updateReturning(db, safetySubstances, { ...input, customized: true, updatedBy: user.id, updatedAt: new Date() }, eq(safetySubstances.slug, slug));
   if (!row) throw ApiError.notFound("Medicine or remedy");
   invalidate();
   return row;
@@ -326,11 +327,7 @@ export async function saveInteraction(user: AuthenticatedUser, input: z.infer<ty
   const found = await db.select({ slug: safetySubstances.slug }).from(safetySubstances).where(sql`${safetySubstances.slug} in (${a}, ${b})`);
   if (found.length !== 2) throw ApiError.badRequest("Both items must exist in the reference.");
   const values = { severity: input.severity, mechanism: input.mechanism, effect: input.effect, management: input.management, evidence: input.evidence, source: input.source, status: input.status, customized: true, updatedBy: user.id, updatedAt: new Date() };
-  const [row] = await db
-    .insert(safetyInteractions)
-    .values({ substanceA: a, substanceB: b, origin: "custom", ...values })
-    .onConflictDoUpdate({ target: [safetyInteractions.substanceA, safetyInteractions.substanceB], set: values })
-    .returning();
+  const [row] = await upsertReturning(db, safetyInteractions, { substanceA: a, substanceB: b, origin: "custom", ...values }, { target: [safetyInteractions.substanceA, safetyInteractions.substanceB], set: values });
   invalidate();
   return row;
 }

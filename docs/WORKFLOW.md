@@ -34,7 +34,7 @@ The guided evaluator is a client-side workflow in `src/app/case/page.tsx`. It lo
 
 The evaluator now has an authentication gateway at `/auth`. Registration creates a user account, hashes passwords with salted scrypt, issues an HTTP-only short-lived access cookie plus a persisted refresh session, and applies a five-attempt/15-minute lockout policy. The page middleware sends unauthenticated browser routes to `/auth`; auth endpoints remain public so a user can register or sign in.
 
-Guided session APIs resolve the authenticated user server-side and reject session IDs owned by another user. The database migration is generated in `drizzle/0000_aromatic_warlock.sql` and can be applied with `npm run db:migrate` after PostgreSQL is available.
+Guided session APIs resolve the authenticated user server-side and reject session IDs owned by another user. The MySQL database schema is managed by migrations in `drizzle-mysql/` and can be applied with `npm run db:migrate` after a dedicated MySQL 8 database is available.
 
 ### Important boundary
 
@@ -238,7 +238,7 @@ Domain A is represented by the domain’s `knowledgeStrandFilters` and, for the 
 - Urgency detection and emergency routing.
 - Psychological and socioeconomic contextual findings.
 
-The legacy scientific evaluation is available through `/intake` and `/api/intake`. It persists users, wellbeing profiles, intake submissions, reports, causes, solutions, and audit events when PostgreSQL is available.
+The legacy scientific evaluation is available through `/intake` and `/api/intake`. It persists users, wellbeing profiles, intake submissions, reports, causes, solutions, and audit events in MySQL.
 
 ### Domain B
 
@@ -296,7 +296,7 @@ The repository already contains `case_sessions`, `case_causes`, and `case_soluti
 
 1. Apply the generated migration and configure a non-development `AUTH_SECRET`.
 2. Persist every guided session transition to the existing case tables.
-3. Replace the in-memory session map with a repository backed by PostgreSQL.
+3. Replace the in-memory session map with a repository backed by MySQL.
 4. Add expiration and deletion policies for abandoned sessions.
 5. Store report confirmation and selected solution IDs in the database.
 6. Add an audit event for report confirmation and solution acceptance.
@@ -307,7 +307,7 @@ The repository already contains `case_sessions`, `case_causes`, and `case_soluti
 The application currently contains multiple valid but separate entry points:
 
 - `/case`: new domain-first holistic workflow.
-- `/intake`: detailed scientific nutrition intake with PostgreSQL persistence and wellbeing-gap reports.
+- `/intake`: detailed scientific nutrition intake with MySQL persistence and wellbeing-gap reports.
 - `/diagnostic`: multi-strand diagnostic portal with urgency detection, retrieval, causal pathways, and diagnostic session persistence.
 - `/inquiry`: lighter natural-language inquiry and synthesis flow.
 - `/profile`: astrology, numerology, naming, and personal profiling.

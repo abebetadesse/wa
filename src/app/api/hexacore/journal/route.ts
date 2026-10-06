@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { hexacoreJournal } from "@/lib/db/schema";
 import { requireUser } from "@/lib/api/authGuard";
 import { badRequest, created, ok, unauthorized, serverError } from "@/lib/api/response";
+import { insertReturning } from "@/lib/db/write";
 
 export async function GET() {
   const { user, error } = await requireUser();
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
   if (body.mood !== undefined && (!Number.isInteger(body.mood) || body.mood < 1 || body.mood > 10)) return badRequest("mood must be an integer from 1 to 10.", "mood");
   if (body.selectedCore && !["P", "H", "C", "E", "S", "O"].includes(body.selectedCore)) return badRequest("Invalid selected core.", "selectedCore");
   try {
-    const [entry] = await db.insert(hexacoreJournal).values({
+    const [entry] = await insertReturning(db, hexacoreJournal, {
       userId: user.id,
       entryDate: new Date(),
       selectedCore: body.selectedCore as "P" | "H" | "C" | "E" | "S" | "O" | undefined,
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       mood: body.mood,
       practiceCompleted: body.practiceCompleted ?? [],
       frequenciesSnapshot: body.frequenciesSnapshot,
-    }).returning();
+    });
     return created(entry);
   } catch (caught) {
     console.error("Hexacore journal save failed:", caught);

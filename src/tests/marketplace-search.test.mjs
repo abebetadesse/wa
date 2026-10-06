@@ -8,14 +8,14 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import { eq, inArray } from "drizzle-orm";
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 const businessesSvc = await import("../server/marketplace/businesses.ts");
 const catalogue = await import("../server/marketplace/catalogue.ts");
 
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -113,7 +113,7 @@ after(async () => {
     await db.delete(schema.businesses).where(inArray(schema.businesses.id, ids));
   }
   await db.delete(schema.users).where(inArray(schema.users.id, created.users));
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 const skip = () => !available && "database unavailable";

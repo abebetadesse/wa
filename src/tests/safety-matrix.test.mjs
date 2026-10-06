@@ -9,11 +9,11 @@ import { eq, inArray } from "drizzle-orm";
 import { PROPERTY_KEYS, buildMatrix, effectiveCautions, evaluatePair, pairKey, parseCautionCodes } from "../server/safety/rules.ts";
 import { SEED_INTERACTIONS, SEED_SUBSTANCES } from "../server/safety/seed.ts";
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -104,7 +104,7 @@ after(async () => {
   if (!available) return;
   if (createdSlugs.length) await db.delete(schema.safetySubstances).where(inArray(schema.safetySubstances.slug, createdSlugs));
   await db.delete(schema.users).where(eq(schema.users.id, editor.id));
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 test("service: seeded reference, name resolution, matrix and details", { skip: skip() }, async () => {

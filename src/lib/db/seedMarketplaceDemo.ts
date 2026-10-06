@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, pgClient } from "./index";
+import { db, dbClient } from "./index";
 import {
   bookings,
   businessCategories,
@@ -562,5 +562,5 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await pgClient.end({ timeout: 2 });
+    await dbClient.end({ timeout: 2 });
   });

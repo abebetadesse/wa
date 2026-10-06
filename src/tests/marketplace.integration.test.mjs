@@ -1,5 +1,5 @@
 /**
- * End-to-end marketplace flow against the real PostgreSQL database.
+ * End-to-end marketplace flow against the real MySQL database.
  * Skipped automatically when the database is unreachable. Everything it creates is removed.
  */
 import { test, before, after } from "node:test";
@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import { eq, inArray } from "drizzle-orm";
 
-const { db, pgClient } = await import("../lib/db/index.ts");
+const { db, dbClient } = await import("../lib/db/index.ts");
 const schema = await import("../lib/db/schema/index.ts");
 const businessesSvc = await import("../server/marketplace/businesses.ts");
 const catalogue = await import("../server/marketplace/catalogue.ts");
@@ -20,7 +20,7 @@ const { addDays, todayIn } = await import("../server/marketplace/time.ts");
 
 let available = true;
 try {
-  await pgClient`select 1`;
+  await dbClient`select 1`;
 } catch {
   available = false;
 }
@@ -54,7 +54,7 @@ after(async () => {
   }
   await db.delete(schema.realtimeEvents).where(inArray(schema.realtimeEvents.channel, [...created.users.map((id) => `user:${id}`), ...created.businesses.map((id) => `business:${id}`)]));
   await db.delete(schema.users).where(inArray(schema.users.id, created.users));
-  await pgClient.end({ timeout: 2 });
+  await dbClient.end({ timeout: 2 });
 });
 
 const skip = () => !available && "database unavailable";
@@ -171,7 +171,7 @@ test("the business confirms, completes, records payment; the client reviews", { 
   assert.equal(board.revenueSeries.length, 30);
 });
 
-test("messages flow both ways and are delivered live through LISTEN/NOTIFY", { skip: skip() }, async () => {
+test("messages flow both ways and are delivered live through database polling", { skip: skip() }, async () => {
   const received = [];
   const unsubscribe = await realtime.subscribe([`business:${business.id}`], (event) => received.push(event));
   const conversation = await engagement.openConversation(client, business.id);

@@ -19,6 +19,8 @@ import { getSettings, type PaymentSettings } from "@/server/settings";
 import { notify, notifyAdmins } from "@/server/marketplace/notifications";
 import { publish, userChannel } from "@/server/realtime";
 import { chapaConfigured, chapaMode, initializeCheckout, verifyTransaction } from "./chapa";
+import { insertReturning, updateReturning } from "@/lib/db/write";
+import { isDuplicateKey } from "@/lib/db/errors";
 
 export const PAY_METHODS = ["chapa", "telebirr", "bank_transfer"] as const;
 export type PayMethod = (typeof PAY_METHODS)[number];
@@ -104,10 +106,7 @@ export async function createOnlinePayment(input: {
   const [payer] = await db.select({ email: users.email, name: users.name }).from(users).where(eq(users.id, input.user.id)).limit(1);
   const [first, ...rest] = (payer?.name ?? "").trim().split(/\s+/);
   const origin = appOrigin(input.origin);
-  const [row] = await db
-    .insert(platformPayments)
-    .values({ txRef, userId: input.user.id, purpose: input.purpose, subjectId: input.subjectId, description: input.description, amountEtb: input.amountEtb.toFixed(2), method: input.method, channel: "chapa", status: "pending" })
-    .returning();
+  const [row] = await insertReturning(db, platformPayments, { txRef, userId: input.user.id, purpose: input.purpose, subjectId: input.subjectId, description: input.description, amountEtb: input.amountEtb.toFixed(2), method: input.method, channel: "chapa", status: "pending" });
   try {
     const { checkoutUrl } = await initializeCheckout({
       txRef,
@@ -151,9 +150,7 @@ export async function submitManualPayment(input: z.infer<typeof manualPaymentInp
     .limit(1);
   if (pending.length) throw ApiError.conflict("You already sent a payment for this. We'll let you know as soon as it's confirmed.");
   try {
-    const [row] = await db
-      .insert(platformPayments)
-      .values({
+    const [row] = await insertReturning(db, platformPayments, {
         txRef: newTxRef(),
         userId: input.user.id,
         purpose: input.purpose,
@@ -166,12 +163,11 @@ export async function submitManualPayment(input: z.infer<typeof manualPaymentInp
         providerReference: reference,
         payerName: input.payerName || null,
         payerNote: input.note || null,
-      })
-      .returning();
+      });
     await notifyAdmins({ type: "payment.review", title: "Payment to confirm", body: `${input.description}: ${input.amountEtb} ETB by ${input.method === "telebirr" ? "telebirr" : "bank transfer"} (${reference})`, href: "/admin/payments" });
     return row;
   } catch (error) {
-    if (pgCode(error) === "23505") throw ApiError.conflict("This transaction number has already been submitted.");
+    if (isDuplicateKey(error)) throw ApiError.conflict("This transaction number has already been submitted.");
     throw error;
   }
 }
@@ -191,11 +187,7 @@ export async function verifyOnlinePayment(txRef: string, expectedUserId?: string
   if (!result.paid) return row;
   // Never trust a paid status for less than we asked for, or in another currency.
   if ((result.currency && result.currency !== "ETB") || (result.amountEtb != null && result.amountEtb + 0.005 < Number(row.amountEtb))) {
-    const [flagged] = await db
-      .update(platformPayments)
-      .set({ status: "needs_attention", raw: result.raw, reviewNote: `Paid ${result.amountEtb} ${result.currency}, expected ${row.amountEtb} ETB.`, updatedAt: new Date() })
-      .where(eq(platformPayments.id, row.id))
-      .returning();
+    const [flagged] = await updateReturning(db, platformPayments, { status: "needs_attention", raw: result.raw, reviewNote: `Paid ${result.amountEtb} ${result.currency}, expected ${row.amountEtb} ETB.`, updatedAt: new Date() }, eq(platformPayments.id, row.id));
     return flagged;
   }
   return settle(row, { providerReference: result.reference ?? txRef, raw: result.raw });
@@ -209,11 +201,7 @@ export async function reviewManualPayment(admin: AuthenticatedUser, paymentId: s
   if (row.channel !== "manual" || row.status !== "awaiting_review") throw ApiError.conflict("This payment has already been reviewed.");
   if (input.decision === "rejected") {
     if (!input.note) throw ApiError.badRequest("Tell the payer why the payment was not accepted.");
-    const [updated] = await db
-      .update(platformPayments)
-      .set({ status: "rejected", reviewedBy: admin.id, reviewedAt: new Date(), reviewNote: input.note, updatedAt: new Date() })
-      .where(and(eq(platformPayments.id, row.id), eq(platformPayments.status, "awaiting_review")))
-      .returning();
+    const [updated] = await updateReturning(db, platformPayments, { status: "rejected", reviewedBy: admin.id, reviewedAt: new Date(), reviewNote: input.note, updatedAt: new Date() }, and(eq(platformPayments.id, row.id), eq(platformPayments.status, "awaiting_review")));
     if (!updated) throw ApiError.conflict("This payment has already been reviewed.");
     if (row.userId) {
       await notify(row.userId, { type: "payment.rejected", title: "Payment not confirmed", body: `${row.description ?? "Your payment"}: ${input.note}`, href: subjectHref(row) });
@@ -226,9 +214,7 @@ export async function reviewManualPayment(admin: AuthenticatedUser, paymentId: s
 async function settle(row: PlatformPayment, extra: { providerReference?: string; raw?: Record<string, unknown>; reviewedBy?: string; reviewNote?: string }) {
   let updated: PlatformPayment | undefined;
   try {
-    [updated] = await db
-      .update(platformPayments)
-      .set({
+    [updated] = await updateReturning(db, platformPayments, {
         status: "paid",
         paidAt: new Date(),
         providerReference: extra.providerReference ?? row.providerReference,
@@ -237,17 +223,11 @@ async function settle(row: PlatformPayment, extra: { providerReference?: string;
         reviewedAt: extra.reviewedBy ? new Date() : null,
         reviewNote: extra.reviewNote ?? null,
         updatedAt: new Date(),
-      })
-      .where(and(eq(platformPayments.id, row.id), inArray(platformPayments.status, ["pending", "awaiting_review", "failed"])))
-      .returning();
+      }, and(eq(platformPayments.id, row.id), inArray(platformPayments.status, ["pending", "awaiting_review", "failed"])));
   } catch (error) {
     // Another payment for the same subject already succeeded: keep the money visible for a refund.
-    if (pgCode(error) !== "23505") throw error;
-    [updated] = await db
-      .update(platformPayments)
-      .set({ status: "needs_attention", reviewNote: "Paid twice for the same item. Refund this payment.", providerReference: extra.providerReference ?? row.providerReference, raw: extra.raw ?? row.raw, updatedAt: new Date() })
-      .where(eq(platformPayments.id, row.id))
-      .returning();
+    if (!isDuplicateKey(error)) throw error;
+    [updated] = await updateReturning(db, platformPayments, { status: "needs_attention", reviewNote: "Paid twice for the same item. Refund this payment.", providerReference: extra.providerReference ?? row.providerReference, raw: extra.raw ?? row.raw, updatedAt: new Date() }, eq(platformPayments.id, row.id));
     await notifyAdmins({ type: "payment.duplicate", title: "Duplicate payment to refund", body: `${row.description ?? row.txRef}: ${row.amountEtb} ETB`, href: "/admin/payments" });
     return updated ?? row;
   }
@@ -319,10 +299,10 @@ export async function listPlatformPayments(query: z.infer<typeof adminPaymentQue
       .limit(query.limit),
     db
       .select({
-        paidEtb: sql<string>`coalesce(sum(${platformPayments.amountEtb}) filter (where ${platformPayments.status} = 'paid'), 0)`,
-        paid30Etb: sql<string>`coalesce(sum(${platformPayments.amountEtb}) filter (where ${platformPayments.status} = 'paid' and ${platformPayments.paidAt} > now() - interval '30 days'), 0)`,
-        awaitingReview: sql<number>`count(*) filter (where ${platformPayments.status} = 'awaiting_review')::int`,
-        needsAttention: sql<number>`count(*) filter (where ${platformPayments.status} = 'needs_attention')::int`,
+        paidEtb: sql<string>`coalesce(sum(case when ${platformPayments.status} = 'paid' then ${platformPayments.amountEtb} end), 0)`,
+        paid30Etb: sql<string>`coalesce(sum(case when ${platformPayments.status} = 'paid' and ${platformPayments.paidAt} > now() - interval 30 day then ${platformPayments.amountEtb} end), 0)`,
+        awaitingReview: sql<number>`count(case when ${platformPayments.status} = 'awaiting_review' then 1 end)`,
+        needsAttention: sql<number>`count(case when ${platformPayments.status} = 'needs_attention' then 1 end)`,
       })
       .from(platformPayments),
   ]);
@@ -338,10 +318,3 @@ export async function myPlatformPayments(userId: string) {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-function pgCode(error: unknown): string | undefined {
-  for (let current = error as { code?: string; cause?: unknown } | undefined; current; current = current.cause as typeof current) {
-    if (typeof current.code === "string" && /^[0-9A-Z]{5}$/.test(current.code)) return current.code;
-  }
-  return undefined;
-}

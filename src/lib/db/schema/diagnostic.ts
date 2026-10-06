@@ -3,10 +3,10 @@
  * Stores wellbeing inquiries, structured AI reasoning, urgency scores,
  * prioritized solutions, and 5-stage action plans.
  */
-import { pgTable, uuid, varchar, timestamp, jsonb, text, integer } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, timestamp, jsonb, text, integer } from "../mysqlSchema";
 import { users } from "./users";
 
-export const diagnosticSessions = pgTable("diagnostic_sessions", {
+export const diagnosticSessions = mysqlTable("diagnostic_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   query: text("query").notNull(),

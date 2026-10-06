@@ -10,7 +10,7 @@ export interface CaseStore {
    * Cases to review. `businessId: null` limits to the platform expert pool; a business id limits
    * to that business's cases (any domain); omitted means both.
    */
-  listForReview(filter: { domains?: WorkflowDomain[]; stages: WorkflowStage[]; reviewerId?: string; businessId?: string | null }): Promise<WorkflowCase[]>;
+  listForReview(filter: { domains?: WorkflowDomain[]; stages: WorkflowStage[]; reviewerId?: string; businessId?: string | null; assignedRole?: string; includeUnassigned?: boolean }): Promise<WorkflowCase[]>;
   insert(record: WorkflowCase): Promise<void>;
   save(record: WorkflowCase): Promise<void>;
 }
@@ -26,6 +26,7 @@ function fromRow(row: Row): WorkflowCase {
     userId: row.userId,
     businessId: row.businessId ?? null,
     bookingId: row.bookingId ?? null,
+    assignedRole: typeof ctx._assignedRole === "string" ? ctx._assignedRole : null,
     domain: row.domain as WorkflowDomain,
     stage: row.stage as WorkflowStage,
     safetyAnswers: (row.safetyAnswers ?? {}) as WorkflowCase["safetyAnswers"],
@@ -39,10 +40,12 @@ function fromRow(row: Row): WorkflowCase {
       consentTextVersion: "1.0",
     },
     answers: (row.answers ?? {}) as WorkflowCase["answers"],
-    context: (row.context ?? {}) as WorkflowCase["context"],
+    context: Object.fromEntries(Object.entries(ctx).filter(([key]) => !key.startsWith("_"))) as WorkflowCase["context"],
     draft: (row.draft ?? null) as WorkflowCase["draft"],
     review: (row.review ?? null) as WorkflowCase["review"],
     auditTrail: (ctx._auditTrail as WorkflowCase["auditTrail"]) ?? [],
+    messages: (ctx._messages as WorkflowCase["messages"]) ?? [],
+    analysis: (ctx._analysis as WorkflowCase["analysis"]) ?? null,
     payment: (row.payment ?? null) as WorkflowCase["payment"],
     consultation: (row.consultation ?? null) as WorkflowCase["consultation"],
     createdAt: iso(row.createdAt),
@@ -66,6 +69,9 @@ function toRow(record: WorkflowCase) {
       ...record.context,
       _consent: record.consent,
       _auditTrail: record.auditTrail,
+      _assignedRole: record.assignedRole,
+      _messages: record.messages,
+      _analysis: record.analysis,
     },
     draft: record.draft,
     review: record.review,
@@ -85,7 +91,7 @@ export const dbCaseStore: CaseStore = {
     const rows = await db.select().from(workflowCases).where(eq(workflowCases.userId, userId)).orderBy(desc(workflowCases.updatedAt));
     return rows.map(fromRow);
   },
-  async listForReview({ domains, stages, reviewerId, businessId }) {
+  async listForReview({ domains, stages, reviewerId, businessId, assignedRole, includeUnassigned }) {
     if ((domains && !domains.length) || !stages.length) return [];
     const conditions: SQL[] = [inArray(workflowCases.stage, stages)];
     if (domains) conditions.push(inArray(workflowCases.domain, domains));
@@ -93,7 +99,11 @@ export const dbCaseStore: CaseStore = {
     if (businessId === null) conditions.push(isNull(workflowCases.businessId));
     else if (businessId) conditions.push(eq(workflowCases.businessId, businessId));
     const rows = await db.select().from(workflowCases).where(and(...conditions)).orderBy(workflowCases.createdAt);
-    return rows.map(fromRow);
+    return rows.map(fromRow).filter((record) =>
+      assignedRole === undefined ||
+      record.assignedRole === assignedRole ||
+      (includeUnassigned && record.assignedRole === null)
+    );
   },
   async insert(record) {
     await db.insert(workflowCases).values(toRow(record));
@@ -116,11 +126,12 @@ export function createMemoryCaseStore(): CaseStore {
     async listByUser(userId) {
       return [...records.values()].filter((record) => record.userId === userId).map(clone);
     },
-    async listForReview({ domains, stages, reviewerId, businessId }) {
+    async listForReview({ domains, stages, reviewerId, businessId, assignedRole, includeUnassigned }) {
       return [...records.values()]
         .filter((record) => (!domains || domains.includes(record.domain)) && stages.includes(record.stage))
         .filter((record) => !reviewerId || record.review?.expertId === reviewerId)
         .filter((record) => businessId === undefined || record.businessId === businessId)
+        .filter((record) => assignedRole === undefined || record.assignedRole === assignedRole || (includeUnassigned && record.assignedRole === null))
         .map(clone);
     },
     async insert(record) {

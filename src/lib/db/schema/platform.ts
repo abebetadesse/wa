@@ -2,18 +2,18 @@
  * Platform-level settings and the ledger of payments the platform itself collects
  * (case reports, consultations). Business payments for bookings live in `payments` (marketplace.ts).
  */
-import { index, jsonb, numeric, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { index, integer, jsonb, numeric, mysqlTable, text, timestamp, uuid, varchar } from "../mysqlSchema";
 import { users } from "./users";
 
 /** Administrator-controlled settings, one JSON document per key (see src/server/settings). */
-export const platformSettings = pgTable("platform_settings", {
+export const platformSettings = mysqlTable("platform_settings", {
   key: varchar("key", { length: 60 }).primaryKey(),
   value: jsonb("value").$type<Record<string, unknown>>().notNull(),
   updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const platformPayments = pgTable(
+export const platformPayments = mysqlTable(
   "platform_payments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -49,4 +49,15 @@ export const platformPayments = pgTable(
     index("platform_payments_status_idx").on(table.status, table.createdAt),
     index("platform_payments_user_idx").on(table.userId),
   ],
+);
+
+/** Shared rate-limit counters (src/lib/api/sharedRateLimit.ts). */
+export const rateLimits = mysqlTable(
+  "rate_limits",
+  {
+    key: varchar("key", { length: 400 }).primaryKey(),
+    count: integer("count").default(0).notNull(),
+    resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [index("rate_limits_reset_idx").on(table.resetAt)],
 );

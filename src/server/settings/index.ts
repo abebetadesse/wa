@@ -59,7 +59,13 @@ export const marketplaceSettings = z.object({
 });
 export type MarketplaceSettings = z.infer<typeof marketplaceSettings>;
 
-const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings } as const;
+export const caseRoutingSettings = z.object({
+  /** Role receiving new requests for each case type. Missing domains use the administrator queue. */
+  domains: z.record(z.enum(WORKFLOW_DOMAINS), z.string().trim().min(2).max(40)).default({}),
+});
+export type CaseRoutingSettings = z.infer<typeof caseRoutingSettings>;
+
+const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings } as const;
 export type SettingsKey = keyof typeof SCHEMAS;
 export type SettingsValue<K extends SettingsKey> = z.infer<(typeof SCHEMAS)[K]>;
 
@@ -77,6 +83,15 @@ export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
   },
   registration: { open: true, telegram: "optional" },
   marketplace: { culturalVisibility: "admins" },
+  caseRouting: {
+    domains: {
+      career: "admin",
+      legal: "admin",
+      relationship: "admin",
+      social: "admin",
+      spiritual: "admin",
+    },
+  },
 };
 
 const cache = new Map<SettingsKey, { value: unknown; at: number }>();
@@ -97,7 +112,7 @@ export async function updateSettings<K extends SettingsKey>(key: K, raw: unknown
   await db
     .insert(platformSettings)
     .values({ key, value: value as Record<string, unknown>, updatedBy: actorId })
-    .onConflictDoUpdate({ target: platformSettings.key, set: { value: value as Record<string, unknown>, updatedBy: actorId, updatedAt: new Date() } });
+    .onDuplicateKeyUpdate({ set: { value: value as Record<string, unknown>, updatedBy: actorId, updatedAt: new Date() } });
   cache.set(key, { value, at: Date.now() });
   return value;
 }

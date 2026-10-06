@@ -1,29 +1,38 @@
-# MySQL migration plan
+# MySQL database
 
-The current production app remains on PostgreSQL while the rewrite is migrated deliberately. The application uses PostgreSQL-specific Drizzle schema types and write APIs, especially `returning()` and `onConflictDoUpdate()`, across authentication, intake, admin, case workflow, evaluation, and literature paths.
+The application database layer targets **MySQL 8.0+**. MariaDB and PostgreSQL are not supported
+application databases. Use a dedicated, initially empty MySQL database for a new installation.
 
-## Target stack
+## Implementation
 
-- MySQL 8.0+
-- `mysql2` with `drizzle-orm/mysql2`
-- `mysqlTable`, `varchar(36)` application UUIDs, `json`, `decimal`, and `timestamp`
-- Explicit follow-up reads after inserts and updates where PostgreSQL `returning()` is currently used
-- `onDuplicateKeyUpdate()` for MySQL upserts
+- Drizzle schema tables and column helpers are MySQL-native (`mysqlTable`, `mysql2`, JSON, UTC
+  `DATETIME(3)`, application-generated UUIDs, and decimal strings).
+- `src/lib/db/write.ts` provides insert/update/upsert/delete-and-read helpers because MySQL does not
+  support PostgreSQL's `RETURNING`.
+- Raw SQL uses MySQL syntax. Rate limits use atomic `ON DUPLICATE KEY UPDATE`; realtime delivery
+  polls the event table because MySQL has no `LISTEN`/`NOTIFY`.
+- The baseline and future MySQL migrations belong in `drizzle-mysql/`. The legacy `drizzle/`
+  directory contains PostgreSQL migrations and must never be applied to MySQL.
+- `npm run db:setup` runs the migration runner and the reference-data setup. `npm run db:status`
+  lists applied and pending MySQL migrations.
 
-## Cutover order
+## New database and migrations
 
-1. Convert schema modules and generate a fresh MySQL migration set.
-2. Replace returning-based repositories with transaction-safe insert/update plus select helpers.
-3. Replace PostgreSQL seed and maintenance scripts with MySQL clients.
-4. Run auth, intake, case workflow, knowledge, literature, and evaluation tests against MySQL 8.
-5. Export the production PostgreSQL data, transform UUID/JSON/date fields, import into a staging MySQL database, and verify row counts and audit history.
+1. Create an empty database and a user with schema-change privileges.
+2. Set `DATABASE_URL=mysql://USER:PASSWORD@HOST:3306/DATABASE`. Percent-encode special characters
+   in URL credentials.
+3. Run `npm run db:setup`, then `npm test`.
+4. Before a release, back up the database. Add future changes as new SQL migrations in
+   `drizzle-mysql/` and update the Drizzle schema.
 
-Do not point production at MySQL until the full workflow test suite passes against the target schema.
+The initial generated migration is the complete schema baseline. The migration runner refuses to
+apply it to a database that already contains tables but has no migration history. MySQL DDL
+implicitly commits; if a migration fails partway, inspect and repair the partial change before
+retrying. Do not modify a migration that has already been deployed.
 
-## Migration history
+## Existing PostgreSQL data
 
-The checked-in `drizzle/` directory contains legacy PostgreSQL snapshots. The MySQL configuration now writes to `drizzle-mysql/`, keeping the old history untouched. Treat the first MySQL migration as a fresh baseline in that directory or a clean deployment database; do not apply the PostgreSQL SQL files to MySQL.
-
-Before production cutover, generate the baseline with the installed Drizzle Kit version, review the SQL for MySQL 8 compatibility, and apply it to an empty staging database.
-
-The active nutrition and auth seed paths use MySQL-native Drizzle transactions and explicit UUIDs. Knowledge CSV ingestion should continue through the existing knowledge import routes after the baseline migration is applied.
+The MySQL baseline creates a new schema; it does not migrate PostgreSQL data. Any production
+cutover requires a separate tested export/transform/import, row-count and relationship checks, and
+an application-level staging verification. Keep the PostgreSQL backup unchanged until the MySQL
+deployment is verified and explicitly approved.

@@ -5,6 +5,7 @@ import { knowledgeCategories, knowledgeItems, knowledgeStrands, knowledgeVersion
 import { ApiError } from "@/lib/api/route";
 import { parseCsvRecords, toCsv } from "@/lib/csv";
 import type { AuthenticatedUser } from "@/lib/auth";
+import { insertReturning } from "@/lib/db/write";
 
 export const KNOWLEDGE_READERS = ["editor", "reviewer", "admin", "super_admin"] as const;
 export const KNOWLEDGE_EDITORS = ["editor", "admin", "super_admin"] as const;
@@ -82,7 +83,7 @@ export function listStrands() {
 }
 
 export async function createStrand(user: AuthenticatedUser, input: z.infer<typeof strandInput>) {
-  const [row] = await db.insert(knowledgeStrands).values({ ...input, createdBy: user.id, updatedBy: user.id }).returning();
+  const [row] = await insertReturning(db, knowledgeStrands, { ...input, createdBy: user.id, updatedBy: user.id });
   return row;
 }
 
@@ -113,7 +114,7 @@ export async function getCategory(id: string) {
 
 export async function createCategory(strandId: string, input: z.infer<typeof categoryInput>) {
   found(await selectById(knowledgeStrands, strandId), "Strand");
-  const [row] = await db.insert(knowledgeCategories).values({ ...input, strandId }).returning();
+  const [row] = await insertReturning(db, knowledgeCategories, { ...input, strandId });
   return row;
 }
 
@@ -137,10 +138,7 @@ export function listItems(categoryId: string) {
 
 export async function createItem(user: AuthenticatedUser, categoryId: string, data: Record<string, unknown>) {
   await getCategory(categoryId);
-  const [row] = await db
-    .insert(knowledgeItems)
-    .values({ categoryId, data, status: "draft", createdBy: user.id, updatedBy: user.id })
-    .returning();
+  const [row] = await insertReturning(db, knowledgeItems, { categoryId, data, status: "draft", createdBy: user.id, updatedBy: user.id });
   return row;
 }
 
@@ -188,7 +186,7 @@ export async function importItemRows(user: AuthenticatedUser, rows: { categoryId
     createdBy: user.id,
     updatedBy: user.id,
   }));
-  const items = await db.insert(knowledgeItems).values(values).returning();
+  const items = await insertReturning(db, knowledgeItems, values);
   return { imported: items.length, items };
 }
 

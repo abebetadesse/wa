@@ -148,7 +148,7 @@ Traditional remedies must pass the safety gate before they can appear as recomme
 
 ## 9. Database Responsibilities
 
-PostgreSQL is the source of truth for persisted operational data, including:
+MySQL 8 is the source of truth for persisted operational data, including:
 
 - Users and authentication sessions
 - wellbeing profiles

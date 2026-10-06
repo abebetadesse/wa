@@ -1,6 +1,7 @@
 /**
- * Fixed-window in-memory rate limiter. Per server process: adequate for a single Node instance;
- * put a shared store (e.g. Redis) behind the same interface before running multiple instances.
+ * Fixed-window in-memory rate limiter, per server process. Used in development and tests, and as
+ * the fallback when the database is unreachable. Production counts in MySQL so limits hold
+ * across processes and restarts: see ./sharedRateLimit.ts.
  */
 const windows = new Map<string, { count: number; resetAt: number }>();
 let lastSweep = 0;
@@ -36,6 +37,11 @@ export function resetRateLimits() {
   windows.clear();
 }
 
+/**
+ * The caller's address. X-Real-IP is set by the reverse proxy in front of the app (nginx on Plesk)
+ * and replaces anything the client sent; X-Forwarded-For is only a fallback because its first
+ * entry can be supplied by the client.
+ */
 export function clientIp(headers: Headers): string {
-  return headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip") || "unknown";
+  return headers.get("x-real-ip")?.trim() || headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 }

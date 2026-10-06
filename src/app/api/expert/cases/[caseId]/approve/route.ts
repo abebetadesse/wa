@@ -1,33 +1,15 @@
 import { z } from "zod";
 import { defineRoute } from "@/lib/api/route";
+import { draftInput } from "@/server/cases/schemas";
 import { caseService } from "@/server/cases/service";
 
-const section = z.object({
-  id: z.string(),
-  title: z.string(),
-  body: z.string().optional(),
-  items: z.array(z.string()).optional(),
-  locked: z.boolean(),
-  cultural: z.boolean().optional(),
-  data: z.record(z.unknown()).optional(),
-});
-
 export const POST = defineRoute({
-  access: { roles: ["expert", "practitioner", "admin", "super_admin"] },
+  access: "user",
   params: z.object({ caseId: z.string().uuid() }),
   body: z.object({
     checklist: z.record(z.boolean()),
     notes: z.string().trim().max(4000).optional(),
-    draft: z
-      .object({
-        title: z.string().min(1),
-        summary: z.string().min(1),
-        sections: z.array(section),
-        disclaimer: z.string().min(1),
-        generatedAt: z.string(),
-        aiAssisted: z.boolean(),
-      })
-      .optional(),
+    draft: draftInput.optional(),
   }),
   handler: ({ user, params, body }) => caseService.approve(user, params.caseId, body),
   audit: {

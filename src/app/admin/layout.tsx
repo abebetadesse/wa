@@ -66,6 +66,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navLinks = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { href: "/case-review", label: "Case request queue", icon: FileText },
+    ...(currentUser?.role === "super_admin" ? [{ href: "/admin/case-routing", label: "Case routing", icon: Radio }] : []),
     { href: "/admin/marketplace", label: "Marketplace", icon: ShieldAlert },
     { href: "/admin/toolkit", label: "Healer toolkit", icon: Compass },
     { href: "/admin/safety", label: "Safety matrix", icon: Pill },

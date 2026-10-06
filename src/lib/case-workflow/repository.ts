@@ -38,10 +38,7 @@ export async function persistCaseSession(session: CaseSession) {
     currentStep: session.currentStep,
     createdAt: new Date(session.createdAt),
     lastUpdated: new Date(session.lastUpdated),
-  }).onConflictDoUpdate({
-    target: caseSessions.id,
-    set: { answers, activeSpecializedPath: session.activeSpecializedPath || null, currentStep: session.currentStep, lastUpdated: new Date(session.lastUpdated) },
-  });
+  }).onDuplicateKeyUpdate({ set: { answers, activeSpecializedPath: session.activeSpecializedPath || null, currentStep: session.currentStep, lastUpdated: new Date(session.lastUpdated) } });
 
   await db.delete(caseCauses).where(eq(caseCauses.sessionId, session.id));
   if (session.causes.length) {

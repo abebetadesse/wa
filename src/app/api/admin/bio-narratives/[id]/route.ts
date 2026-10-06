@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { bioNarrativeReports, users, userProfiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { BioNarrativeSections } from "@/lib/profiling/bioNarrative/types";
+import { updateReturning } from "@/lib/db/write";
 
 // ─── GET /api/admin/bio-narratives/[id] ───────────────────────────────────────
 
@@ -147,9 +148,7 @@ export const PATCH = defineRoute({
       });
     }
 
-    const [updated] = await db
-      .update(bioNarrativeReports)
-      .set({
+    const [updated] = await updateReturning(db, bioNarrativeReports, {
         sections: updatedSections,
         status: nextStatus,
         publishedAt,
@@ -158,9 +157,7 @@ export const PATCH = defineRoute({
         returnedWithComments,
         auditEvents: newAuditEvents,
         updatedAt: new Date(),
-      })
-      .where(eq(bioNarrativeReports.id, params.id))
-      .returning();
+      }, eq(bioNarrativeReports.id, params.id));
 
     return {
       report: {

@@ -335,12 +335,12 @@ export function ReviewStatus({ review }: { review: NonNullable<OwnerView["review
         <Clock className="mt-1 size-6 text-brand" aria-hidden="true" />
         <div className="flex flex-col gap-1">
           <p className="font-display font-bold text-foreground">
-            {review.status === "queued" ? "Waiting for an available expert" : `Being reviewed${review.expert?.name ? ` by ${review.expert.name}` : ""}`}
+            {review.status === "queued" ? `Waiting for ${review.assignedRole ?? "an available expert"}` : `Being reviewed${review.expert?.name ? ` by ${review.expert.name}` : review.assignedRole ? ` by ${review.assignedRole}` : ""}`}
           </p>
           <p className="text-sm text-muted-foreground">
             {review.status === "queued"
-              ? "Your answers are saved. A verified practitioner will pick up your case; you can close this page and come back any time."
-              : "Your report is being checked by a human practitioner before it is shared with you."}
+              ? "Your request is in the review queue. You can close this page and return later; we will notify you when a response is ready."
+              : "Your report is being checked by the assigned reviewer before it is shared with you."}
           </p>
           {review.status === "in_review" && (
             <div className="mt-3 flex flex-wrap gap-2">
