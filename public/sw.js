@@ -1,5 +1,5 @@
-const CACHE_NAME = "ethiopian-wellness-v5";
-const KNOWLEDGE_CACHE = "ethio-knowledge-v2";
+const CACHE_NAME = "ethiopian-wellness-v6";
+const KNOWLEDGE_CACHE = "ethio-knowledge-v3";
 
 // Only public, non-personal pages enter the offline navigation cache.
 const APP_SHELL = ["/", "/offline", "/constitution", "/atlas", "/emergency", "/foods", "/safety"];
@@ -119,7 +119,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Cache only versioned build assets and bundled public knowledge images.
-  if (!url.pathname.startsWith("/_next/static/") && !url.pathname.startsWith("/icons/") && !url.pathname.startsWith("/images/")) return;
+  if (!url.pathname.startsWith("/_next/static/") && !url.pathname.startsWith("/icons/") && !url.pathname.startsWith("/app-icons/") && !url.pathname.startsWith("/images/")) return;
 
   event.respondWith(
     caches.match(request).then(
