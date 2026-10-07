@@ -69,7 +69,7 @@ export const GET = defineRoute({
       fatherName: (data.fatherName as string) || (data.father as string) || "",
       motherName: profile?.motherName || (data.motherName as string) || (data.mother as string) || "",
       birthLocation: profile?.birthLocation || (data.birthLocation as string) || accountUser?.city || (data.city as string) || "",
-      birthTime: profile?.birthTime || (data.birthTime as string) || "12:00",
+      birthTime: profile?.birthTime || (data.birthTime as string) || "",
       email: accountUser?.email || "",
       phone: accountUser?.phone || (data.phone as string) || "",
       dateOfBirth: accountUser?.dateOfBirth || profile?.birthDate || (data.dateOfBirth as string) || (data.birthDate as string) || (data.dob as string) || "",

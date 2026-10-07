@@ -11,7 +11,11 @@ export async function ensureProfileFieldCatalog() {
   const missing = PROFILE_FIELD_CATALOG.filter((field) => !existingKeys.has(`${field.section}:${field.label}`));
 
   if (missing.length) {
-    await db.insert(profileFieldDefinitions).values(missing);
+    const toInsert = missing.map((field) => ({
+      id: crypto.randomUUID(),
+      ...field,
+    }));
+    await db.insert(profileFieldDefinitions).values(toInsert);
   }
 
   return db

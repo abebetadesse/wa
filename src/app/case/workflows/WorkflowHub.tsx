@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Briefcase, Compass, Heart, Scale, Users } from "lucide-react";
+import { ArrowRight, Briefcase, Compass, Heart, Scale, Users, Dna } from "lucide-react";
 import type { OwnerView } from "@/server/cases/views";
 import type { WorkflowDomain } from "@/server/cases/types";
 import { apiFetch, errorMessage } from "@/lib/api/client";
@@ -21,6 +21,7 @@ const ICONS: Record<WorkflowDomain, typeof Briefcase> = {
   relationship: Heart,
   social: Users,
   spiritual: Compass,
+  biological: Dna,
 };
 
 export const STAGE_LABELS: Record<OwnerView["stage"], { label: string; tone: "neutral" | "brand" | "gold" | "success" | "warning" | "danger" }> = {

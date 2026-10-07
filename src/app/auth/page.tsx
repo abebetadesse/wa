@@ -177,6 +177,11 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [language, setLanguage] = useState("am");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [birthTime, setBirthTime] = useState("");
+  const [birthLocation, setBirthLocation] = useState("");
+  const [motherName, setMotherName] = useState("");
+  const [consentSpiritual, setConsentSpiritual] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -191,7 +196,7 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
     try {
       const user = await apiFetch<{ role: string }>("/api/auth/register", {
         method: "POST",
-        json: { fullName: name, email, password, confirmPassword: password, preferredLanguage: language, acceptTerms: true, acceptPrivacy: true },
+        json: { fullName: name, email, password, confirmPassword: password, preferredLanguage: language, dateOfBirth: dateOfBirth || undefined, birthTime: birthTime || undefined, birthLocation: birthLocation || undefined, motherName: motherName || undefined, consentSpiritual, acceptTerms: true, acceptPrivacy: true },
       });
       onDone(user.role);
     } catch (err) {
@@ -230,6 +235,19 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
           </Select>
         )}
       </Field>
+      <details className="rounded-xl border border-border p-3">
+        <summary className="cursor-pointer text-sm font-semibold text-foreground">Optional profile details for preliminary readings</summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field label="Date of birth">{(control) => <Input {...control} type="date" value={dateOfBirth} onChange={(event) => setDateOfBirth(event.target.value)} />}</Field>
+          <Field label="Birth time" hint="Optional; an approximate time limits chart detail.">{(control) => <Input {...control} type="time" value={birthTime} onChange={(event) => setBirthTime(event.target.value)} />}</Field>
+          <Field label="Birth location" hint="Town or city">{(control) => <Input {...control} value={birthLocation} onChange={(event) => setBirthLocation(event.target.value)} />}</Field>
+          <Field label="Mother's name (optional, for cultural naming reflection)">{(control) => <Input {...control} value={motherName} onChange={(event) => setMotherName(event.target.value)} />}</Field>
+        </div>
+        <label className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+          <input type="checkbox" checked={consentSpiritual} onChange={(event) => setConsentSpiritual(event.target.checked)} className="mt-0.5 size-4 accent-[var(--brand-accent)]" />
+          <span>I consent to preliminary cultural astrology, numerology, name reflection, and dietary overview calculations from these profile details. These are educational, not medical advice.</span>
+        </label>
+      </details>
       <label className="flex items-start gap-2 text-sm text-muted-foreground">
         <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 size-4 accent-[var(--brand-accent)]" />
         <span>I agree to the <Link href="/trust" className="font-semibold text-brand hover:underline">terms and privacy policy</Link>.</span>

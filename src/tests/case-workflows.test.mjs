@@ -13,7 +13,7 @@ const reviewerUser = { id: "reviewer-1", role: "reviewer", permissions: ["cases:
 const adminUser = { id: "admin-1", role: "admin", permissions: ["cases:review"] };
 
 const experts = {
-  "expert-1": { id: "expert-1", role: "expert", practitionerCredentials: { verifiedAt: "2026-01-01", domains: ["career", "spiritual", "legal", "social", "relationship"] } },
+  "expert-1": { id: "expert-1", role: "expert", practitionerCredentials: { verifiedAt: "2026-01-01", domains: ["career", "spiritual", "legal", "social", "relationship", "biological"] } },
   "unverified": { id: "unverified", role: "expert", practitionerCredentials: { domains: ["career"] } },
 };
 
@@ -61,6 +61,7 @@ const safe = {
   relationship: { feelsSafe: "yes", domesticViolence: "no", childSafety: "no_children", immediateRisk: "no" },
   social: { loneliness: "low", self_harm: "no", immediateRisk: "no", supportAvailable: "yes" },
   spiritual: { self_harm: "no", immediateRisk: "no" },
+  biological: { urgentSymptoms: "no" },
 };
 
 function fillRequired(view) {
@@ -88,11 +89,15 @@ async function runToApproval(svc, domain, answers = {}) {
 test("every domain runs the full pipeline: intake → review → approval → payment → consultation", async () => {
   for (const domain of WORKFLOW_DOMAINS) {
     const { svc } = service();
-    const answers = domain === "spiritual" ? { nameGeez: "ሰላማዊት", motherNameGeez: "ማርያም" } : {};
+    const answers = domain === "spiritual"
+      ? { nameGeez: "ሰላማዊት", motherNameGeez: "ማርያም" }
+      : domain === "biological" ? { caseNarrative: "I have had recurring fatigue for two weeks and would like help understanding possible wellbeing factors." } : {};
     const approved = await runToApproval(svc, domain, answers);
-    assert.equal(approved.stage, "visible_to_user", domain);
+    const isFree = DOMAIN_CONFIGS[domain].pricing.reportEtb === 0;
+    assert.equal(approved.stage, isFree ? "full_report_released" : "visible_to_user", domain);
     assert.equal(approved.review.expert.name, "Test Expert");
     assert.ok(approved.report, `${domain} report visible after approval`);
+    if (isFree) assert.equal(approved.report.unlocked, true, `${domain} free report is fully released`);
     assert.ok(approved.report.sections.every((section) => !section.locked || (!section.body && !section.items)), `${domain} locked content withheld`);
     if (domain === "career") {
       assert.deepEqual(approved.report.recommendations, []);
@@ -102,17 +107,45 @@ test("every domain runs the full pipeline: intake → review → approval → pa
       assert.ok(approved.report.sections.some((section) => section.id === "ethiopian_cultural_context"));
     }
 
-    const purchase = await svc.purchase(owner, approved.id, "telebirr");
-    assert.equal(purchase.amountEtb, DOMAIN_CONFIGS[domain].pricing.reportEtb);
-    const paid = await svc.confirmPurchase(owner, approved.id, purchase.purchaseId);
-    assert.equal(paid.stage, "full_report_released");
-    assert.equal(paid.report.unlocked, true);
+    let paid = approved;
+    if (!isFree) {
+      const purchase = await svc.purchase(owner, approved.id, "telebirr");
+      assert.equal(purchase.amountEtb, DOMAIN_CONFIGS[domain].pricing.reportEtb);
+      paid = await svc.confirmPurchase(owner, approved.id, purchase.purchaseId);
+      assert.equal(paid.stage, "full_report_released");
+      assert.equal(paid.report.unlocked, true);
+    }
 
     const format = DOMAIN_CONFIGS[domain].pricing.consultationFormats[0];
-    const consult = await svc.requestConsultation(owner, approved.id, { format, preferredTimes: ["Monday morning"] });
+    const consult = await svc.requestConsultation(owner, paid.id, { format, preferredTimes: ["Monday morning"] });
     assert.equal(consult.stage, "consultation_requested");
     assert.equal(consult.consultation.status, "requested");
   }
+});
+
+test("biological pathway requires a case note or audio/video upload and sends no draft before review", async () => {
+  const { svc } = service();
+  await assert.rejects(
+    svc.start(owner, "biological", { safetyAnswers: safe.biological, answers: {} }),
+    /Write a detailed note or attach an audio\/video recording/,
+  );
+  const view = await svc.start(owner, "biological", {
+    safetyAnswers: safe.biological,
+    answers: { caseNarrative: "I have felt unusually tired for two weeks." },
+  });
+  assert.equal(view.stage, "intake");
+  assert.equal(view.report, null);
+  assert.equal(view.questions.length, 0, "the detailed note is the single case entry");
+});
+
+test("biological pathway routes an emergency response rather than a routine review", async () => {
+  const { svc } = service();
+  const view = await svc.start(owner, "biological", {
+    safetyAnswers: { urgentSymptoms: "yes" },
+    answers: {},
+  });
+  assert.equal(view.stage, "crisis_routed");
+  assert.match(view.safety.reason, /medical emergency/);
 });
 
 test("drafts are never shown before an expert approves", async () => {

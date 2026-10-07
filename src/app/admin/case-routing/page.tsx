@@ -10,6 +10,7 @@ const DOMAIN_LABELS: Record<WorkflowDomain, string> = {
   relationship: "Relationship",
   social: "Social",
   spiritual: "Spiritual",
+  biological: "Biological, wellbeing and health",
 };
 
 interface RoutingDesk {

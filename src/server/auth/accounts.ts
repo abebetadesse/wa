@@ -156,6 +156,7 @@ export interface RegisterInput {
   motherName?: string;
   phone?: string;
   dateOfBirth?: string;
+  birthTime?: string;
   preferredLanguage: string;
   gender?: string;
   region?: string;
@@ -164,6 +165,7 @@ export interface RegisterInput {
   geoLat?: number;
   geoLng?: number;
   consentLocation?: boolean;
+  consentSpiritual?: boolean;
   birthLocation?: string;
 }
 
@@ -249,10 +251,10 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     currentLocation: input.city || null,
     motherName: input.motherName || null,
     consentLocation: input.consentLocation ?? false,
-    consentSpiritual: true,
+    consentSpiritual: input.consentSpiritual ?? false,
     consent: {
       location: input.consentLocation ?? false,
-      spiritual: true,
+      spiritual: input.consentSpiritual ?? false,
       traditionalMedicine: false,
       bioNarrative: true,
       voiceIntake: false,
@@ -264,6 +266,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
       motherName: input.motherName || null,
       birthLocation: input.birthLocation || null,
       birthDate: input.dateOfBirth || null,
+      birthTime: input.birthTime || null,
       currentLocation: input.city || null,
       fullName: input.name || null,
     },

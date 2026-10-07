@@ -3,7 +3,7 @@
  * One pipeline, one persisted record shape; each domain contributes a DomainConfig.
  */
 
-export const WORKFLOW_DOMAINS = ["career", "legal", "relationship", "social", "spiritual"] as const;
+export const WORKFLOW_DOMAINS = ["career", "legal", "relationship", "social", "spiritual", "biological"] as const;
 export type WorkflowDomain = (typeof WORKFLOW_DOMAINS)[number];
 
 /**

@@ -11,6 +11,12 @@ The workflow intentionally keeps two information layers visible:
 
 Domain B can shape reflection and framing when the user opts in. It must not override scientific urgency, medication safety, nutrient calculations, or emergency referral logic.
 
+### Biological, wellbeing and health pathway
+
+The expert-reviewed workflow at `/case/workflows` includes **Biological, Wellbeing and Health**. A user may provide one detailed written account, one audio/video attachment, or both. Uploaded media is private to the uploader and the authorized case reviewer; audio/video is not transcribed or interpreted by the automated analysis. The text-based reviewer dossier uses the existing biological, biochemical, medication-safety and dietary knowledge engines. A possible acute emergency is routed to emergency guidance instead of routine analysis. An administrator or assigned reviewer must check and approve the report before it is visible to the user; generated content is educational and is not a diagnosis or treatment plan.
+
+Users are directed to `/profile` after registration. Preliminary profile calculations use entered profile details only; missing birth information is not replaced with sample/default values. Astrology, numerology and naming reflection are cultural tools, while dietary material is educational and not a personalized medical diet.
+
 ## 2. Entry Gate
 
 ### Browser route

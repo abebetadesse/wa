@@ -85,7 +85,25 @@ test("request schemas keep the legacy field names working", () => {
   assert.equal(registration.email, "abebe@example.com");
   assert.equal(registration.name, "Abebe");
   assert.equal(registration.preferredLanguage, "en");
+  assert.equal(registration.consentSpiritual, false, "cultural profile calculations require explicit opt-in");
   assert.equal("acceptTerms" in registration, false);
+
+  const profileRegistration = registerBody.parse({
+    email: "profile@example.com",
+    password: "Str0ng!Pass",
+    fullName: "Tigist",
+    dateOfBirth: "1990-03-15",
+    birthTime: "06:30",
+    birthLocation: "Gondar",
+    motherName: "Mariam",
+    consentSpiritual: true,
+    acceptTerms: true,
+    acceptPrivacy: true,
+  });
+  assert.equal(profileRegistration.dateOfBirth, "1990-03-15");
+  assert.equal(profileRegistration.birthTime, "06:30");
+  assert.equal(profileRegistration.birthLocation, "Gondar");
+  assert.equal(profileRegistration.consentSpiritual, true);
 
   assert.equal(registerBody.safeParse({ email: "a@b.co", password: "x", acceptTerms: false, acceptPrivacy: true }).success, false);
   assert.equal(registerBody.safeParse({ email: "a@b.co", password: "x", confirmPassword: "y", acceptTerms: true, acceptPrivacy: true }).success, false);

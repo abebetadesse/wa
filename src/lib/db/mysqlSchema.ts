@@ -85,9 +85,16 @@ export function timestamp<TName extends string>(name: TName, _options?: { withTi
 
 const json = customType<{ data: unknown; driverData: unknown }>({
   dataType: () => "json",
-  toDriver: (value) => JSON.stringify(value),
-  // MySQL drivers can return JSON columns as parsed values or JSON text.
-  fromDriver: (value) => (typeof value === "string" ? JSON.parse(value) : value),
+  toDriver: (value) => (value === undefined ? null : JSON.stringify(value)),
+  // MySQL drivers can return JSON columns as parsed values, JSON text, or unquoted strings.
+  fromDriver: (value) => {
+    if (typeof value !== "string") return value;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  },
 });
 
 export function jsonb<TName extends string>(name: TName) {

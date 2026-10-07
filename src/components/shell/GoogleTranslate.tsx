@@ -89,11 +89,15 @@ export default function GoogleTranslate() {
 
   return (
     <>
-      <div id="google_translate_element" aria-hidden="true" />
+      <div id="google_translate_element" className="notranslate" aria-hidden="true" />
       <Script
         src="https://translate.google.com/translate_a/element.js"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         onReady={initialize}
+        onError={() => {
+          // Gracefully ignore script load failure (e.g. adblocker, strict CSP, or offline)
+          console.warn("[GoogleTranslate] Script could not be loaded; continuing without auto-translation.");
+        }}
       />
     </>
   );

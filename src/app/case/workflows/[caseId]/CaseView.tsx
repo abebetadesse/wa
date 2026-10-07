@@ -86,6 +86,16 @@ export function CaseView({ caseId }: { caseId: string }) {
       <CarePathway stage={view.stage} />
       <SupportPanel safety={view.safety} />
       <WhatHappensNext stage={view.stage} />
+      {view.domain === "biological" && typeof view.answers.mediaId === "string" && (
+        <Card>
+          <CardHeader><CardTitle>Attached recording</CardTitle></CardHeader>
+          <CardContent>
+            {view.answers.mediaKind === "video"
+              ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="max-h-72 w-full rounded-xl" />
+              : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="w-full" />}
+          </CardContent>
+        </Card>
+      )}
 
       {(view.stage === "intake" || view.stage === "referred") && <IntakeForm view={view} onChange={setView} />}
       {view.stage !== "intake" && view.stage !== "referred" && (

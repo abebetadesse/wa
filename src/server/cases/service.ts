@@ -36,9 +36,9 @@ import { toExpertView, toOwnerView } from "./views";
 import { caseBridge, type CaseBridge } from "@/server/marketplace/caseBridge";
 import { getSettings } from "@/server/settings";
 import { notify } from "@/server/marketplace/notifications";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, workflowCaseMedia } from "@/lib/db/schema";
 
 async function send(userId: string, notice: { type: string; title: string; body?: string; href: string }, context: string) {
   try {
@@ -217,11 +217,37 @@ export function createCaseService(deps: Deps) {
       bookingId?: string;
     }) {
       const config = getDomainConfig(domain);
+      if (domain === "biological" && input.safetyAnswers.urgentSymptoms !== "yes" && !String(input.answers.caseNarrative ?? "").trim() && !String(input.answers.mediaId ?? "").trim()) {
+        throw ApiError.badRequest("Write a detailed note or attach an audio/video recording.");
+      }
+      if (domain === "biological" && input.safetyAnswers.urgentSymptoms !== "yes" && input.consent?.dataUsage === false) {
+        throw ApiError.badRequest("Consent to case analysis and report preparation is required for this pathway.");
+      }
       const link = input.bookingId ? { bookingId: input.bookingId, ...(await deps.bridge.resolveBookingForCase(user, input.bookingId, domain)) } : null;
       const missing = config.safetyQuestions.filter((question) => input.safetyAnswers[question.id] === undefined).map((question) => question.id);
       if (missing.length) throw ApiError.badRequest("Please answer every safety question.", { missing });
       const record = createCase({ id: crypto.randomUUID(), userId: user.id, config, ...input, consent: input.consent ?? { dataUsage: true, emergencySupport: true, thirdPartySharing: false, retention: "90_days", consentedAt: new Date().toISOString(), consentTextVersion: "v1" }, businessId: link?.businessId ?? null, bookingId: link?.bookingId ?? null });
+      if (domain === "biological" && typeof input.answers.mediaId === "string" && input.answers.mediaId) {
+        const [media] = await db.select({ id: workflowCaseMedia.id }).from(workflowCaseMedia).where(and(
+          eq(workflowCaseMedia.id, input.answers.mediaId),
+          eq(workflowCaseMedia.userId, user.id),
+          isNull(workflowCaseMedia.caseId),
+        )).limit(1);
+        if (!media) throw ApiError.badRequest("The audio/video attachment is missing or no longer available. Please upload it again.");
+      }
       await store.insert(record);
+      if (domain === "biological" && typeof input.answers.mediaId === "string" && input.answers.mediaId) {
+        await db.update(workflowCaseMedia).set({ caseId: record.id }).where(and(
+          eq(workflowCaseMedia.id, input.answers.mediaId),
+          eq(workflowCaseMedia.userId, user.id),
+          isNull(workflowCaseMedia.caseId),
+        ));
+        const [linked] = await db.select({ id: workflowCaseMedia.id }).from(workflowCaseMedia).where(and(
+          eq(workflowCaseMedia.id, input.answers.mediaId),
+          eq(workflowCaseMedia.caseId, record.id),
+        )).limit(1);
+        if (!linked) throw ApiError.conflict("The recording could not be linked to this case. Please contact support.");
+      }
       if (link) await deps.bridge.linkBooking(link.bookingId, record.id);
       return ownerView(record);
     },

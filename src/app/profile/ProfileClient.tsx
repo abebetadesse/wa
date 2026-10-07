@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   IntegratedPersonalProfile,
@@ -65,7 +65,10 @@ type AccountProfile = {
     manuscriptKnowledge: boolean;
     identityContext: boolean;
   };
+
 };
+
+type GenerateProfile = (name?: string, date?: string, time?: string, location?: string, consentConfirmed?: boolean) => void;
 
 const DEFAULT_CONSENT: AccountProfile["consent"] = {
   location: false,
@@ -153,10 +156,10 @@ const HUMOR_COLORS: Record<HumoralElement, { badge: string; bg: string; border: 
 };
 
 export default function ProfileClient() {
-  const [fullName, setFullName] = useState("Tigist Mulugeta");
-  const [birthDate, setBirthDate] = useState("1985-06-15");
-  const [birthTime, setBirthTime] = useState("14:30");
-  const [city, setCity] = useState("Addis Ababa");
+  const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [birthTime, setBirthTime] = useState("");
+  const [city, setCity] = useState("");
   const [activeTab, setActiveTab] = useState<ActiveTab>("synthesis");
   const [profile, setProfile] = useState<IntegratedPersonalProfile | null>(null);
   const [loading, setLoading] = useState(false);
@@ -184,6 +187,7 @@ export default function ProfileClient() {
 
   // Profile finalize & 50% Gating Paywall state
   const [showFinalizeBanner, setShowFinalizeBanner] = useState(false);
+  const generateProfileRef = useRef<GenerateProfile>(() => undefined);
   const [isUnlocked, setIsUnlocked] = useState(true);
   const [gatingSettings, setGatingSettings] = useState<{
     enabled: boolean;
@@ -196,7 +200,6 @@ export default function ProfileClient() {
 
   // Initialize on mount
   useEffect(() => {
-    handleGenerateProfile();
     if (typeof window !== "undefined") {
       const sp = new URLSearchParams(window.location.search);
       if (sp.get("finalize") === "1" || sp.get("welcome") === "1") {
@@ -221,7 +224,7 @@ export default function ProfileClient() {
             fatherName: resData.fatherName || resData.data?.fatherName || "",
             motherName: resData.motherName || resData.profile?.motherName || "",
             birthLocation: resData.birthLocation || resData.profile?.birthLocation || resData.city || "",
-            birthTime: resData.birthTime || resData.profile?.birthTime || "12:00",
+            birthTime: resData.birthTime || resData.profile?.birthTime || "",
             email: resData.email || "",
             phone: resData.phone || "",
             preferredLanguage: resData.preferredLanguage || "en",
@@ -241,22 +244,24 @@ export default function ProfileClient() {
             setGatingSettings(resData.gatingSettings);
           }
 
-          if (!accProfile.dateOfBirth || !accProfile.birthLocation || !accProfile.motherName) {
+          if (!accProfile.dateOfBirth || !accProfile.birthLocation || !accProfile.motherName || !accProfile.consent.spiritual) {
             setShowFinalizeBanner(true);
           }
 
           // Auto-populate coordinates with real user profile data (never force hardcoded names)
-          const targetName = accProfile.name || fullName;
-          const targetDOB = accProfile.dateOfBirth || birthDate;
-          const targetCity = accProfile.birthLocation || accProfile.city || city;
-          const targetTime = accProfile.birthTime || birthTime;
+          const targetName = accProfile.name;
+          const targetDOB = accProfile.dateOfBirth;
+          const targetCity = accProfile.birthLocation || accProfile.city;
+          const targetTime = accProfile.birthTime || "12:00";
 
           if (accProfile.name) setFullName(accProfile.name);
           if (accProfile.dateOfBirth) setBirthDate(accProfile.dateOfBirth);
           if (accProfile.birthLocation || accProfile.city) setCity(accProfile.birthLocation || accProfile.city);
           if (accProfile.birthTime) setBirthTime(accProfile.birthTime);
           // Generate personal profile calculations with the real registered data
-          handleGenerateProfile(targetName, targetDOB, targetTime, targetCity);
+          if (targetDOB && targetCity && accProfile.consent.spiritual) {
+            generateProfileRef.current(targetName, targetDOB, targetTime, targetCity, true);
+          }
         }
       })
       .catch((error: unknown) => {
@@ -335,13 +340,23 @@ export default function ProfileClient() {
     customName?: string,
     customDate?: string,
     customTime?: string,
-    customCity?: string
+    customCity?: string,
+    consentConfirmed = false
   ) => {
+    if (!consentConfirmed && !accountProfile?.consent.spiritual) {
+      setAccountMessage("Enable cultural and spiritual reflection consent in your profile before generating these readings.");
+      return;
+    }
     setLoading(true);
     const targetName = customName || fullName;
     const targetDate = customDate || birthDate;
     const targetTime = customTime || birthTime;
     const targetCity = customCity || city;
+    if (!targetName.trim() || !targetDate || !targetCity) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
 
     try {
       const generated = buildPersonalProfile({
@@ -379,6 +394,7 @@ export default function ProfileClient() {
       setLoading(false);
     }
   };
+  generateProfileRef.current = handleGenerateProfile;
 
   const handlePresetSelect = (preset: (typeof PRESETS)[0]) => {
     setFullName(preset.name);
@@ -437,10 +453,13 @@ export default function ProfileClient() {
                   <span>እንኳን ደህና መጡ! Welcome! Please finalize your profile coordinates to get the best results</span>
                 </div>
                 <p className="text-xs md:text-sm text-slate-200 leading-relaxed">
-                  To calculate your authentic 5-system astrological chart, numerological life paths, AwudeNegest circles, and traditional naming resonance with maximum accuracy, please complete and confirm your birth date, birth time, mother&apos;s name, and birth location below.
+                  Add your birth date and location to generate preliminary astrology and numerology, name and heritage reflection, and the dietary overview. If birth time is unavailable, charts use an approximate noon time. These cultural readings and food patterns are educational only, not medical advice.
                 </p>
               </div>
               <div className="flex items-center gap-3 shrink-0">
+                <Link href="/case/workflows" className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-white/5">
+                  Explore care pathways
+                </Link>
                 <button
                   type="button"
                   onClick={() => {

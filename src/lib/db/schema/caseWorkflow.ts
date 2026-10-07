@@ -1,4 +1,4 @@
-import { mysqlTable, uuid, varchar, text, integer, boolean, jsonb, timestamp } from "../mysqlSchema";
+import { mysqlTable, uuid, varchar, text, integer, boolean, jsonb, timestamp, index } from "../mysqlSchema";
 import { users } from "./users";
 
 export const caseCategories = mysqlTable("case_categories", {
@@ -85,3 +85,17 @@ export const workflowCases = mysqlTable("workflow_cases", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+/** Private audio/video evidence for a biological pathway case; unattached uploads expire by cleanup. */
+export const workflowCaseMedia = mysqlTable("workflow_case_media", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  caseId: uuid("case_id").references(() => workflowCases.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 10 }).notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  storageKey: varchar("storage_key", { length: 200 }).notNull(),
+  originalName: varchar("original_name", { length: 200 }),
+  sha256: varchar("sha256", { length: 64 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("workflow_case_media_user_idx").on(table.userId, table.createdAt), index("workflow_case_media_case_idx").on(table.caseId)]);

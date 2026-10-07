@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org https://translate.google.com https://translate.googleapis.com; frame-src https://oauth.telegram.org https://translate.google.com https://translate.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://translate.google.com https://translate.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' http: https:; frame-ancestors 'self'; base-uri 'self'; object-src 'none';",
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org https://translate.google.com https://translate.googleapis.com https://www.google.com; frame-src https://oauth.telegram.org https://translate.google.com https://translate.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://translate.google.com https://translate.googleapis.com https://www.google.com; img-src 'self' data: blob: https: https://www.google.com https://translate.google.com https://translate.googleapis.com https://www.gstatic.com; media-src 'self' blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' http: https: https://translate.google.com https://translate.googleapis.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none';",
           },
         ],
       },

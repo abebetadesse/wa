@@ -308,6 +308,82 @@ const social: DomainConfig = {
   },
 };
 
+// ── Biological, wellbeing and health ────────────────────────────────────────
+
+const biological: DomainConfig = {
+  domain: "biological",
+  label: "Biological, Wellbeing and Health",
+  description: "Share one detailed account of your concern for a reviewer-assisted, evidence-aware look at biological, biochemical and wellbeing factors. Educational reflection only, not a medical evaluation or substitute for healthcare.",
+  pricing: { reportEtb: 0, consultationEtb: 0, consultationFormats: ["video", "voice", "chat"] },
+  reviewChecklist: [
+    ...STANDARD_CHECKLIST,
+    { id: "medical_scope", label: "Biochemical and biological findings are evidence-grounded and not presented as a diagnosis." },
+    { id: "medical_referral", label: "Urgent symptoms and any need for qualified medical care are clearly addressed." },
+  ],
+  safetyQuestions: normalizeQuestions([{
+    id: "urgentSymptoms",
+    text: "Are you experiencing a medical emergency now, such as severe difficulty breathing, chest pain, heavy bleeding, fainting, or signs of stroke?",
+    type: "choice",
+    required: true,
+    options: [{ value: "no", label: "No" }, { value: "yes", label: "Yes" }],
+  }]),
+  startQuestions: normalizeQuestions([
+    {
+      id: "urgentSymptoms",
+      text: "Are you experiencing a medical emergency now, such as severe difficulty breathing, chest pain, heavy bleeding, fainting, or signs of stroke?",
+      type: "choice",
+      required: true,
+      options: [{ value: "no", label: "No" }, { value: "yes", label: "Yes" }],
+    },
+    {
+      id: "caseNarrative",
+      text: "Describe your health or wellbeing concern in detail",
+      type: "textarea",
+      required: false,
+      placeholder: "Include what you have noticed, when it began, relevant test results (if any), medicines or supplements, and what you would like help understanding. Do not include another person's private information.",
+      hint: "One written account is enough. You may optionally attach one audio or video note instead or in addition.",
+    },
+  ]),
+  evaluateSafety(answers) {
+    if (answers.urgentSymptoms === "yes") {
+      return crisisOutcome("Possible medical emergency reported", [
+        "Contact local emergency services or go to the nearest emergency department now.",
+        "Do not wait for an app report or online review.",
+      ]);
+    }
+    return proceed();
+  },
+  questions: () => [],
+  screenAnswers: screenFreeText,
+  async buildDraft({ answers }) {
+    const narrative = text(answers.caseNarrative) || "The user submitted an audio or video attachment for human review. No media transcription or interpretation is available to the AI analysis.";
+    const ai = text(answers.caseNarrative) ? await aiSection("biological", { caseNarrative: narrative }) : null;
+    return {
+      title: "Biological, wellbeing and health case review",
+      summary: "A preliminary case brief for an authorized reviewer. No diagnosis or treatment decision is made by this automated draft.",
+      sections: compact([
+        {
+          id: "scope",
+          title: "Review scope",
+          body: "The reviewer should assess the submitted account against relevant biological, biochemical, medication-safety and dietary knowledge, note uncertainty and missing information, and recommend qualified clinical follow-up when appropriate.",
+          locked: false,
+        },
+        ai,
+        {
+          id: "review_required",
+          title: "Qualified human review",
+          body: "This case and any AI-generated analysis must be checked by the assigned administrator or qualified delegate before a report is sent to the user.",
+          locked: false,
+        },
+      ]),
+      recommendations: [],
+      disclaimer: "Educational, preliminary information only. This app does not diagnose conditions, interpret laboratory tests as a clinician, or prescribe treatment. For urgent or worsening symptoms, contact local emergency services or a qualified healthcare professional.",
+      generatedAt: new Date().toISOString(),
+      aiAssisted: Boolean(ai),
+    };
+  },
+};
+
 // ── Spiritual ────────────────────────────────────────────────────────────────
 
 const spiritual: DomainConfig = {
@@ -365,7 +441,7 @@ const spiritual: DomainConfig = {
   },
 };
 
-export const DOMAIN_CONFIGS: Record<WorkflowDomain, DomainConfig> = { career, legal, relationship, social, spiritual };
+export const DOMAIN_CONFIGS: Record<WorkflowDomain, DomainConfig> = { career, legal, relationship, social, spiritual, biological };
 
 export function getDomainConfig(domain: string): DomainConfig {
   const config = DOMAIN_CONFIGS[domain as WorkflowDomain];

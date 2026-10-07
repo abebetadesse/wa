@@ -12,6 +12,7 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
 
   const beginListening = useCallback(() => {
     setError(null);
+    setTranscript("");
     if (typeof window === "undefined") return;
 
     const SpeechRecognition =
@@ -80,6 +81,8 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
     }
   }, []);
 
+  const clearTranscript = useCallback(() => setTranscript(""), []);
+
   return {
     isListening,
     transcript,
@@ -89,5 +92,6 @@ export function useGeezVoiceInput(onResult?: (transcript: string) => void) {
     stopListening,
     acceptVoiceConsent,
     declineVoiceConsent,
+    clearTranscript,
   };
 }

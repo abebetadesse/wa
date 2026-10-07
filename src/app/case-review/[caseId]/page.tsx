@@ -10,6 +10,7 @@ import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/ty
 
 interface ReviewItem {
   id: string;
+  domain: string;
   label: string;
   stage: string;
   assignedRole: string | null;
@@ -158,12 +159,20 @@ export default function CaseReviewItemPage() {
           <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
             <h2 className="font-semibold text-white">What the person told us</h2>
             <dl className="mt-4 grid gap-3">
-              {item.questions.filter((question) => item.answers[question.id] !== undefined).map((question) => (
+              {item.questions.filter((question) => item.answers[question.id] !== undefined && question.id !== "mediaId" && question.id !== "mediaKind").map((question) => (
                 <div key={question.id}>
                   <dt className="text-xs text-slate-400">{question.text}</dt>
                   <dd className="mt-1 whitespace-pre-wrap text-sm text-slate-200">{answerText(question, item.answers[question.id])}</dd>
                 </div>
               ))}
+              {item.domain === "biological" && typeof item.answers.mediaId === "string" && (
+                <div className="mt-4">
+                  <p className="text-sm font-semibold text-slate-200">Client audio/video attachment</p>
+                  {item.answers.mediaKind === "video"
+                    ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 max-h-72 w-full rounded-xl" />
+                    : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 w-full" />}
+                </div>
+              )}
             </dl>
           </section>
 
