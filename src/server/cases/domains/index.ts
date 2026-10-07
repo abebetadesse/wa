@@ -20,6 +20,7 @@ import { buildSpiritualSections } from "./spiritualContent";
 const SPIRITUAL_NAME_QUESTIONS = [
   { id: "nameGeez", text: "Your name in Ge'ez script", textAmharic: "ስምዎ በግዕዝ ፊደል", type: "name_geez", required: true, hint: "For example ሰላማዊት. The reading is calculated from the letters of your name." },
   { id: "motherNameGeez", text: "Your mother's name in Ge'ez script", textAmharic: "የእናትዎ ስም በግዕዝ ፊደል", type: "name_geez", required: false },
+  { id: "christianNameGeez", text: "Your Christian (baptismal) name in Ge'ez script", textAmharic: "የክርስትና ስምዎ በግዕዝ ፊደል", type: "name_geez", required: false, hint: "For example ወለተ ማርያም or ገብረ ሚካኤል. The seal and the blessing scroll are addressed to this name; leave it empty if you have none." },
 ];
 
 const anyPreferNot = (answers: Record<string, unknown>) => Object.values(answers).includes("prefer_not");
@@ -433,7 +434,7 @@ const spiritual: DomainConfig = {
     return {
       title: "Awde Negest reflection",
       summary: `A reflective reading of ${gematria.nameGeez} in the Awde Negest tradition, focused on ${category.replace(/_/g, " ")}.`,
-      sections: [...buildSpiritualSections(gematria, category), ...compact([ai])],
+      sections: [...buildSpiritualSections(gematria, category, { christianName: text(answers.christianNameGeez) }), ...compact([ai])],
       disclaimer: REPORT_DISCLAIMER,
       generatedAt: new Date().toISOString(),
       aiAssisted: Boolean(ai),

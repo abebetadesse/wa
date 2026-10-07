@@ -380,6 +380,145 @@ test("review desk: the report is edited, saved and released with the reviewer's 
   assert.ok(ownerNotices.some((notice) => notice.type === "case.claimed"));
 });
 
+// ── Awde Negest sections in full, and "AI" on a section ──────────────────────
+
+test("spiritual report: the seal and the scroll are written in full for the bearer's Christian name", async () => {
+  const { calculateFullDivination } = await import("../lib/cultural/spiritualDivinationEngine.ts");
+  const { ETHIOPIAN_TELSEM_COLLECTION } = await import("../lib/cultural/telsemData.ts");
+  const { buildSpiritualSections } = await import("../server/cases/domains/spiritualContent.ts");
+  const gematria = calculateFullDivination("ሰላማዊት", "ፀሐይ");
+  const byId = (sections) => Object.fromEntries(sections.map((entry) => [entry.id, entry]));
+
+  const woman = byId(buildSpiritualSections(gematria, "family", { christianName: "ወለተ ማርያም", now: NOW }));
+  assert.match(woman.healing_scroll.title, /ወለተ ማርያም \(ሰላማዊት\)/);
+  const scroll = woman.healing_scroll.items.join("\n");
+  assert.match(scroll, /በስመ አብ ወወልድ ወመንፈስ ቅዱስ/);
+  assert.match(scroll, /ለአመትከ ወለተ ማርያም/, "a woman's baptismal name is addressed as handmaid");
+  assert.match(scroll, /የእናት ስም፦ ፀሐይ/);
+  assert.match(scroll, /ቤቷን እና ቤተሰቧን ባርክ/, "the petition follows the question and the bearer");
+  assert.match(scroll, /ለዓለመ ዓለም አሜን/);
+  assert.match(scroll, /ተጻፈ \(Written\): መስከረም/, "the scroll is dated in the Ethiopian calendar");
+  assert.ok(woman.healing_scroll.items.length >= 8 && woman.healing_scroll.body.length > 600, "the scroll is complete, with its English rendering");
+  assert.match(woman.sacred_telsem.body, /here it reads ለአመትከ ወለተ ማርያም, with the mother's name, ፀሐይ/);
+  assert.ok(woman.sacred_telsem.items.length >= 9, "design, name band, prayer, meaning, reading, colours, day, materials, guardian");
+
+  // The same reading for a man, and for someone who gave no baptismal name.
+  const man = byId(buildSpiritualSections(gematria, "career", { christianName: "ገብረ ሚካኤል", now: NOW }));
+  assert.match(man.healing_scroll.items.join("\n"), /ለገብርከ ገብረ ሚካኤል/);
+  assert.match(man.healing_scroll.items.join("\n"), /ሥራውን ባርክ/);
+  const unnamed = byId(buildSpiritualSections(gematria, "wellbeing", { now: NOW }));
+  assert.match(unnamed.healing_scroll.items.join("\n"), /ለሰላማዊት የተዘጋጀ/);
+  assert.match(unnamed.healing_scroll.items.join("\n"), /ሥጋቸውንና ነፍሳቸውን/, "the respectful plural is used when the name does not say");
+  assert.match(unnamed.divination_summary.body, /No Christian \(baptismal\) name was given/);
+
+  // The seal's own prayer carries the bearer's name where the manuscript leaves a place for one.
+  const psalmSeal = ETHIOPIAN_TELSEM_COLLECTION.find((seal) => seal.id === "telsem-medfe-memelesha");
+  const withPrayer = byId(buildSpiritualSections({ ...gematria, telsem: psalmSeal }, "life_direction", { christianName: "ወለተ ማርያም", now: NOW }));
+  const prayer = withPrayer.sacred_telsem.items.find((item) => item.startsWith("የጸሎት ቃል"));
+  assert.match(prayer, /ለአመትከ ወለተ ማርያም/);
+  assert.ok(!prayer.includes("እገሌ"), "the placeholder is replaced");
+
+  // A manuscript line that is a preparation (cut, mix, eat) is not reproduced.
+  const procedural = ETHIOPIAN_TELSEM_COLLECTION.find((seal) => seal.id === "telsem-dirsan-mikael");
+  const withProcedure = byId(buildSpiritualSections({ ...gematria, telsem: procedural }, "life_direction", { christianName: "ወለተ ማርያም", now: NOW }));
+  assert.ok(![withProcedure.sacred_telsem.body, ...withProcedure.sacred_telsem.items].join(" ").includes("በማር ለውሰህ"));
+  assert.ok(withProcedure.sacred_telsem.items.some((item) => /preparation at this point, which is not reproduced/.test(item)));
+
+  // Everything fits in a draft.
+  const { draftInput } = await import("../server/cases/schemas.ts");
+  assert.ok(draftInput.safeParse({ title: "t", summary: "s", sections: Object.values(woman), disclaimer: "d", generatedAt: NOW.toISOString(), aiAssisted: false }).success);
+});
+
+test("AI on a section: rebuilt from the case, with the model kept inside its limits", async () => {
+  const { enhanceReportSection } = await import("../server/cases/sectionEnhancer.ts");
+  const config = DOMAIN_CONFIGS.spiritual;
+  const answers = { nameGeez: "ሰላማዊት", motherNameGeez: "ፀሐይ", question_category: "family" };
+  const record = { ...createCase({ id: "case-spirit", userId: "user-1", config, safetyAnswers: {}, answers }), answers, context: config.buildContext(answers), analysis: null };
+  const draft = await config.buildDraft({ answers, context: record.context, safety: record.safety });
+  const scroll = draft.sections.find((entry) => entry.id === "healing_scroll");
+  assert.match(scroll.items.join("\n"), /ለሰላማዊት የተዘጋጀ/, "without a baptismal name the worldly name is used");
+
+  // No language model: the section is rebuilt from the case with the name the reviewer supplies.
+  const rebuilt = await enhanceReportSection(record, { section: { ...scroll, locked: false }, christianName: "ወለተ ማርያም" }, { model: undefined, now: () => NOW });
+  assert.equal(rebuilt.source, "case_data");
+  assert.equal(rebuilt.section.id, "healing_scroll");
+  assert.equal(rebuilt.section.locked, false, "the reviewer's lock setting is kept");
+  assert.match(rebuilt.section.items.join("\n"), /ለአመትከ ወለተ ማርያም/);
+
+  // Asking again with nothing new changes nothing.
+  const again = await enhanceReportSection(record, { section: rebuilt.section, christianName: "ወለተ ማርያም" }, { model: undefined, now: () => NOW });
+  assert.equal(again.source, "unchanged");
+
+  // With a model: names leave as tokens, sacred lines come back verbatim, commentary is the model's.
+  let seen;
+  const model = async (request) => {
+    seen = request;
+    return { body: `${request.body}\n\nExpanded for ⟦N1⟧.`, items: ["A new note about the blessing for ⟦N1⟧.", "በስመ አብ የተለወጠ መስመር"] };
+  };
+  const written = await enhanceReportSection(record, { section: scroll, christianName: "ወለተ ማርያም", instruction: "Explain the petition for ሰላማዊት" }, { model, now: () => NOW });
+  assert.equal(written.source, "model");
+  const sent = JSON.stringify(seen);
+  for (const name of ["ወለተ ማርያም", "ሰላማዊት", "ፀሐይ"]) assert.ok(!sent.includes(name), `${name} is masked before it leaves the platform`);
+  assert.match(seen.instruction, /⟦N\d⟧/);
+  assert.equal(seen.kind, "cultural reflection");
+  assert.match(written.section.body, /Expanded for ወለተ ማርያም\./, "names are restored");
+  for (const line of rebuilt.section.items.filter((item) => /^(መክፈቻ|ስም|ልመና|ጥበቃ|ማኅተም)/.test(item))) assert.ok(written.section.items.includes(line), "the scroll's own lines are kept verbatim");
+  assert.ok(!written.section.items.includes("በስመ አብ የተለወጠ መስመር"), "the model cannot add or alter sacred lines");
+  assert.ok(written.section.items.includes("A new note about the blessing for ወለተ ማርያም."));
+
+  // A model that mangles a name, or fails, falls back to the case data.
+  const mangled = await enhanceReportSection(record, { section: scroll, christianName: "ወለተ ማርያም" }, { model: async () => ({ body: "For ⟦N9⟧.", items: [] }), now: () => NOW });
+  assert.equal(mangled.source, "case_data");
+  const failed = await enhanceReportSection(record, { section: scroll, christianName: "ወለተ ማርያም" }, { model: async () => { throw new Error("down"); }, now: () => NOW });
+  assert.equal(failed.source, "case_data");
+});
+
+test("AI on a section: other sections are extended from the analysis, within the case's scope", async () => {
+  const { enhanceReportSection } = await import("../server/cases/sectionEnhancer.ts");
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const withAnalysis = { ...record, analysis };
+
+  const own = { id: "reviewer-note-1", title: "About the money worries", body: "A note written by the reviewer.", locked: false };
+  const extended = await enhanceReportSection(withAnalysis, { section: own }, { model: undefined, now: () => NOW });
+  assert.equal(extended.source, "case_data");
+  assert.equal(extended.section.body, own.body, "the reviewer's own text is kept");
+  assert.ok(extended.section.items.some((item) => /^In your words — Money pressure: “My husband and I argue/.test(item)));
+  assert.ok(extended.section.items.some((item) => /^At your stage of life \(25–39\)/.test(item)));
+  assert.ok(!JSON.stringify(extended.section).includes("Adama"));
+
+  // A detailed-analysis section is rebuilt by its id.
+  const patterns = await enhanceReportSection(withAnalysis, { section: { id: "analysis-patterns", title: "Patterns to consider together", body: "short", locked: true } }, { model: undefined, now: () => NOW });
+  assert.equal(patterns.source, "case_data");
+  assert.ok(patterns.section.items.length >= 3 && patterns.section.locked === true);
+
+  // A reflection is extended only with reflection.
+  const reflection = await enhanceReportSection(withAnalysis, { section: { id: "reviewer-reflection-1", title: "A blessing", body: "x", locked: false, cultural: true } }, { model: undefined, now: () => NOW });
+  assert.ok(reflection.section.items.some((item) => /^Your personal profile: Sun in Pisces/.test(item)));
+  assert.ok(!reflection.section.items.some((item) => /In your words/.test(item)));
+
+  // Reflection-only case types never receive evidence material, and an open safety warning stops everything.
+  const legal = { ...withAnalysis, domain: "legal", analysis: { ...analysis, publishScope: "reflection_only" } };
+  assert.equal((await enhanceReportSection(legal, { section: own }, { model: undefined, now: () => NOW })).source, "unchanged");
+  const unsafe = { ...withAnalysis, analysis: { ...analysis, safety: { ...analysis.safety, warnings: ["Safety screen: reported feeling unsafe"] } } };
+  await assert.rejects(() => enhanceReportSection(unsafe, { section: own }, { model: undefined, now: () => NOW }), /safety review/);
+});
+
+test("AI on a section: only the reviewer who claimed the request may use it", async () => {
+  const { svc } = desk();
+  const view = await submitted(svc);
+  const section = { id: "reviewer-note-1", title: "A note", body: "Text", locked: false };
+  await assert.rejects(() => svc.enhanceSection(admin, view.id, { section }), /Claim the request/);
+  await svc.claim(admin, view.id);
+  await assert.rejects(() => svc.enhanceSection(otherAdmin, view.id, { section }));
+  await assert.rejects(() => svc.enhanceSection(owner, view.id, { section }));
+  const result = await svc.enhanceSection(admin, view.id, { section });
+  assert.ok(["case_data", "unchanged", "model"].includes(result.source));
+  // Nothing was saved: the stored draft does not contain the section.
+  const stored = await svc.getForExpert(admin, view.id);
+  assert.ok(!stored.draft.sections.some((entry) => entry.id === section.id));
+});
+
 test("notices: sensitive cases never carry content outside the app", () => {
   const { record } = relationshipCase(STORY, { ...SAFE, domesticViolence: "possible" });
   assert.equal(isSensitive(record), true);

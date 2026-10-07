@@ -431,16 +431,69 @@ export function Conversation({ messages, canAct, busy, discreet, value, onChange
 
 // ── Report editor ────────────────────────────────────────────────────────────
 
+/** What "AI" on a section returns: the developed section, where it came from and a note for the reviewer. */
+export interface SectionEnhancement {
+  section: ReportSection;
+  source: "model" | "case_data" | "unchanged";
+  note: string;
+}
+
 interface DraftEditorProps {
   draft: DraftState;
   onChange: (draft: DraftState) => void;
   dirty: boolean;
   busy: boolean;
   onSave: () => void;
+  /** Develops one section further on the server. Absent: the AI control is not shown. */
+  onEnhance?: (section: ReportSection, options: { instruction?: string; christianName?: string }) => Promise<SectionEnhancement>;
+  /** The Christian (baptismal) name given with the case, offered for the seal and the scroll. */
+  christianName?: string;
 }
 
-export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEditorProps) {
+// Sections that are addressed to the person by their Christian name.
+const NAMED_SECTIONS = new Set(["divination_summary", "sacred_telsem", "healing_scroll"]);
+const ENHANCEMENT_SOURCE: Record<SectionEnhancement["source"], string> = {
+  model: "Language model",
+  case_data: "Case data",
+  unchanged: "No change",
+};
+
+export function DraftEditor({ draft, onChange, dirty, busy, onSave, onEnhance, christianName = "" }: DraftEditorProps) {
   const [openId, setOpenId] = useState<string | null>(null);
+  // "AI" on a section: which panel is open, what was asked, and the version to return to.
+  const [aiId, setAiId] = useState<string | null>(null);
+  const [aiBusyId, setAiBusyId] = useState<string | null>(null);
+  const [instruction, setInstruction] = useState("");
+  const [baptismalName, setBaptismalName] = useState(christianName);
+  const [aiResult, setAiResult] = useState<Record<string, { source: SectionEnhancement["source"]; note: string; error?: boolean }>>({});
+  const [previous, setPrevious] = useState<Record<string, ReportSection>>({});
+
+  async function enhance(section: ReportSection) {
+    if (!onEnhance) return;
+    setAiBusyId(section.id);
+    try {
+      const result = await onEnhance(cleanSection(section), { instruction: instruction.trim() || undefined, christianName: NAMED_SECTIONS.has(section.id) ? baptismalName.trim() || undefined : undefined });
+      if (result.source !== "unchanged") {
+        setPrevious((current) => ({ ...current, [section.id]: section }));
+        onChange({ ...draft, sections: draft.sections.map((entry) => (entry.id === section.id ? { ...result.section, id: section.id } : entry)) });
+        setOpenId(section.id);
+      }
+      setAiResult((current) => ({ ...current, [section.id]: { source: result.source, note: result.note } }));
+    } catch (cause) {
+      setAiResult((current) => ({ ...current, [section.id]: { source: "unchanged", note: cause instanceof Error ? cause.message : "The section could not be developed.", error: true } }));
+    } finally {
+      setAiBusyId(null);
+    }
+  }
+
+  function undoEnhancement(id: string) {
+    const before = previous[id];
+    if (!before) return;
+    onChange({ ...draft, sections: draft.sections.map((entry) => (entry.id === id ? before : entry)) });
+    setPrevious(({ [id]: _restored, ...rest }) => rest);
+    setAiResult(({ [id]: _cleared, ...rest }) => rest);
+  }
+
   const stats = reportStatistics(draft);
   const locked = draft.sections.filter((section) => section.locked).length;
   const setSection = (id: string, patch: Partial<ReportSection>) => onChange({ ...draft, sections: draft.sections.map((section) => (section.id === id ? { ...section, ...patch } : section)) });
@@ -483,11 +536,54 @@ export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEdito
                   <span className="ml-2 text-[11px] font-normal text-slate-500">{reportStatistics({ summary: "", sections: [section] }).words} words{section.items?.length ? ` · ${section.items.length} point${section.items.length === 1 ? "" : "s"}` : ""}</span>
                 </button>
                 {section.cultural && <span className="rounded-full border border-violet-500/40 px-2 py-0.5 text-[11px] text-violet-200">Reflection</span>}
+                {onEnhance && (
+                  <button
+                    type="button"
+                    disabled={aiBusyId !== null}
+                    onClick={() => setAiId(aiId === section.id ? null : section.id)}
+                    aria-expanded={aiId === section.id}
+                    aria-label={`Develop “${section.title}” further with AI`}
+                    title="Develop this section further"
+                    className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold disabled:opacity-40 ${aiId === section.id ? "border-sky-400 bg-sky-500/20 text-sky-100" : "border-sky-500/40 text-sky-200 hover:bg-sky-500/10"}`}
+                  >
+                    {aiBusyId === section.id ? "AI…" : "✦ AI"}
+                  </button>
+                )}
                 {section.locked && <span className="rounded-full border border-amber-500/40 px-2 py-0.5 text-[11px] text-amber-200">Full report only</span>}
                 <button type="button" disabled={index === 0} onClick={() => move(index, -1)} className={smallButton} aria-label={`Move ${section.title} up`}>↑</button>
                 <button type="button" disabled={index === draft.sections.length - 1} onClick={() => move(index, 1)} className={smallButton} aria-label={`Move ${section.title} down`}>↓</button>
                 <button type="button" onClick={() => onChange({ ...draft, sections: draft.sections.filter((item) => item.id !== section.id) })} className={`${smallButton} text-rose-200`}>Remove</button>
               </div>
+              {aiId === section.id && onEnhance && (
+                <div className="mt-3 grid gap-3 rounded-lg border border-sky-500/30 bg-sky-950/20 p-3">
+                  <p className="text-xs text-slate-300">
+                    Develops this section in full from the case: the person&apos;s own words, their reading and their profile. The result replaces the section here, unsaved, for you to check and edit.
+                  </p>
+                  {NAMED_SECTIONS.has(section.id) && (
+                    <label className="grid gap-1.5 text-xs font-medium text-slate-300">
+                      Christian (baptismal) name — የክርስትና ስም
+                      <input value={baptismalName} onChange={(event) => setBaptismalName(event.target.value)} maxLength={80} lang="am" placeholder="ለምሳሌ ወለተ ማርያም ፣ ገብረ ሚካኤል" className={`${input} font-geez`} />
+                      <span className="font-normal text-slate-500">The seal and the scroll are addressed to this name. Leave empty to use the name given with the case.</span>
+                    </label>
+                  )}
+                  <label className="grid gap-1.5 text-xs font-medium text-slate-300">
+                    What should be developed? (optional)
+                    <textarea value={instruction} onChange={(event) => setInstruction(event.target.value)} maxLength={600} rows={2} className={input} placeholder="For example: explain each line of the prayer, or say more about what this means for their work." />
+                  </label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button type="button" disabled={aiBusyId !== null} onClick={() => void enhance(section)} className="rounded-lg bg-sky-700 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                      {aiBusyId === section.id ? "Developing…" : "Develop this section"}
+                    </button>
+                    {previous[section.id] && <button type="button" disabled={aiBusyId !== null} onClick={() => undoEnhancement(section.id)} className={smallButton}>Undo</button>}
+                    {aiResult[section.id] && (
+                      <span role="status" className={`basis-full text-xs ${aiResult[section.id].error ? "text-rose-200" : "text-slate-300"}`}>
+                        {!aiResult[section.id].error && <span className="mr-1.5 rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-slate-200">{ENHANCEMENT_SOURCE[aiResult[section.id].source]}</span>}
+                        {aiResult[section.id].note}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               {open && (
                 <div className="mt-3 grid gap-3">
                   <label className="grid gap-1.5 text-xs font-medium text-slate-300">
@@ -533,15 +629,12 @@ export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEdito
   );
 }
 
+function cleanSection(section: ReportSection): ReportSection {
+  const items = section.items?.map((item) => item.trim()).filter(Boolean);
+  return { ...section, title: section.title.trim() || "Untitled section", body: section.body?.trim() || undefined, items: items?.length ? items : undefined };
+}
+
 /** Blank lines typed while editing points are dropped before the draft is saved. */
 export function cleanDraft(draft: DraftState): DraftState {
-  return {
-    ...draft,
-    title: draft.title.trim(),
-    summary: draft.summary.trim(),
-    sections: draft.sections.map((section) => {
-      const items = section.items?.map((item) => item.trim()).filter(Boolean);
-      return { ...section, title: section.title.trim() || "Untitled section", body: section.body?.trim() || undefined, items: items?.length ? items : undefined };
-    }),
-  };
+  return { ...draft, title: draft.title.trim(), summary: draft.summary.trim(), sections: draft.sections.map(cleanSection) };
 }

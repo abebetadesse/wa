@@ -1,7 +1,7 @@
 /** Request shapes shared by the review desk routes. */
 import { z } from "zod";
 
-const section = z.object({
+export const sectionInput = z.object({
   id: z.string().min(1).max(80),
   title: z.string().trim().min(1).max(200),
   body: z.string().max(8000).optional(),
@@ -16,10 +16,17 @@ const section = z.object({
 export const draftInput = z.object({
   title: z.string().trim().min(1).max(200),
   summary: z.string().trim().min(1).max(4000),
-  sections: z.array(section).max(30),
+  sections: z.array(sectionInput).max(30),
   disclaimer: z.string().trim().min(1).max(2000),
   generatedAt: z.string(),
   aiAssisted: z.boolean(),
+});
+
+/** One section sent to "AI" for further development, with what the reviewer asked for. */
+export const enhanceInput = z.object({
+  section: sectionInput,
+  instruction: z.string().trim().max(600).optional(),
+  christianName: z.string().trim().max(80).optional(),
 });
 
 export const messageInput = z.object({

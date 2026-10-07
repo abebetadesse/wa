@@ -30,6 +30,7 @@ import { caseBilling } from "@/server/payments/caseBilling";
 import { dbCaseStore, type CaseStore } from "./store";
 import type { CaseAnalysis, CaseMessage, ConsultationRecord, ConsentRecord, DomainConfig, DraftReport, MessageChannel, WorkflowCase, WorkflowDomain } from "./types";
 import { buildCaseAnalysis } from "./analysis";
+import { enhanceReportSection, type EnhanceDeps, type EnhanceInput } from "./sectionEnhancer";
 import { loadAnalysisProfile } from "./analysisProfile";
 import { ownerNotice, reviewerNotice, type OwnerNoticeType, type ReviewerNoticeType } from "./notices";
 import { toExpertView, toOwnerView } from "./views";
@@ -86,6 +87,8 @@ interface Deps {
   notifyOwner?: (record: WorkflowCase, type: Exclude<OwnerNoticeType, "approved">, message?: CaseMessage) => Promise<void>;
   /** The owner replied: tell the reviewer (or the assigned role while nobody has claimed the case). */
   notifyReply?: (record: WorkflowCase) => Promise<void>;
+  /** Overrides for the section enhancer (tests supply or withhold the language model). */
+  enhancer?: Partial<EnhanceDeps>;
 }
 
 export function createCaseService(deps: Deps) {
@@ -420,6 +423,17 @@ export function createCaseService(deps: Deps) {
       await store.save(next);
       await deps.notifyOwner?.(next, "message", message);
       return toExpertView(next, getDomainConfig(next.domain));
+    },
+
+    /**
+     * The claiming reviewer asks for one section of the draft to be developed further. The result is
+     * returned for their editor and is not saved: they keep, edit or discard it.
+     */
+    async enhanceSection(user: AuthenticatedUser, caseId: string, input: EnhanceInput) {
+      const record = await reviewable(user, caseId);
+      if (record.stage !== "in_review") throw ApiError.conflict("Claim the request before developing its report.");
+      if (record.review?.expertId !== user.id) throw ApiError.forbidden("Only the reviewer who claimed this request may develop its report.");
+      return enhanceReportSection(record, input, deps.enhancer);
     },
 
     /** Rebuilds the analysis on request (for example after the knowledge base was updated). */

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "@/features/session/SessionProvider";
 import { apiFetch, errorMessage } from "@/lib/api/client";
-import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState } from "@/features/cases/review/ReviewPanels";
+import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState, type SectionEnhancement } from "@/features/cases/review/ReviewPanels";
 import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/types";
 
 interface ReviewItem {
@@ -140,6 +140,10 @@ export default function CaseReviewItemPage() {
     setStatus("Detailed report sections added or refreshed from the latest analysis. Review and edit them before approving.");
   }
 
+  /** "AI" on a section: the server returns a fuller version for the editor; nothing is saved until the reviewer saves. */
+  const enhanceSection = (section: ReportSection, options: { instruction?: string; christianName?: string }) =>
+    apiFetch<SectionEnhancement>(`${base}/sections/enhance`, { method: "POST", json: { section, ...options } });
+
   const mayAct = Boolean(user && item?.review?.expertId === user.id && item.stage === "in_review");
   const allChecked = Boolean(item?.checklist.length && item.checklist.every((entry) => checked[entry.id]));
   const reportValid = Boolean(draft && draft.title.trim() && draft.summary.trim());
@@ -207,7 +211,15 @@ export default function CaseReviewItemPage() {
           <Conversation messages={item.messages} canAct={mayAct} busy={busy} discreet={item.safety.action !== "proceed"} value={message} onChange={setMessage} onSend={(kind) => void send(kind)} />
 
           {draft && mayAct && (
-            <DraftEditor draft={draft} onChange={(next) => { setDraft(next); setDirty(true); }} dirty={dirty} busy={busy} onSave={() => void saveDraft()} />
+            <DraftEditor
+              draft={draft}
+              onChange={(next) => { setDraft(next); setDirty(true); }}
+              dirty={dirty}
+              busy={busy}
+              onSave={() => void saveDraft()}
+              onEnhance={enhanceSection}
+              christianName={typeof item.answers.christianNameGeez === "string" ? item.answers.christianNameGeez : ""}
+            />
           )}
           {draft && !mayAct && (
             <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
