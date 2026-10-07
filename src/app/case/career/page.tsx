@@ -216,7 +216,7 @@ export default function CareerCasePage() {
 
     setCurrentQuestionIdx(0);
     setStage("questions");
-  }, [geezName, motherGeezName, sessionId, careerStage]);
+  }, [geezName, motherGeezName, sessionId]);
 
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
     setAnswers((prev) => {

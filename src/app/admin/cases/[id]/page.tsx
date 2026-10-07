@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CaseStatus } from "@/lib/pipeline/types";
@@ -40,7 +40,7 @@ export default function AdminCaseDetailPage() {
     return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
   });
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!caseId) return;
     setLoading(true);
     setActionError(null);
@@ -81,11 +81,11 @@ export default function AdminCaseDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [caseId]);
 
   useEffect(() => {
     loadData();
-  }, [caseId]);
+  }, [loadData]);
 
   // Handle Publish
   const handlePublish = async () => {

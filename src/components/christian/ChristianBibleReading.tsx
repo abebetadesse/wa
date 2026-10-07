@@ -198,7 +198,6 @@ export default function ChristianBibleReading() {
             <button
               key={reading.id}
               type="button"
-              role="listitem"
               onClick={() => setSelected(reading)}
               aria-pressed={isSelected}
               className={`relative rounded-2xl border p-4 text-left transition ${

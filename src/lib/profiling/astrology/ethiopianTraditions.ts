@@ -1271,7 +1271,6 @@ export const awdeNegest = new AwudeNegestEngine();
 // SECTION 16 — MODULE-LOAD INVARIANT CHECKS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/* eslint-disable no-console */
 (function validateModuleInvariants() {
   const problems: string[] = [];
 
@@ -1293,7 +1292,6 @@ export const awdeNegest = new AwudeNegestEngine();
     const [m1, d1, m2, d2] = GREGORIAN_RANGES[k];
     let m = m1, d = d1;
     let guard = 0;
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const tag = `${m}-${d}`;
       if (coveredDays.has(tag)) {
@@ -1326,4 +1324,3 @@ export const awdeNegest = new AwudeNegestEngine();
     console.error("[AwudeNegest] Module invariants failed:", problems);
   }
 })();
-/* eslint-enable no-console */

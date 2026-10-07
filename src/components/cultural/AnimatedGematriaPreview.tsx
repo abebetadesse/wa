@@ -7,10 +7,12 @@ import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 
 function AnimatedCounter({ value, className = "" }: { value: number; className?: string }) {
   const [displayValue, setDisplayValue] = useState(value);
+  const prevRef = React.useRef(value);
 
   useEffect(() => {
-    let start = displayValue;
+    const start = prevRef.current;
     const end = value;
+    prevRef.current = value;
     if (start === end) return;
 
     const duration = 400;

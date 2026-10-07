@@ -32,7 +32,7 @@ export function EthiopianLocationInput({
     if (value !== searchTerm && !isOpen) {
       setSearchTerm(value);
     }
-  }, [value, isOpen]);
+  }, [value, isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (searchTerm.trim().length >= 2) {

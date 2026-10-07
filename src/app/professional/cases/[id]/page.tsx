@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { CaseStatus } from "@/lib/pipeline/types";
@@ -45,7 +45,7 @@ export default function ProfessionalCaseDetailPage() {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnNote, setReturnNote] = useState("");
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!caseId) return;
     setLoading(true);
     setActionError(null);
@@ -84,11 +84,11 @@ export default function ProfessionalCaseDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [caseId]);
 
   useEffect(() => {
     loadData();
-  }, [caseId]);
+  }, [loadData]);
 
   // Handle Save & Re-project
   const handleSaveAndReproject = async () => {

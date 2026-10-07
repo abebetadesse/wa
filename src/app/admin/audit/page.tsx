@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState, useCallback, FormEvent } from "react";
 import { FileText, Search, Filter, Clock, Eye, X, Terminal, ArrowRight, ArrowLeft } from "lucide-react";
 
 export default function AuditLogPage() {
@@ -16,11 +16,7 @@ export default function AuditLogPage() {
   // Inspector Modal
   const [inspectEvent, setInspectEvent] = useState<any>(null);
 
-  useEffect(() => {
-    fetchAuditLogs();
-  }, [page, actionFilter]);
-
-  async function fetchAuditLogs() {
+  const fetchAuditLogs = useCallback(async () => {
     setLoading(true);
     try {
       const query = new URLSearchParams({
@@ -41,7 +37,11 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, limit, search, actionFilter]);
+
+  useEffect(() => {
+    fetchAuditLogs();
+  }, [fetchAuditLogs]);
 
   function handleSearch(e: FormEvent) {
     e.preventDefault();

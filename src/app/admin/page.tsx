@@ -495,6 +495,7 @@ export default function AdminDashboardPage() {
 
             {/* Export data dropdown/link */}
             <a
+              download="users_export.csv"
               href="/api/admin/users/export?format=csv"
               className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors flex items-center gap-1.5"
             >

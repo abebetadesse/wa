@@ -74,7 +74,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, roleFilter, statusFilter]);
+  }, [page, roleFilter, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchUsers() {
     setLoading(true);
@@ -293,6 +293,7 @@ export default function UserManagementPage() {
             <span>Add New User</span>
           </button>
           <a
+            download="users_export.csv"
             href="/api/admin/users/export?format=csv"
             className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors flex items-center gap-1.5"
           >

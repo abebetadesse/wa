@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { StatusTimeline } from "@/components/pipeline/StatusTimeline";
 import { getPipelineI18n, PipelineI18nCatalog } from "@/lib/i18n/pipeline";
 import { CaseStatus } from "@/lib/pipeline/types";
@@ -212,18 +213,18 @@ export default function UserPipelinePage() {
             >
               {locale === "am" ? "English" : "አማርኛ"}
             </button>
-            <a
+            <Link
               href="/professional/cases"
               className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-medium text-amber-300 transition-colors"
             >
               {locale === "am" ? "የባለሙያ ገጽ (Pro View)" : "Professional Desk"}
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/cases"
               className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-xs font-medium text-purple-300 transition-colors"
             >
               {locale === "am" ? "አስተዳዳሪ (Admin View)" : "Admin Desk"}
-            </a>
+            </Link>
           </div>
         </header>
 

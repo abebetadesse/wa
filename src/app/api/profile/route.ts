@@ -393,7 +393,6 @@ export async function POST(req: Request) {
     await pipelineRepository.saveProfile(profileRecord);
 
     // Run Stage A evaluation: Profile -> Preliminary Analysis
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const preliminaryAnalysis = await evaluateProfile(profileRecord as any);
     await pipelineRepository.savePreliminaryAnalysis(profileId, preliminaryAnalysis);
 

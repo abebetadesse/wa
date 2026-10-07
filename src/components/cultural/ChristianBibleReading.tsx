@@ -112,7 +112,7 @@ export default function ChristianBibleReading() {
 
       <div role="list" className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {readings.map((reading) => (
-          <button key={reading.id} type="button" role="listitem" aria-pressed={selected.id === reading.id} onClick={() => setSelected(reading)} className={`rounded-2xl border p-4 text-left ${selected.id === reading.id ? "border-amber-400 bg-amber-500/10" : "border-stone-800 bg-black/20 hover:border-amber-500/50"}`}>
+          <button key={reading.id} type="button" aria-pressed={selected.id === reading.id} onClick={() => setSelected(reading)} className={`rounded-2xl border p-4 text-left ${selected.id === reading.id ? "border-amber-400 bg-amber-500/10" : "border-stone-800 bg-black/20 hover:border-amber-500/50"}`}>
             <div className="flex justify-between gap-2 font-semibold text-amber-100">{reading.label}{bookmarks.includes(reading.id) && <span aria-label="Bookmarked">★</span>}</div>
             <div className="mt-1 text-xs leading-5 text-stone-400">{reading.description}</div>
             {reading.ethiopianNote && <div className="mt-2 border-l-2 border-violet-500/50 pl-2 text-[11px] text-violet-300">{reading.ethiopianNote}</div>}

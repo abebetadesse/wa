@@ -58,7 +58,7 @@ export default function KnowledgeAdminPage() {
     refreshStrands()
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedStrand) refreshCategories(selectedStrand).catch((e) => setError(e.message));
