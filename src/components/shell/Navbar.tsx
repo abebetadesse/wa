@@ -239,7 +239,7 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <Link href={`/auth?next=${encodeURIComponent(pathname)}`} className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-brand-strong">
+            <Link href={`/auth?next=${encodeURIComponent(pathname)}&via=menu`} className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-brand-strong">
               <LogIn className="size-4" aria-hidden="true" /> Sign in
             </Link>
           )}

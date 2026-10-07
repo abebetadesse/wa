@@ -31,6 +31,18 @@ function safeNext(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 }
 
+/** The installed app opens here (start_url in public/manifest.webmanifest). */
+const APP_START_PATH = "/wellness";
+
+/** Phone-sized screens and the installed app. */
+function isMobileView() {
+  return (
+    window.matchMedia("(max-width: 767px)").matches ||
+    window.matchMedia("(display-mode: standalone)").matches ||
+    Boolean((navigator as Navigator & { standalone?: boolean }).standalone)
+  );
+}
+
 export default function AuthPage() {
   return (
     <Suspense fallback={<LoadingState className="min-h-[70vh]" />}>
@@ -44,6 +56,8 @@ function AuthScreen() {
   const params = useSearchParams();
   const mode: Mode = params.get("mode") === "register" ? "register" : "login";
   const next = safeNext(params.get("next"));
+  // Sign-in opened from the navigation bar: `next` is only the page the person happened to be on.
+  const fromMenu = params.get("via") === "menu";
   const [settings, setSettings] = useState<PublicSettings | null>(null);
 
   useEffect(() => {
@@ -53,12 +67,16 @@ function AuthScreen() {
   function switchMode(target: Mode) {
     const query = new URLSearchParams({ mode: target });
     if (next) query.set("next", next);
+    if (fromMenu) query.set("via", "menu");
     router.replace(`/auth?${query}`, { scroll: false });
   }
 
   function finish(role: string, isNew: boolean) {
     notifyAuthStateChanged();
-    router.push(next ?? "/profile?finalize=1");
+    // In the mobile view the profile is home. Only a destination the person was heading to (a booking,
+    // an invitation, a protected page) comes first; the page they happened to open sign-in from does not.
+    const destination = isMobileView() && (fromMenu || next === APP_START_PATH) ? null : next;
+    router.push(destination ?? "/profile?finalize=1");
     router.refresh();
   }
 
