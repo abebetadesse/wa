@@ -26,7 +26,7 @@ export const registerBody = z
     motherName: optionalText,
     phone: optionalText,
     dateOfBirth: optionalText,
-    preferredLanguage: language.catch("am"),
+    preferredLanguage: language.catch("en"),
     gender: optionalText,
     region: optionalText,
     city: optionalText,
