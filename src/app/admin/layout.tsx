@@ -22,6 +22,7 @@ import {
   Pill,
   UserCheck,
   Wallet,
+  ListFilter,
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -76,6 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/users", label: "Users & Accounts", icon: Users },
     { href: "/admin/roles", label: "Roles & Permissions", icon: KeyRound },
     { href: "/admin/knowledge", label: "Knowledge Base", icon: BookOpen },
+    { href: "/admin/case-search", label: "Case search filters", icon: ListFilter },
     { href: "/admin/audit", label: "Audit Ledger", icon: FileText },
     { href: "/admin/analytics", label: "Analytics & Demographics", icon: BarChart3 },
     { href: "/admin/settings", label: "System & Governance", icon: Settings },

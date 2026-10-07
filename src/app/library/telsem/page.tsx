@@ -4,9 +4,9 @@ import { Sparkles, ArrowLeft, Scroll, ShieldCheck, BookOpenText } from "lucide-r
 import { TelsemLibraryViewer } from "@/components/cultural/TelsemLibraryViewer";
 
 export const metadata = {
-  title: "Sacred Ethiopian Telsem Archive (የጠልሰም ማኅደር) | Ethio-Wellness",
+  title: "Ethiopian Telsem Archive & Prayer Study Guide (የጠልሰም ማኅደር) | Ethio-Wellness",
   description:
-    "Comprehensive digital archive of authentic Ethiopian talismanic art (ጠልሰም), parchment seals, geometric diagrams, and prayers from Mets'hafe Asmat and classical scroll traditions.",
+    "Explore catalogued Ethiopian Telsem seals, prayer transcriptions, geometric illustrations, and manuscript scans. Some transcriptions may be abbreviated; provided for cultural and educational study.",
 };
 
 export default function TelsemLibraryPage() {
@@ -60,10 +60,10 @@ export default function TelsemLibraryPage() {
           </h1>
 
           <p className="text-sm sm:text-base leading-relaxed text-stone-300">
-            Explore the complete collection of classical Ethiopian talismanic seals (ጠልሰም),
-            parchment geometry, and sacred Ge&apos;ez invocations. Faithfully extracted from
-            historical manuscripts including <strong className="text-amber-200">Mets&apos;hafe Asmat (መጽሐፈ አስማት)</strong>,
-            Awde Negest (አውደ ነገሥት), and the debtera healing scroll tradition of Gondar and Lake Tana.
+            Browse 22 catalogued Ethiopian Telsem entries (ጠልሰም), geometric illustrations, prayer transcriptions,
+            and manuscript scans where available. Entries refer to sources including
+            <strong className="text-amber-200"> Mets&apos;hafe Asmat (መጽሐፈ አስማት)</strong> and Awde Negest
+            (አውደ ነገሥት); some catalog text is abbreviated and is not a critical edition.
           </p>
 
           <div className="flex flex-wrap gap-2 pt-2 text-[11px] uppercase tracking-[0.18em] text-stone-400 font-mono">
@@ -77,7 +77,7 @@ export default function TelsemLibraryPage() {
               Interactive Sacred Geometry
             </span>
             <span className="rounded-full border border-stone-800 bg-stone-950/60 px-3 py-1">
-              Ge&apos;ez Prayer Formulas
+              Ge&apos;ez Prayer Transcriptions
             </span>
           </div>
         </div>
@@ -87,15 +87,22 @@ export default function TelsemLibraryPage() {
       <section className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 text-xs text-stone-400 space-y-2">
         <div className="flex items-center gap-2 font-bold text-amber-300">
           <BookOpenText size={16} />
-          <span>The Esoteric Debtera & Parchment Healing Scroll Tradition</span>
+          <span>Manuscript, Prayer & Scroll Traditions</span>
         </div>
         <p className="leading-relaxed text-stone-300">
-          In Ethiopian cultural tradition, a <em>Telsem</em> (ጠልሰም) is not mere decoration: it is an active sacred graphic
-          technology created by ecclesiastical scholars (<em>debteras</em>). Written on vellum prepared from goat-hide,
-          each talisman combines symbolic geometry, all-seeing eyes (ዓይነት), interlaced cruciforms, and Ge&apos;ez
-          scriptural verses. The talisman was personalized to the bearer&apos;s baptismal name and astrological hour to
-          serve as a protective shield against malevolent glances (ዓይነ ጥላ), spiritual disquiet, and illness.
+          Telsem (ጠልሰም) imagery and prayer texts appear in a range of Ethiopian manuscript and devotional traditions.
+          Interpretations and practices vary among communities and religious authorities. This archive presents
+          catalog descriptions and source images for cultural study; it does not validate claims of healing or
+          protection. Printed study copies preserve the available catalog wording and flag abbreviated transcriptions.
         </p>
+        <Link
+          href="https://app.wisdomcourse.com.et/library/telsem"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex text-amber-300 underline underline-offset-2 hover:text-amber-200"
+        >
+          Open the linked Telsem guide
+        </Link>
       </section>
 
       {/* Main Interactive Explorer */}

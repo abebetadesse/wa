@@ -703,7 +703,7 @@ export default function AdminDashboardPage() {
                 <span className="text-emerald-400">📍</span>
                 <span>Regional Adoption (48 Ethiopian Districts)</span>
               </h2>
-              <p className="text-[11px] text-slate-400 mb-4">Patient origin calibrated with local terroir and soils</p>
+              <p className="text-[11px] text-slate-400 mb-4">Patient origin calibrated with regional growing conditions and soils</p>
 
               <div className="space-y-3">
                 {(analytics?.regionalDistribution || [

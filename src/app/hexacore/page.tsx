@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import HexacoreOrrery from "@/components/cultural/HexacoreOrrery";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
@@ -21,8 +21,9 @@ import {
   CheckCircle2,
   Zap,
 } from "lucide-react";
-import { HEXACORE_DEFAULT_PRODUCTS } from "@/lib/db/schema/hexacore";
+import { HEXACORE_DEFAULT_PRODUCTS, type HexacoreCommercialProduct } from "@/lib/db/schema/hexacore";
 import type { HexacoreDossierReport } from "@/lib/hexacore/HexacoreDossierService";
+import HexacoreLiveAlignment from "@/features/hexacore/HexacoreLiveAlignment";
 
 const CORE_REMEDY_PREVIEWS = [
   { core: "Power", coreAm: "ኃይል", herb: "Damakesse", herbAm: "ደማከሴ", hz: 741, color: "#FF6347" },
@@ -89,11 +90,38 @@ const KNOWLEDGE_DIRECTORIES = [
 ] as const;
 
 export default function HexacorePage() {
-  const [checkoutProduct, setCheckoutProduct] = useState<(typeof HEXACORE_DEFAULT_PRODUCTS)[0] | null>(null);
+  const [checkoutProduct, setCheckoutProduct] = useState<HexacoreCommercialProduct | null>(null);
   const [unlockedDossier, setUnlockedDossier] = useState<HexacoreDossierReport | null>(null);
   const [purchaseRef, setPurchaseRef] = useState<string | null>(null);
+  const [products, setProducts] = useState<HexacoreCommercialProduct[]>(HEXACORE_DEFAULT_PRODUCTS);
+  const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "fallback">("loading");
+  const [catalogRefreshKey, setCatalogRefreshKey] = useState(0);
 
-  const products = HEXACORE_DEFAULT_PRODUCTS;
+  useEffect(() => {
+    const controller = new AbortController();
+    setCatalogStatus("loading");
+    const loadProducts = async () => {
+      try {
+        const response = await fetch("/api/hexacore/commercial/products", { signal: controller.signal });
+        const payload = await response.json() as {
+          success?: boolean;
+          data?: HexacoreCommercialProduct[];
+          error?: string;
+        };
+        if (!response.ok || payload.success !== true || !Array.isArray(payload.data)) {
+          throw new Error(payload.error || "The live product catalog could not be loaded.");
+        }
+        setProducts(payload.data);
+        setCatalogStatus("ready");
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error("Hexacore catalog load failed:", error);
+        setCatalogStatus("fallback");
+      }
+    };
+    void loadProducts();
+    return () => controller.abort();
+  }, [catalogRefreshKey]);
 
   return (
     <main className="app-container py-10 space-y-12">
@@ -145,6 +173,8 @@ export default function HexacorePage() {
 
       {/* ── Grand Orrery (Free Preview Layers 1-3) ───────────────────────── */}
       <section id="hexacore-orrery" aria-label="Interactive Hexacore Arcana">
+        <HexacoreLiveAlignment />
+        <div className="mt-8" />
         <HexacoreOrrery />
       </section>
 
@@ -178,6 +208,24 @@ export default function HexacorePage() {
           <p className="mt-2 text-sm text-slate-400 max-w-xl mx-auto">
             Begin with the free celestial preview or purchase your complete Natal Dossier — a personalized, printable Ethiopian wisdom blueprint.
           </p>
+          {catalogStatus === "loading" && (
+            <p role="status" className="mt-2 text-xs text-slate-500">Loading current products and prices…</p>
+          )}
+          {catalogStatus === "fallback" && (
+            <div role="status" className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-amber-200">
+              <span>The live catalog is unavailable. Built-in product information is shown; confirm prices before purchasing.</span>
+              <button
+                type="button"
+                onClick={() => setCatalogRefreshKey((key) => key + 1)}
+                className="rounded-lg border border-amber-300/30 px-2.5 py-1 font-semibold hover:bg-amber-300/10"
+              >
+                Retry catalog
+              </button>
+            </div>
+          )}
+          {catalogStatus === "ready" && products.length === 0 && (
+            <p role="status" className="mt-2 text-xs text-slate-400">No products are currently available.</p>
+          )}
         </header>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">

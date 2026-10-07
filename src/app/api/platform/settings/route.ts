@@ -10,7 +10,7 @@ export const GET = defineRoute({
     const telegram = telegramStatus();
     return {
       registration: { open: registration.open, telegram: telegram.configured ? registration.telegram : "off", telegramBot: telegram.configured ? telegram.botUsername : null },
-      payments: { freeMode: payments.freeMode },
+      payments: { freeMode: payments.freeMode, profileGating: payments.profileGating },
     };
   },
 });

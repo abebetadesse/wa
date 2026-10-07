@@ -10,13 +10,13 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-  language: "en",
+  language: "am",
   setLanguage: () => {},
-  t: TRANSLATIONS.en,
+  t: TRANSLATIONS.am,
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>("am");
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -31,10 +31,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguageState(lang);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("ethio_lang", lang);
+      window.dispatchEvent(new CustomEvent("ethio:language-change", { detail: lang }));
     }
   };
 
-  const activeLanguage = isHydrated ? language : "en";
+  const activeLanguage = isHydrated ? language : "am";
 
   return (
     <LanguageContext.Provider

@@ -46,7 +46,8 @@ test("guided workflow supports the expanded case taxonomy and interest refinemen
   assert.equal(completed?.currentStep, "solutionReview");
   assert.equal(getCase("social")?.name, "Social");
   assert.equal(getCase("relationships")?.name, "Relationships & Family");
-  assert.equal(getCase("legal")?.name, "Legal & Dispute");
+  assert.equal(getCase("career")?.name, "Money & Business Reflection");
+  assert.equal(getCase("legal")?.name, "Peace & Harmony");
   assert.equal(getCase("spiritual")?.name, "Spiritual & Life Direction");
 });
 

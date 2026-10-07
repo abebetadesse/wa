@@ -6,7 +6,7 @@ import { resolveAgroEcologicalZone, evaluateRiftValleyFluoride } from "../lib/en
 import { convertToHabeshaTime } from "../lib/engines/chrononutritionEngine.ts";
 import { evaluateFastingStatus, classifyEaterArchetype } from "../lib/engines/fastingMetabolismEngine.ts";
 import { evaluateRawMeatSafety, getZebuNiterKibbehProfile } from "../lib/engines/zoonoticSafetyEngine.ts";
-import { getTazmaApitherapyProfile } from "../lib/engines/apitherapyEngine.ts";
+import { evaluateApitherapySafety, getTazmaApitherapyProfile } from "../lib/engines/apitherapyEngine.ts";
 import { evaluateVectorSafeIron } from "../lib/engines/vectorSafeNutritionEngine.ts";
 import { calculateErshoKinetics, getEnsetMicrobiomeProfile } from "../lib/engines/fermentationMicrobiomeEngine.ts";
 import { getAllWildFruits, getWildFruitsByZone } from "../lib/engines/wildForagingEngine.ts";
@@ -141,6 +141,13 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     assert.equal(highRisk.kossoSafetyIntercept.interceptTriggered, true);
     assert.ok(highRisk.kossoSafetyIntercept.scientificAlert.includes("optic nerve atrophy"));
     assert.ok(highRisk.kossoSafetyIntercept.saferConventionalAlternative.includes("Niclosamide"));
+
+    assert.equal(evaluateRawMeatSafety("weekly", true, false).kossoSafetyIntercept.interceptTriggered, false);
+
+    const vulnerable = evaluateRawMeatSafety("rarely", false, false, { isPregnant: true });
+    assert.equal(vulnerable.riskTier, "high");
+    assert.equal(vulnerable.vulnerabilityGate.interceptTriggered, true);
+    assert.match(vulnerable.vulnerabilityGate.messages[0], /avoid raw or undercooked meat/);
   });
 
   // Enhancement 7
@@ -159,6 +166,32 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     assert.ok(tazma.trehaluloseContentPct > 35);
     assert.ok(tazma.pH < 3.8); // High natural acidity
     assert.ok(tazma.therapeuticApplications.some((a) => a.indication.includes("Asthma")));
+  });
+
+  test("Enhancement 8: apitherapy safety gates block infant, allergy, and treatment-substitution risks", () => {
+    const infant = evaluateApitherapySafety({
+      ageMonths: 11,
+      hasBeeProductAllergy: false,
+      hasDiabetes: false,
+      replacingMedicalCare: false,
+    });
+    assert.equal(infant.action, "block");
+    assert.equal(infant.gates[0].id, "infant-botulism");
+
+    const combined = evaluateApitherapySafety({
+      ageMonths: 36,
+      hasBeeProductAllergy: true,
+      hasDiabetes: true,
+      replacingMedicalCare: true,
+    });
+    assert.equal(combined.action, "block");
+    assert.deepEqual(combined.gates.map((gate) => gate.id), ["bee-product-allergy", "blood-glucose", "treatment-substitution"]);
+    assert.throws(() => evaluateApitherapySafety({
+      ageMonths: -1,
+      hasBeeProductAllergy: false,
+      hasDiabetes: false,
+      replacingMedicalCare: false,
+    }), RangeError);
   });
 
   // Enhancement 9

@@ -21,6 +21,7 @@ export async function GET(
         gematria: session.gematria,
         category: session.category,
         status: session.status,
+        serviceChoice: session.serviceChoice ?? null,
         birthContext: {
           birthDate: session.birthDate ?? null,
           birthYear: session.birthYear ?? null,

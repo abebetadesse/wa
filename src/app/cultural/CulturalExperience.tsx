@@ -15,10 +15,11 @@ import {
 import {
   getLunarForagingGuidance,
   getPagumeStatus,
-  getMineralSpringsDirectory,
 } from "@/lib/cultural/seasonalTraditionsEngine";
 import { toEthiopianDate } from "@/lib/profiling/astrology/ethiopianTraditions";
 import ChristianBibleReading from "@/components/cultural/ChristianBibleReading";
+import EthiopianHeritageExplorer from "./EthiopianHeritageExplorer";
+import WorldTraditionsExplorer from "./WorldTraditionsExplorer";
 
 interface EthiopianCalendarInfo {
   year: string;
@@ -81,10 +82,6 @@ export default function CulturalExperience() {
 
   const lunarGuidance = getLunarForagingGuidance();
   const pagumeInfo = getPagumeStatus();
-  const mineralSprings = getMineralSpringsDirectory();
-
-  const [selectedSpringId, setSelectedSpringId] = useState<string | null>(null);
-  const [showSpringDetails, setShowSpringDetails] = useState(false);
   const [calendarView, setCalendarView] = useState<"current" | "fasting" | "holidays">("current");
 
   const ethiopianCalendar = useMemo((): EthiopianCalendarInfo => {
@@ -111,16 +108,6 @@ export default function CulturalExperience() {
     };
   }, []);
 
-  const toggleSpringDetails = (springId: string) => {
-    if (selectedSpringId === springId && showSpringDetails) {
-      setShowSpringDetails(false);
-      setSelectedSpringId(null);
-    } else {
-      setSelectedSpringId(springId);
-      setShowSpringDetails(true);
-    }
-  };
-
   return (
     <div className="space-y-14">
       <div>
@@ -139,6 +126,8 @@ export default function CulturalExperience() {
       <nav aria-label="Cultural topics" className="flex gap-2 overflow-x-auto pb-1">
         {[
           ["traditions-signs", "Signs"],
+          ["ethiopian-heritage", "Ethiopian heritage"],
+          ["world-traditions", "World traditions"],
           ["ethiopian-calendar", "Calendar"],
           ["cultural-names", "Names"],
           ["coffee-rituals", "Coffee ritual"],
@@ -155,6 +144,8 @@ export default function CulturalExperience() {
       </nav>
 
       <ChristianBibleReading />
+      <EthiopianHeritageExplorer />
+      <WorldTraditionsExplorer />
 
       <div id="traditions-signs" className="glass-panel scroll-mt-24 p-6 md:p-8 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/10 pb-4">
@@ -651,70 +642,9 @@ export default function CulturalExperience() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div id="mineral-springs" className="scroll-mt-24 border-b border-white/10 pb-4">
-          <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Enhancement 19</span>
-          <h2 className="text-2xl font-bold text-white">Sacred Mineral Springs (ፍልውኃና ጸበል) Balneotherapy Directory</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Volcanic geothermal sulfur waters and highland cold springs historically frequented for physical and somatic reset.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mineralSprings.map((spring) => {
-            const isExpanded = selectedSpringId === spring.id && showSpringDetails;
-            return (
-              <div key={spring.id} className="glass-panel p-5 space-y-3 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-white text-base leading-snug">{spring.nameAmharic}</h3>
-                    <span className="font-mono text-amber-400 font-bold text-xs bg-black/40 px-2 py-0.5 rounded">
-                      {spring.waterTemperatureC}°C
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400">{spring.location}</p>
-
-                  <div className="pt-2 border-t border-white/5 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold block">Dissolved Minerals</span>
-                    <div className="flex flex-wrap gap-1">
-                      {spring.prominentMinerals.map((m, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 rounded bg-white/5 text-[10px] text-slate-300">
-                          {m}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                    {spring.traditionalAndBalneotherapeuticIndications}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => toggleSpringDetails(spring.id)}
-                  aria-expanded={isExpanded}
-                  aria-controls={`spring-details-${spring.id}`}
-                  className="mt-3 text-[10px] text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
-                >
-                  {isExpanded ? "Hide details" : "View more"}
-                </button>
-
-                {isExpanded && (
-                  <div id={`spring-details-${spring.id}`} className="p-3 rounded-lg bg-black/40 border border-white/10 text-xs space-y-2">
-                    <p><strong className="text-white">Cultural significance:</strong> {spring.culturalSignificance ?? "Documented local significance varies by community."}</p>
-                    <p><strong className="text-white">Seasonal access:</strong> {spring.seasonalAccess ?? "Access may vary with weather and local guidance."}</p>
-                    <p><strong className="text-white">Associated rituals:</strong> {spring.associatedRituals ?? "Follow local customs and safety guidance."}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="flex justify-between items-center pt-8 border-t border-white/10 text-xs">
         <Link href="/zoonotic" className="text-slate-400 hover:text-white transition-colors">
-          ← Back to Terroir & Zoonotic Safety
+          ← Back to Regional Ecology & Zoonotic Safety
         </Link>
         <Link href="/somatics" className="btn-primary text-xs py-2 px-4">
           Explore Coffee Ceremony Somatics (Enhancement 21) →

@@ -12,13 +12,23 @@ export async function POST(req: NextRequest) {
     const birthLocationName = typeof body.birthLocationName === "string" ? body.birthLocationName.trim().slice(0, 120) : undefined;
     const birthLatitude = typeof body.birthLatitude === "number" && Number.isFinite(body.birthLatitude) && body.birthLatitude >= -90 && body.birthLatitude <= 90 ? body.birthLatitude : undefined;
     const birthLongitude = typeof body.birthLongitude === "number" && Number.isFinite(body.birthLongitude) && body.birthLongitude >= -180 && body.birthLongitude <= 180 ? body.birthLongitude : undefined;
+    const serviceChoice = body.serviceChoice && typeof body.serviceChoice === "object" ? {
+      id: typeof body.serviceChoice.id === "string" ? body.serviceChoice.id : "general",
+      title: typeof body.serviceChoice.title === "string" ? body.serviceChoice.title : "Spiritual focus",
+      label: typeof body.serviceChoice.label === "string" ? body.serviceChoice.label : "Guidance",
+      prayer: typeof body.serviceChoice.prayer === "string" ? body.serviceChoice.prayer : "May clarity and patience guide this path.",
+      prayerGe: typeof body.serviceChoice.prayerGe === "string" ? body.serviceChoice.prayerGe : undefined,
+      telsemId: typeof body.serviceChoice.telsemId === "string" ? body.serviceChoice.telsemId : null,
+      telsemName: typeof body.serviceChoice.telsemName === "string" ? body.serviceChoice.telsemName : null,
+      fullDescription: typeof body.serviceChoice.fullDescription === "string" ? body.serviceChoice.fullDescription : undefined,
+    } : undefined;
 
     const session = startSpiritualCase(nameGeez, motherNameGeez, user.id, {
       birthDate,
       birthLocationName,
       birthLatitude,
       birthLongitude,
-    });
+    }, serviceChoice);
 
     return NextResponse.json({
       success: true,

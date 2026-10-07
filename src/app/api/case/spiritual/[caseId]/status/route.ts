@@ -33,6 +33,7 @@ export async function GET(
           birthLongitude: session.birthLongitude ?? null,
         },
         category: session.category,
+        serviceChoice: session.serviceChoice ?? null,
         lastUpdated: session.lastUpdated,
         assignedExpert: session.assignedExpert,
         estimatedMinutesRemaining: session.estimatedMinutesRemaining,

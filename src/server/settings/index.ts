@@ -23,6 +23,18 @@ const price = z.object({ reportEtb: z.coerce.number().min(0).max(1_000_000), con
 export const paymentSettings = z.object({
   /** Everything the platform charges for is free while this is on. */
   freeMode: z.boolean(),
+  /** Administrator-managed setting to hide/blur 50% of personal profile results to enforce payment */
+  profileGating: z.object({
+    enabled: z.boolean().default(true),
+    priceEtb: z.coerce.number().min(0).max(1_000_000).default(150),
+    title: z.string().trim().default("Complete 5-System Sacred Blueprint"),
+    description: z.string().trim().default("Unlock 100% of your multi-system profile results: deep herbal adaptogens, Dasha planetary timing, and complete naming formulas."),
+  }).default({
+    enabled: true,
+    priceEtb: 150,
+    title: "Complete 5-System Sacred Blueprint",
+    description: "Unlock 100% of your multi-system profile results: deep herbal adaptogens, Dasha planetary timing, and complete naming formulas.",
+  }),
   methods: z.object({
     chapa: z.object({ enabled: z.boolean() }),
     telebirr: z.object({
@@ -65,13 +77,28 @@ export const caseRoutingSettings = z.object({
 });
 export type CaseRoutingSettings = z.infer<typeof caseRoutingSettings>;
 
-const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings } as const;
+export const caseSearchSettings = z.object({
+  caseType: z.boolean().default(true),
+  herb: z.boolean().default(true),
+  diet: z.boolean().default(true),
+  location: z.boolean().default(true),
+  element: z.boolean().default(true),
+});
+export type CaseSearchSettings = z.infer<typeof caseSearchSettings>;
+
+const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings, caseSearch: caseSearchSettings } as const;
 export type SettingsKey = keyof typeof SCHEMAS;
 export type SettingsValue<K extends SettingsKey> = z.infer<(typeof SCHEMAS)[K]>;
 
 export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
   payments: {
     freeMode: false,
+    profileGating: {
+      enabled: true,
+      priceEtb: 150,
+      title: "Complete 5-System Sacred Blueprint",
+      description: "Unlock 100% of your multi-system profile results: deep herbal adaptogens, Dasha planetary timing, and complete naming formulas.",
+    },
     methods: {
       chapa: { enabled: true },
       telebirr: { enabled: true, channel: "chapa", accountName: "", phone: "" },
@@ -92,6 +119,7 @@ export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
       spiritual: "admin",
     },
   },
+  caseSearch: { caseType: true, herb: true, diet: true, location: true, element: true },
 };
 
 const cache = new Map<SettingsKey, { value: unknown; at: number }>();

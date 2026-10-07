@@ -29,6 +29,12 @@ export default function HatataLibraryPage() {
             አውደ ነገሥት (Manuscripts) ↗
           </Link>
           <Link
+            href="/library/archangels"
+            className="text-xs font-mono px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 transition-colors"
+          >
+            ድርሳነ ሊቃነ መላእክት ↗
+          </Link>
+          <Link
             href="/library/telsem"
             className="text-xs font-mono px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 transition-colors"
           >

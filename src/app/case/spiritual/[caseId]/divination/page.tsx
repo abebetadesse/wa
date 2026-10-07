@@ -22,6 +22,7 @@ export default function SpiritualDivinationPage({
   const [revealStep, setRevealStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
+  const selectedService = data?.serviceChoice;
 
   const continueToProcessing = async () => {
     setIsProcessing(true);
@@ -122,6 +123,24 @@ export default function SpiritualDivinationPage({
             ) : ""}
           </p>
         </div>
+
+        {selectedService && (
+          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-stone-900 to-emerald-500/10 p-5 shadow-lg">
+            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Chosen spiritual service</div>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-amber-50">{selectedService.title}</h2>
+                <p className="text-sm text-stone-300">{selectedService.label}</p>
+              </div>
+              {selectedService.telsemName && (
+                <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                  Telsem: {selectedService.telsemName}
+                </span>
+              )}
+            </div>
+            <p className="mt-4 text-sm leading-6 text-stone-200">“{selectedService.prayer}”</p>
+          </div>
+        )}
 
         {/* Step 1: Name Resonance Summary */}
         <div

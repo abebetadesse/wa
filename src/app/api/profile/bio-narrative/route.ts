@@ -88,6 +88,7 @@ export const POST = defineRoute({
       bioNarrative: false,
       voiceIntake: false,
       manuscriptKnowledge: false,
+      identityContext: false,
     };
     if (!consent.bioNarrative) {
       throw ApiError.badRequest("Bio-narrative generation requires explicit bio-narrative consent in your profile.");

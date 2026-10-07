@@ -5,9 +5,18 @@
 
 export type RawMeatConsumptionFrequency = "never" | "rarely" | "monthly" | "weekly" | "multiple_per_week";
 
+export interface RawMeatSafetyContext {
+  isPregnant?: boolean;
+  isImmunocompromised?: boolean;
+}
+
 export interface ParasitologyRiskAssessment {
   rawMeatFrequency: RawMeatConsumptionFrequency;
   riskTier: "low" | "moderate" | "high" | "critical";
+  vulnerabilityGate: {
+    interceptTriggered: boolean;
+    messages: string[];
+  };
   parasiteRisks: {
     name: string;
     scientificName: string;
@@ -45,7 +54,8 @@ export interface ZebuLipidomicsProfile {
 export function evaluateRawMeatSafety(
   frequency: RawMeatConsumptionFrequency,
   hasAbdominalSymptoms: boolean = false,
-  consideringTraditionalKosso: boolean = false
+  consideringTraditionalKosso: boolean = false,
+  context: RawMeatSafetyContext = {}
 ): ParasitologyRiskAssessment {
   let riskTier: ParasitologyRiskAssessment["riskTier"] = "low";
   if (frequency === "weekly" || frequency === "multiple_per_week") {
@@ -54,11 +64,21 @@ export function evaluateRawMeatSafety(
     riskTier = hasAbdominalSymptoms ? "high" : "moderate";
   }
 
-  const interceptKosso = consideringTraditionalKosso || riskTier === "critical" || riskTier === "high";
+  const vulnerableConsumer = context.isPregnant === true || context.isImmunocompromised === true;
+  const vulnerabilityGateTriggered = frequency !== "never" && vulnerableConsumer;
+  if (vulnerabilityGateTriggered && riskTier !== "critical") riskTier = "high";
+  const interceptKosso = consideringTraditionalKosso;
 
   return {
     rawMeatFrequency: frequency,
     riskTier,
+    vulnerabilityGate: {
+      interceptTriggered: vulnerabilityGateTriggered,
+      messages: [
+        ...(context.isPregnant ? ["Pregnancy: avoid raw or undercooked meat because foodborne infections can pose added risks."] : []),
+        ...(context.isImmunocompromised ? ["A weakened immune system can increase the risk of severe foodborne illness; choose thoroughly cooked meat."] : []),
+      ],
+    },
     parasiteRisks: [
       {
         name: "Bovine Tapeworm (የከብት ቴፕዎርም / የሆድ ውስጥ ትል)",

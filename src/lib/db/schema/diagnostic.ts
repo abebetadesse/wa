@@ -11,7 +11,7 @@ export const diagnosticSessions = mysqlTable("diagnostic_sessions", {
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   query: text("query").notNull(),
   mode: varchar("mode", { length: 20 }).default("text").notNull(),
-  language: varchar("language", { length: 10 }).default("en").notNull(),
+  language: varchar("language", { length: 10 }).default("am").notNull(),
   urgencyLevel: varchar("urgency_level", { length: 20 }).notNull(),
   urgencyScore: integer("urgency_score").notNull(),
   intent: varchar("intent", { length: 50 }).notNull(),

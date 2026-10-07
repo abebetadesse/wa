@@ -12,20 +12,40 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { userProfiles } from "@/lib/db/schema";
+import { userProfiles, users } from "@/lib/db/schema";
 import { isVisible } from "@/lib/profileFields";
 import { ensureProfileFieldCatalog } from "@/lib/profileFieldCatalog";
 import { defineRoute, ApiError } from "@/lib/api/route";
+import { getSettings } from "@/server/settings";
 
 // ─── GET /api/profile ─────────────────────────────────────────────────────────
 
 export const GET = defineRoute({
   access: "user",
   handler: async ({ user }) => {
-    const [profile] = await db
-      .select()
-      .from(userProfiles)
-      .where(eq(userProfiles.userId, user.id));
+    const [[[profile], [accountUser]], paymentConfig] = await Promise.all([
+      Promise.all([
+        db.select().from(userProfiles).where(eq(userProfiles.userId, user.id)),
+        db
+          .select({
+            id: users.id,
+            name: users.name,
+            email: users.email,
+            phone: users.phone,
+            dateOfBirth: users.dateOfBirth,
+            gender: users.gender,
+            region: users.region,
+            city: users.city,
+            preferredLanguage: users.preferredLanguage,
+            role: users.role,
+            isVerified: users.isVerified,
+          })
+          .from(users)
+          .where(eq(users.id, user.id))
+          .limit(1),
+      ]),
+      getSettings("payments"),
+    ]);
 
     const fields = await ensureProfileFieldCatalog();
     const data = profile?.data || {};
@@ -44,28 +64,59 @@ export const GET = defineRoute({
         : null;
 
     return {
+      // Account-level fields from the users table
+      name: accountUser?.name || (data.primaryName as string) || (data.fullName as string) || "",
+      fatherName: (data.fatherName as string) || (data.father as string) || "",
+      motherName: profile?.motherName || (data.motherName as string) || (data.mother as string) || "",
+      birthLocation: profile?.birthLocation || (data.birthLocation as string) || accountUser?.city || (data.city as string) || "",
+      birthTime: profile?.birthTime || (data.birthTime as string) || "12:00",
+      email: accountUser?.email || "",
+      phone: accountUser?.phone || (data.phone as string) || "",
+      dateOfBirth: accountUser?.dateOfBirth || profile?.birthDate || (data.dateOfBirth as string) || (data.birthDate as string) || (data.dob as string) || "",
+      gender: typeof data.genderIdentity === "string" ? data.genderIdentity : accountUser?.gender || (data.gender as string) || "",
+      religion: typeof data.religion === "string" ? data.religion : "",
+      region: accountUser?.region || (data.region as string) || "",
+      city: accountUser?.city || profile?.currentLocation || (data.city as string) || "",
+      preferredLanguage: accountUser?.preferredLanguage || "en",
+      role: accountUser?.role || user.role || "user",
+      isVerified: accountUser?.isVerified ?? false,
+      // Profile data blob
       data,
       fields,
       profile: {
-        primaryName: profile?.primaryName || (data.primaryName as string) || (data.fullName as string) || "",
-        birthDate: profile?.birthDate || (data.birthDate as string) || (data.dob as string) || "",
+        primaryName: profile?.primaryName || (data.primaryName as string) || (data.fullName as string) || accountUser?.name || "",
+        birthDate: profile?.birthDate || (data.birthDate as string) || (data.dob as string) || accountUser?.dateOfBirth || "",
         birthTime: profile?.birthTime || (data.birthTime as string) || "",
         birthLocation: profile?.birthLocation || (data.birthLocation as string) || "",
-        currentLocation: profile?.currentLocation || (data.currentLocation as string) || "",
+        currentLocation: profile?.currentLocation || (data.currentLocation as string) || accountUser?.city || "",
         motherName: profile?.motherName || (data.motherName as string) || "",
         consentSpiritual: profile?.consentSpiritual ?? Boolean(data.consentSpiritual ?? false),
         consentLocation: profile?.consentLocation ?? Boolean(data.consentLocation ?? false),
-        consent: profile?.consent ?? {
-          location: profile?.consentLocation ?? false,
-          spiritual: profile?.consentSpiritual ?? false,
-          traditionalMedicine: false,
-          bioNarrative: false,
-          voiceIntake: false,
-          manuscriptKnowledge: false,
+        consent: {
+          ...profile?.consent,
+          location: profile?.consent?.location ?? profile?.consentLocation ?? false,
+          spiritual: profile?.consent?.spiritual ?? profile?.consentSpiritual ?? false,
+          traditionalMedicine: profile?.consent?.traditionalMedicine ?? false,
+          bioNarrative: profile?.consent?.bioNarrative ?? false,
+          voiceIntake: profile?.consent?.voiceIntake ?? false,
+          manuscriptKnowledge: profile?.consent?.manuscriptKnowledge ?? false,
+          identityContext: profile?.consent?.identityContext ?? false,
         },
         onboardingCompleted: profile?.onboardingCompleted ?? Boolean(data.onboardingCompleted ?? data.onboardingComplete ?? false),
         locationContext: profile?.locationContext ?? data.locationContext ?? null,
         birthLocationContext: profile?.birthLocationContext ?? data.birthLocationContext ?? null,
+      },
+      isUnlocked: Boolean(
+        (accountUser?.role === "admin" || accountUser?.role === "super_admin" || user.role === "admin" || user.role === "super_admin") ||
+        paymentConfig.freeMode ||
+        !paymentConfig.profileGating?.enabled ||
+        data.profileUnlocked
+      ),
+      gatingSettings: {
+        enabled: Boolean(paymentConfig.profileGating?.enabled),
+        priceEtb: Number(paymentConfig.profileGating?.priceEtb ?? 150),
+        title: paymentConfig.profileGating?.title ?? "Complete 5-System Sacred Blueprint",
+        description: paymentConfig.profileGating?.description ?? "",
       },
       computed: { bmi },
     };
@@ -85,6 +136,18 @@ export const PUT = defineRoute({
   },
   handler: async ({ user, body }) => {
     const incoming = body as Record<string, unknown>;
+    for (const field of ["gender", "religion"] as const) {
+      if (incoming[field] !== undefined) {
+        if (typeof incoming[field] !== "string") {
+          throw ApiError.badRequest(`${field} must be text.`);
+        }
+        const value = incoming[field].trim();
+        if (value.length > 100) {
+          throw ApiError.badRequest(`${field} must be 100 characters or fewer.`);
+        }
+        incoming[field] = value;
+      }
+    }
     const fields = await ensureProfileFieldCatalog();
 
     const [existing] = await db
@@ -118,14 +181,16 @@ export const PUT = defineRoute({
     let consentLocation = incoming.consentLocation !== undefined
       ? Boolean(incoming.consentLocation)
       : (existing?.consentLocation ?? false);
-    const consentKeys = ["location", "spiritual", "traditionalMedicine", "bioNarrative", "voiceIntake", "manuscriptKnowledge"] as const;
-    const previousConsent = existing?.consent ?? {
-      location: consentLocation,
-      spiritual: consentSpiritual,
-      traditionalMedicine: false,
-      bioNarrative: false,
-      voiceIntake: false,
-      manuscriptKnowledge: false,
+    const consentKeys = ["location", "spiritual", "traditionalMedicine", "bioNarrative", "voiceIntake", "manuscriptKnowledge", "identityContext"] as const;
+    const previousConsent = {
+      ...existing?.consent,
+      location: existing?.consent?.location ?? consentLocation,
+      spiritual: existing?.consent?.spiritual ?? consentSpiritual,
+      traditionalMedicine: existing?.consent?.traditionalMedicine ?? false,
+      bioNarrative: existing?.consent?.bioNarrative ?? false,
+      voiceIntake: existing?.consent?.voiceIntake ?? false,
+      manuscriptKnowledge: existing?.consent?.manuscriptKnowledge ?? false,
+      identityContext: existing?.consent?.identityContext ?? false,
     };
     const suppliedConsent = incoming.consent;
     if (suppliedConsent !== undefined && (
@@ -169,6 +234,8 @@ export const PUT = defineRoute({
 
     data.consentSpiritual = consentSpiritual;
     data.consentLocation = consentLocation;
+    if (incoming.gender !== undefined) data.genderIdentity = incoming.gender;
+    if (incoming.religion !== undefined) data.religion = incoming.religion;
     data.onboardingCompleted = onboardingCompleted;
     if (birthLocationContext) data.birthLocationContext = birthLocationContext;
 

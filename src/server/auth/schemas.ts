@@ -22,9 +22,11 @@ export const registerBody = z
     confirmPassword: z.string().optional(),
     fullName: optionalText,
     name: optionalText,
+    fatherName: optionalText,
+    motherName: optionalText,
     phone: optionalText,
     dateOfBirth: optionalText,
-    preferredLanguage: language.catch("en"),
+    preferredLanguage: language.catch("am"),
     gender: optionalText,
     region: optionalText,
     city: optionalText,
@@ -40,9 +42,11 @@ export const registerBody = z
     message: "Passwords do not match.",
     path: ["confirmPassword"],
   })
-  .transform(({ fullName, name, confirmPassword: _confirm, acceptTerms: _terms, acceptPrivacy: _privacy, ...rest }) => ({
+  .transform(({ fullName, name, fatherName, motherName, confirmPassword: _confirm, acceptTerms: _terms, acceptPrivacy: _privacy, ...rest }) => ({
     ...rest,
-    name: fullName ?? name,
+    name: fullName ?? (fatherName && name ? `${name} ${fatherName}` : (name ?? fatherName)),
+    fatherName,
+    motherName,
   }));
 
 

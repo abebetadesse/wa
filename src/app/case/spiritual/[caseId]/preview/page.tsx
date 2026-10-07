@@ -8,6 +8,14 @@ type PreviewData = {
   status: string;
   freeSummary: string;
   draftNotice: string;
+  serviceChoice?: {
+    id: string;
+    title: string;
+    label: string;
+    prayer: string;
+    prayerGe?: string;
+    telsemName?: string | null;
+  };
   aiAnalysis?: {
     situationSummary: string;
     strengths: string[];
@@ -82,6 +90,29 @@ export default function SpiritualPreviewPage({
             <div role="status" className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 text-sm text-amber-100">
               {preview.draftNotice}
             </div>
+
+            {preview.serviceChoice && (
+              <section className="rounded-3xl border border-amber-500/30 bg-stone-900/80 p-6">
+                <div className="flex items-center justify-between gap-3 border-b border-stone-800 pb-3">
+                  <div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Selected prayer focus</div>
+                    <h2 className="mt-2 text-2xl font-bold text-amber-50">{preview.serviceChoice.title}</h2>
+                  </div>
+                  <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">
+                    {preview.serviceChoice.label}
+                  </span>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-stone-200">“{preview.serviceChoice.prayer}”</p>
+                {preview.serviceChoice.prayerGe && (
+                  <p className="mt-3 text-sm italic text-emerald-200">{preview.serviceChoice.prayerGe}</p>
+                )}
+                {preview.serviceChoice.telsemName && (
+                  <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm text-emerald-100">
+                    Telsem match: {preview.serviceChoice.telsemName}
+                  </div>
+                )}
+              </section>
+            )}
 
             <section className="space-y-3 rounded-3xl border border-amber-500/30 bg-stone-900/80 p-6">
               <h2 className="text-xs font-bold uppercase tracking-widest text-amber-300">Name calculation · cultural reflection</h2>

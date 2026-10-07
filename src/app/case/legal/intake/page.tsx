@@ -357,7 +357,7 @@ export default function LegalIntakePage() {
           </Link>
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-semibold text-zinc-200 tracking-wide">Legal & Dispute</span>
+            <span className="text-sm font-semibold text-zinc-200 tracking-wide">Peace & Harmony</span>
           </div>
           <StageProgress current={stage} />
         </div>
@@ -374,7 +374,7 @@ export default function LegalIntakePage() {
                 <Scale className="w-8 h-8 text-purple-400" />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-br from-white via-zinc-200 to-purple-300 bg-clip-text text-transparent">
-                Legal & Dispute Guidance (የሕግና ክርክር ምክር)
+                Peace & Harmony
               </h1>
               <p className="text-zinc-400 max-w-lg mx-auto text-sm leading-relaxed">
                 Spiritual peacemaking, community reconciliation (ሽምግልና), and cultural restorative justice. Grounded entirely in traditional Ethiopian wisdom — no scientific or statutory legal advice.

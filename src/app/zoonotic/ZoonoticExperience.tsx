@@ -7,7 +7,7 @@ import {
   getZebuNiterKibbehProfile,
   RawMeatConsumptionFrequency,
 } from "@/lib/engines/zoonoticSafetyEngine";
-import { getTazmaApitherapyProfile } from "@/lib/engines/apitherapyEngine";
+import { evaluateApitherapySafety, getTazmaApitherapyProfile } from "@/lib/engines/apitherapyEngine";
 import { evaluateVectorSafeIron } from "@/lib/engines/vectorSafeNutritionEngine";
 import { getEnsetMicrobiomeProfile } from "@/lib/engines/fermentationMicrobiomeEngine";
 
@@ -15,19 +15,37 @@ export default function ZoonoticExperience() {
   const [rawMeatFreq, setRawMeatFreq] = useState<RawMeatConsumptionFrequency>("weekly");
   const [hasSymptoms, setHasSymptoms] = useState<boolean>(false);
   const [consideringKosso, setConsideringKosso] = useState<boolean>(true);
-  const parasitologyAssessment = evaluateRawMeatSafety(rawMeatFreq, hasSymptoms, consideringKosso);
+  const [isPregnant, setIsPregnant] = useState<boolean>(false);
+  const [isImmunocompromised, setIsImmunocompromised] = useState<boolean>(false);
+  const parasitologyAssessment = evaluateRawMeatSafety(rawMeatFreq, hasSymptoms, consideringKosso, {
+    isPregnant,
+    isImmunocompromised,
+  });
 
   const zebuProfile = getZebuNiterKibbehProfile();
   const tazmaProfile = getTazmaApitherapyProfile();
+  const [ageMonths, setAgeMonths] = useState<number>(36);
+  const [hasBeeProductAllergy, setHasBeeProductAllergy] = useState<boolean>(false);
+  const [hasDiabetes, setHasDiabetes] = useState<boolean>(false);
+  const [replacingMedicalCare, setReplacingMedicalCare] = useState<boolean>(false);
+  const apitherapyAssessment = evaluateApitherapySafety({
+    ageMonths,
+    hasBeeProductAllergy,
+    hasDiabetes,
+    replacingMedicalCare,
+  });
 
   const [vectorAltitude, setVectorAltitude] = useState<number>(600);
   const [vectorRegion, setVectorRegion] = useState<string>("Gambela");
   const [intendedIronDose, setIntendedIronDose] = useState<number>(65);
+  const [month, setMonth] = useState<number>(new Date().getMonth());
+  const [usesInsecticideTreatedNet, setUsesInsecticideTreatedNet] = useState<boolean>(false);
   const vectorAssessment = evaluateVectorSafeIron({
     altitudeMeters: vectorAltitude,
     region: vectorRegion,
+    month,
     intendedIronSupplementDoseMg: intendedIronDose,
-    isSleepingUnderInsecticideTreatedNet: false,
+    isSleepingUnderInsecticideTreatedNet: usesInsecticideTreatedNet,
   });
 
   const [selectedEnsetProduct, setSelectedEnsetProduct] = useState<"kocho" | "bulla">("kocho");
@@ -37,7 +55,7 @@ export default function ZoonoticExperience() {
     <div className="app-container py-10 space-y-12">
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2">
-          <span>Terroir, Apiculture & Scientific Safety Gates</span>
+          <span>Regional Ecology, Apiculture & Scientific Safety Gates</span>
           <span>•</span>
           <span className="text-amber-400">Enhancements 6, 7, 8, 9 & 12</span>
         </div>
@@ -97,6 +115,26 @@ export default function ZoonoticExperience() {
               <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
                 <input
                   type="checkbox"
+                  checked={isPregnant}
+                  onChange={(e) => setIsPregnant(e.target.checked)}
+                  className="rounded border-white/20 bg-black/40 text-rose-500 focus:ring-0"
+                />
+                <span>Currently pregnant</span>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isImmunocompromised}
+                  onChange={(e) => setIsImmunocompromised(e.target.checked)}
+                  className="rounded border-white/20 bg-black/40 text-rose-500 focus:ring-0"
+                />
+                <span>Have a weakened immune system</span>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
                   checked={consideringKosso}
                   onChange={(e) => setConsideringKosso(e.target.checked)}
                   className="rounded border-white/20 bg-black/40 text-rose-500 focus:ring-0"
@@ -105,6 +143,15 @@ export default function ZoonoticExperience() {
               </label>
             </div>
           </div>
+
+          {parasitologyAssessment.vulnerabilityGate.interceptTriggered && (
+            <div role="alert" className="p-4 rounded-xl bg-rose-950/30 border border-rose-500/40 space-y-2 text-xs">
+              <strong className="text-rose-300">Food-safety gate: choose thoroughly cooked meat</strong>
+              <ul className="list-disc list-inside text-slate-300 text-[11px] space-y-1">
+                {parasitologyAssessment.vulnerabilityGate.messages.map((message) => <li key={message}>{message}</li>)}
+              </ul>
+            </div>
+          )}
 
           {parasitologyAssessment.kossoSafetyIntercept.interceptTriggered && (
             <div className="p-4 rounded-xl bg-rose-950/30 border border-rose-500/40 space-y-2 text-xs">
@@ -148,6 +195,18 @@ export default function ZoonoticExperience() {
             </span>
           </div>
 
+          <div className="flex flex-wrap gap-2 text-[10px]">
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300">
+              VECTOR RISK: {vectorAssessment.vectorRiskLevel.toUpperCase()}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300">
+              {vectorAssessment.isPeakTransmissionSeason ? "PEAK TRANSMISSION SEASON" : "OUTSIDE PEAK SEASON"}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300">
+              {vectorAssessment.isMalariaEndemicZone ? "MALARIA-RISK ZONE" : "NON-ENDEMIC ZONE"}
+            </span>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-slate-300 block mb-1">Region:</label>
@@ -173,6 +232,29 @@ export default function ZoonoticExperience() {
               />
             </div>
           </div>
+
+          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={usesInsecticideTreatedNet}
+              onChange={(e) => setUsesInsecticideTreatedNet(e.target.checked)}
+              className="rounded border-white/20 bg-black/40 text-amber-500 focus:ring-0"
+            />
+            <span>Sleep under an insecticide-treated net</span>
+          </label>
+
+          <label className="block text-xs text-slate-300">
+            Month of exposure:
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="mt-1 w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white"
+            >
+              {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((name, index) => (
+                <option key={name} value={index}>{name}</option>
+              ))}
+            </select>
+          </label>
 
           <div>
             <div className="flex justify-between items-center text-xs mb-1">
@@ -219,13 +301,59 @@ export default function ZoonoticExperience() {
           </div>
         </div>
 
-        <div className="glass-panel p-6">
+        <div className="glass-panel p-6 space-y-4">
           <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Enhancement 8</span>
-          <h2 className="text-xl font-bold text-white mt-2">Tazma Apitherapy</h2>
-          <div className="mt-4 space-y-3 text-xs text-slate-300">
+          <h2 className="text-xl font-bold text-white mt-2">Tazma Honey Safety Gate</h2>
+          <p className="text-xs text-slate-400">Educational screening only; this does not establish that honey is an effective treatment.</p>
+          <div className="space-y-3 text-xs text-slate-300">
             <p><strong className="text-emerald-400">Product:</strong> {tazmaProfile.productNameAmharic}</p>
             <p><strong className="text-emerald-400">Habitat:</strong> {tazmaProfile.nestingHabitat}</p>
-            <p><strong className="text-emerald-400">Caution:</strong> {tazmaProfile.precautions[0]}</p>
+            <label className="block">
+              Age (months):
+              <input
+                type="number"
+                min="0"
+                max="1200"
+                step="1"
+                value={ageMonths}
+                onChange={(e) => setAgeMonths(Math.max(0, Number(e.target.value)))}
+                className="mt-1 w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white"
+              />
+            </label>
+            {[
+              { label: "Known allergy to honey, bee products, or propolis", checked: hasBeeProductAllergy, onChange: setHasBeeProductAllergy },
+              { label: "Diabetes or blood-glucose management", checked: hasDiabetes, onChange: setHasDiabetes },
+              { label: "Considering honey instead of prescribed treatment or professional care", checked: replacingMedicalCare, onChange: setReplacingMedicalCare },
+            ].map((gate) => (
+              <label key={gate.label} className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={gate.checked}
+                  onChange={(e) => gate.onChange(e.target.checked)}
+                  className="mt-0.5 rounded border-white/20 bg-black/40 text-amber-500 focus:ring-0"
+                />
+                <span>{gate.label}</span>
+              </label>
+            ))}
+            <div
+              role={apitherapyAssessment.action === "block" ? "alert" : "status"}
+              className={`rounded-lg border p-3 text-xs ${
+                apitherapyAssessment.action === "block"
+                  ? "bg-rose-950/30 border-rose-500/40 text-rose-200"
+                  : apitherapyAssessment.action === "caution"
+                    ? "bg-amber-950/30 border-amber-500/40 text-amber-200"
+                    : "bg-emerald-950/30 border-emerald-500/30 text-emerald-200"
+              }`}
+            >
+              <strong className="block mb-2">Honey screening: {apitherapyAssessment.action.toUpperCase()}</strong>
+              {apitherapyAssessment.gates.length ? (
+                <ul className="list-disc list-inside space-y-1">
+                  {apitherapyAssessment.gates.map((gate) => <li key={gate.id}>{gate.title}: {gate.message}</li>)}
+                </ul>
+              ) : (
+                <p>No listed risk factors selected. This is not a safety guarantee or treatment recommendation.</p>
+              )}
+            </div>
           </div>
         </div>
 

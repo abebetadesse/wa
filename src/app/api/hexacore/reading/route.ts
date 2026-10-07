@@ -18,12 +18,22 @@ export async function GET() {
       practiceCompleted: hexacoreJournal.practiceCompleted,
     }).from(hexacoreJournal).where(eq(hexacoreJournal.userId, user.id)).orderBy(desc(hexacoreJournal.entryDate)).limit(30);
     const reading = HexacoreEngine.compute({ user: { dateOfBirth: account?.dateOfBirth, frequencies }, recentJournal: journal });
-    await db.insert(hexacoreFrequencyHistory).values({
-      userId: user.id,
-      frequencies: reading.frequencies,
-      dominantCore: reading.activeCores.primary,
-      source: "seasonal",
-    });
+    const [latestSnapshot] = await db.select({
+      frequencies: hexacoreFrequencyHistory.frequencies,
+      dominantCore: hexacoreFrequencyHistory.dominantCore,
+    }).from(hexacoreFrequencyHistory).where(eq(hexacoreFrequencyHistory.userId, user.id))
+      .orderBy(desc(hexacoreFrequencyHistory.recordedAt)).limit(1);
+    const hasChanged = !latestSnapshot ||
+      latestSnapshot.dominantCore !== reading.activeCores.primary ||
+      Object.entries(reading.frequencies).some(([core, value]) => latestSnapshot.frequencies[core as Core] !== value);
+    if (hasChanged) {
+      await db.insert(hexacoreFrequencyHistory).values({
+        userId: user.id,
+        frequencies: reading.frequencies,
+        dominantCore: reading.activeCores.primary,
+        source: "seasonal",
+      });
+    }
     return ok(reading);
   } catch (caught) {
     console.error("Hexacore reading failed:", caught);

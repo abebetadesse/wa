@@ -41,6 +41,17 @@ export type SpiritualCaseStatus =
   | "full_report_released"
   | "consultation_booked";
 
+export interface SpiritualServiceChoice {
+  id: string;
+  title: string;
+  label: string;
+  prayer: string;
+  prayerGe?: string;
+  telsemId?: string | null;
+  telsemName?: string | null;
+  fullDescription?: string;
+}
+
 export interface HealingScrollData {
   pdfUrl: string;
   previewUrl: string;
@@ -105,6 +116,7 @@ export interface SpiritualReport {
     materials: string[];
     expertNotes: string;
   };
+  serviceChoice?: SpiritualServiceChoice;
   healingScroll: HealingScrollData;
   expert?: {
     id: string;
@@ -138,6 +150,7 @@ export interface SpiritualCaseSession {
   birthLatitude?: number;
   birthLongitude?: number;
   category: string;
+  serviceChoice?: SpiritualServiceChoice;
   gematria: FullDivinationResult;
   answers: Record<string, any>;
   assignedExpert?: Expert;
@@ -296,35 +309,41 @@ export async function assignExpert(
  */
 export function generateHealingScroll(
   gematria: Partial<FullDivinationResult>,
-  category: string = "life_direction"
+  category: string = "life_direction",
+  serviceChoice?: SpiritualServiceChoice
 ): HealingScrollData {
   const name = gematria.nameGeez || "Name not supplied";
   const circleNum = gematria.awdeCircle?.number;
+  const selectedTitle = serviceChoice?.title || category.replaceAll("_", " ");
+  const prayer = serviceChoice?.prayer || `A personal reflection for ${name}: May I approach ${category.replaceAll("_", " ")} with clarity, patience, and care.`;
+  const prayerGe = serviceChoice?.prayerGe || "በሰላም እቀመጣለሁ እንዲሁም እገዛለሁ።";
 
   const prayers = [
-    `A personal reflection for ${name}: May I approach ${category.replaceAll("_", " ")} with clarity, patience, and care.`,
+    prayer,
+    prayerGe,
     "A quiet moment can help clarify what matters and what next step is within reach.",
   ];
 
   const wordsOfPower = [
-    `Chosen focus: ${category.replaceAll("_", " ")}`,
-    circleNum ? `Circle ${circleNum}: ${gematria.awdeCircle?.name || gematria.awdeCircle?.nameAmharic}` : "Name-based cultural symbolism",
+    `Chosen focus: ${selectedTitle}`,
+    serviceChoice?.telsemName ? `Telsem: ${serviceChoice.telsemName}` : (circleNum ? `Circle ${circleNum}: ${gematria.awdeCircle?.name || gematria.awdeCircle?.nameAmharic}` : "Name-based cultural symbolism"),
+    serviceChoice?.label ? `Service: ${serviceChoice.label}` : `Category: ${category.replaceAll("_", " ")}`,
   ];
 
   const imagery = [
-    "A private space for reflection",
-    "A written intention for the selected focus",
+    serviceChoice ? `Service focus: ${selectedTitle}` : "A private space for reflection",
+    serviceChoice?.telsemName ? `Telsem resonance: ${serviceChoice.telsemName}` : "A written intention for the selected focus",
     `A symbolic reference to ${gematria.awdeCircle?.name || "the name calculation"}`,
   ];
 
   return {
     pdfUrl: "",
     previewUrl: "",
-    title: `Reflective reading for ${name}`,
+    title: serviceChoice ? `${serviceChoice.title} reading for ${name}` : `Reflective reading for ${name}`,
     prayers,
     wordsOfPower,
     imagery,
-    patronAngel: circleNum === 8 ? "ቅዱስ ሩፋኤልና ቅድስት ማርያም" : "Not specified",
+    patronAngel: circleNum === 8 ? "ቅዱስ ሩፋኤልና ቅድስት ማርያም" : serviceChoice?.label || "Not specified",
     generatedAt: new Date().toISOString(),
   };
 }
@@ -333,10 +352,10 @@ export function generateHealingScroll(
  * Generates full personalized spiritual report
  */
 export function generateSpiritualReport(session: SpiritualCaseSession, expert?: Expert): SpiritualReport {
-  const { gematria, nameGeez, motherNameGeez, category } = session;
+  const { gematria, nameGeez, motherNameGeez, category, serviceChoice } = session;
   const now = new Date().toISOString();
 
-  const scroll = generateHealingScroll(gematria, category);
+  const scroll = generateHealingScroll(gematria, category, serviceChoice);
   const categoryLabel = category.replaceAll("_", " ");
   const responseContext = Object.entries(session.answers)
     .filter(([key, value]) => key !== "question_category" && typeof value === "string" && value.trim())
@@ -348,10 +367,13 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert?: 
   const answerSummary = responseContext.length
     ? ` Your submitted reflections: ${responseContext.join("; ")}.`
     : " You did not add a written reflection.";
-  const narrative = `This optional cultural reading was calculated from the Ge'ez name ${nameGeez}${motherNameGeez ? ` and the supplied mother's name ${motherNameGeez}` : ""}. The name calculation returned total ${gematria.totalSum} and final value ${gematria.finalNumber}.${circleDescription} You selected ${categoryLabel}.${answerSummary} These symbolic traditions are for reflection only; they do not predict outcomes or establish personal traits.`;
+  const serviceTitle = serviceChoice?.title || categoryLabel;
+  const servicePrayer = serviceChoice?.prayer || "May clarity and patience guide this path.";
+  const serviceTelsem = serviceChoice?.telsemName ? ` Your selected prayer focus is ${serviceChoice.title}, paired with the Telsem ${serviceChoice.telsemName}.` : "";
+  const narrative = `This optional cultural reading was calculated from the Ge'ez name ${nameGeez}${motherNameGeez ? ` and the supplied mother's name ${motherNameGeez}` : ""}. The name calculation returned total ${gematria.totalSum} and final value ${gematria.finalNumber}.${circleDescription} You selected ${categoryLabel} with the service focus ${serviceTitle}.${serviceTelsem}${answerSummary} These symbolic traditions are for reflection only; they do not predict outcomes or establish personal traits.`;
 
   const culturalInterpretation = {
-    narrative: `Reflection prompt for ${categoryLabel}: Which part of the situation you described feels most important to you, and what small, practical next step would you choose?${answerSummary} This prompt is generated from your submitted answers and is not a claim about your character or future.`,
+    narrative: `Reflection prompt for ${serviceTitle}: ${servicePrayer} Which part of the situation you described feels most important to you, and what small, practical next step would you choose?${answerSummary} This prompt is generated from your submitted answers and is not a claim about your character or future.`,
     references: ["No manuscript-specific source was verified for this generated reflection."],
     expertSignature: expert ? `${expert.name}, ${expert.credential} (${expert.titleAmharic})` : undefined,
   };
@@ -380,10 +402,12 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert?: 
   };
 
   const recommendedRitual = {
-    title: "Optional quiet reflection",
-    description: "If it fits your own beliefs, take a few quiet minutes to reflect or pray in your own way. No ritual or material is required.",
+    title: serviceChoice ? `${serviceChoice.title} reflection practice` : "Optional quiet reflection",
+    description: serviceChoice
+      ? `${serviceChoice.prayer} If it fits your own beliefs, take a few quiet minutes to reflect with this intention in mind and allow the focus to settle gently.`
+      : "If it fits your own beliefs, take a few quiet minutes to reflect or pray in your own way. No ritual or material is required.",
     timing: "Choose a time that feels comfortable to you.",
-    materials: ["None required"],
+    materials: serviceChoice?.prayerGe ? ["Quiet space", serviceChoice.prayerGe] : ["None required"],
     expertNotes: "Optional cultural or spiritual reflection only; it is not treatment or a promised outcome.",
   };
 
@@ -415,6 +439,7 @@ export function generateSpiritualReport(session: SpiritualCaseSession, expert?: 
     culturalInterpretation,
     practicalGuidance,
     recommendedRitual,
+    serviceChoice,
     healingScroll: scroll,
     expert: expert ? {
       id: expert.id,
@@ -440,6 +465,7 @@ export function startSpiritualCase(
     birthLatitude?: number;
     birthLongitude?: number;
   },
+  serviceChoice?: SpiritualServiceChoice,
 ): SpiritualCaseSession {
   const normalizedName = nameGeez.trim();
   if (!normalizedName) {
@@ -474,6 +500,7 @@ export function startSpiritualCase(
     birthLatitude: birthContext?.birthLatitude,
     birthLongitude: birthContext?.birthLongitude,
     category: "life_direction",
+    serviceChoice,
     gematria,
     answers: {},
     crisisScreen: { isCrisis: false, urgencyLevel: "routine" },

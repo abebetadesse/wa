@@ -30,6 +30,8 @@ jobs:
       DATABASE_URL: mysql://root:ci-only@127.0.0.1:3306/ethio_wellness
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22

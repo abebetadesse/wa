@@ -35,7 +35,7 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
   ]);
 
   describe("Stage 1: Normalize Profile", () => {
-    test("correctly applies Ethiopian regional altitude and demographic defaults", () => {
+    test("correctly applies Ethiopian regional context to explicitly provided profile details", () => {
       const input = {
         age: "34",
         gender: "female",
@@ -51,6 +51,16 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
       assert.equal(profile.altitudeMeters, 2400, "Addis Ababa altitude should default to 2,400m");
       assert.equal(profile.lifestyleHabits.teaWithMeals, true);
       assert.equal(profile.medications[0].drugClass, "Anticoagulants / Antiplatelets");
+    });
+
+    test("does not assume sex or body weight when they are not provided", () => {
+      const profile = stage1Normalize({
+        age: 34,
+        region: "Addis Ababa",
+      });
+
+      assert.equal(profile.gender, "other");
+      assert.equal(profile.weightKg, undefined);
     });
   });
 
@@ -73,6 +83,16 @@ describe("Ethiopian Wisdom & Wellness Evaluation Engine (v3.0)", () => {
         ironTarget.adjustmentReasons.some((r) => r.includes("Highland elevation")),
         "Reasoning must cite highland altitude adaptation"
       );
+    });
+
+    test("does not apply a sex-specific iron adjustment when sex is unspecified", () => {
+      const profile = stage1Normalize({ age: 34, region: "Addis Ababa" });
+      const ironTarget = stage2ComputeTargets(profile, mockNutrients)
+        .find((target) => target.nutrientName === "Iron");
+
+      assert.ok(ironTarget);
+      assert.equal(ironTarget.adjustedRda, 20.7);
+      assert.ok(ironTarget.adjustmentReasons.some((reason) => reason.includes("not provided")));
     });
   });
 

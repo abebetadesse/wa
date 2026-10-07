@@ -21,6 +21,50 @@ export default function LibraryPage() {
       </header>
 
       <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Link href="/library/books" className="group block overflow-hidden rounded-[28px] border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-stone-900 to-black shadow-[0_15px_60px_rgba(217,119,6,0.15)] transition hover:-translate-y-1 hover:border-amber-400">
+          <div className="flex h-full flex-col gap-6 p-6 md:p-8">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Supplied collection</p>
+                <h2 className="mt-3 text-2xl font-bold text-white">Ethiopian Orthodox books</h2>
+                <p className="mt-1 text-xs text-stone-400">ድርሳን · ግጻዌ · ግእዝ</p>
+              </div>
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-amber-300">
+                <BookOpenText size={28} />
+              </div>
+            </div>
+            <p className="text-sm leading-relaxed text-stone-300">
+              Search and read six supplied PDFs: devotional Dirsan, the Book of Hours, Gitsaw, and a Ge’ez handwriting workbook.
+            </p>
+            <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-amber-300">
+              Browse six full texts
+              <ArrowRight size={16} />
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/library/archangels" className="group block overflow-hidden rounded-[28px] border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-stone-900 to-black shadow-[0_15px_60px_rgba(217,119,6,0.15)] transition hover:-translate-y-1 hover:border-amber-400">
+          <div className="flex h-full flex-col gap-6 p-6 md:p-8">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Devotional texts</p>
+                <h2 className="mt-3 text-2xl font-bold text-white font-serif">ድርሳነ ሊቃነ መላእክት</h2>
+                <p className="mt-1 text-xs text-stone-400">Archangels Dirsan reader & search</p>
+              </div>
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-amber-300">
+                <BookOpenText size={28} />
+              </div>
+            </div>
+            <p className="text-sm leading-relaxed text-stone-300">
+              Search by saint or collective title, explore public catalogs, and follow authorized full-text and PDF editions.
+            </p>
+            <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-amber-300">
+              Open archangel text library
+              <ArrowRight size={16} />
+            </div>
+          </div>
+        </Link>
+
         <Link href="/library/awde-negast" className="group block overflow-hidden rounded-[28px] border border-amber-500/20 bg-stone-900/80 shadow-[0_15px_60px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-amber-400/40">
           <div className="flex flex-col gap-6 p-6 md:p-8 h-full">
             <div className="flex items-start justify-between gap-4">

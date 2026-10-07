@@ -24,7 +24,7 @@ import { isDuplicateKey } from "@/lib/db/errors";
 
 export const PAY_METHODS = ["chapa", "telebirr", "bank_transfer"] as const;
 export type PayMethod = (typeof PAY_METHODS)[number];
-export const PAYMENT_PURPOSES = ["case_report"] as const;
+export const PAYMENT_PURPOSES = ["case_report", "profile_unlock"] as const;
 export type PaymentPurpose = (typeof PAYMENT_PURPOSES)[number];
 
 export type PlatformPayment = typeof platformPayments.$inferSelect;
@@ -261,12 +261,24 @@ async function settleSubject(payment: PlatformPayment) {
       await notifyAdmins({ type: "payment.attention", title: "Payment to refund", body: `${payment.description ?? payment.txRef}: ${payment.amountEtb} ETB`, href: "/admin/payments" });
       return;
     }
+  } else if (payment.purpose === "profile_unlock" && payment.userId) {
+    const { userProfiles } = await import("@/lib/db/schema");
+    const [prof] = await db.select().from(userProfiles).where(eq(userProfiles.userId, payment.userId)).limit(1);
+    if (prof) {
+      const data = prof.data || {};
+      await db.update(userProfiles).set({
+        data: { ...data, profileUnlocked: true, profileUnlockedAt: new Date().toISOString() },
+        updatedAt: new Date(),
+      }).where(eq(userProfiles.userId, payment.userId));
+    }
   }
   if (payment.userId) await publish(userChannel(payment.userId), "payment.paid", { paymentId: payment.id, purpose: payment.purpose, subjectId: payment.subjectId });
 }
 
 function subjectHref(payment: Pick<PlatformPayment, "purpose" | "subjectId">) {
-  return payment.purpose === "case_report" ? `/case/workflows/${payment.subjectId}` : "/account";
+  if (payment.purpose === "case_report") return `/case/workflows/${payment.subjectId}`;
+  if (payment.purpose === "profile_unlock") return "/profile?unlocked=1";
+  return "/account";
 }
 
 // ── Reading ──────────────────────────────────────────────────────────────────

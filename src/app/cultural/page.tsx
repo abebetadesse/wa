@@ -9,10 +9,10 @@ export default function CulturalPage() {
           Sacred heritage layer
         </div>
         <h1 className="max-w-4xl text-3xl font-black tracking-tight text-white md:text-5xl">
-          Sacred heritage, ritual memory, and contextual wisdom.
+          Explore living traditions across Ethiopia and the world.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-stone-200 md:text-base">
-          This domain honors the living heritage of Ethiopian wisdom—Awde Negest signs, Ge&apos;ez numerology, fasting cadence, and seasonal practice—while keeping ritual meaning clearly separated from scientific diagnosis and medication safety. Heritage is respected without abandoning evidence.
+          Explore Ethiopian heritage alongside traditions from China, India, Japan, Latin America, and beyond. Learn through curated cultural and public-health resources, with respect for local context and a clear boundary between cultural practice and medical evidence.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/discover" className="btn-pill-primary">Explore knowledge map</Link>
@@ -25,7 +25,7 @@ export default function CulturalPage() {
           { title: "Astrology", copy: "Celestial interpretation and temperament mapping from the Awde Negest tradition." },
           { title: "Gematria", copy: "Ge&apos;ez word value and lineage interpretation for naming and spiritual reflection." },
           { title: "Fasting seasons", copy: "Lunar and ecclesiastical timing connected to food, rest, and practice cycles." },
-          { title: "Community ritual", copy: "Coffee ceremony, healing context, and social meaning as part of care design." },
+          { title: "Ceremonies & sacred places", copy: "Explore Ethiopian festivals, churches, holy-water traditions, thermal springs, and historic landscapes." },
         ].map((item) => (
           <div key={item.title} className="rounded-[24px] border border-white/10 bg-stone-900/70 p-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-300">{item.title}</p>

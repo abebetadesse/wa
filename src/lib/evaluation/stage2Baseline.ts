@@ -26,6 +26,8 @@ export function stage2ComputeTargets(
       } else if (profile.gender === "male" || profile.age > 50) {
         multiplier = 8.0 / 18.0; // Males and postmenopausal females require 8mg
         reasons.push("Adult male / postmenopausal baseline adjustment (8mg)");
+      } else if (profile.gender === "other" && profile.age >= 14 && profile.age <= 50) {
+        reasons.push("No sex-specific iron adjustment applied because relevant information was not provided.");
       }
     }
 

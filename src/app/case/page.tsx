@@ -63,6 +63,16 @@ function asStringList(value: unknown): string[] {
     .filter((item) => item && !/^(none|none known|no known|n\/a|not applicable|prefer not to say)$/i.test(item));
 }
 
+function withoutIdentityFields(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(withoutIdentityFields);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => !/gender|religion/i.test(key))
+      .map(([key, nestedValue]) => [key, withoutIdentityFields(nestedValue)]),
+  );
+}
+
 function ageFromBirthDate(value: unknown): number | undefined {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
   const birthDate = new Date(`${value}T00:00:00`);
@@ -134,6 +144,7 @@ export default function CasePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [answerSync, setAnswerSync] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [profileContext, setProfileContext] = useState<Record<string, unknown>>({});
+  const [includeIdentityContext, setIncludeIdentityContext] = useState(false);
   const [profileContextLoaded, setProfileContextLoaded] = useState(false);
   const [profileContextError, setProfileContextError] = useState("");
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticSolution | null>(null);
@@ -256,11 +267,31 @@ export default function CasePage() {
           return;
         }
         const values = profile.data || {};
+        const savedProfile = values.profile && typeof values.profile === "object"
+          ? values.profile as Record<string, unknown>
+          : {};
+        const savedConsent = savedProfile.consent && typeof savedProfile.consent === "object"
+          ? savedProfile.consent as Record<string, unknown>
+          : {};
+        const savedData = values.data && typeof values.data === "object"
+          ? values.data as Record<string, unknown>
+          : {};
         const labeled = (profile.fields || []).reduce((context: Record<string, unknown>, field: { id: string; label: string }) => {
           if (values[field.id] !== undefined) context[field.label] = values[field.id];
           return context;
         }, {});
-        setProfileContext({ ...labeled, ...values, ...auth?.data });
+        setProfileContext({
+          ...labeled,
+          ...values,
+          ...auth?.data,
+          identityContextConsent: savedConsent.identityContext === true,
+          identityGender: typeof values.gender === "string" ? values.gender : "",
+          identityReligion: typeof values.religion === "string"
+            ? values.religion
+            : typeof savedData.religion === "string"
+              ? savedData.religion
+              : "",
+        });
       })
       .catch(() => {
         setProfileContextError("Your saved profile could not be loaded. Analysis will use the answers in this case intake.");
@@ -391,6 +422,7 @@ export default function CasePage() {
       setSession(nextSession);
       setQuestions(next.questions);
       setPhase("challenge");
+      setIncludeIdentityContext(false);
       // Pre‑fill challenge options if the user has already answered? No, start fresh.
       setAnswers({});
       setDiagnosticResult(null);
@@ -421,7 +453,6 @@ export default function CasePage() {
         userProfile: {
           demographics: {
             age: Number(answers.age) || ageFromBirthDate(profileContext["Date of birth"] || profileContext.birthDate),
-            gender: asText(profileContext["Gender identity"]),
             region: asText(answers.region || profileContext["Region or state"]) || undefined,
           },
           medications: [...new Set([
@@ -445,7 +476,7 @@ export default function CasePage() {
           name: profileContext["Full name"] || profileContext.name,
           fullName: profileContext["Full name"] || profileContext.fullName,
           birthDate: profileContext["Date of birth"] || profileContext.birthDate,
-          profileContext,
+          profileContext: withoutIdentityFields(profileContext),
         },
         domain: selectedCase?.id || "wellbeing",
         domainLabel: selectedCase?.name || "wellbeing",
@@ -490,7 +521,6 @@ export default function CasePage() {
           : pregnancyContext === "none"
             ? "none"
             : undefined;
-      const genderValue = asText(profileContext["Gender identity"]).toLowerCase();
       const activityValue = asText(profileContext["Physical activity level"]).toLowerCase();
       const culturalOptIn = String(answers.reflectionLens || "").toLowerCase().includes("yes");
       const response = await fetch("/api/intake", {
@@ -500,7 +530,6 @@ export default function CasePage() {
           name: asText(profileContext["Full name"] || profileContext.name) || undefined,
           email,
           age: Number(answers.age) || ageFromBirthDate(profileContext["Date of birth"] || profileContext.birthDate),
-          gender: genderValue === "male" || genderValue === "female" ? genderValue : undefined,
           city: asText(answers.location) || undefined,
           weightKg: Number(profileContext["Weight (kg)"] || 0) || undefined,
           region: asText(answers.region || profileContext["Region or state"]) || undefined,
@@ -1357,7 +1386,7 @@ export default function CasePage() {
                       {/* FLAGSHIP 2: CAREER TIMING & VOCATIONAL DESTINY */}
                       <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-sky-950/70 via-stone-900/90 to-black border-2 border-sky-500/60 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-sky-400 to-sky-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
-                          ✨ Flagship 2 · Vocational Destiny
+                          ✨ Flagship 2 · Livelihood Reflection
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                           <div className="w-16 h-16 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -1365,20 +1394,20 @@ export default function CasePage() {
                           </div>
                           <div className="space-y-1.5 flex-1">
                             <h2 className="text-2xl font-black text-sky-100 font-serif group-hover:text-sky-300 transition-colors">
-                              Career Timing & Vocational Destiny (የሙያና ዕጣ ፈንታ)
+                              Money & Business Reflection
                             </h2>
                             <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
-                              Astrological timing windows, planetary alignments, Ge&apos;ez voice input, name numerology, and licensed career counselor & debtera review.
+                              Reflect on work, livelihood, and enterprise through cultural values. This is not financial, business, or career advice.
                             </p>
                             <div className="flex flex-wrap gap-1.5 pt-2">
                               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
-                                Favorable Timing Windows
+                                Work & Livelihood Values
                               </span>
                               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
                                 Ge&apos;ez Voice Input
                               </span>
                               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
-                                Counselor Review
+                                Cultural Reflection
                               </span>
                             </div>
                           </div>
@@ -1406,18 +1435,18 @@ export default function CasePage() {
 
                   {(domainFilter === "all" || domainFilter === "flagship" || domainFilter === "legal_social") && (
                     <div className="space-y-4">
-                      {/* FLAGSHIP 3: LEGAL & DISPUTE GUIDANCE */}
+                      {/* FLAGSHIP 3: PEACE & HARMONY */}
                       <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-purple-950/70 via-stone-900/90 to-black border-2 border-purple-500/60 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-purple-400 to-purple-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
                           ✨ Flagship 3 · Customary Peacemaking & Shimgelna
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                           <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                            ⚖️
+                            🕊️
                           </div>
                           <div className="space-y-1.5 flex-1">
                             <h2 className="text-2xl font-black text-purple-100 font-serif group-hover:text-purple-300 transition-colors">
-                              Legal & Dispute Guidance (የሕግና ክርክር ምክር)
+                              Peace & Harmony
                             </h2>
                             <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
                               Rooted entirely in Ethiopian customary reconciliation (ሽምግልና / Shemgelna), spiritual peacemaking, and traditional restorative justice. Provides cultural and spiritual wisdom for dispute resolution, family harmony, and conscience guidance — with no scientific or statutory advice.
@@ -1788,6 +1817,42 @@ export default function CasePage() {
                       </div>
                     </div>
 
+                    <div className="rounded-xl border border-violet-400/20 bg-violet-950/15 p-4">
+                      <p className="text-sm font-semibold text-white">Identity context (optional)</p>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                        Religion and gender identity are never sent with scientific diagnostic analysis.
+                        If you allow them in your profile and select them for this case, they are displayed here
+                        as personal cultural context only.
+                      </p>
+                      {profileContext.identityContextConsent === true ? (
+                        <label className="mt-3 flex items-start gap-3 text-xs text-slate-200">
+                          <input
+                            type="checkbox"
+                            checked={includeIdentityContext}
+                            onChange={(event) => setIncludeIdentityContext(event.target.checked)}
+                            className="mt-0.5 accent-violet-400"
+                          />
+                          <span>Show my saved religion and gender identity in this case&apos;s personal cultural context.</span>
+                        </label>
+                      ) : (
+                        <p className="mt-3 text-xs text-slate-300">
+                          Not enabled. You can manage optional details and permissions in your{" "}
+                          <Link href="/profile" className="font-semibold text-violet-200 underline underline-offset-2">
+                            profile settings
+                          </Link>.
+                        </p>
+                      )}
+                      {includeIdentityContext && profileContext.identityContextConsent === true && (
+                        <p className="mt-2 text-xs text-violet-100" aria-live="polite">
+                          This case view will display: {[
+                            asText(profileContext.identityGender),
+                            asText(profileContext.identityReligion),
+                          ].filter(Boolean).join(" · ") || "no saved identity details"}.
+                          {" "}No cultural or clinical assumptions are inferred from these details.
+                        </p>
+                      )}
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {profileContextError && (
                         <p className="md:col-span-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-100" role="status">
@@ -1808,10 +1873,6 @@ export default function CasePage() {
                           <div>
                             <span className="block text-slate-500">Age</span>
                             <span className="font-semibold text-white">{String(answers.age ?? profileContext["Date of birth"] ?? "—")}</span>
-                          </div>
-                          <div>
-                            <span className="block text-slate-500">Gender</span>
-                            <span className="font-semibold text-white">{String(profileContext["Gender identity"] || "Prefer not to say")}</span>
                           </div>
                         </div>
                       </div>

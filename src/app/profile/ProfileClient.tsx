@@ -42,12 +42,17 @@ type ActiveTab =
 
 type AccountProfile = {
   name: string;
+  fatherName?: string;
+  motherName?: string;
+  birthLocation?: string;
+  birthTime?: string;
   email: string;
   phone: string;
   preferredLanguage: string;
   region: string;
   city: string;
   gender: string;
+  religion: string;
   dateOfBirth: string;
   role: string;
   isVerified: boolean;
@@ -58,6 +63,7 @@ type AccountProfile = {
     bioNarrative: boolean;
     voiceIntake: boolean;
     manuscriptKnowledge: boolean;
+    identityContext: boolean;
   };
 };
 
@@ -68,6 +74,7 @@ const DEFAULT_CONSENT: AccountProfile["consent"] = {
   bioNarrative: false,
   voiceIntake: false,
   manuscriptKnowledge: false,
+  identityContext: false,
 };
 
 const CONSENT_OPTIONS: Array<{ key: keyof AccountProfile["consent"]; label: string; detail: string }> = [
@@ -77,6 +84,7 @@ const CONSENT_OPTIONS: Array<{ key: keyof AccountProfile["consent"]; label: stri
   { key: "bioNarrative", label: "Bio-narrative generation", detail: "Allow generation of a personal profile report." },
   { key: "voiceIntake", label: "Voice intake", detail: "Allow browser speech recognition for case intake; transcription may use a third-party service." },
   { key: "manuscriptKnowledge", label: "Manuscript knowledge matching", detail: "Allow historical manuscript references in relevant reports." },
+  { key: "identityContext", label: "Optional identity context in cases", detail: "Allow your chosen religion and gender identity to appear in a case's personal context panel only when you also opt in for that case. Never send these details with analysis requests." },
 ];
 
 const PRESETS = [
@@ -167,14 +175,37 @@ export default function ProfileClient() {
 
   // Name suggester state
   const [suggestTargetElement, setSuggestTargetElement] = useState<string>("may");
-  const [suggestGender, setSuggestGender] = useState<string>("female");
+  const [suggestGender, setSuggestGender] = useState<string>("");
   const [suggestLanguage, setSuggestLanguage] = useState<string>("");
+  const [suggestReason, setSuggestReason] = useState<string>("general_alignment");
   const [suggestions, setSuggestions] = useState<NameSuggestionResult[]>([]);
+  const [appreciation, setAppreciation] = useState<any>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
+
+  // Profile finalize & 50% Gating Paywall state
+  const [showFinalizeBanner, setShowFinalizeBanner] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(true);
+  const [gatingSettings, setGatingSettings] = useState<{
+    enabled: boolean;
+    priceEtb: number;
+    title: string;
+    description: string;
+  } | null>(null);
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const [unlockMessage, setUnlockMessage] = useState("");
 
   // Initialize on mount
   useEffect(() => {
     handleGenerateProfile();
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get("finalize") === "1" || sp.get("welcome") === "1") {
+        setShowFinalizeBanner(true);
+      }
+      if (sp.get("unlocked") === "1" || sp.get("payment")) {
+        setIsUnlocked(true);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -184,19 +215,48 @@ export default function ProfileClient() {
         const payload = await response.json();
         if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to load your profile.");
         if (active) {
-          setAccountProfile({
-            name: payload.data.name || "",
-            email: payload.data.email || "",
-            phone: payload.data.phone || "",
-            preferredLanguage: payload.data.preferredLanguage || "en",
-            region: payload.data.region || "",
-            city: payload.data.city || "",
-            gender: payload.data.gender || "",
-            dateOfBirth: payload.data.dateOfBirth || "",
-            consent: { ...DEFAULT_CONSENT, ...(payload.data.profile?.consent || {}) },
-            role: payload.data.role || "user",
-            isVerified: Boolean(payload.data.isVerified),
-          });
+          const resData = payload.data;
+          const accProfile: AccountProfile = {
+            name: resData.name || "",
+            fatherName: resData.fatherName || resData.data?.fatherName || "",
+            motherName: resData.motherName || resData.profile?.motherName || "",
+            birthLocation: resData.birthLocation || resData.profile?.birthLocation || resData.city || "",
+            birthTime: resData.birthTime || resData.profile?.birthTime || "12:00",
+            email: resData.email || "",
+            phone: resData.phone || "",
+            preferredLanguage: resData.preferredLanguage || "en",
+            region: resData.region || "",
+            city: resData.city || "",
+            gender: resData.gender || "",
+            religion: resData.religion || "",
+            dateOfBirth: resData.dateOfBirth || "",
+            consent: { ...DEFAULT_CONSENT, ...(resData.profile?.consent || {}) },
+            role: resData.role || "user",
+            isVerified: Boolean(resData.isVerified),
+          };
+          setAccountProfile(accProfile);
+
+          setIsUnlocked(Boolean(resData.isUnlocked));
+          if (resData.gatingSettings) {
+            setGatingSettings(resData.gatingSettings);
+          }
+
+          if (!accProfile.dateOfBirth || !accProfile.birthLocation || !accProfile.motherName) {
+            setShowFinalizeBanner(true);
+          }
+
+          // Auto-populate coordinates with real user profile data (never force hardcoded names)
+          const targetName = accProfile.name || fullName;
+          const targetDOB = accProfile.dateOfBirth || birthDate;
+          const targetCity = accProfile.birthLocation || accProfile.city || city;
+          const targetTime = accProfile.birthTime || birthTime;
+
+          if (accProfile.name) setFullName(accProfile.name);
+          if (accProfile.dateOfBirth) setBirthDate(accProfile.dateOfBirth);
+          if (accProfile.birthLocation || accProfile.city) setCity(accProfile.birthLocation || accProfile.city);
+          if (accProfile.birthTime) setBirthTime(accProfile.birthTime);
+          // Generate personal profile calculations with the real registered data
+          handleGenerateProfile(targetName, targetDOB, targetTime, targetCity);
         }
       })
       .catch((error: unknown) => {
@@ -209,6 +269,33 @@ export default function ProfileClient() {
       active = false;
     };
   }, []);
+
+  const handleUnlockProfile = async () => {
+    setUnlockLoading(true);
+    setUnlockMessage("");
+    try {
+      const res = await fetch("/api/profile/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method: "chapa", origin: window.location.origin }),
+      });
+      const data = await res.json();
+      if (data.unlocked) {
+        setIsUnlocked(true);
+        setUnlockMessage("✨ Complete 5-system profile reading unlocked!");
+      } else if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else if (data.awaitingReview) {
+        setUnlockMessage("Payment reference submitted. An administrator will confirm shortly.");
+      } else {
+        setUnlockMessage(data.error || "Unable to initiate payment.");
+      }
+    } catch (err) {
+      setUnlockMessage(err instanceof Error ? err.message : "Unlock request failed.");
+    } finally {
+      setUnlockLoading(false);
+    }
+  };
 
   async function saveAccountProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -227,6 +314,7 @@ export default function ProfileClient() {
           region: accountProfile.region,
           city: accountProfile.city,
           gender: accountProfile.gender,
+          religion: accountProfile.religion,
           dateOfBirth: accountProfile.dateOfBirth,
           consent: accountProfile.consent,
         }),
@@ -300,7 +388,7 @@ export default function ProfileClient() {
     handleGenerateProfile(preset.name, preset.birthDate, preset.birthTime, preset.city);
   };
 
-  const handleFetchSuggestions = async () => {
+  const handleFetchSuggestions = async (overrideReason?: string) => {
     setSuggestLoading(true);
     try {
       const res = await fetch("/api/profile/suggest-name", {
@@ -310,11 +398,19 @@ export default function ProfileClient() {
           targetElement: suggestTargetElement || undefined,
           gender: suggestGender || undefined,
           languagePreference: suggestLanguage || undefined,
+          fullName: fullName || undefined,
+          birthDate: birthDate || undefined,
+          birthTime: birthTime || undefined,
+          city: city || undefined,
+          reason: overrideReason || suggestReason || undefined,
         }),
       });
       const data = await res.json();
       if (data.success) {
         setSuggestions(data.suggestions);
+        if (data.appreciation) {
+          setAppreciation(data.appreciation);
+        }
       }
     } catch (err) {
       console.error("Suggestions error:", err);
@@ -325,10 +421,81 @@ export default function ProfileClient() {
 
   const humorStyle = profile ? HUMOR_COLORS[profile.synthesis.humoralDominance] : HUMOR_COLORS.esat;
   const danMillmanPath = calculateDanMillmanLifePath(birthDate);
+  const isAdmin = accountProfile?.role === "admin" || accountProfile?.role === "super_admin";
+  const isGated = Boolean(gatingSettings?.enabled && !isUnlocked && !isAdmin);
 
   return (
     <div className="py-10 space-y-10">
-      <div className="app-container">
+      <div className="app-container space-y-8">
+        {/* Finalize Profile Coordinates Request Banner */}
+        {showFinalizeBanner && (
+          <div className="p-5 md:p-6 rounded-2xl bg-gradient-to-r from-amber-950/70 via-stone-900/95 to-amber-950/50 border-2 border-amber-500/60 shadow-2xl relative animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+              <div className="space-y-1.5 max-w-3xl">
+                <div className="flex items-center gap-2 text-amber-300 font-extrabold text-sm uppercase tracking-wide">
+                  <span className="text-xl">🌟</span>
+                  <span>እንኳን ደህና መጡ! Welcome! Please finalize your profile coordinates to get the best results</span>
+                </div>
+                <p className="text-xs md:text-sm text-slate-200 leading-relaxed">
+                  To calculate your authentic 5-system astrological chart, numerological life paths, AwudeNegest circles, and traditional naming resonance with maximum accuracy, please complete and confirm your birth date, birth time, mother&apos;s name, and birth location below.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById("coordinates-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs shadow-xl transition flex items-center gap-2"
+                >
+                  <span>✍️</span>
+                  <span>Finalize Coordinates</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowFinalizeBanner(false)}
+                  className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 transition"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 50% Gating Paywall Banner */}
+        {isGated && (
+          <div className="p-4 rounded-xl bg-gradient-to-r from-amber-900/40 via-stone-900/70 to-amber-950/30 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs shadow-lg">
+            <div className="flex items-center gap-3 text-amber-300">
+              <span className="text-2xl">🔐</span>
+              <div>
+                <strong className="block text-white text-sm">Previewing 50% of Your Personal Profile Results</strong>
+                <span className="text-slate-300 text-xs">
+                  {gatingSettings?.title || "Complete 5-System Sacred Blueprint"}: Administrator policy requires unlocking to view complete botanical formulas, dietary strategy, D9 Navamsha chart, and full lineage formulas.
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={handleUnlockProfile}
+              disabled={unlockLoading}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg shrink-0"
+            >
+              {unlockLoading ? (
+                <>
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin"></span>
+                  <span>Connecting...</span>
+                </>
+              ) : (
+                <>
+                  <span>🔓</span>
+                  <span>Unlock Full Reading ({gatingSettings?.priceEtb || 150} ETB)</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-8">
           <div>
@@ -509,21 +676,41 @@ export default function ProfileClient() {
                   />
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Gender</span>
-                  <select
+                  <span className="text-xs font-medium text-slate-400">Gender identity (optional)</span>
+                  <input
+                    type="text"
+                    maxLength={100}
                     value={accountProfile.gender}
                     onChange={(event) => setAccountProfile({ ...accountProfile, gender: event.target.value })}
+                    placeholder="Share only if you choose"
                     className="input-warm w-full"
-                  >
-                    <option value="">Prefer not to say</option>
-                    <option value="female">Female</option>
-                    <option value="male">Male</option>
-                    <option value="non_binary">Non-binary</option>
-                  </select>
+                  />
+                  <span className="block text-[11px] leading-relaxed text-slate-500">
+                    Used for respectful language only when you opt in for a specific case.
+                  </span>
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-slate-400">Religion or faith tradition (optional)</span>
+                  <input
+                    type="text"
+                    maxLength={100}
+                    value={accountProfile.religion}
+                    onChange={(event) => setAccountProfile({ ...accountProfile, religion: event.target.value })}
+                    placeholder="Share only if you choose"
+                    className="input-warm w-full"
+                  />
+                  <span className="block text-[11px] leading-relaxed text-slate-500">
+                    Use your own terms, leave blank, or clear it at any time.
+                  </span>
                 </label>
               </div>
               <fieldset className="space-y-3 border-t border-white/10 pt-4">
                 <legend className="text-sm font-semibold text-white">Optional data and content permissions</legend>
+                <p className="max-w-3xl text-xs leading-relaxed text-slate-400">
+                  Religion and gender identity are optional sensitive information. They are private to your profile by default.
+                  This permission allows their use only in cultural reflection when you also opt in for an individual case.
+                  Changing or clearing these details is always allowed.
+                </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {CONSENT_OPTIONS.map(({ key, label, detail }) => (
                     <label key={key} className="flex items-start gap-3 rounded-lg border border-white/10 p-3">
@@ -557,7 +744,7 @@ export default function ProfileClient() {
         </section>
 
         {/* Client Intake & Preset Selector */}
-        <div className="glass-panel p-6 mb-8 border border-white/10 space-y-6">
+        <div id="coordinates-section" className="glass-panel p-6 mb-8 border border-white/10 space-y-6 scroll-mt-20">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -573,18 +760,37 @@ export default function ProfileClient() {
               <label className="block text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
                 <span className="sr-only">Preset</span>
                 <select
-                  value={fullName}
+                  value={PRESETS.some((p) => p.name === fullName) ? fullName : "my_profile"}
                   onChange={(event) => {
-                    const chosen = PRESETS.find((p) => p.name === event.target.value);
-                    if (chosen) handlePresetSelect(chosen);
+                    if (event.target.value === "my_profile") {
+                      if (accountProfile) {
+                        const targetName = accountProfile.name || "";
+                        const targetDOB = accountProfile.dateOfBirth || "";
+                        const targetCity = accountProfile.birthLocation || accountProfile.city || "";
+                        const targetTime = accountProfile.birthTime || "12:00";
+                        if (targetName) setFullName(targetName);
+                        if (targetDOB) setBirthDate(targetDOB);
+                        if (targetCity) setCity(targetCity);
+                        if (targetTime) setBirthTime(targetTime);
+                        handleGenerateProfile(targetName, targetDOB, targetTime, targetCity);
+                      }
+                    } else {
+                      const chosen = PRESETS.find((p) => p.name === event.target.value);
+                      if (chosen) handlePresetSelect(chosen);
+                    }
                   }}
                   className="w-full min-w-[220px] px-3 py-2 rounded-lg bg-black/40 border border-amber-500/30 text-white text-sm focus:border-amber-400 focus:outline-none"
                 >
-                  {PRESETS.map((p) => (
-                    <option key={p.name} value={p.name} className="bg-slate-900 text-white">
-                      {p.name}
-                    </option>
-                  ))}
+                  <option value="my_profile" className="bg-slate-900 text-amber-300 font-bold">
+                    {accountProfile?.name ? `👤 ${accountProfile.name} (Registered Profile)` : "👤 My Profile Coordinates"}
+                  </option>
+                  <optgroup label="Sample Archetypes">
+                    {PRESETS.map((p) => (
+                      <option key={p.name} value={p.name} className="bg-slate-900 text-white">
+                        {p.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
               </label>
             </div>
@@ -619,18 +825,22 @@ export default function ProfileClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Birth Location (Ethiopia)</label>
-              <select
+              <label className="block text-xs font-medium text-slate-400 mb-1">Birth Location (Open Text Field)</label>
+              <input
+                type="text"
+                list="ethiopian-cities-list"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
+                placeholder="e.g. Addis Ababa, Gondar, Hawassa, Mekelle..."
                 className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-sm focus:border-amber-400 focus:outline-none"
-              >
+              />
+              <datalist id="ethiopian-cities-list">
                 {Object.keys(ETHIOPIAN_CITIES).map((c) => (
-                  <option key={c} value={c} className="bg-slate-900 text-white">
+                  <option key={c} value={c}>
                     {c} ({ETHIOPIAN_CITIES[c].altitudeMeters}m)
                   </option>
                 ))}
-              </select>
+              </datalist>
             </div>
           </div>
 
@@ -761,16 +971,18 @@ export default function ProfileClient() {
                 <span>AwudeNegest</span>
               </button>
 
-              <button
-                onClick={() => setActiveTab("aichat")}
-                className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "aichat"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
-                  }`}
-              >
-                <span>🧠</span>
-                <span>AI Chat</span>
-              </button>
+              {(accountProfile?.role === "admin" || accountProfile?.role === "super_admin") && (
+                <button
+                  onClick={() => setActiveTab("aichat")}
+                  className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "aichat"
+                      ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    }`}
+                >
+                  <span>🧠</span>
+                  <span>AI Chat</span>
+                </button>
+              )}
 
               <button
                 onClick={() => setActiveTab("compatibility")}
@@ -845,82 +1057,125 @@ export default function ProfileClient() {
                   </div>
                 </div>
 
-                {/* Dietary Principles & Favored Foods */}
-                <div className="glass-panel p-6 border border-white/10 space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <span>🍲</span> Personalized Ethiopian Dietary Strategy (EFCT 2025)
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Calibrated for {profile.synthesis.humoralDominance.toUpperCase()} elemental balance and Life Path {profile.numerology.lifePath.number} metabolic rhythms.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-3">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-amber-400">
-                        Therapeutic Principles
-                      </div>
-                      <ul className="space-y-2 text-xs text-slate-300">
-                        {profile.synthesis.recommendations.dietary.therapeuticPrinciples.map((tp, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-amber-400">•</span>
-                            <span>{tp}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                        Favored Ethiopian Foods
-                      </div>
-                      <ul className="space-y-2 text-xs text-slate-300">
-                        {profile.synthesis.recommendations.dietary.favoredEthiopianFoods.map((f, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-emerald-400">•</span>
-                            <span>{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-rose-400">
-                        Foods to Moderate
-                      </div>
-                      <ul className="space-y-2 text-xs text-slate-300">
-                        {profile.synthesis.recommendations.dietary.foodsToModerate.map((f, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-rose-400">•</span>
-                            <span>{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Botanical Adaptogens Table */}
-                <div className="glass-panel p-6 border border-white/10 space-y-4">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <span>🌿</span> Indigenous Botanical Adaptogens &amp; Humoral Synergies
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {profile.synthesis.recommendations.herbalAdaptogens.map((herb, idx) => (
-                      <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
-                        <div className="text-sm font-bold text-emerald-300">{herb.herb}</div>
-                        <div className="text-xs text-slate-300">
-                          <strong>Traditional Use:</strong> {herb.traditionalUse}
-                        </div>
-                        <div className="text-xs text-slate-400">{herb.synergyNote}</div>
-                        <div className="text-[11px] text-amber-300/90 pt-1 border-t border-white/5">
-                          <strong>Precaution:</strong> {herb.safetyPrecaution}
+                {/* ===== GATED 50%: DIETARY + BOTANICALS ===== */}
+                {isGated ? (
+                  <div className="relative rounded-2xl overflow-hidden">
+                    {/* Blurred preview */}
+                    <div className="pointer-events-none select-none filter blur-[6px] opacity-40 space-y-6">
+                      <div className="glass-panel p-6 border border-white/10 space-y-4">
+                        <h3 className="text-lg font-bold text-white">🍲 Personalized Ethiopian Dietary Strategy (EFCT 2025)</h3>
+                        <div className="grid grid-cols-3 gap-4">
+                          {["Therapeutic Principles","Favored Foods","Foods to Moderate"].map(t => (
+                            <div key={t} className="space-y-2">
+                              <div className="text-xs font-bold text-amber-400">{t}</div>
+                              {[1,2,3].map(i => <div key={i} className="h-3 rounded bg-white/10 my-1" />)}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
+                      <div className="glass-panel p-6 border border-white/10 space-y-4">
+                        <h3 className="text-lg font-bold text-white">🌿 Indigenous Botanical Adaptogens &amp; Humoral Synergies</h3>
+                        <div className="grid grid-cols-3 gap-4">
+                          {[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-white/5" />)}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Frosted glass unlock overlay */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-3xl shadow-xl shadow-amber-500/30">
+                        🔐
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-lg font-black text-white">{gatingSettings?.title || "Complete 5-System Sacred Blueprint"}</h3>
+                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">
+                          {gatingSettings?.description || "Unlock your full personalized dietary strategy, botanical adaptogens formula, and cross-strand wellbeing notes — calibrated uniquely to your cosmic profile."}
+                        </p>
+                        <p className="text-[11px] text-amber-400 font-semibold">Previewing 50% of your results — admin policy requires payment to view full reading.</p>
+                      </div>
+                      <button
+                        onClick={handleUnlockProfile}
+                        disabled={unlockLoading}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-sm transition flex items-center gap-2 shadow-xl shadow-amber-500/30"
+                      >
+                        {unlockLoading ? (
+                          <><span className="w-4 h-4 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></>
+                        ) : (
+                          <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>
+                        )}
+                      </button>
+                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Dietary Principles & Favored Foods */}
+                    <div className="glass-panel p-6 border border-white/10 space-y-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                          <span>🍲</span> Personalized Ethiopian Dietary Strategy (EFCT 2025)
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Calibrated for {profile.synthesis.humoralDominance.toUpperCase()} elemental balance and Life Path {profile.numerology.lifePath.number} metabolic rhythms.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-3">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-amber-400">Therapeutic Principles</div>
+                          <ul className="space-y-2 text-xs text-slate-300">
+                            {profile.synthesis.recommendations.dietary.therapeuticPrinciples.map((tp, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-amber-400">•</span>
+                                <span>{tp}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Favored Ethiopian Foods</div>
+                          <ul className="space-y-2 text-xs text-slate-300">
+                            {profile.synthesis.recommendations.dietary.favoredEthiopianFoods.map((f, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-emerald-400">•</span>
+                                <span>{f}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-rose-400">Foods to Moderate</div>
+                          <ul className="space-y-2 text-xs text-slate-300">
+                            {profile.synthesis.recommendations.dietary.foodsToModerate.map((f, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-rose-400">•</span>
+                                <span>{f}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botanical Adaptogens Table */}
+                    <div className="glass-panel p-6 border border-white/10 space-y-4">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <span>🌿</span> Indigenous Botanical Adaptogens &amp; Humoral Synergies
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {profile.synthesis.recommendations.herbalAdaptogens.map((herb, idx) => (
+                          <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
+                            <div className="text-sm font-bold text-emerald-300">{herb.herb}</div>
+                            <div className="text-xs text-slate-300"><strong>Traditional Use:</strong> {herb.traditionalUse}</div>
+                            <div className="text-xs text-slate-400">{herb.synergyNote}</div>
+                            <div className="text-[11px] text-amber-300/90 pt-1 border-t border-white/5">
+                              <strong>Precaution:</strong> {herb.safetyPrecaution}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -952,18 +1207,64 @@ export default function ProfileClient() {
             {activeTab === "numerology" && multiNumeroData && (
               <div className="space-y-8">
                 <NumerologyView profile={multiNumeroData} birthDate={birthDate} />
+                {isGated && (
+                  <div className="relative rounded-2xl overflow-hidden">
+                    <div className="pointer-events-none select-none filter blur-sm opacity-30 p-6 space-y-3">
+                      <div className="h-4 rounded bg-white/10 w-2/3" />
+                      <div className="h-4 rounded bg-white/10 w-1/2" />
+                      <div className="h-4 rounded bg-white/10 w-3/4" />
+                      <div className="h-4 rounded bg-white/10 w-1/3" />
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
+                      <span className="text-4xl">🔢</span>
+                      <div className="space-y-1">
+                        <h4 className="text-base font-black text-white">Advanced Numerology Cycles & Forecasts</h4>
+                        <p className="text-xs text-slate-300 max-w-xs leading-relaxed">Deep personal year forecasts, pinnacle cycles, and karmic debt analysis are in the full reading.</p>
+                      </div>
+                      <button onClick={handleUnlockProfile} disabled={unlockLoading}
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg">
+                        {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* TAB 4: AWUDENEGEST & CULTURAL HERITAGE */}
             {activeTab === "awudenegest" && (
               <div className="space-y-8">
-                <AwudeNegestViewer initialName={fullName} />
+                {isGated ? (
+                  <div className="relative rounded-2xl overflow-hidden">
+                    <div className="pointer-events-none select-none filter blur-md opacity-25 p-10 flex flex-col gap-4">
+                      <div className="h-6 rounded bg-amber-500/20 w-1/2" />
+                      <div className="h-4 rounded bg-white/10 w-3/4" />
+                      <div className="h-4 rounded bg-white/10 w-2/3" />
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        {[1,2,3,4,5,6].map(i => <div key={i} className="h-20 rounded-xl bg-white/5" />)}
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/85 backdrop-blur-md rounded-2xl border border-amber-500/30 p-8 text-center">
+                      <span className="text-4xl">👑</span>
+                      <div className="space-y-1.5">
+                        <h4 className="text-lg font-black text-white">AwudeNegest — 16 Circles of Sacred Wisdom</h4>
+                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">Your complete AwudeNegest circle reading, Däbtära scroll interpretations, and Ethiopian lunar calendar alignments require a full unlock.</p>
+                      </div>
+                      <button onClick={handleUnlockProfile} disabled={unlockLoading}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-sm transition flex items-center gap-2 shadow-xl">
+                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                      </button>
+                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                    </div>
+                  </div>
+                ) : (
+                  <AwudeNegestViewer initialName={fullName} />
+                )}
               </div>
             )}
 
             {/* TAB 5: AI CHAT (CONTEXT-AWARE ASTROLOGER & ADVISOR) */}
-            {activeTab === "aichat" && (
+            {activeTab === "aichat" && (accountProfile?.role === "admin" || accountProfile?.role === "super_admin") && (
               <div className="space-y-8">
                 <AIChatView
                   userId={`user_${fullName.replace(/\s+/g, "_").toLowerCase()}`}
@@ -989,7 +1290,32 @@ export default function ProfileClient() {
             {/* TAB 6: MULTI-DIMENSIONAL COMPATIBILITY ANALYZER */}
             {activeTab === "compatibility" && (
               <div className="space-y-8">
-                <CompatibilityView currentUser={{ name: fullName, birthDate, city }} />
+                {isGated ? (
+                  <div className="relative rounded-2xl overflow-hidden min-h-[320px]">
+                    <div className="pointer-events-none select-none filter blur-md opacity-25 p-10 flex flex-col gap-4">
+                      <div className="h-6 rounded bg-rose-500/20 w-1/2" />
+                      <div className="h-4 rounded bg-white/10 w-3/4" />
+                      <div className="h-4 rounded bg-white/10 w-2/3" />
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-white/5" />)}
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/85 backdrop-blur-md rounded-2xl border border-rose-500/30 p-8 text-center">
+                      <span className="text-4xl">❤️</span>
+                      <div className="space-y-1.5">
+                        <h4 className="text-lg font-black text-white">Multi-Dimensional Compatibility Analyzer</h4>
+                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">Full relationship compatibility — astrology, numerology, humoral, and AwudeNegest cross-analysis — is available in the complete reading.</p>
+                      </div>
+                      <button onClick={handleUnlockProfile} disabled={unlockLoading}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-black text-sm transition flex items-center gap-2 shadow-xl">
+                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                      </button>
+                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                    </div>
+                  </div>
+                ) : (
+                  <CompatibilityView currentUser={{ name: fullName, birthDate, city }} />
+                )}
               </div>
             )}
 
@@ -1043,12 +1369,60 @@ export default function ProfileClient() {
                     </div>
                   )}
 
+                  {/* Registered Profile Lineage & Roots */}
+                  {(accountProfile?.fatherName || accountProfile?.motherName || accountProfile?.birthLocation) && (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/20 space-y-3">
+                      <div className="text-xs uppercase font-bold tracking-wider text-amber-400 flex items-center gap-2">
+                        <span>🌳</span>
+                        <span>የተመዘገበ የዘር ሐረግ እና የትውልድ መረጃ (Registered Heritage &amp; Roots)</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        {accountProfile.fatherName && (
+                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
+                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የአባት ስም (Father&apos;s Name)</span>
+                            <span className="text-white font-bold text-sm">{accountProfile.fatherName}</span>
+                          </div>
+                        )}
+                        {accountProfile.motherName && (
+                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
+                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የእናት ስም (Mother&apos;s Name)</span>
+                            <span className="text-white font-bold text-sm">{accountProfile.motherName}</span>
+                          </div>
+                        )}
+                        {accountProfile.birthLocation && (
+                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
+                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የትውልድ ቦታ (Birth Location)</span>
+                            <span className="text-white font-bold text-sm">{accountProfile.birthLocation}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Overall Identity Synergy */}
-                  <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 text-xs text-slate-300">
-                    <span className="font-bold text-white block">Holistic Identity &amp; wellbeing Behavior Synthesis:</span>
-                    <p>{profile.naming.overallNameIdentitySynergy.wellbeingBehaviorInfluence}</p>
-                    <p>{profile.naming.overallNameIdentitySynergy.mindBodyResilience}</p>
-                  </div>
+                  {isGated ? (
+                    <div className="relative rounded-2xl overflow-hidden">
+                      <div className="pointer-events-none select-none filter blur-sm opacity-30 p-6 space-y-2">
+                        <div className="h-4 rounded bg-white/10 w-3/4" />
+                        <div className="h-4 rounded bg-white/10 w-1/2" />
+                        <div className="h-4 rounded bg-white/10 w-2/3" />
+                      </div>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-5 text-center">
+                        <span className="text-2xl">📜</span>
+                        <p className="text-xs text-slate-300 max-w-xs">Full identity synthesis and wellbeing behavior analysis are in the complete reading.</p>
+                        <button onClick={handleUnlockProfile} disabled={unlockLoading}
+                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2">
+                          {unlockLoading ? <span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 text-xs text-slate-300">
+                      <span className="font-bold text-white block">Holistic Identity &amp; wellbeing Behavior Synthesis:</span>
+                      <p>{profile.naming.overallNameIdentitySynergy.wellbeingBehaviorInfluence}</p>
+                      <p>{profile.naming.overallNameIdentitySynergy.mindBodyResilience}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1062,12 +1436,61 @@ export default function ProfileClient() {
                       <span>✨</span> Name Harmony &amp; Elemental Alignment Suggester
                     </h3>
                     <p className="text-xs text-slate-400 mt-1">
-                      Explore culturally authentic Ethiopian names designed to balance your elemental humor.
+                      Explore culturally authentic Ethiopian &amp; Biblical names dynamically calculated using your astrology, numerology, and intentional purpose.
                     </p>
                   </div>
 
-                  {/* Filter Controls */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-white/5">
+                  {/* 85% Name Appreciation & Recommendation Banner */}
+                  {appreciation && (
+                    <div className={`p-5 rounded-2xl border ${
+                      appreciation.isAppreciated
+                        ? "bg-gradient-to-r from-amber-950/40 via-emerald-950/30 to-slate-900/60 border-amber-500/40"
+                        : "bg-slate-900/60 border-white/10"
+                    } space-y-3`}>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{appreciation.isAppreciated ? "👑" : "📜"}</span>
+                          <h4 className="text-sm font-bold text-amber-300">
+                            {appreciation.headline}
+                          </h4>
+                        </div>
+                        <span className="text-xs px-3 py-1 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          Sacred Resonance: {appreciation.harmonyScore}%
+                        </span>
+                      </div>
+                      <div className="text-xs text-emerald-300 font-semibold bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-500/30 flex items-center gap-2">
+                        <span>✨</span>
+                        <span>{appreciation.recommendation}</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {appreciation.reasoning}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Filter & Purpose Controls */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-white/5">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Reason / Purpose for Suggestion</label>
+                      <select
+                        value={suggestReason}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSuggestReason(val);
+                          handleFetchSuggestions(val);
+                        }}
+                        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
+                      >
+                        <option value="general_alignment">General Alignment (አጠቃላይ ማመጣጠን)</option>
+                        <option value="new_baby">New Baby Blessing (የህፃን ምርቃትና ስም)</option>
+                        <option value="spiritual_rebirth">Spiritual Rebirth (የክርስትና ስም / መንፈሳዊ እድሳት)</option>
+                        <option value="business">Business &amp; Prosperity (የንግድና ስራ ስኬት)</option>
+                        <option value="personal_empowerment">Personal Empowerment (የውስጥ ብርታትና ድል)</option>
+                        <option value="marriage">Marriage &amp; Union (የጋብቻና ፍቅር ስምምነት)</option>
+                        <option value="healing_balance">Healing Balance (ፈውስ እና ሰላም)</option>
+                      </select>
+                    </div>
+
                     <div>
                       <label className="block text-xs font-medium text-slate-400 mb-1">Target Humoral Element</label>
                       <select
@@ -1083,14 +1506,15 @@ export default function ProfileClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Gender Focus</label>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Name style (optional)</label>
                       <select
                         value={suggestGender}
                         onChange={(e) => setSuggestGender(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
                       >
-                        <option value="female">Female</option>
-                        <option value="male">Male</option>
+                        <option value="">No preference</option>
+                        <option value="female">Feminine names</option>
+                        <option value="male">Masculine names</option>
                         <option value="unisex">Unisex / All</option>
                       </select>
                     </div>
@@ -1102,91 +1526,109 @@ export default function ProfileClient() {
                         onChange={(e) => setSuggestLanguage(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
                       >
-                        <option value="">All Traditions (Amharic, Oromo, Tigrinya, Ge&apos;ez)</option>
-                        <option value="Amharic">Amharic</option>
+                        <option value="">All Traditions (Ethiopian &amp; Biblical)</option>
+                        <option value="Biblical">Biblical / ቅዱሳት መጻሕፍት (Hebrew, Greek, Ge&apos;ez)</option>
+                        <option value="Amharic">Amharic (አማርኛ)</option>
+                        <option value="Ge'ez">Ge&apos;ez (ግዕዝ)</option>
                         <option value="Afaan Oromo">Afaan Oromo</option>
-                        <option value="Tigrinya">Tigrinya</option>
-                        <option value="Ge'ez">Ge&apos;ez</option>
+                        <option value="Tigrinya">Tigrinya (ትግርኛ)</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="flex justify-end">
                     <button
-                      onClick={() => {
-                        const payload = {
-                          targetElement: suggestTargetElement,
-                          gender: suggestGender,
-                          languagePreference: suggestLanguage,
-                          fullName,
-                          birthDate,
-                          birthTime,
-                          city,
-                        };
-                        fetch("/api/profile/suggest-name", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(payload),
-                        })
-                          .then(async (res) => {
-                            const data = await res.json();
-                            if (data.success) setSuggestions(data.suggestions);
-                          })
-                          .catch((err) => console.error("Suggestions error:", err));
-                      }}
+                      onClick={() => handleFetchSuggestions()}
                       disabled={suggestLoading}
-                      className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center gap-2"
+                      className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs transition flex items-center gap-2 shadow-lg"
                     >
-                      {suggestLoading ? "Searching..." : "Generate Name Suggestions"}
+                      {suggestLoading ? (
+                        <>
+                          <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-950 border-t-transparent animate-spin"></span>
+                          <span>Calculating Harmonies...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>✨</span>
+                          <span>Generate Dynamic Name Suggestions</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
 
-                {/* Suggestions Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {suggestions.map((item, idx) => (
-                    <div key={idx} className="glass-panel p-5 border border-white/10 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-base font-bold text-white flex items-center gap-2">
-                            <span>{item.suggestedName}</span>
-                            {item.geezFidel && <span className="text-amber-400 font-serif">({item.geezFidel})</span>}
-                          </div>
-                          {idx === 0 && item.score !== undefined && (
-                            <span className="inline-block mt-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-300">
-                              Best match
-                            </span>
-                          )}
-                          <div className="text-xs text-amber-300 italic">&quot;{item.meaning}&quot;</div>
-                          {item.sourceTradition && (
-                            <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                              {item.sourceTradition} · Score {item.score ?? "—"}/85
+                {/* Suggestions Grid — first 4 always visible; rest gated */}
+                {(() => {
+                  const visibleItems = isGated ? suggestions.slice(0, 4) : suggestions;
+                  const hiddenItems = isGated ? suggestions.slice(4) : [];
+                  return (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {visibleItems.map((item, idx) => (
+                          <div key={idx} className="glass-panel p-5 border border-white/10 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-base font-bold text-white flex items-center gap-2">
+                                  <span>{item.suggestedName}</span>
+                                  {item.geezFidel && <span className="text-amber-400 font-serif">({item.geezFidel})</span>}
+                                </div>
+                                {idx === 0 && item.score !== undefined && (
+                                  <span className="inline-block mt-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-300">Best match</span>
+                                )}
+                                <div className="text-xs text-amber-300 italic">&quot;{item.meaning}&quot;</div>
+                                {item.sourceTradition && (
+                                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{item.sourceTradition} · Score {item.score ?? "—"}/85</div>
+                                )}
+                              </div>
+                              <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${HUMOR_COLORS[item.primaryElement].badge}`}>{item.primaryElement}</span>
                             </div>
-                          )}
-                        </div>
-                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${HUMOR_COLORS[item.primaryElement].badge}`}>
-                          {item.primaryElement}
-                        </span>
+                            <div className="text-xs text-slate-300"><strong className="text-white">Cultural Heritage:</strong> {item.language} • Destiny {item.destinyNumber}</div>
+                            <div className="text-xs text-slate-400">{item.alignmentReason}</div>
+                            <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
+                              <strong>Wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
+                            </div>
+                            {item.recommendation && (
+                              <div className="text-xs p-2.5 rounded-lg bg-sky-950/30 border border-sky-500/20 text-sky-100">
+                                <strong>Profile Recommendation:</strong> {item.recommendation}
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
 
-                      <div className="text-xs text-slate-300">
-                        <strong className="text-white">Cultural Heritage:</strong> {item.language} • Destiny {item.destinyNumber}
-                      </div>
-
-                      <div className="text-xs text-slate-400">{item.alignmentReason}</div>
-
-                      <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
-                        <strong>Wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
-                      </div>
-
-                      {item.recommendation && (
-                        <div className="text-xs p-2.5 rounded-lg bg-sky-950/30 border border-sky-500/20 text-sky-100">
-                          <strong>Profile Recommendation:</strong> {item.recommendation}
+                      {/* Gate: hidden suggestions blur overlay */}
+                      {isGated && hiddenItems.length > 0 && (
+                        <div className="relative rounded-2xl overflow-hidden">
+                          <div className="pointer-events-none select-none filter blur-sm opacity-25 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                            {hiddenItems.slice(0, 4).map((_, i) => (
+                              <div key={i} className="h-32 rounded-xl bg-white/5" />
+                            ))}
+                          </div>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
+                            <span className="text-3xl">✨</span>
+                            <div className="space-y-1">
+                              <h4 className="text-base font-black text-white">{hiddenItems.length} More Name Suggestions Hidden</h4>
+                              <p className="text-xs text-slate-300 max-w-xs leading-relaxed">Unlock your complete set of harmonically-calculated name suggestions with full alignment scores, deep lineage notes, and biblical resonance analysis.</p>
+                            </div>
+                            <button onClick={handleUnlockProfile} disabled={unlockLoading}
+                              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg">
+                              {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock All — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                            </button>
+                            {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                          </div>
                         </div>
                       )}
-                    </div>
-                  ))}
-                </div>
+
+                      {/* Gate: no suggestions loaded yet */}
+                      {isGated && suggestions.length === 0 && (
+                        <div className="flex flex-col items-center justify-center gap-4 p-10 rounded-2xl border border-amber-500/30 bg-slate-950/50 text-center">
+                          <span className="text-3xl">✨</span>
+                          <p className="text-xs text-slate-400">Generate suggestions above, then unlock to view the full set.</p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
           </>

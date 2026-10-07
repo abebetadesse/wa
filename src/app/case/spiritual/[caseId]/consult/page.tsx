@@ -19,6 +19,17 @@ export default function SpiritualConsultPage({
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [isBooking, setIsBooking] = useState(false);
   const [bookedSuccess, setBookedSuccess] = useState(false);
+  const [selectedService, setSelectedService] = useState<{ id: string; title: string; label: string; prayer: string; prayerGe?: string; telsemName?: string | null } | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/case/spiritual/${caseId}/status`, { credentials: "include", cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok || !payload.success) return;
+        setSelectedService(payload.data?.serviceChoice ?? null);
+      })
+      .catch(() => undefined);
+  }, [caseId]);
 
   useEffect(() => {
     setLoadingSlots(true);
@@ -82,6 +93,20 @@ export default function SpiritualConsultPage({
           </h1>
         </div>
 
+        {selectedService && (
+          <div className="rounded-3xl border border-amber-500/30 bg-amber-500/5 p-5">
+            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Selected service</div>
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <h2 className="text-2xl font-bold text-amber-50">{selectedService.title}</h2>
+              <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">
+                {selectedService.label}
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-stone-200">“{selectedService.prayer}”</p>
+            {selectedService.telsemName && <p className="mt-2 text-xs text-emerald-200">Telsem match: {selectedService.telsemName}</p>}
+          </div>
+        )}
+
         {/* Expert Profile Header Card */}
         <div className="p-6 rounded-3xl bg-stone-900 border border-amber-500/30 flex items-center gap-4 shadow-xl">
           <div className="w-16 h-16 rounded-2xl bg-amber-600/30 border border-amber-500/40 flex items-center justify-center text-3xl flex-shrink-0">
@@ -103,7 +128,7 @@ export default function SpiritualConsultPage({
             <span className="text-5xl block">🎉</span>
             <h2 className="text-2xl font-bold text-white">Consultation Successfully Scheduled!</h2>
             <p className="text-sm text-stone-300">
-              Your 30-minute {selectedFormat} session with Selamawit Tadesse is confirmed for:
+              Your 30-minute {selectedFormat} session for {selectedService?.title || "your selected spiritual focus"} with Selamawit Tadesse is confirmed for:
             </p>
             <div className="p-4 rounded-2xl bg-black/50 text-emerald-300 font-mono text-base font-bold">
               {selectedDate} at {selectedSlot}

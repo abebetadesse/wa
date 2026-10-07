@@ -9,10 +9,10 @@ export default function DiscoverPage() {
           Knowledge map
         </div>
         <h1 className="max-w-4xl text-3xl font-black tracking-tight text-white md:text-5xl">
-          The living map of Ethiopian wisdom, science, and daily context.
+          Find relevant sample cases, local context, and practical next steps.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-emerald-50/85 md:text-base">
-          This layer organizes each practitioner’s expertise around a single truth: Ethiopian healing traditions are living knowledge systems, and they are strongest when grounded in biology, scientific safety, nutrition, demographics, and the realities of everyday community life.
+          Search illustrative cases by topic, herbs and food ingredients, diet, Ethiopian location, or Hexacore element. Examples are educational starting points, not real patient records or personalized treatment advice.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/case" className="btn-pill-primary">Start a guided case</Link>

@@ -46,6 +46,7 @@ export async function generateBioNarrativeReport(
     bioNarrative: false,
     voiceIntake: false,
     manuscriptKnowledge: false,
+    identityContext: false,
     ...input.consent,
   };
   if (!consent.bioNarrative) {

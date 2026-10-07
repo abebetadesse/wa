@@ -39,10 +39,10 @@ const domainOptions = [
   { id: "peace", label: "Peace", icon: "☼", description: "Stress, safety, sleep, emotional steadiness, and restoration." },
   { id: "power", label: "Power", icon: "◇", description: "Agency, boundaries, energy, motivation, and leadership." },
   { id: "money", label: "Money", icon: "◈", description: "Stability, obligations, planning, and resource pressure." },
-  { id: "career", label: "Career", icon: "↗", description: "Direction, work fit, opportunity, and sustainable professional growth." },
+  { id: "career", label: "Money & Business Reflection", icon: "◈", description: "Work, livelihood, business pressures, and sustainable next steps." },
   { id: "relationships", label: "Relationships & Family", icon: "❤", description: "Communication, conflict, family roles, safety, and partnership dynamics." },
   { id: "spiritual", label: "Spiritual & Life Direction", icon: "✦", description: "Purpose, ritual, life direction, and cultural reflection with clear safety boundaries." },
-  { id: "legal", label: "Legal & Dispute", icon: "⚖", description: "Housing, contracts, rights, and dispute guidance with legal-safety screening." },
+  { id: "legal", label: "Peace & Harmony", icon: "☮", description: "Family and community conflict, reconciliation, and safety-aware support." },
   { id: "social", label: "Social", icon: "◎", description: "Belonging, relationships, family patterns, and community support." },
 ];
 
@@ -68,7 +68,7 @@ const domainInsightMap: Record<string, { headline: string; emphasis: string; que
     questions: ["What is creating the most pressure right now?", "What bills, commitments, or burdens feel most urgent?", "What would reduce your stress within the next 30 days?"],
   },
   career: {
-    headline: "Career-focused synthesis",
+    headline: "Money & Business reflection synthesis",
     emphasis: "The plan emphasizes work fit, direction, burnout, skill-building, and sustainable professional decisions.",
     questions: ["What part of work or study feels least aligned?", "Where are you stuck between exploration and action?", "What would make the path more sustainable and clear?"],
   },
@@ -83,9 +83,9 @@ const domainInsightMap: Record<string, { headline: string; emphasis: string; que
     questions: ["What area of life feels most unclear or spiritually heavy right now?", "What traditions or questions feel most meaningful to you?", "What would help you feel more grounded in purpose?"],
   },
   legal: {
-    headline: "Legal & Dispute synthesis",
-    emphasis: "This review focuses on rights, deadlines, obligations, and general legal context while avoiding case-specific legal advice.",
-    questions: ["What is the dispute or obligation you are facing?", "Is there a deadline or immediate risk you need to account for?", "What is the concrete next step you need to understand?"],
+    headline: "Peace & Harmony synthesis",
+    emphasis: "This review focuses on safety, communication, and options for peaceful resolution without replacing formal legal advice.",
+    questions: ["What conflict or relationship strain would you like help navigating?", "Is anyone in immediate danger or at risk of harm?", "What would a safer, more peaceful next step look like?"],
   },
   social: {
     headline: "Social-focused synthesis",

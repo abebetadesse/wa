@@ -39,6 +39,7 @@ export async function GET(
         practicalGuidance: session.report.practicalGuidance,
         recommendedRitual: session.report.recommendedRitual,
         draftNotice: "AI-assisted cultural reflection draft. No human practitioner review or approval has been recorded.",
+        serviceChoice: session.serviceChoice ?? session.report?.serviceChoice,
       },
     });
   } catch (error) {

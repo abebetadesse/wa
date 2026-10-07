@@ -9,8 +9,97 @@ import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaP
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
 import VoiceCaptureConsent from "@/components/case/VoiceCaptureConsent";
+import { getTelsemByCategory, type TelsemCategory } from "@/lib/cultural/telsemData";
 
 const FIDEL_NAME_MIN_LENGTH = 2;
+
+type SpiritualService = {
+  id: string;
+  title: string;
+  label: string;
+  shortDescription: string;
+  fullDescription: string;
+  prayer: string;
+  prayerGe: string;
+  idealFor: string[];
+  telsemCategory: TelsemCategory;
+  accent: string;
+};
+
+const SPIRITUAL_SERVICES: SpiritualService[] = [
+  {
+    id: "protection",
+    title: "Protection & Boundary",
+    label: "Guardian",
+    shortDescription: "Calm the atmosphere around your path and strengthen the space around you.",
+    fullDescription: "This focus is used when the heart feels under pressure, interpersonal friction is strong, or a protective prayer is needed before a tender decision.",
+    prayer: "May I be protected from heaviness, conflict, and unseen strain, and walk with calm steadiness.",
+    prayerGe: "እንድርሆ በሰላም በጥበቃ እለፍ እንድያው ሁሉ ክብ፡፡",
+    idealFor: ["stress", "conflict", "boundary-setting"],
+    telsemCategory: "protection",
+    accent: "from-amber-500/20 via-orange-500/10 to-transparent",
+  },
+  {
+    id: "healing",
+    title: "Healing & Release",
+    label: "Release",
+    shortDescription: "Open a gentle path for emotional and spiritual release when heaviness feels persistent.",
+    fullDescription: "This service is suited to cycles of fatigue, inner tension, or recurring emotional burdens that need renewal and clarity.",
+    prayer: "May old heaviness loosen and my spirit return to ease, regain breath, and renew vitality.",
+    prayerGe: "ከብርሃን በኩል ከመድመቅ ይበርሃ መንፈሴ እድለ ተስፋ እና የሰላም አጠገብ፡፡",
+    idealFor: ["healing", "fatigue", "emotional release"],
+    telsemCategory: "healing",
+    accent: "from-emerald-500/20 via-teal-500/10 to-transparent",
+  },
+  {
+    id: "abundance",
+    title: "Abundance & Prosperity",
+    label: "Prosperity",
+    shortDescription: "Invite flow, steadiness, and practical blessing into work, livelihood, and daily rhythm.",
+    fullDescription: "This focus supports clarity in business, livelihood, and personal stability, especially when momentum feels disrupted or delayed.",
+    prayer: "May opportunity arrive in truth, my effort be supported, and abundance move with dignity and peace.",
+    prayerGe: "እግዚአብሔር እንዲፈቀድልኝ በረጎ ስራ ያየም እንዲፈጣ በእርግጠኝነት፡፡",
+    idealFor: ["work", "livelihood", "clarity"],
+    telsemCategory: "abundance",
+    accent: "from-yellow-500/20 via-amber-500/10 to-transparent",
+  },
+  {
+    id: "wisdom",
+    title: "Wisdom & Direction",
+    label: "Guidance",
+    shortDescription: "Ask for insight, discernment, and a clearer understanding before major choices.",
+    fullDescription: "This service is ideal when you need perspective, thoughtful next steps, and a calm sense of alignment before action.",
+    prayer: "Grant me clarity to see what is worthy, what is ready, and what can be left in peace.",
+    prayerGe: "ጥበብን በልቤ እንዲቀመር እውነተኛ ፈቃድ እየደረሰኝ ግባ ይሆንልኝ፡፡",
+    idealFor: ["decision-making", "purpose", "clarity"],
+    telsemCategory: "wisdom",
+    accent: "from-sky-500/20 via-cyan-500/10 to-transparent",
+  },
+  {
+    id: "harmony",
+    title: "Harmony & Peace",
+    label: "Peace",
+    shortDescription: "Restore balance in relationships, inner calm, and the rhythm of everyday life.",
+    fullDescription: "This focus is ideal for family tension, emotional imbalance, and situations that need gentleness, patience, and reconciliation.",
+    prayer: "May peace return to my heart and my home, and may forgiveness and understanding grow without force.",
+    prayerGe: "ሰላም የእግዚአብሔር ምስጋና በቤቴ በልቤ እና በአለማችን ይዛ፡፡",
+    idealFor: ["relationships", "peace", "family"],
+    telsemCategory: "harmony",
+    accent: "from-violet-500/20 via-fuchsia-500/10 to-transparent",
+  },
+  {
+    id: "archangels",
+    title: "Archangelic Strength",
+    label: "Divine support",
+    shortDescription: "Call for strength and courage when the route ahead feels uncertain or spiritually heavy.",
+    fullDescription: "This service is suited to difficult transitions, moments of uncertainty, and seasons when courage and steady guidance are needed.",
+    prayer: "May divine strength guide my steps, steady my courage, and keep me aligned with the right path.",
+    prayerGe: "በጎዳና ላይ ብድራትና እውነተኛ ኃይል ይሰጠኝ እንደዚህ እንዳለ፡፡",
+    idealFor: ["strength", "transition", "direction"],
+    telsemCategory: "archangels",
+    accent: "from-rose-500/20 via-pink-500/10 to-transparent",
+  },
+];
 
 export default function SpiritualStep1Page() {
   const router = useRouter();
@@ -26,8 +115,13 @@ export default function SpiritualStep1Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [needsSignIn, setNeedsSignIn] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState(SPIRITUAL_SERVICES[0].id);
 
   const gematria = useLiveGematria(nameGeez, motherNameGeez);
+  const recommendedService = SPIRITUAL_SERVICES[(gematria.finalNumber - 1 + SPIRITUAL_SERVICES.length) % SPIRITUAL_SERVICES.length] ?? SPIRITUAL_SERVICES[0];
+  const activeService = SPIRITUAL_SERVICES.find((service) => service.id === selectedServiceId) ?? recommendedService;
+  const matchingTelsem = getTelsemByCategory(activeService.telsemCategory);
+  const featuredTelsem = matchingTelsem[Math.abs((gematria.finalNumber || 1) + activeService.id.length) % Math.max(matchingTelsem.length, 1)] ?? matchingTelsem[0] ?? null;
 
   const { isListening, startListening, stopListening, error: voiceError, consentPending, acceptVoiceConsent, declineVoiceConsent } = useGeezVoiceInput((text) => {
     const cleanText = (text || "").trim();
@@ -82,6 +176,26 @@ export default function SpiritualStep1Page() {
       }
     }
   }, [motherNameGeez]);
+
+  useEffect(() => {
+    try {
+      const storedService = sessionStorage.getItem("spiritual_service_id");
+      if (storedService && SPIRITUAL_SERVICES.some((service) => service.id === storedService)) {
+        setSelectedServiceId(storedService);
+      }
+    } catch {
+      // ignore storage access issues.
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("spiritual_service_id", activeService.id);
+      sessionStorage.setItem("spiritual_service_name", activeService.title);
+    } catch {
+      // ignore storage quota or privacy exceptions.
+    }
+  }, [activeService.id, activeService.title]);
 
   const autofetchLocation = async () => {
     if (!birthLocationName.trim()) {
@@ -156,6 +270,15 @@ export default function SpiritualStep1Page() {
           birthLocationName: birthLocationName || undefined,
           birthLatitude: birthLatitude ?? undefined,
           birthLongitude: birthLongitude ?? undefined,
+          serviceChoice: {
+            id: activeService.id,
+            title: activeService.title,
+            label: activeService.label,
+            prayer: activeService.prayer,
+            prayerGe: activeService.prayerGe,
+            telsemId: featuredTelsem?.id ?? null,
+            telsemName: featuredTelsem?.nameAm ?? null,
+          },
         }),
       });
 
@@ -172,6 +295,13 @@ export default function SpiritualStep1Page() {
           sessionStorage.setItem("spiritual_mother_geez", motherNameGeez);
           sessionStorage.setItem("spiritual_birth_date", birthDate);
           sessionStorage.setItem("spiritual_birth_location", birthLocationName);
+          sessionStorage.setItem("spiritual_service_id", activeService.id);
+          sessionStorage.setItem("spiritual_service_name", activeService.title);
+          sessionStorage.setItem("spiritual_service_prayer", activeService.prayer);
+          if (featuredTelsem) {
+            sessionStorage.setItem("spiritual_telsem_id", featuredTelsem.id);
+            sessionStorage.setItem("spiritual_telsem_name", featuredTelsem.nameAm);
+          }
           if (birthLatitude !== null && birthLongitude !== null) {
             sessionStorage.setItem("spiritual_birth_coordinates", JSON.stringify({ latitude: birthLatitude, longitude: birthLongitude }));
           }
@@ -231,6 +361,75 @@ export default function SpiritualStep1Page() {
                 details are optional context; they do not determine personality, health, or future outcomes.
               </p>
               <div className="mt-6"><SpiritualIntakeProgress current={1} /></div>
+
+              <section className="mt-7 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-stone-950 via-stone-900 to-black/80 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-300">Respective service</div>
+                    <h2 className="mt-2 text-xl font-bold text-amber-50">Choose the prayer focus for this reading</h2>
+                  </div>
+                  <span className="rounded-full border border-amber-500/40 bg-amber-500/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200">
+                    Dynamic
+                  </span>
+                </div>
+
+                <div className="mt-5 grid gap-3 md:grid-cols-2">
+                  {SPIRITUAL_SERVICES.map((service) => {
+                    const isSelected = service.id === activeService.id;
+                    return (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() => setSelectedServiceId(service.id)}
+                        className={`group rounded-2xl border p-4 text-left transition-all ${
+                          isSelected
+                            ? "border-amber-400 bg-amber-500/10 shadow-lg shadow-amber-900/10"
+                            : "border-stone-800 bg-stone-900/50 hover:border-stone-700 hover:bg-stone-900"
+                        }`}
+                      >
+                        <div className={`rounded-xl bg-gradient-to-r ${service.accent} p-3`}>
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-200">{service.label}</span>
+                            {isSelected && <span className="text-[10px] font-bold text-emerald-300">Selected</span>}
+                          </div>
+                          <h3 className="mt-2 text-lg font-bold text-stone-50">{service.title}</h3>
+                          <p className="mt-2 text-xs leading-5 text-stone-300">{service.shortDescription}</p>
+                          <div className="mt-3 flex flex-wrap gap-1.5">
+                            {service.idealFor.map((item) => (
+                              <span key={`${service.id}-${item}`} className="rounded-full border border-stone-700 bg-black/20 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-stone-300">
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="mt-3 rounded-xl border border-stone-800 bg-black/30 p-3">
+                          <div className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200">Respective prayer</div>
+                          <p className="mt-2 text-sm leading-6 text-stone-200">“{service.prayer}”</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {featuredTelsem && (
+                  <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-800 pb-3">
+                      <div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200">Telsem match</div>
+                        <h3 className="mt-2 text-xl font-bold text-amber-100">{featuredTelsem.nameAm}</h3>
+                      </div>
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-200">
+                        {featuredTelsem.categoryLabelEn}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-stone-300">{featuredTelsem.spiritualMeaning}</p>
+                    <div className="mt-4 rounded-xl border border-stone-800 bg-black/30 p-3">
+                      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-300">Traditional formula</div>
+                      <p className="mt-2 text-sm italic leading-6 text-stone-200">“{featuredTelsem.traditionalFormulaEn}”</p>
+                    </div>
+                  </div>
+                )}
+              </section>
 
               {error && (
                 <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">

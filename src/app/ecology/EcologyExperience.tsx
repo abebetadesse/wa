@@ -31,7 +31,7 @@ export default function EcologyExperience() {
           <span className="text-amber-400">Enhancements 1, 2, 10 & 11</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-          Agro-Ecology, Terroir & Fermentation Kinetics
+          Agro-Ecology, Regional Conditions & Fermentation Kinetics
         </h1>
         <p className="text-slate-400 text-sm md:text-base max-w-3xl mt-2">
           Biochemical calibration based on elevation zones, volcanic soil trace minerals, Rift Valley fluoride antagonism,
@@ -44,7 +44,7 @@ export default function EcologyExperience() {
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Enhancement 1</span>
-              <h2 className="text-xl font-bold text-white">Agro-Climatic Terroir & Soil Minerals</h2>
+              <h2 className="text-xl font-bold text-white">Agro-Climatic Conditions & Soil Minerals</h2>
             </div>
             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400">
               {zoneProfile.zone.toUpperCase()}

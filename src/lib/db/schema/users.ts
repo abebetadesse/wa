@@ -48,7 +48,7 @@ export const users = mysqlTable("users", {
     language?: "am" | "en" | "om" | "ti" | "so";
     shareWithPractitioner?: boolean;
   }>().default({}),
-  preferredLanguage: varchar("preferred_language", { length: 10 }).default("en").notNull(), // 'am' | 'om' | 'en' | 'ti' | 'so'
+  preferredLanguage: varchar("preferred_language", { length: 10 }).default("am").notNull(), // 'am' | 'om' | 'en' | 'ti' | 'so'
   profileImageUrl: varchar("profile_image_url", { length: 500 }),
   isVerified: boolean("is_verified").default(false).notNull(),
   /** Telegram account linked through the Telegram Login Widget (verification, sign-in, notifications). */
@@ -127,6 +127,7 @@ export const userProfiles = mysqlTable("user_profiles", {
     bioNarrative: boolean;
     voiceIntake: boolean;
     manuscriptKnowledge: boolean;
+    identityContext: boolean;
   }>().default({
     location: false,
     spiritual: false,
@@ -134,6 +135,7 @@ export const userProfiles = mysqlTable("user_profiles", {
     bioNarrative: false,
     voiceIntake: false,
     manuscriptKnowledge: false,
+    identityContext: false,
   }).notNull(),
   consentUpdatedAt: timestamp("consent_updated_at"),
   consentHistory: jsonb("consent_history").$type<Array<{

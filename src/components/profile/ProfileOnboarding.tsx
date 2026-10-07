@@ -11,8 +11,8 @@ import { Select } from "@/components/ui/select";
 const CASE_TYPES = [
   ["wellbeing", "wellbeing & wellness"],
   ["relationships", "Relationships & family"],
-  ["career", "Career & business"],
-  ["legal", "Legal & dispute support"],
+  ["career", "Money & Business Reflection"],
+  ["legal", "Peace & Harmony"],
   ["social", "Social & community"],
   ["spiritual", "Spiritual & cultural reflection"],
 ];

@@ -58,7 +58,7 @@ function AuthScreen() {
 
   function finish(role: string, isNew: boolean) {
     notifyAuthStateChanged();
-    router.push(next ?? (isNew ? "/account?welcome=1" : ADMIN_ROLES.includes(role) ? "/admin" : "/marketplace"));
+    router.push(next ?? "/profile?finalize=1");
     router.refresh();
   }
 

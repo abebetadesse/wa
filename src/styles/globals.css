@@ -10,6 +10,81 @@
 /* Tailwind's html.dark variant, matching ThemeContext. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .telsem-print-root,
+  .telsem-print-root * {
+    visibility: visible !important;
+  }
+
+  .telsem-print-root {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    z-index: 99999 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    color: #21170f !important;
+  }
+
+  .telsem-print-root .telsem-no-print {
+    display: none !important;
+  }
+
+  .telsem-print-root .telsem-scroll-content {
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+  }
+
+  .telsem-print-root .telsem-paper {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 12mm !important;
+    border: 1px solid #85582b !important;
+    border-radius: 0 !important;
+    background: #fffdf8 !important;
+    box-shadow: none !important;
+    color: #21170f !important;
+    break-inside: avoid;
+  }
+
+  .telsem-print-root img {
+    max-height: 85mm !important;
+    object-fit: contain !important;
+  }
+
+  .telsem-print-root p,
+  .telsem-print-root li {
+    color: #21170f !important;
+  }
+}
+
+#google_translate_element {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
 @layer components {
   /* Legacy aliases used by older component CSS. New code uses tokens.css names directly. */
   :root {

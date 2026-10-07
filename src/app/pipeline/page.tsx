@@ -33,7 +33,7 @@ export default function UserPipelinePage() {
 
   // Intake Form fields
   const [ageBand, setAgeBand] = useState("25-40");
-  const [sex, setSex] = useState("Female");
+  const [sex, setSex] = useState("Unspecified");
   const [pregnancyStatus, setPregnancyStatus] = useState("Non-pregnant");
   const [region, setRegion] = useState("Amhara");
   const [zone, setZone] = useState("North Gondar");
@@ -284,13 +284,14 @@ export default function UserPipelinePage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    {i18n.profile.sex}
+                    {locale === "am" ? "የፆታ መረጃ (አማራጭ)" : "Sex-specific health context (optional)"}
                   </label>
                   <select
                     value={sex}
                     onChange={(e) => setSex(e.target.value)}
                     className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
                   >
+                    <option value="Unspecified">Prefer not to say</option>
                     <option value="Female">Female</option>
                     <option value="Male">Male</option>
                   </select>

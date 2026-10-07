@@ -19,6 +19,11 @@ control). What has not: the Plesk server itself. Steps that depend on that serve
 | Two secrets | `AUTH_SECRET` and `DATA_ENCRYPTION_KEY`, generated in §4. |
 | A mailbox for sending | Plesk → Mail → create e.g. `no-reply@your-domain`. Used for password resets. |
 
+The supplied-books library includes six PDF files in `public/books` (about 339 MB total). These
+files are tracked with Git LFS; install Git LFS and fetch LFS objects before building or preparing
+a release. The PDFs are copied into the Plesk release with the rest of `public`, so allow for the
+additional disk space, upload time, and bandwidth on the app host.
+
 **Rotate exposed passwords first.** Earlier versions of this repository (public on GitHub)
 contained account passwords in seed scripts, and they remain in its history. Change the password
 of every account that used them, and never reuse them. Passwords typed into chats or tickets

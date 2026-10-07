@@ -229,6 +229,88 @@ function PaymentSettingsForm() {
         </CardContent>
       </Card>
 
+      <Card className={cn(draft.profileGating?.enabled && "border-amber-500/40")}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <span>🔐</span>
+                <span>Profile Results 50% Gating &amp; Paywall</span>
+              </CardTitle>
+              <CardDescription>
+                When enabled, regular users receive 50% of their personal profile results, with the remaining 50% blurred/locked behind an unlock payment.
+              </CardDescription>
+            </div>
+            <Badge tone={draft.profileGating?.enabled ? "warning" : "neutral"}>
+              {draft.profileGating?.enabled ? "50% Gating Active" : "Disabled (100% Free)"}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <label className="flex items-center justify-between gap-4 rounded-2xl border border-border p-4">
+            <span>
+              <span className="block font-semibold text-foreground">Enforce 50% profile results gating for regular users</span>
+              <span className="text-sm text-muted-foreground">Requires users to pay or unlock to view the full 5-system sacred blueprint, botanical adaptogens, and deep lineage formulas.</span>
+            </span>
+            <input
+              type="checkbox"
+              className="size-5 accent-[var(--brand-accent)]"
+              checked={Boolean(draft.profileGating?.enabled)}
+              onChange={(e) => update({
+                profileGating: {
+                  ...draft.profileGating,
+                  enabled: e.target.checked,
+                  priceEtb: draft.profileGating?.priceEtb ?? 150,
+                  title: draft.profileGating?.title ?? "Complete 5-System Sacred Blueprint",
+                  description: draft.profileGating?.description ?? "",
+                }
+              })}
+            />
+          </label>
+          {draft.profileGating?.enabled && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Unlock price (ETB)">
+                {(control) => (
+                  <Input
+                    {...control}
+                    type="number"
+                    min="0"
+                    max="1000000"
+                    value={String(draft.profileGating?.priceEtb ?? 150)}
+                    onChange={(e) => update({
+                      profileGating: {
+                        ...draft.profileGating,
+                        enabled: draft.profileGating?.enabled ?? true,
+                        priceEtb: Math.max(0, Number(e.target.value) || 0),
+                        title: draft.profileGating?.title ?? "Complete 5-System Sacred Blueprint",
+                        description: draft.profileGating?.description ?? "",
+                      }
+                    })}
+                  />
+                )}
+              </Field>
+              <Field label="Unlock title">
+                {(control) => (
+                  <Input
+                    {...control}
+                    value={draft.profileGating?.title ?? "Complete 5-System Sacred Blueprint"}
+                    onChange={(e) => update({
+                      profileGating: {
+                        ...draft.profileGating,
+                        enabled: draft.profileGating?.enabled ?? true,
+                        priceEtb: draft.profileGating?.priceEtb ?? 150,
+                        title: e.target.value,
+                        description: draft.profileGating?.description ?? "",
+                      }
+                    })}
+                  />
+                )}
+              </Field>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Payment methods</CardTitle>

@@ -74,6 +74,7 @@ export default function SpiritualReportPage({
   const report = reportData?.report;
   const gematria = reportData?.gematria;
   const expert = reportData?.assignedExpert || report?.expert;
+  const selectedService = report?.serviceChoice;
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -110,6 +111,27 @@ export default function SpiritualReportPage({
             </Link>
           </div>
         </div>
+
+        {selectedService && (
+          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-stone-900 to-stone-900 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-300">Selected service</div>
+                <h2 className="mt-2 text-2xl font-bold text-amber-50">{selectedService.title}</h2>
+              </div>
+              <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200">
+                {selectedService.label}
+              </span>
+            </div>
+            <p className="mt-4 text-sm leading-7 text-stone-200">“{selectedService.prayer}”</p>
+            {selectedService.prayerGe && <p className="mt-3 text-sm italic text-emerald-200">{selectedService.prayerGe}</p>}
+            {selectedService.telsemName && (
+              <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm text-emerald-100">
+                Linked Telsem: {selectedService.telsemName}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Navigation Tabs */}
         <div className="flex border-b border-stone-800 gap-2 text-sm font-medium overflow-x-auto pb-1">

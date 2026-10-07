@@ -31,6 +31,7 @@ export async function GET(
               status: session.status,
               estimatedMinutesRemaining: session.estimatedMinutesRemaining,
               expert: session.assignedExpert,
+              serviceChoice: session.serviceChoice ?? null,
             })}\n\n`
           )
         );
@@ -47,7 +48,8 @@ export async function GET(
                 status: current.status,
                 estimatedMinutesRemaining: current.estimatedMinutesRemaining,
                 expert: current.assignedExpert,
-              })}\n\n`
+                    serviceChoice: current.serviceChoice ?? null,
+                  })}\n\n`
             )
           );
         }

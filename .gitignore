@@ -10,8 +10,10 @@ next-env.d.ts
 .env.production
 .env.development
 
-# Large files - keep locally but don't track in git
+# Ignore local PDFs except the Git LFS-backed public book collection.
 *.pdf
+!public/books/
+!public/books/*.pdf
 
 # Local runtime caches (contain personal case data)
 .cases_cache/

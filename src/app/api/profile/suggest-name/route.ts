@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { suggestAlternativeNames, SuggestionCriteria } from "@/lib/profiling/naming/nameSuggester";
+import {
+  suggestAlternativeNamesWithAppreciation,
+  SuggestionCriteria,
+  SuggestionReason,
+} from "@/lib/profiling/naming/nameSuggester";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,14 +17,16 @@ export async function POST(req: NextRequest) {
       birthDate: body.birthDate,
       birthTime: body.birthTime,
       city: body.city,
+      reason: (body.reason as SuggestionReason) || undefined,
     };
 
-    const suggestions = suggestAlternativeNames(criteria);
+    const { suggestions, appreciation } = suggestAlternativeNamesWithAppreciation(criteria);
     return NextResponse.json({
       success: true,
       count: suggestions.length,
       bestSuggestion: suggestions[0] ?? null,
       suggestions,
+      appreciation,
       disclaimer: "Name scores are transparent cultural-reflection matches, not predictions, diagnoses, or measures of a person's worth.",
     });
   } catch (err) {

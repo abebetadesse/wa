@@ -19,7 +19,7 @@ Object.assign(ETHIOPIAN_REGION_ALTITUDES, {
 
 export function stage1Normalize(rawInput: any): NormalizedProfile {
   const age = Number(rawInput.age) || 30;
-  const gender = (rawInput.gender === "male" || rawInput.gender === "female") ? rawInput.gender : "female";
+  const gender = (rawInput.gender === "male" || rawInput.gender === "female") ? rawInput.gender : "other";
   const location = resolveEthiopianLocation(rawInput.city || rawInput.region);
   const region = typeof rawInput.region === "string" && rawInput.region ? rawInput.region : location.name;
   
@@ -85,7 +85,7 @@ export function stage1Normalize(rawInput: any): NormalizedProfile {
     userId: rawInput.userId,
     age,
     gender,
-    weightKg: Number(rawInput.weightKg) || (gender === "female" ? 58 : 68),
+    weightKg: Number(rawInput.weightKg) || undefined,
     region,
     altitudeMeters,
     activityLevel,

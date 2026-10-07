@@ -29,8 +29,8 @@ const incompleteScreen = () => concern("One or more safety questions were not an
 
 const career: DomainConfig = {
   domain: "career",
-  label: "Career & Vocation Reflection",
-  description: "Spiritual and cultural reflection on vocation and work; no career, financial, or scientific advice.",
+  label: "Money & Business Reflection",
+  description: "Spiritual and cultural reflection on work, livelihood, and enterprise; no career, business, financial, or scientific advice.",
   pricing: { reportEtb: 500, consultationEtb: 1000, consultationFormats: ["video", "voice", "chat", "in_person"] },
   reviewChecklist: [...STANDARD_CHECKLIST, { id: "reflection_only", label: "Only cultural and spiritual reflection is included; no career or financial instructions are given." }],
   safetyQuestions: CAREER_SAFETY,
@@ -93,7 +93,7 @@ const career: DomainConfig = {
 
 const legal: DomainConfig = {
   domain: "legal",
-  label: "Legal & Dispute Guidance (የሕግና ክርክር ምክር)",
+  label: "Peace & Harmony",
   description: "Spiritual and cultural reflection on disputes, family harmony, and customary reconciliation (ሽምግልና); no scientific or statutory legal advice.",
   pricing: { reportEtb: 500, consultationEtb: 1000, consultationFormats: ["video", "voice", "in_person"] },
   reviewChecklist: [...STANDARD_CHECKLIST, { id: "reflection_only", label: "Only cultural and spiritual reflection is included; no scientific advice or formal statutory instruction is given." }],

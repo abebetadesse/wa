@@ -324,7 +324,7 @@ export default function FastingExperience() {
           ← Back to Agro-Ecology
         </Link>
         <Link href="/zoonotic" className="btn-primary text-xs py-2 px-4">
-          Explore Terroir, Apiculture & Safety →
+          Explore Regional Ecology, Apiculture & Safety →
         </Link>
       </div>
     </div>

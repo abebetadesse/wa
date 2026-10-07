@@ -8,6 +8,7 @@ export function useCaseStatusStream(caseId: string) {
   const [eta, setEta] = useState<number | null>(null);
   const [expert, setExpert] = useState<Expert | null>(null);
   const [reportReady, setReportReady] = useState(false);
+  const [serviceChoice, setServiceChoice] = useState<{ id: string; title: string; label: string; prayer: string; prayerGe?: string; telsemName?: string | null; fullDescription?: string } | null>(null);
 
   useEffect(() => {
     if (!caseId) return;
@@ -23,6 +24,7 @@ export function useCaseStatusStream(caseId: string) {
           setStatus(payload.data.status);
           setEta(payload.data.estimatedMinutesRemaining);
           if (payload.data.assignedExpert) setExpert(payload.data.assignedExpert);
+          if (payload.data.serviceChoice) setServiceChoice(payload.data.serviceChoice);
           if (payload.data.status === "visible_to_user" || payload.data.status === "full_report_released") {
             setReportReady(true);
           }
@@ -42,6 +44,7 @@ export function useCaseStatusStream(caseId: string) {
           switch (data.type) {
             case "status_update":
               setStatus(data.status);
+              if (data.serviceChoice) setServiceChoice(data.serviceChoice);
               if (data.status === "visible_to_user" || data.status === "full_report_released") {
                 setReportReady(true);
               }
@@ -78,6 +81,7 @@ export function useCaseStatusStream(caseId: string) {
             setStatus(res.data.status);
             setEta(res.data.estimatedMinutesRemaining);
             if (res.data.assignedExpert) setExpert(res.data.assignedExpert);
+            if (res.data.serviceChoice) setServiceChoice(res.data.serviceChoice);
             if (res.data.status === "visible_to_user" || res.data.status === "full_report_released") {
               setReportReady(true);
             }
@@ -93,5 +97,5 @@ export function useCaseStatusStream(caseId: string) {
     };
   }, [caseId]);
 
-  return { status, eta, expert, reportReady };
+  return { status, eta, expert, reportReady, serviceChoice };
 }

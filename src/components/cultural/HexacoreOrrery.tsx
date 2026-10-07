@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { HerbSafetyBadge } from "@/features/safety/HerbSafetyBadge";
 import {
   CREATION_DAY_MAPPINGS,
@@ -271,12 +271,13 @@ class SolfeggioSynth {
   private oscHarmonic: OscillatorNode | null = null;
   private gain: GainNode | null = null;
 
-  play(freq: number) {
+  async play(freq: number): Promise<boolean> {
     this.stop();
     try {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
+      if (!AudioCtx) return false;
       this.ctx = new AudioCtx();
+      await this.ctx.resume();
       this.osc = this.ctx.createOscillator();
       this.oscHarmonic = this.ctx.createOscillator();
       this.gain = this.ctx.createGain();
@@ -300,38 +301,46 @@ class SolfeggioSynth {
 
       this.osc.start();
       this.oscHarmonic.start();
+      return true;
     } catch {
-      // Audio policy or not supported
+      this.stop();
+      return false;
     }
   }
 
   stop() {
-    if (this.gain && this.ctx) {
+    const ctx = this.ctx;
+    const osc = this.osc;
+    const oscHarmonic = this.oscHarmonic;
+    const gain = this.gain;
+    this.ctx = null;
+    this.osc = null;
+    this.oscHarmonic = null;
+    this.gain = null;
+
+    if (gain && ctx) {
       try {
-        this.gain.gain.setValueAtTime(this.gain.gain.value, this.ctx.currentTime);
-        this.gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
         setTimeout(() => {
-          this.osc?.stop();
-          this.oscHarmonic?.stop();
-          this.osc?.disconnect();
-          this.oscHarmonic?.disconnect();
-          this.ctx?.close();
-          this.osc = null;
-          this.oscHarmonic = null;
-          this.gain = null;
-          this.ctx = null;
+          try {
+            osc?.stop();
+            oscHarmonic?.stop();
+            osc?.disconnect();
+            oscHarmonic?.disconnect();
+            void ctx.close();
+          } catch {
+            // Nodes may already have stopped during browser teardown.
+          }
         }, 300);
       } catch {
-        this.osc = null;
-        this.oscHarmonic = null;
-        this.gain = null;
-        this.ctx = null;
+        void ctx.close();
       }
+    } else if (ctx) {
+      void ctx.close();
     }
   }
 }
-
-const synth = typeof window !== "undefined" ? new SolfeggioSynth() : null;
 
 export default function HexacoreOrrery() {
   const [activeTab, setActiveTab] = useState<"orrery" | "layers" | "journal" | "bodysigns" | "calculator">("orrery");
@@ -343,6 +352,8 @@ export default function HexacoreOrrery() {
   const [activeDay, setActiveDay] = useState<number>(1);
   const [bodySignTab, setBodySignTab] = useState<"tongue" | "palm" | "face">("tongue");
   const [playingFreq, setPlayingFreq] = useState<number | null>(null);
+  const [audioUnavailable, setAudioUnavailable] = useState(false);
+  const synthRef = useRef<SolfeggioSynth | null>(null);
 
   // Profile Calculator State
   const [calcName, setCalcName] = useState("");
@@ -359,6 +370,15 @@ export default function HexacoreOrrery() {
   const [journalStatus, setJournalStatus] = useState<"idle" | "loading" | "saving" | "saved" | "local" | "error">("idle");
 
   useEffect(() => {
+    const synth = new SolfeggioSynth();
+    synthRef.current = synth;
+    return () => {
+      synth.stop();
+      synthRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     try {
@@ -366,7 +386,6 @@ export default function HexacoreOrrery() {
       if (saved) {
         const parsed = JSON.parse(saved);
         setSavedEntries(parsed);
-        if (parsed[activeDay]) setJournalText(parsed[activeDay]);
       }
     } catch {
       setJournalStatus("local");
@@ -411,7 +430,6 @@ export default function HexacoreOrrery() {
         }
         if (cancelled) return;
         setSavedEntries((current) => ({ ...current, ...serverEntries }));
-        if (serverEntries[activeDay]) setJournalText(serverEntries[activeDay]);
         setJournalStatus("saved");
       } catch (error) {
         if (cancelled) return;
@@ -482,18 +500,25 @@ export default function HexacoreOrrery() {
         throw new Error("Unable to save reflection.");
       }
       setJournalStatus("saved");
+      window.dispatchEvent(new Event("hexacore:journal-saved"));
     } catch (error) {
       console.error("Hexacore journal save failed:", error);
       setJournalStatus("local");
     }
   };
 
-  const handlePlaySound = (freq: number) => {
+  const handlePlaySound = async (freq: number) => {
     if (playingFreq === freq) {
-      synth?.stop();
+      synthRef.current?.stop();
       setPlayingFreq(null);
     } else {
-      synth?.play(freq);
+      const started = await synthRef.current?.play(freq);
+      if (!started) {
+        setPlayingFreq(null);
+        setAudioUnavailable(true);
+        return;
+      }
+      setAudioUnavailable(false);
       setPlayingFreq(freq);
     }
   };
@@ -633,6 +658,11 @@ export default function HexacoreOrrery() {
           );
         })}
       </div>
+      {audioUnavailable && (
+        <p role="status" className="text-xs text-amber-200">
+          Audio playback is unavailable or was blocked by your browser. Try enabling audio for this page and selecting a tone again.
+        </p>
+      )}
 
       {/* TAB 1: GRAND ORRERY */}
       {activeTab === "orrery" && (

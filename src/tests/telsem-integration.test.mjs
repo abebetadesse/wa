@@ -13,6 +13,7 @@ import {
 } from "../lib/cultural/telsemData.ts";
 
 import { calculateFullDivination } from "../lib/cultural/spiritualDivinationEngine.ts";
+import { RELATED_MANUSCRIPTS } from "../lib/cultural/relatedManuscripts.ts";
 
 describe("Ethiopian Telsem (ጠልሰም) Sacred Repository", () => {
   test("loads all 22 authentic Telsem seals", () => {
@@ -100,5 +101,15 @@ describe("Ethiopian Telsem (ጠልሰም) Sacred Repository", () => {
       assert.ok(seal.vectorGeometryType, `Seal ${seal.id} must have vectorGeometryType`);
       assert.notEqual(seal.vectorGeometryType, "", "Geometry type cannot be empty");
     }
+  });
+
+  test("keeps related public scroll records separate from Telsem entries", () => {
+    const related = RELATED_MANUSCRIPTS.find((record) => record.id === "wellcome-cs94db4g");
+    assert.ok(related);
+    assert.match(related.catalogueUrl, /wellcomecollection\.org\/works\/cs94db4g/);
+    assert.match(related.licenseLabel, /CC BY 4\.0/);
+    assert.match(related.relationshipNote, /not counted as a Telsem/i);
+    assert.equal(getAllTelsem().some((seal) => seal.id === related.id), false);
+    assert.equal(getAllTelsem().length, 22);
   });
 });

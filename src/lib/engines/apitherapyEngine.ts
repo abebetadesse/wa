@@ -27,6 +27,72 @@ export interface TazmaBiochemicalProfile {
   precautions: string[];
 }
 
+export interface ApitherapySafetyInput {
+  ageMonths: number;
+  hasBeeProductAllergy: boolean;
+  hasDiabetes: boolean;
+  replacingMedicalCare: boolean;
+}
+
+export interface ApitherapySafetyAssessment {
+  action: "clear" | "caution" | "block";
+  gates: {
+    id: string;
+    title: string;
+    severity: "caution" | "block";
+    message: string;
+  }[];
+}
+
+export function evaluateApitherapySafety(input: ApitherapySafetyInput): ApitherapySafetyAssessment {
+  if (!Number.isFinite(input.ageMonths) || input.ageMonths < 0) {
+    throw new RangeError("Age in months must be a non-negative number.");
+  }
+
+  const gates: ApitherapySafetyAssessment["gates"] = [];
+  if (input.ageMonths < 12) {
+    gates.push({
+      id: "infant-botulism",
+      title: "Do not give honey to infants under 12 months",
+      severity: "block",
+      message: "Honey can expose infants under 12 months to botulism spores. Do not give this or any honey to an infant.",
+    });
+  }
+  if (input.hasBeeProductAllergy) {
+    gates.push({
+      id: "bee-product-allergy",
+      title: "Avoid bee products with a known allergy",
+      severity: "block",
+      message: "A known allergy to honey, bee products, or propolis can cause a serious reaction. Avoid use and seek clinical advice.",
+    });
+  }
+  if (input.hasDiabetes) {
+    gates.push({
+      id: "blood-glucose",
+      title: "Honey still contributes sugars",
+      severity: "caution",
+      message: "Honey can raise blood glucose. Do not treat it as sugar-free or diabetes-safe; discuss portions with your care team.",
+    });
+  }
+  if (input.replacingMedicalCare) {
+    gates.push({
+      id: "treatment-substitution",
+      title: "Do not replace prescribed care",
+      severity: "block",
+      message: "Honey has not been assessed here as a treatment. Do not use it instead of prescribed medicines or professional care.",
+    });
+  }
+
+  return {
+    action: gates.some((gate) => gate.severity === "block")
+      ? "block"
+      : gates.length > 0
+        ? "caution"
+        : "clear",
+    gates,
+  };
+}
+
 export function getTazmaApitherapyProfile(): TazmaBiochemicalProfile {
   return {
     productNameAmharic: "የታዝማ ማር (Tazma Subterranean Stingless Bee Honey)",

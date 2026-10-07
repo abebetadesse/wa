@@ -9,6 +9,14 @@ type ProcessingStatus = {
   hasReport: boolean;
   nameGeez: string;
   category: string;
+  serviceChoice?: {
+    id: string;
+    title: string;
+    label: string;
+    prayer: string;
+    prayerGe?: string;
+    telsemName?: string | null;
+  } | null;
   lastUpdated: string;
 };
 
@@ -80,9 +88,19 @@ export default function SpiritualStatusPage({
             </div>
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
               <div><dt className="text-xs text-stone-500">Name entered</dt><dd className="mt-1 text-stone-200">{caseInfo.nameGeez}</dd></div>
-              <div><dt className="text-xs text-stone-500">Selected focus</dt><dd className="mt-1 text-stone-200">{caseInfo.category.replaceAll("_", " ")}</dd></div>
+              <div><dt className="text-xs text-stone-500">Selected focus</dt><dd className="mt-1 text-stone-200">{caseInfo.serviceChoice?.title || caseInfo.category.replaceAll("_", " ")}</dd></div>
               <div className="sm:col-span-2"><dt className="text-xs text-stone-500">Last updated</dt><dd className="mt-1 text-stone-300">{new Date(caseInfo.lastUpdated).toLocaleString()}</dd></div>
             </dl>
+            {caseInfo.serviceChoice && (
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Prayer focus</div>
+                <h3 className="mt-2 text-xl font-bold text-amber-50">{caseInfo.serviceChoice.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-stone-200">“{caseInfo.serviceChoice.prayer}”</p>
+                {caseInfo.serviceChoice.telsemName && (
+                  <p className="mt-2 text-xs text-emerald-200">Telsem: {caseInfo.serviceChoice.telsemName}</p>
+                )}
+              </div>
+            )}
             {!draftReady && <p className="text-sm text-amber-200">The report draft is not available yet. Return to the cultural reading and submit processing again.</p>}
             {draftReady && (
               <Link href={`/case/spiritual/${caseId}/preview`} className="inline-flex rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black hover:bg-amber-400">

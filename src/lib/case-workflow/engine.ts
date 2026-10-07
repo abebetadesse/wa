@@ -87,8 +87,8 @@ const domainConfigs: DomainConfig[] = [
     ],
   },
   {
-    id: "career", name: "Career", icon: "↗", order: 5, isActive: true,
-    description: "Explore work and vocation through Ethiopian spiritual and cultural traditions. This path offers reflection only, not career, financial, or scientific advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.career, domainLayers: ["B"], interests: ["career direction", "job search", "skill building", "sustainable work"],
+    id: "career", name: "Money & Business Reflection", icon: "◈", order: 5, isActive: true,
+    description: "Explore work, livelihood, and enterprise through Ethiopian spiritual and cultural traditions. This path offers reflection only, not career, business, financial, or scientific advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.career, domainLayers: ["B"], interests: ["career direction", "job search", "skill building", "sustainable work"],
     challengeOptions: ["Choosing a direction", "Finding work", "Skill or study decisions", "Burnout or work fit"],
     specificQuestions: [
       { id: "career-detail", fieldId: "detail", questionSetId: "career-specific", text: "What work or career change are you considering?", type: "textarea", required: true, order: 1, section: "specialized" },
@@ -120,7 +120,7 @@ const domainConfigs: DomainConfig[] = [
     ],
   },
   {
-    id: "legal", name: "Legal & Dispute", icon: "⚖", order: 8, isActive: true,
+    id: "legal", name: "Peace & Harmony", icon: "☮", order: 8, isActive: true,
     description: "Explore dispute resolution, community harmony, and ethical conscience through Ethiopian customary peacemaking (ሽምግልና / Shemgelna) and spiritual reconciliation. Grounded entirely in cultural and spiritual wisdom — no scientific or statutory legal advice.", knowledgeStrandFilters: CASE_STRAND_FILTERS.legal, domainLayers: ["B"], interests: ["customary reconciliation (ሽምግልና)", "spiritual peacemaking & erek", "elder mediation (የአገር ሽማግሌ)", "spiritual conscience & ethics"],
     challengeOptions: ["Customary dispute reconciliation (ሽምግልና)", "Family or inheritance dispute resolution", "Community or tenancy harmony", "Spiritual conscience & ethical guidance"],
     specificQuestions: [
