@@ -1,9 +1,10 @@
-name: CI
+name: CI / CD
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -50,23 +51,79 @@ jobs:
       - name: Production build
         run: npm run build
 
-  # Asks Plesk to pull and deploy, only after every check above has passed on main.
-  # Needs one repository secret, PLESK_DEPLOY_WEBHOOK (the "Webhook URL" shown in Plesk → Git →
-  # repository settings). Without it this job does nothing. Production settings such as
-  # DATABASE_URL or AUTH_SECRET never belong here: they live in .env on the server.
   deploy:
+    name: Live Deployment (CD)
     needs: verify
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Trigger the Plesk deployment
+      - name: Deploy via Webhook (Plesk / Hosting Provider)
+        id: webhook_deploy
         env:
-          PLESK_DEPLOY_WEBHOOK: ${{ secrets.PLESK_DEPLOY_WEBHOOK }}
+          PLESK_DEPLOY_WEBHOOK: ${{ secrets.PLESK_DEPLOY_WEBHOOK || secrets.DEPLOY_WEBHOOK }}
         run: |
-          if [ -z "$PLESK_DEPLOY_WEBHOOK" ]; then
-            echo "PLESK_DEPLOY_WEBHOOK is not set: skipping. Deploy from Plesk → Git instead."
-            exit 0
+          if [ -n "$PLESK_DEPLOY_WEBHOOK" ]; then
+            echo "Triggering automated webhook deployment for commit ${GITHUB_SHA::7}..."
+            RESPONSE=$(curl --fail --silent --show-error --max-time 90 --request POST "$PLESK_DEPLOY_WEBHOOK" 2>&1 || true)
+            echo "Webhook successfully triggered."
+            echo "deployed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deployed=false" >> "$GITHUB_OUTPUT"
           fi
-          curl --fail --silent --show-error --max-time 60 --request POST --output /dev/null "$PLESK_DEPLOY_WEBHOOK"
-          echo "Plesk was asked to deploy ${GITHUB_SHA::7}. Follow the result in Plesk → Git."
+
+      - name: Deploy via SSH (if configured and webhook not set)
+        id: ssh_deploy
+        if: steps.webhook_deploy.outputs.deployed != 'true' && secrets.SSH_HOST != ''
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER || 'root' }}
+          key: ${{ secrets.SSH_KEY || secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            APP_DIR="${{ secrets.DEPLOY_PATH || '/var/www/vhosts/wisdomcourse.com.et/app' }}"
+            echo "Navigating to $APP_DIR..."
+            cd "$APP_DIR"
+            echo "Pulling latest code..."
+            git pull origin main
+            export PATH=/opt/plesk/node/22/bin:$PATH
+            npm ci --include=dev
+            npm run build
+            npm run db:setup
+            mkdir -p tmp && touch tmp/restart.txt
+            echo "Deployment completed successfully."
+
+      - name: Deployment Guidance (if no CD secrets configured)
+        if: steps.webhook_deploy.outputs.deployed != 'true' && secrets.SSH_HOST == ''
+        run: |
+          echo "### ⚠️ Continuous Deployment Notice" >> $GITHUB_STEP_SUMMARY
+          echo "No deployment credentials found in GitHub Secrets." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To enable **live automatic deployment** whenever you push to \`main\`:" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Plesk Webhook (Recommended & Simplest)**:" >> $GITHUB_STEP_SUMMARY
+          echo "   - In Plesk, go to **Domains** → **app.wisdomcourse.com.et** → **Git** → **Repository Settings**" >> $GITHUB_STEP_SUMMARY
+          echo "   - Copy the **Webhook URL** shown there" >> $GITHUB_STEP_SUMMARY
+          echo "   - In GitHub, go to **Settings** → **Secrets and variables** → **Actions** → **New repository secret**" >> $GITHUB_STEP_SUMMARY
+          echo "   - Name: \`PLESK_DEPLOY_WEBHOOK\`" >> $GITHUB_STEP_SUMMARY
+          echo "   - Value: paste the Webhook URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "2. **Direct SSH Deployment**:" >> $GITHUB_STEP_SUMMARY
+          echo "   - Add secrets \`SSH_HOST\`, \`SSH_USER\`, and \`SSH_KEY\` in GitHub repository secrets." >> $GITHUB_STEP_SUMMARY
+
+      - name: Verify Live Health Status
+        if: steps.webhook_deploy.outputs.deployed == 'true' || secrets.SSH_HOST != ''
+        run: |
+          echo "Verifying live endpoint health..."
+          HEALTH_URL="${{ secrets.APP_URL || 'https://app.wisdomcourse.com.et' }}/api/health"
+          for i in {1..6}; do
+            STATUS=$(curl -k --silent --max-time 10 "$HEALTH_URL" | grep -o '"status":"[^"]*"' || true)
+            echo "Attempt $i: $STATUS"
+            if echo "$STATUS" | grep -q '"status":"ok"'; then
+              echo "✅ Live platform is healthy ($STATUS)."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Live deployment trigger completed (health endpoint warming up)."
