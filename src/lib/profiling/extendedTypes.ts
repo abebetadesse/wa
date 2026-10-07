@@ -50,6 +50,12 @@ export interface DivisionalChartPlacement {
     planet: CelestialBody;
     sign: ZodiacSignName;
     house: number;
+    /** Nakshatra and pada of the D1 position; the pada is what fixes the navamsha sign. */
+    nakshatra?: string;
+    pada?: number;
+    dignity?: VedicPlanetaryPlacement["dignity"];
+    /** Same sign in D1 and in this chart. */
+    vargottama?: boolean;
   }[];
 }
 
@@ -92,6 +98,30 @@ export interface PanchangData {
   sunrise: string;
   sunset: string;
   auspiciousPeriod: string;
+  /** The civil date and the place the day was computed for. */
+  date?: string;
+  location?: { city: string; latitude: number; longitude: number; matched: boolean };
+  rahuKalam?: string;
+  dayLength?: string;
+  moonPhase?: { name: string; illumination: number };
+}
+
+/** Today's Moon measured against one person's birth Moon and chart. */
+export interface PersonalDayAlignment {
+  date: string;
+  birthStar: { name: string; geezName: string; pada: number; rulingPlanet: string; temperament: string };
+  moonToday: {
+    tropicalSign: ZodiacSignName;
+    siderealSign: ZodiacSignName;
+    nakshatra: string;
+    nakshatraGeez: string;
+    /** House of the person's natal chart the Moon is passing through. */
+    natalHouse: number;
+    houseTheme: string;
+  };
+  phase: { name: string; illumination: number; waxing: boolean };
+  taraBala: { count: number; name: string; favourable: boolean; meaning: string };
+  chandraBala: { houseFromNatalMoon: number; strength: "strong" | "moderate" | "low"; meaning: string };
 }
 
 export interface PrashnaKundliResult {
@@ -113,6 +143,11 @@ export interface PrashnaKundliResult {
   confidenceScore: number;
   favorableDirections: string[];
   auspiciousTimingRecommendation: string;
+  topic?: string;
+  /** Net weight of the testimonies; positive favours the matter. */
+  score?: number;
+  /** Each placement the answer rests on, prefixed with + (for), − (against) or • (neutral). */
+  reasoning?: string[];
 }
 
 export interface DetailedHoroscope {

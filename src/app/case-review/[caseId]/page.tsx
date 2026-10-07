@@ -14,6 +14,9 @@ interface ReviewItem {
   label: string;
   stage: string;
   assignedRole: string | null;
+  createdAt: string;
+  updatedAt: string;
+  consent: { dataUsage: boolean };
   safety: { action: string; priority: string; reason?: string };
   answers: Record<string, unknown>;
   draft: DraftState | null;
@@ -129,6 +132,14 @@ export default function CaseReviewItemPage() {
     setStatus(`“${section.title}” was added to the end of the report. Edit it there before approving.`);
   }
 
+  function addSections(sections: ReportSection[]) {
+    if (!draft || !sections.length) return;
+    const generatedIds = new Set(sections.map((section) => section.id));
+    setDraft({ ...draft, sections: [...draft.sections.filter((section) => !generatedIds.has(section.id)), ...sections] });
+    setDirty(true);
+    setStatus("Detailed report sections added or refreshed from the latest analysis. Review and edit them before approving.");
+  }
+
   const mayAct = Boolean(user && item?.review?.expertId === user.id && item.stage === "in_review");
   const allChecked = Boolean(item?.checklist.length && item.checklist.every((entry) => checked[entry.id]));
   const reportValid = Boolean(draft && draft.title.trim() && draft.summary.trim());
@@ -144,6 +155,12 @@ export default function CaseReviewItemPage() {
           <header>
             <p className="text-xs uppercase tracking-wide text-slate-400">{item.label} · {item.safety.priority} priority · Assigned role: {item.assignedRole ?? "expert pool"}</p>
             <h1 className="mt-2 text-2xl font-bold text-white">Review case request</h1>
+            <p className="mt-2 text-xs text-slate-400">
+              Received {new Date(item.createdAt).toLocaleString()} · last activity {new Date(item.updatedAt).toLocaleString()} · stage: {item.stage.replace(/_/g, " ")}
+              {" · "}{item.messages.length} message{item.messages.length === 1 ? "" : "s"}
+              {" · "}profile use {item.consent.dataUsage ? "consented" : "not consented"}
+              {item.draft && <> · report draft: {item.draft.sections.length} sections</>}
+            </p>
           </header>
           {item.safety.reason && <aside className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 text-sm text-amber-100">Safety note: {item.safety.reason}</aside>}
           {item.stage === "awaiting_expert" && (
@@ -177,7 +194,7 @@ export default function CaseReviewItemPage() {
           </section>
 
           {item.analysis ? (
-            <AnalysisPanel analysis={item.analysis} canAct={mayAct} busy={busy} onAddSection={addSection} onAsk={(question) => void send("question", question)} onReanalyse={() => void reanalyse()} />
+            <AnalysisPanel analysis={item.analysis} canAct={mayAct} busy={busy} onAddSection={addSection} onAddSections={addSections} profileConsented={item.consent.dataUsage} onAsk={(question) => void send("question", question)} onReanalyse={() => void reanalyse()} />
           ) : (
             (item.stage === "awaiting_expert" || item.stage === "in_review") && (
               <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5">

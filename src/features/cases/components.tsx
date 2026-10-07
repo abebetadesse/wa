@@ -550,6 +550,15 @@ export function ReportView({ report, review }: { report: NonNullable<OwnerView["
   const [tab, setTab] = useState<ReportTab>("overview");
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
+  const readingMinutes = Math.max(
+    1,
+    Math.round(
+      [report.summary, ...report.sections.flatMap((s) => ["body" in s && s.body ? s.body : "", ...("items" in s && s.items ? s.items : [])])]
+        .join(" ")
+        .split(/\s+/u)
+        .filter(Boolean).length / 200
+    )
+  );
   const scientificSections = report.sections.filter((s) => !s.cultural);
   const culturalSections = report.sections.filter((s) => s.cultural);
   const hasRecommendations = (report.recommendations?.length ?? 0) > 0;
@@ -637,7 +646,7 @@ export function ReportView({ report, review }: { report: NonNullable<OwnerView["
         {tab === "overview" && (
           <Card>
             <CardContent className="pt-6 text-sm text-muted-foreground leading-relaxed">
-              <p>{report.summary}</p>
+              <p className="whitespace-pre-line">{report.summary}</p>
               <dl className="mt-4 grid gap-2 sm:grid-cols-2">
                 <div className="rounded-xl border border-border bg-muted/30 p-3">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Report type</dt>
@@ -645,7 +654,7 @@ export function ReportView({ report, review }: { report: NonNullable<OwnerView["
                 </div>
                 <div className="rounded-xl border border-border bg-muted/30 p-3">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sections</dt>
-                  <dd className="mt-1 text-foreground font-medium">{report.sections.length} total · {scientificSections.length} findings · {culturalSections.length} cultural</dd>
+                  <dd className="mt-1 text-foreground font-medium">{report.sections.length} total · {scientificSections.length} findings · {culturalSections.length} cultural · about {readingMinutes} min to read</dd>
                 </div>
                 <div className="rounded-xl border border-border bg-muted/30 p-3">
                   <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Actions</dt>
@@ -753,6 +762,18 @@ export function ReportView({ report, review }: { report: NonNullable<OwnerView["
 
 // ── Section card (collapsible) ────────────────────────────────────────────────
 
+/** A point written as "Heading: detail" shows its heading in bold, so long points can be scanned. */
+function LeadIn({ text }: { text: string }) {
+  const cut = text.indexOf(": ");
+  if (cut < 3 || cut > 120 || /[.!?።]\s/.test(text.slice(0, cut))) return <>{text}</>;
+  return (
+    <>
+      <strong className="font-semibold">{text.slice(0, cut + 1)}</strong>
+      {text.slice(cut + 1)}
+    </>
+  );
+}
+
 function SectionCard({
   section,
   collapsed,
@@ -784,12 +805,12 @@ function SectionCard({
       </button>
       {!collapsed && hasContent && (
         <CardContent className="flex flex-col gap-3 border-t border-border pt-4 text-sm text-foreground">
-          {"body" in section && section.body && <p className="leading-relaxed">{section.body}</p>}
+          {"body" in section && section.body && <p className="whitespace-pre-line leading-relaxed">{section.body}</p>}
           {"items" in section && section.items && section.items.length > 0 && (
             <ul className="list-disc space-y-1.5 pl-5">
               {section.items.map((item) => (
-                <li key={item} lang={/[ሀ-፿]/.test(item) ? "am" : undefined} className={/[ሀ-፿]/.test(item) ? "font-geez" : undefined}>
-                  {item}
+                <li key={item} lang={/[ሀ-፿]/.test(item) ? "am" : undefined} className={cn("leading-relaxed", /[ሀ-፿]/.test(item) && "font-geez")}>
+                  <LeadIn text={item} />
                 </li>
               ))}
             </ul>

@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     const moonTropical = positions.planets.find((p) => p.planet === "Moon")?.totalLongitude || 0;
     const moonSidereal = tropicalToSidereal(moonTropical, ayanamsha);
 
-    const dashas = calculateVimshottariDasha(birthDate, moonSidereal);
+    const dashas = calculateVimshottariDasha(birthDate, moonSidereal, birthTime, positions.place.utcOffsetHours);
 
     return NextResponse.json({
       success: true,

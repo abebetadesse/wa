@@ -233,3 +233,135 @@ test("Compliance Disclaimers", () => {
   assert.ok(PLATFORM_DISCLAIMERS.compatibility.length > 20);
   assert.ok(PLATFORM_DISCLAIMERS.wellbeing.length > 20);
 });
+
+test("Chart is cast from the person's own birth data", async (t) => {
+  const { bodyLongitude, julianDay, chartAngles, julianDayFromLocal, solarDay } = await import("../lib/profiling/astrology/ephemeris.ts");
+  const { resolveBirthPlace } = await import("../lib/profiling/astrology/places.ts");
+  const { calculateCelestialPositions } = await import("../lib/profiling/astrology/chartCalculator.ts");
+  const { calculateTransits } = await import("../lib/profiling/astrology/personalSky.ts");
+  const { calculatePersonalDayAlignment, getVedicDignity } = await import("../lib/profiling/astrology/vedicAstrologyEngine.ts");
+  const { buildPersonalProfile } = await import("../lib/profiling/synthesis/profileBuilder.ts");
+
+  const near = (actual, expected, tolerance, label) => {
+    const gap = Math.abs(((actual - expected + 540) % 360) - 180);
+    assert.ok(gap <= tolerance, `${label}: expected ~${expected}°, got ${actual.toFixed(2)}°`);
+  };
+
+  await t.test("planet positions match published ephemeris values", () => {
+    // 1 January 2000, 00:00 UT.
+    const jd = julianDay(2000, 1, 1, 0);
+    near(bodyLongitude("Sun", jd), 279.86, 0.05, "Sun");
+    near(bodyLongitude("Moon", jd), 217.29, 0.1, "Moon");
+    near(bodyLongitude("Mercury", jd), 271.1, 0.3, "Mercury");
+    near(bodyLongitude("Venus", jd), 240.97, 0.3, "Venus");
+    near(bodyLongitude("Mars", jd), 327.58, 0.3, "Mars");
+    near(bodyLongitude("Jupiter", jd), 25.23, 0.3, "Jupiter");
+    near(bodyLongitude("Saturn", jd), 40.4, 0.3, "Saturn");
+    // Meeus, Astronomical Algorithms, example 47.a.
+    near(bodyLongitude("Moon", 2448724.5), 133.16, 0.02, "Moon (Meeus)");
+  });
+
+  await t.test("the Ascendant depends on the birth place and the clock time is local", () => {
+    const addis = calculateCelestialPositions("1990-03-10", "06:30", "Addis Ababa");
+    const jijiga = calculateCelestialPositions("1990-03-10", "06:30", "Jijiga");
+    const later = calculateCelestialPositions("1990-03-10", "12:30", "Addis Ababa");
+    const asc = (chart) => chart.planets.find((p) => p.planet === "Ascendant").totalLongitude;
+    assert.notEqual(asc(addis).toFixed(1), asc(jijiga).toFixed(1), "four degrees of longitude move the Ascendant");
+    assert.notEqual(addis.ascendant.sign, later.ascendant.sign, "six hours later a different sign is rising");
+    // Just after sunrise the Sun is close to the Ascendant, in the 1st or 12th house.
+    assert.ok([1, 12].includes(addis.planets.find((p) => p.planet === "Sun").house));
+    // 06:30 East Africa Time is 03:30 UT.
+    near(chartAngles(julianDayFromLocal("1990-03-10", "06:30", 3), 9.03, 38.74).ascendant, asc(addis), 0.01, "local time");
+  });
+
+  await t.test("free-text birth places resolve, and unknown ones are reported", () => {
+    assert.equal(resolveBirthPlace("Bole, Addis Ababa").city, "Addis Ababa");
+    assert.equal(resolveBirthPlace("ጅማ").city, "Jimma");
+    assert.equal(resolveBirthPlace("gonder, amhara").city, "Gondar");
+    assert.equal(resolveBirthPlace("Addis Zemen").city, "Addis Zemen");
+    assert.equal(resolveBirthPlace("Wollo").city, "Wollo");
+    const unknown = resolveBirthPlace("Atlantis");
+    assert.equal(unknown.matched, false);
+    assert.equal(unknown.city, "Addis Ababa");
+    assert.equal(calculateCelestialPositions("1990-03-10", "06:30", "Atlantis").place.matched, false);
+  });
+
+  await t.test("sunrise and sunset are computed for the place", () => {
+    const addis = solarDay("2026-06-21", 9.03, 38.74, 3);
+    const axum = solarDay("2026-06-21", 14.13, 38.72, 3);
+    assert.ok(addis.sunrise > 5.8 && addis.sunrise < 6.4, `Addis June sunrise ${addis.sunrise}`);
+    assert.ok(axum.dayLengthHours > addis.dayLengthHours, "the June day is longer further north");
+  });
+
+  await t.test("transits are measured against the natal chart, with real dates", () => {
+    const natal = calculateCelestialPositions("1985-06-15", "14:30", "Addis Ababa");
+    const when = new Date("2026-10-07T09:00:00Z");
+    const transits = calculateTransits(natal.planets, when, 8);
+    assert.ok(transits.length > 0);
+    for (const transit of transits) {
+      const target = natal.planets.find((p) => p.planet === transit.targetPlanetOrPoint);
+      assert.ok(transit.orb <= 3, "within orb");
+      assert.ok(transit.wellbeingForecast.includes(`${target.degree.toFixed(1)}° ${target.sign}`), "names the natal degree it touches");
+      assert.ok(transit.peakDate >= "2025-01-01" && transit.peakDate <= "2029-01-01");
+    }
+    // A different chart on the same day gets a different list.
+    const other = calculateCelestialPositions("1996-03-21", "10:00", "Jimma");
+    const headline = (list) => list.map((item) => item.headline).join("|");
+    assert.notEqual(headline(calculateTransits(other.planets, when, 8)), headline(transits));
+  });
+
+  await t.test("Vedic dignities and karakas come from the placements", () => {
+    assert.equal(getVedicDignity("Sun", "Aries"), "Exalted");
+    assert.equal(getVedicDignity("Sun", "Libra"), "Debilitated");
+    assert.equal(getVedicDignity("Mars", "Scorpio"), "Own Sign");
+    assert.equal(getVedicDignity("Saturn", "Leo"), "Enemy");
+    const chart = calculateVedicChart("1985-06-15", "14:30", "Addis Ababa");
+    const karakas = chart.d1Placements.map((p) => p.karaka).filter((k) => k !== "—");
+    assert.equal(karakas.length, 7);
+    assert.equal(new Set(karakas).size, 7, "each of the seven karakas is held by one planet");
+    assert.equal(chart.d1Placements.find((p) => p.planet === "Ascendant").house, 1);
+    assert.equal(chart.d9Placements.placements.find((p) => p.planet === "Ascendant").house, 1);
+    assert.equal(chart.lunarNodes.length, 2);
+  });
+
+  await t.test("mahadashas run on without gaps and carry dated antardashas", () => {
+    const dashas = calculateVimshottariDasha("1985-06-15", 45, "14:30");
+    for (let i = 1; i < dashas.length; i++) assert.equal(dashas[i].startDate, dashas[i - 1].endDate);
+    assert.equal(dashas[0].startDate, "1985-06-15");
+    const current = dashas.find((d) => d.isCurrent);
+    assert.equal(current.subPeriods.filter((sub) => sub.isCurrent).length, 1);
+    assert.equal(current.subPeriods[0].planet, current.planet, "the first antardasha belongs to the mahadasha lord");
+  });
+
+  await t.test("the Panchang reports the place it was computed for", () => {
+    const panchang = calculatePanchang("2026-10-07", "Mekelle");
+    assert.equal(panchang.location.city, "Mekelle");
+    assert.equal(panchang.vaar.dayOfWeek, "Wednesday");
+    assert.match(panchang.sunrise, /^\d{1,2}:\d{2} AM EAT$/);
+    assert.match(panchang.rahuKalam, /–/);
+  });
+
+  await t.test("today's reading depends on the person's birth star", () => {
+    const when = new Date("2026-10-07T09:00:00Z");
+    const first = calculatePersonalDayAlignment({ moonSiderealLongitude: 38, ascendantTropicalLongitude: 127 }, when);
+    const second = calculatePersonalDayAlignment({ moonSiderealLongitude: 200, ascendantTropicalLongitude: 10 }, when);
+    assert.equal(first.moonToday.nakshatra, second.moonToday.nakshatra, "the same Moon in the sky");
+    assert.notEqual(first.taraBala.count, second.taraBala.count);
+    assert.notEqual(first.moonToday.natalHouse, second.moonToday.natalHouse);
+  });
+
+  await t.test("the synthesis cites the person's own placements", () => {
+    const one = buildPersonalProfile({ fullName: "Tigist Mulugeta", birthDate: "1985-06-15", birthTime: "14:30", birthPlace: "Gondar" });
+    const two = buildPersonalProfile({ fullName: "Chaltu Tolessa", birthDate: "1996-03-21", birthTime: "10:00", birthPlace: "Jimma" });
+    assert.ok(one.synthesis.enduringStrengths[0].includes(`Sun in ${one.astrology.sunSign}`));
+    assert.ok(one.synthesis.primarywellbeingRisks.some((line) => line.includes(`${one.astrology.risingSign} rising`)));
+    assert.notDeepEqual(one.synthesis.enduringStrengths, two.synthesis.enduringStrengths);
+    assert.equal(one.synthesis.seasonalPatterns.filter((season) => season.isCurrent).length, 1);
+    assert.equal(one.astrology.castFor.city, "Gondar");
+
+    // Without a birth time the reading says so and does not lean on the Ascendant.
+    const untimed = buildPersonalProfile({ fullName: "Dawit Haile", birthDate: "1992-10-24", birthPlace: "Gondar" });
+    assert.equal(untimed.astrology.birthTimeAssumed, true);
+    assert.ok(!untimed.synthesis.enduringStrengths.some((line) => line.includes("rising")));
+  });
+});

@@ -6,6 +6,8 @@ import {
 import { buildAstrologicalProfile } from "../astrology/chartCalculator";
 import { buildNumerologyProfile } from "../numerology/numberCalculator";
 import { analyzeNameIdentity } from "../naming/culturalAnalyzer";
+import { ELEMENT_LABEL } from "../astrology/zodiac";
+import { calibrateSeasons, describeRisks, describeStrengths, DIET_BY_HUMOR } from "./personalCalibration";
 
 export interface GenerateProfileInput {
   fullName: string;
@@ -22,7 +24,9 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   const birthPlace = input.birthPlace || "Addis Ababa";
   const preferredLanguage = input.preferredLanguage || "en";
 
-  const astro = buildAstrologicalProfile(birthDate, birthTime, birthPlace);
+  // Without a birth time the chart is cast for noon: signs hold, but the Ascendant and houses are approximate.
+  const timeKnown = Boolean(input.birthTime);
+  const astro = { ...buildAstrologicalProfile(birthDate, birthTime, birthPlace), birthTimeAssumed: !timeKnown };
   const num = buildNumerologyProfile(fullName, birthDate);
   const naming = analyzeNameIdentity(fullName);
 
@@ -48,26 +52,26 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
   // Composite constitutional type title
   const constitutionalType = `${astro.sunSign} Sun • ${astro.ethiopianZodiacSign.geezName} • Life Path ${num.lifePath.number} (${num.lifePath.name})`;
 
-  // Primary Wellbeing Risks synthesis
+  // Primary Wellbeing Risks synthesis: this person's own placements first, then life path and name.
   const primarywellbeingRisks = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.wellbeingAssociations.potentialVulnerabilities || [],
-      ...num.lifePath.wellbeingPatterns.vulnerabilities,
-      naming.givenNameProfile.wellbeingIdentityCorrelation.psychosomaticTendency,
+      ...describeRisks(astro, timeKnown),
+      `Life Path ${num.lifePath.number}: ${num.lifePath.wellbeingPatterns.vulnerabilities[0] ?? "pace yourself through demanding periods"}`,
+      `The name ${naming.givenNameProfile.name}: ${naming.givenNameProfile.wellbeingIdentityCorrelation.psychosomaticTendency}`,
     ])
-  ).slice(0, 5);
+  ).slice(0, 7);
 
   // Enduring Strengths synthesis
   const enduringStrengths = Array.from(
     new Set([
-      ...astro.planetaryPositions.find((p) => p.planet === "Sun")?.wellbeingAssociations.vitalityStrengths || [],
-      ...num.lifePath.wellbeingPatterns.strengths,
-      naming.givenNameProfile.wellbeingIdentityCorrelation.balancingVirtue,
+      ...describeStrengths(astro, timeKnown),
+      `Life Path ${num.lifePath.number}: ${num.lifePath.wellbeingPatterns.strengths[0] ?? "steady inner resources"}`,
+      `The name ${naming.givenNameProfile.name}: ${naming.givenNameProfile.wellbeingIdentityCorrelation.balancingVirtue}`,
     ])
-  ).slice(0, 5);
+  ).slice(0, 7);
 
-  // Seasonal Wellbeing Patterns (Ethiopian 4 Seasons)
-  const seasonalPatterns: SeasonalwellbeingPattern[] = [
+  // Seasonal Wellbeing Patterns (Ethiopian seasons)
+  const baseSeasonalPatterns: SeasonalwellbeingPattern[] = [
     {
       season: "Kiremt (Rainy)",
       ethiopianMonths: "Hamle & Nehase (July – August)",
@@ -84,6 +88,23 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
         "Koseret (Lippia abyssinica) warm tea infusions before morning activities.",
       ],
       dailyPacing: "Brisk indoor physical movement upon waking to mobilize stagnant fluids.",
+    },
+    {
+      season: "Tsedey (Bloom & Harvest)",
+      ethiopianMonths: "Meskerem, Tikimt, Hidar (September – November)",
+      potentialVulnerabilities: [
+        "Cool mornings and hot middays in quick succession; pollen and dust once the rains stop.",
+        "Mosquitoes are at their peak in lower-lying areas in the weeks after the rains.",
+      ],
+      dietaryAdjustments: [
+        "Make use of the fresh harvest: green maize, new pulses and seasonal greens.",
+        "Shift gradually from the heavy, warming food of Kiremt to lighter meals as the days dry out.",
+      ],
+      botanicalSupports: [
+        "Tosign (highland thyme) tea on cool mornings.",
+        "Damakesse (Ocimum lamiifolium) from the household garden, used in the customary way.",
+      ],
+      dailyPacing: "Use the clear, mild days for walking and outdoor work; dress in layers for the cold early hours.",
     },
     {
       season: "Bega (Dry & Sunny)",
@@ -136,32 +157,18 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
     },
   ];
 
-  // Actionable Recommendations
-  const isFireOrAir = finalHumor === "esat" || finalHumor === "nifas";
+  const seasonalPatterns = calibrateSeasons(baseSeasonalPatterns, finalHumor, new Date());
+
+  // Actionable Recommendations, chosen for this person's humoral constitution.
+  const diet = DIET_BY_HUMOR[finalHumor];
   const dietary = {
-    therapeuticPrinciples: isFireOrAir
-      ? [
-        "Cultivate internal cooling and hydration to temper metabolic heat and nervous restlessness.",
-        "Balance piquant Berbere stews with soothing probiotic accompaniments (Ayib cottage cheese).",
-        "Ensure consistent meal timing to prevent hypoglycemia-triggered irritability.",
-      ]
-      : [
-        "Cultivate metabolic warmth and digestive stimulation to overcome cold sluggish motility.",
-        "Favor warm pungent spices (Zingibil, Korerima, Black Pepper) to ignite metabolic fire.",
-        "Prioritize hot, freshly prepared meals over cold or dry snacks.",
-      ],
-    favoredEthiopianFoods: [
-      "Authentic Fermented Injera (Eragrostis tef - high prebiotic iron and zinc)",
-      "Habesha Gomen (Highland collard greens rich in calcium, folate, and carotenoids)",
-      "Ayib (Fresh cottage cheese providing gentle lactic acid and bioavailable peptides)",
-      "Kocho (Fermented Ensete providing gut microbiome resilience and complex starch)",
-      "Telba (Flaxseed drink providing anti-inflammatory alpha-linolenic omega-3)",
-    ],
-    foodsToModerate: isFireOrAir
-      ? ["Excessive raw hot peppers (Kariya)", "Ultra-dry roasted barley snacks without tea", "Heavy liquor or excessive midday coffee"]
-      : ["Heavy mucilaginous unfermented dairy", "Cold ice drinks", "Excessive deep-fried pastries"],
+    therapeuticPrinciples: diet.principles,
+    favoredEthiopianFoods: diet.favored,
+    foodsToModerate: diet.moderate,
   };
 
+  // The same four household botanicals for everyone; the one that suits this constitution leads.
+  const leadHerb: Record<HumoralElement, string> = { esat: "Damakesse", afere: "Tikur Azmud", nifas: "Korerima", may: "Korerima" };
   const herbalAdaptogens = [
     {
       herb: "Damakesse (Ocimum lamiifolium)",
@@ -187,7 +194,13 @@ export function buildPersonalProfile(input: GenerateProfileInput): IntegratedPer
       synergyNote: "Warming aromatic medicine that grounds restless nervous tension without provoking inflammation.",
       safetyPrecaution: "Excellent safety profile; ideal for daily culinary integration in wots and teas.",
     },
-  ];
+  ]
+    .map((entry) =>
+      entry.herb.startsWith(leadHerb[finalHumor])
+        ? { ...entry, synergyNote: `Listed first for you: tradition pairs it with the ${ELEMENT_LABEL[finalHumor]} constitution your chart shows. ${entry.synergyNote}` }
+        : entry
+    )
+    .sort((a, b) => Number(b.herb.startsWith(leadHerb[finalHumor])) - Number(a.herb.startsWith(leadHerb[finalHumor])));
 
   const mindBodyLifestyle = [
     `Circadian Rhythm: Establish a fixed morning wake time aligned with highland dawn (${astro.sunSign} solar vitality).`,

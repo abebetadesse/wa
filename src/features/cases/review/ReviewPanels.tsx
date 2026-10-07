@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisConfidence, CaseAnalysis, CaseMessage, GroundedFinding, ReportSection } from "@/server/cases/types";
+import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, GroundedFinding, ReportSection } from "@/server/cases/types";
+import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
+import { FACTORS } from "@/server/cases/analysisLexicon";
+import { buildEnhancedReportSections, reportStatistics } from "@/server/cases/reportEnhancer";
 
 export interface DraftState {
   title: string;
@@ -22,7 +25,13 @@ const CONFIDENCE: Record<AnalysisConfidence, string> = {
   tentative: "border-slate-500/40 bg-slate-800/60 text-slate-300",
 };
 const HORIZON = { now: "Now", this_week: "This week", ongoing: "Ongoing" } as const;
+const HORIZON_ORDER = ["now", "this_week", "ongoing"] as const;
 const VIA = { app: "", telegram: " · via Telegram", whatsapp: " · via WhatsApp" } as const;
+const FOLLOW_UP = new Map(FACTORS.map((factor) => [factor.id, factor.followUp]));
+const URGENCY: Record<string, string> = {
+  critical: "border-rose-500/50 bg-rose-950/40 text-rose-100",
+  high: "border-amber-500/50 bg-amber-950/40 text-amber-100",
+};
 
 let sequence = 0;
 const sectionId = (prefix: string) => `reviewer-${prefix}-${Date.now().toString(36)}-${++sequence}`;
@@ -35,17 +44,25 @@ interface AnalysisPanelProps {
   canAct: boolean;
   busy: boolean;
   onAddSection: (section: ReportSection) => void;
+  onAddSections: (sections: ReportSection[]) => void;
+  profileConsented: boolean;
   onAsk: (question: string) => void;
   onReanalyse: () => void;
 }
 
-export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onReanalyse }: AnalysisPanelProps) {
+export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSections, profileConsented, onAsk, onReanalyse }: AnalysisPanelProps) {
   const reflectionOnly = analysis.publishScope === "reflection_only";
   // Reflection-only case types publish Domain B only, so evidence findings cannot be inserted with one click.
   const mayInsert = (layer: "A" | "B") => canAct && (layer === "B" || !reflectionOnly);
   const kept = analysis.strands.reduce((sum, strand) => sum + strand.kept, 0);
   const considered = analysis.strands.reduce((sum, strand) => sum + strand.considered, 0);
   const quality = analysis.dataQuality.score;
+  const person = profileConsented ? analysis.person : undefined;
+  // What "Build detailed report" would produce right now, so the reviewer sees its size before using it.
+  const detailed = buildEnhancedReportSections(analysis, profileConsented);
+  const detailedSize = reportStatistics({ summary: "", sections: detailed });
+  const heaviest = Math.max(1, ...analysis.factors.map((factor) => factor.weight));
+  const askable = new Set(analysis.dataQuality.followUps);
 
   const add = (title: string, body: string | undefined, items: string[], cultural = false) =>
     onAddSection({ id: sectionId(cultural ? "reflection" : "analysis"), title, body, items: items.length ? items : undefined, locked: false, ...(cultural ? { cultural: true } : {}) });
@@ -62,6 +79,27 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
         <button type="button" disabled={busy} onClick={onReanalyse} className={smallButton}>Run analysis again</button>
       </header>
 
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-950/15 p-3">
+        <p className="min-w-0 flex-1 text-sm text-slate-200">
+          Build or refresh editable report sections from the latest grounded analysis
+          {profileConsented ? ", using profile context only where relevant and consented" : ", using case answers only"}.
+          Review every section before saving or sending.
+          <span className="mt-1 block text-xs text-slate-400">
+            Would add {detailedSize.sections} sections, about {detailedSize.words.toLocaleString()} words ({detailedSize.minutes} min read): {detailed.map((entry) => entry.title).join(" · ")}.
+          </span>
+        </p>
+        <button
+          type="button"
+          disabled={!canAct || busy || analysis.safety.warnings.length > 0}
+          onClick={() => onAddSections(detailed)}
+          className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+        >
+          Build detailed report
+        </button>
+        {!canAct && <span className="text-xs text-slate-400">Claim this request to edit its report.</span>}
+        {canAct && analysis.safety.warnings.length > 0 && <span className="text-xs text-amber-200">Resolve the safety review before generating report text.</span>}
+      </div>
+
       {reflectionOnly && (
         <p className="rounded-lg border border-violet-500/30 bg-violet-950/30 p-3 text-sm text-violet-100">
           This case type publishes cultural and spiritual reflection only. Evidence-based findings below are background for your judgement; only reflections can be added to the report from here.
@@ -73,6 +111,50 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
           <ul className="mt-1 list-disc pl-5">{analysis.safety.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
           {analysis.safety.domainBSuppressed && <p className="mt-2 text-xs text-rose-200">Cultural and spiritual reflections are withheld while a safety signal is active.</p>}
         </div>
+      )}
+
+      <dl className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+        {[
+          ["Urgency", `${analysis.urgency.level} · ${analysis.urgency.score}/100`, URGENCY[analysis.urgency.level]],
+          ["Their own words", `${analysis.narrative.words} words`, undefined],
+          ["Themes found", String(analysis.factors.length), undefined],
+          ["Publishes", reflectionOnly ? "reflection only" : "full report", undefined],
+        ].map(([label, value, tone]) => (
+          <div key={label} className={`rounded-lg border px-3 py-2 ${tone ?? "border-white/10 text-slate-200"}`}>
+            <dt className="text-[11px] uppercase tracking-wide text-slate-400">{label}</dt>
+            <dd className="mt-0.5 font-semibold capitalize">{value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {analysis.factors.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-white">Themes in the person&apos;s words <span className="text-xs font-normal text-slate-400">(heaviest first)</span></h3>
+          <ul className="mt-3 grid gap-2">
+            {analysis.factors.map((factor) => (
+              <li key={factor.id} className="rounded-lg border border-white/10 p-3">
+                <div className="flex items-center gap-3">
+                  <p className="w-40 shrink-0 text-sm font-semibold text-white">{factor.label}</p>
+                  <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10" role="img" aria-label={`Weight ${factor.weight}`}>
+                    <div className="h-full rounded-full bg-emerald-500/80" style={{ width: `${Math.round((factor.weight / heaviest) * 100)}%` }} />
+                  </div>
+                  <span className="text-[11px] tabular-nums text-slate-400">{factor.weight}</span>
+                </div>
+                <p className="mt-1.5 text-xs italic text-slate-300">{factor.quotes.map((quote) => `“${quote}”`).join(" · ")}</p>
+                {FACTOR_GUIDANCE[factor.id] && <p className="mt-1.5 text-xs text-slate-400">{FACTOR_GUIDANCE[factor.id].insight}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {person && <PersonPanel person={person} mayInsertContext={mayInsert("A")} mayInsertReflection={mayInsert("B")} onAdd={add} />}
+      {!person && (
+        <p className="rounded-lg border border-white/10 p-3 text-xs text-slate-400">
+          {profileConsented
+            ? "No profile context is stored with this analysis. Run the analysis again to align it with the person's profile."
+            : "The person did not consent to profile use for this case, so the analysis and report rest on the case answers only."}
+        </p>
       )}
 
       <div>
@@ -113,6 +195,12 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
                 <ul className="mt-2 grid gap-1 border-l-2 border-white/15 pl-3 text-xs italic text-slate-300">
                   {cause.because.map((quote) => <li key={quote}>“{quote}”</li>)}
                 </ul>
+                {[...new Set(cause.factors.map((id) => FOLLOW_UP.get(id)).filter((question): question is string => Boolean(question)))].slice(0, 2).map((question) => (
+                  <div key={question} className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+                    <span className="min-w-0 flex-1"><span className="font-semibold text-slate-200">To confirm:</span> {question}</span>
+                    {askable.has(question) && <button type="button" disabled={!canAct || busy} onClick={() => onAsk(question)} className={smallButton}>Ask</button>}
+                  </div>
+                ))}
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs text-slate-500">{cause.strands.length ? `Supported by: ${cause.strands.join(", ")}` : "No supporting knowledge finding"}</span>
                   <button type="button" disabled={!mayInsert("A")} onClick={() => add(cause.title, cause.explanation, [])} className={smallButton}>Add to report</button>
@@ -127,7 +215,7 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
         <div>
           <h3 className="font-semibold text-white">Proposed steps</h3>
           <ul className="mt-3 grid gap-3">
-            {analysis.solutions.map((solution) => (
+            {HORIZON_ORDER.flatMap((horizon) => analysis.solutions.filter((solution) => solution.horizon === horizon)).map((solution) => (
               <li key={solution.id} className="rounded-lg border border-white/10 p-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="min-w-0 flex-1 text-sm font-semibold text-white">{solution.title}</p>
@@ -198,6 +286,73 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAsk, onR
         </details>
       )}
     </section>
+  );
+}
+
+interface PersonPanelProps {
+  person: CasePersonContext;
+  mayInsertContext: boolean;
+  mayInsertReflection: boolean;
+  onAdd: (title: string, body: string | undefined, items: string[], cultural?: boolean) => void;
+}
+
+/** Who the report is for: life stage, place and season, cautions, and the reading from their birth details. */
+function PersonPanel({ person, mayInsertContext, mayInsertReflection, onAdd }: PersonPanelProps) {
+  const { lifeStage, place, reading } = person;
+  return (
+    <div>
+      <h3 className="font-semibold text-white">Who this report is for <span className="text-xs font-normal text-slate-400">(from the consented profile; bands and cautions, not raw values)</span></h3>
+      <div className="mt-3 grid gap-3">
+        {person.care.length > 0 && (
+          <ul className="grid gap-1 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-sm text-amber-100">
+            {person.care.map((entry) => <li key={entry.id}>{entry.reviewer}</li>)}
+          </ul>
+        )}
+        {lifeStage && (
+          <div className="rounded-lg border border-white/10 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <p className="text-sm font-semibold text-white">Life stage: {lifeStage.label} <span className="font-normal text-slate-400">({lifeStage.band})</span></p>
+              <button type="button" disabled={!mayInsertContext} onClick={() => onAdd(`At your stage of life (${lifeStage.band})`, undefined, lifeStage.considerations)} className={smallButton}>Add to report</button>
+            </div>
+            <ul className="mt-2 list-disc pl-5 text-sm text-slate-300">{lifeStage.considerations.map((line) => <li key={line}>{line}</li>)}</ul>
+          </div>
+        )}
+        {place && (
+          <div className="rounded-lg border border-white/10 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <p className="text-sm font-semibold text-white">Place and season: {place.region}{place.zone ? ` · ${place.zone}` : ""} · {place.season}</p>
+              <button type="button" disabled={!mayInsertContext} onClick={() => onAdd("Where you live and the season you are in", undefined, place.notes)} className={smallButton}>Add to report</button>
+            </div>
+            <ul className="mt-2 list-disc pl-5 text-sm text-slate-300">{place.notes.map((line) => <li key={line}>{line}</li>)}</ul>
+          </div>
+        )}
+        {person.language && <p className="text-xs text-slate-400">Preferred language on the profile: <span className="font-semibold uppercase text-slate-200">{person.language}</span></p>}
+        {reading && (
+          <div className="rounded-lg border border-violet-500/30 bg-violet-950/20 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <p className="min-w-0 flex-1 text-sm font-semibold text-white">Personal reading <span className="font-normal text-violet-200">(cultural reflection)</span></p>
+              <button
+                type="button"
+                disabled={!mayInsertReflection}
+                onClick={() => onAdd("Timing and temperament from your personal profile", `${reading.signature}.\n\n${reading.basis}`, [...(reading.matter ? [reading.matter.note] : []), ...reading.temperament, ...reading.timing], true)}
+                className={smallButton}
+              >
+                Add as reflection
+              </button>
+            </div>
+            <p className="mt-1 text-sm text-violet-100">{reading.signature}</p>
+            <p className="mt-1 text-xs text-slate-400">{reading.basis}</p>
+            {reading.matter && <p className="mt-2 text-sm text-slate-200">{reading.matter.note}</p>}
+            <details className="mt-2">
+              <summary className="cursor-pointer text-xs font-semibold text-slate-200">Temperament, timing and constitution ({reading.temperament.length + reading.timing.length + reading.constitution.length} points)</summary>
+              <ul className="mt-2 list-disc pl-5 text-xs text-slate-300">
+                {[...reading.temperament, ...reading.timing, ...reading.constitution].map((line) => <li key={line} className="mt-1">{line}</li>)}
+              </ul>
+            </details>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -286,6 +441,8 @@ interface DraftEditorProps {
 
 export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEditorProps) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const stats = reportStatistics(draft);
+  const locked = draft.sections.filter((section) => section.locked).length;
   const setSection = (id: string, patch: Partial<ReportSection>) => onChange({ ...draft, sections: draft.sections.map((section) => (section.id === id ? { ...section, ...patch } : section)) });
   const move = (index: number, by: number) => {
     const sections = [...draft.sections];
@@ -299,7 +456,10 @@ export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEdito
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-white">Report for the person</h2>
-          <p className="mt-1 text-xs text-slate-400">Edit freely. Nothing is visible to the person until you approve.</p>
+          <p className="mt-1 text-xs text-slate-400">
+            Edit freely. Nothing is visible to the person until you approve. {stats.sections} sections · {stats.words.toLocaleString()} words · about {stats.minutes} min to read
+            {locked > 0 && ` · ${locked} in the full (paid) report only`}.
+          </p>
         </div>
         <button type="button" disabled={busy || !dirty} onClick={onSave} className={smallButton}>{dirty ? "Save draft" : "Draft saved"}</button>
       </header>
@@ -320,6 +480,7 @@ export function DraftEditor({ draft, onChange, dirty, busy, onSave }: DraftEdito
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" onClick={() => setOpenId(open ? null : section.id)} aria-expanded={open} className="min-w-0 flex-1 text-left text-sm font-semibold text-white hover:underline">
                   {index + 1}. {section.title || "Untitled section"}
+                  <span className="ml-2 text-[11px] font-normal text-slate-500">{reportStatistics({ summary: "", sections: [section] }).words} words{section.items?.length ? ` · ${section.items.length} point${section.items.length === 1 ? "" : "s"}` : ""}</span>
                 </button>
                 {section.cultural && <span className="rounded-full border border-violet-500/40 px-2 py-0.5 text-[11px] text-violet-200">Reflection</span>}
                 {section.locked && <span className="rounded-full border border-amber-500/40 px-2 py-0.5 text-[11px] text-amber-200">Full report only</span>}

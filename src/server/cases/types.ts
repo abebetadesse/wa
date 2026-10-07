@@ -223,6 +223,31 @@ export interface AnalysisSolution {
 }
 
 /**
+ * What is known about the person behind a case, reduced to what helps a reviewer write for them.
+ * Built only with consent to data usage. It carries bands and cautions rather than raw values:
+ * no exact age, city, gender, religion, medicine or condition names.
+ */
+export interface CasePersonContext {
+  lifeStage?: { label: string; band: string; considerations: string[] };
+  place?: { region: string; zone?: string; season: string; notes: string[] };
+  language?: string;
+  /** Cautions that follow from the wellbeing profile. `report` is wording fit for the person. */
+  care: Array<{ id: string; reviewer: string; report: string }>;
+  /**
+   * Domain B: a reading from the person's birth details, present only when they consented to
+   * cultural and spiritual reflection and no safety signal is active.
+   */
+  reading?: {
+    basis: string;
+    signature: string;
+    temperament: string[];
+    matter?: { house: number; label: string; sign: string; occupants: string[]; note: string };
+    timing: string[];
+    constitution: string[];
+  };
+}
+
+/**
  * The reviewer's dossier: every knowledge strand and engine run over the request, reduced to what
  * the person's own words support. Never sent to the case owner; the reviewer decides what goes
  * into the report.
@@ -251,6 +276,8 @@ export interface CaseAnalysis {
     /** Questions that would sharpen the analysis; the reviewer can send one with a click. */
     followUps: string[];
   };
+  /** Profile-derived context for aligning the report with the person; absent on older analyses. */
+  person?: CasePersonContext;
 }
 
 /** The persisted case. Stored as one row in `workflow_cases`. */

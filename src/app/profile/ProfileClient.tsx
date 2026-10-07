@@ -18,16 +18,19 @@ import AwudeNegestViewer from "@/components/profiling/AwudeNegestViewer";
 import AIChatView from "@/components/profiling/AIChatView";
 import CompatibilityView from "@/components/profiling/CompatibilityView";
 
+import { ChartCalibration, LifestyleAndTradition, TodayForYou, TransitList, castDescription } from "@/components/profiling/PersonalSkyPanels";
+
 import {
   calculateVedicChart,
   calculateVimshottariDasha,
   calculatePanchang,
-  tropicalToSidereal,
+  calculatePersonalDayAlignment,
+  localDateString,
 } from "@/lib/profiling/astrology/vedicAstrologyEngine";
 import { buildMultiSystemNumerologyProfile } from "@/lib/profiling/numerology/multiSystemNumerology";
 import { calculateDanMillmanLifePath } from "@/lib/profiling/numerology/danMillmanNumerology";
 import { calculateAwudeNegestReading } from "@/lib/cultural/awudeNegestEngine";
-import { PLATFORM_DISCLAIMERS } from "@/lib/profiling/extendedTypes";
+import { PersonalDayAlignment, PLATFORM_DISCLAIMERS } from "@/lib/profiling/extendedTypes";
 import { notifyAuthStateChanged } from "@/lib/auth/clientEvents";
 
 type ActiveTab =
@@ -175,6 +178,9 @@ export default function ProfileClient() {
   const [panchangData, setPanchangData] = useState<any>(null);
   const [multiNumeroData, setMultiNumeroData] = useState<any>(null);
   const [awudeReadingData, setAwudeReadingData] = useState<any>(null);
+  const [dayAlignment, setDayAlignment] = useState<PersonalDayAlignment | null>(null);
+  // Where the person lives now: the day's sunrise, Panchang and Prashna are cast there, not at the birth place.
+  const livingCityRef = useRef("");
 
   // Name suggester state
   const [suggestTargetElement, setSuggestTargetElement] = useState<string>("may");
@@ -252,7 +258,8 @@ export default function ProfileClient() {
           const targetName = accProfile.name;
           const targetDOB = accProfile.dateOfBirth;
           const targetCity = accProfile.birthLocation || accProfile.city;
-          const targetTime = accProfile.birthTime || "12:00";
+          const targetTime = accProfile.birthTime || "";
+          livingCityRef.current = accProfile.city || targetCity;
 
           if (accProfile.name) setFullName(accProfile.name);
           if (accProfile.dateOfBirth) setBirthDate(accProfile.dateOfBirth);
@@ -359,27 +366,30 @@ export default function ProfileClient() {
     }
 
     try {
+      // A missing birth time stays missing: the builder then casts for noon and says so.
+      const castTime = targetTime || "12:00";
       const generated = buildPersonalProfile({
         fullName: targetName,
         birthDate: targetDate,
-        birthTime: targetTime,
+        birthTime: targetTime || undefined,
         birthPlace: targetCity,
       });
       setProfile(generated);
 
       // 1. Vedic calculations (Jyotish, D1, D9)
-      const vChart = calculateVedicChart(targetDate, targetTime, targetCity);
+      const vChart = calculateVedicChart(targetDate, castTime, targetCity);
       setVedicData(vChart);
 
-      // 2. Vimshottari Dasha
-      const moonTrop = generated.astrology.planetaryPositions.find((p) => p.planet === "Moon")?.totalLongitude || 0;
-      const moonSid = tropicalToSidereal(moonTrop, vChart.ayanamsha);
-      const dPeriods = calculateVimshottariDasha(targetDate, moonSid);
+      // 2. Vimshottari Dasha, from the Moon's sidereal position at the birth moment
+      const moonSid = vChart.d1Placements.find((p) => p.planet === "Moon")?.totalLongitude || 0;
+      const dPeriods = calculateVimshottariDasha(targetDate, moonSid, castTime);
       setDashasData(dPeriods);
 
-      // 3. Panchang
-      const pan = calculatePanchang(new Date().toISOString().slice(0, 10), targetCity);
+      // 3. Panchang for today where the person lives, and today's Moon against their birth Moon
+      const pan = calculatePanchang(localDateString(), livingCityRef.current || targetCity);
       setPanchangData(pan);
+      const ascendantLongitude = generated.astrology.planetaryPositions.find((p) => p.planet === "Ascendant")?.totalLongitude || 0;
+      setDayAlignment(calculatePersonalDayAlignment({ moonSiderealLongitude: moonSid, ascendantTropicalLongitude: ascendantLongitude }));
 
       // 4. Multi-System Numerology (Dan Millman unreduced, Chaldean, Pythagorean, Personal Cycles)
       const mNum = buildMultiSystemNumerologyProfile(targetName, targetDate);
@@ -589,7 +599,7 @@ export default function ProfileClient() {
               <div className="flex flex-wrap items-center gap-3 text-xs text-stone-400 font-mono">
                 <span>📍 {accountProfile?.city || city || "Ethiopia"}</span>
                 <span>🌐 {accountProfile?.preferredLanguage?.toUpperCase() || "EN"}</span>
-                <span>🎂 {accountProfile?.dateOfBirth || birthDate || "1985-06-15"}</span>
+                <span>🎂 {accountProfile?.dateOfBirth || birthDate || "Birth date not set"}</span>
               </div>
             </div>
           </div>
@@ -598,19 +608,19 @@ export default function ProfileClient() {
             <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
               <div className="text-[10px] uppercase font-mono text-stone-400">Sun Sign</div>
               <div className="text-xs font-bold text-amber-300">
-                {profile?.astrology?.sunSign || "Gemini"}
+                {profile?.astrology?.sunSign || "—"}
               </div>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
               <div className="text-[10px] uppercase font-mono text-stone-400">Life Path</div>
               <div className="text-xs font-bold text-cyan-300">
-                {multiNumeroData?.danMillman?.unreducedComposite || "35/8"}
+                {multiNumeroData?.danMillman?.unreducedComposite || (birthDate ? danMillmanPath.unreducedNumber : "—")}
               </div>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
               <div className="text-[10px] uppercase font-mono text-stone-400">Vitality</div>
               <div className="text-xs font-bold text-emerald-300">
-                {profile?.synthesis?.vitalityScore || 88}/100
+                {profile ? `${profile.synthesis.vitalityScore}/100` : "—"}
               </div>
             </div>
           </div>
@@ -900,6 +910,11 @@ export default function ProfileClient() {
                     <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-medium">
                       Moon in {profile.astrology.moonSign}
                     </span>
+                    {!profile.astrology.birthTimeAssumed && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-medium">
+                        {profile.astrology.risingSign} rising
+                      </span>
+                    )}
                     <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold">
                       Life Path {danMillmanPath.unreducedNumber}
                     </span>
@@ -927,6 +942,9 @@ export default function ProfileClient() {
                   <p className="text-sm text-slate-300 max-w-3xl">
                     {profile.synthesis.constitutionalType} — {profile.naming.overallNameIdentitySynergy.identityNarrative}
                   </p>
+                  <p className="text-xs text-slate-400 max-w-3xl">
+                    {castDescription(profile.astrology, profile.userInfo.birthDate, profile.userInfo.birthTime)}
+                  </p>
                 </div>
 
                 {/* Vitality Gauge Card */}
@@ -937,8 +955,8 @@ export default function ProfileClient() {
                   </div>
                   <div className="h-10 w-[1px] bg-white/10"></div>
                   <div className="text-xs text-slate-300">
-                    <div className="font-semibold text-white">Harmonious Flow</div>
-                    <div>{profile.astrology.aspects.filter((a) => a.nature === "harmonious").length} Trines/Sextiles</div>
+                    <div className="font-semibold text-white">Your natal aspects</div>
+                    <div>{profile.astrology.aspects.filter((a) => a.nature === "harmonious").length} flowing • {profile.astrology.aspects.filter((a) => a.nature === "challenging").length} testing</div>
                   </div>
                 </div>
               </div>
@@ -1043,6 +1061,15 @@ export default function ProfileClient() {
             {/* TAB 1: SYNTHESIS & wellbeing BLUEPRINT */}
             {activeTab === "synthesis" && (
               <div className="space-y-8">
+                <TodayForYou
+                  firstName={profile.userInfo.fullName.split(" ")[0] || "you"}
+                  alignment={dayAlignment}
+                  cycles={multiNumeroData?.personalCycles}
+                  transits={profile.astrology.transitsForecast}
+                />
+
+                <ChartCalibration profile={profile} />
+
                 {/* Strengths & Vulnerabilities Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Enduring Strengths */}
@@ -1193,6 +1220,8 @@ export default function ProfileClient() {
                         ))}
                       </div>
                     </div>
+
+                    <LifestyleAndTradition profile={profile} />
                   </>
                 )}
               </div>
@@ -1205,8 +1234,15 @@ export default function ProfileClient() {
                 <NatalChartWheel
                   planets={profile.astrology.planetaryPositions}
                   aspects={profile.astrology.aspects}
-                  ascendant={{ sign: profile.astrology.risingSign, degree: 14.5 }}
-                  midheaven={{ sign: profile.astrology.risingSign, degree: 12.0 }}
+                  ascendant={profile.astrology.ascendant ?? { sign: profile.astrology.risingSign, degree: 0 }}
+                  midheaven={profile.astrology.midheaven ?? { sign: profile.astrology.risingSign, degree: 0 }}
+                  castNote={castDescription(profile.astrology, profile.userInfo.birthDate, profile.userInfo.birthTime)}
+                />
+
+                <TransitList
+                  title="The sky over your chart now"
+                  intro="Each line exists because a planet in today's sky is within orb of a point in your own chart. The dates show how long it stays in orb."
+                  transits={profile.astrology.transitsForecast}
                 />
 
                 {/* Vedic Kundli, Divisional Charts, Dasha & Panchang Section */}
@@ -1217,6 +1253,10 @@ export default function ProfileClient() {
                     d9Placements={vedicData.d9Placements}
                     dashas={dashasData}
                     panchang={panchangData}
+                    lunarNodes={vedicData.lunarNodes}
+                    lagna={vedicData.lagna}
+                    dayAlignment={dayAlignment}
+                    defaultCity={accountProfile?.city || city}
                   />
                 )}
               </div>

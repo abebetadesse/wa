@@ -4,7 +4,6 @@
  */
 
 import {
-  CelestialBody,
   HumoralElement,
   TransitForecastItem,
   ZodiacSignName,
@@ -15,10 +14,25 @@ import {
   DivisionalChartPlacement,
   NakshatraInfo,
   PanchangData,
+  PersonalDayAlignment,
   PrashnaKundliResult,
   VedicPlanetaryPlacement,
 } from "../extendedTypes";
 import { calculateCelestialPositions, getSignFromLongitude } from "./chartCalculator";
+import {
+  allBodyPositions,
+  bodyLongitude,
+  chartAngles,
+  formatClock,
+  julianDayFromDate,
+  julianDayFromLocal,
+  lunarNodeLongitude,
+  moonIllumination,
+  solarDay,
+} from "./ephemeris";
+import { calculateTransits } from "./personalSky";
+import { resolveBirthPlace } from "./places";
+import { HOUSE_THEMES, ordinal } from "./zodiac";
 
 // 27 Nakshatras with traditional Vedic details and Ethiopian celestial resonances
 export const NAKSHATRAS: {
@@ -154,8 +168,60 @@ export function getNavamshaSign(siderealLongitude: number): ZodiacSignName {
   return ZODIAC_LIST[finalSignIndex] || "Aries";
 }
 
+const SIGN_LORD: Record<ZodiacSignName, string> = {
+  Aries: "Mars", Taurus: "Venus", Gemini: "Mercury", Cancer: "Moon", Leo: "Sun", Virgo: "Mercury",
+  Libra: "Venus", Scorpio: "Mars", Sagittarius: "Jupiter", Capricorn: "Saturn", Aquarius: "Saturn", Pisces: "Jupiter",
+};
+
+const EXALTATION: Record<string, ZodiacSignName> = {
+  Sun: "Aries", Moon: "Taurus", Mars: "Capricorn", Mercury: "Virgo", Jupiter: "Cancer", Venus: "Pisces", Saturn: "Libra",
+};
+
+const NATURAL_FRIENDS: Record<string, { friends: string[]; enemies: string[] }> = {
+  Sun: { friends: ["Moon", "Mars", "Jupiter"], enemies: ["Venus", "Saturn"] },
+  Moon: { friends: ["Sun", "Mercury"], enemies: [] },
+  Mars: { friends: ["Sun", "Moon", "Jupiter"], enemies: ["Mercury"] },
+  Mercury: { friends: ["Sun", "Venus"], enemies: ["Moon"] },
+  Jupiter: { friends: ["Sun", "Moon", "Mars"], enemies: ["Mercury", "Venus"] },
+  Venus: { friends: ["Mercury", "Saturn"], enemies: ["Sun", "Moon"] },
+  Saturn: { friends: ["Mercury", "Venus"], enemies: ["Sun", "Moon", "Mars"] },
+};
+
+const CHARA_KARAKAS = [
+  "Atmakaraka (soul's aim)",
+  "Amatyakaraka (vocation)",
+  "Bhratrikaraka (courage, siblings)",
+  "Matrikaraka (nurture, home)",
+  "Putrakaraka (creativity, children)",
+  "Gnatikaraka (obstacles to master)",
+  "Darakaraka (partnership)",
+];
+
+type Dignity = VedicPlanetaryPlacement["dignity"];
+
+/** Dignity of one of the seven classical planets in a sidereal sign; other points have none. */
+export function getVedicDignity(planet: string, sign: ZodiacSignName): Dignity {
+  const exalted = EXALTATION[planet];
+  if (!exalted) return "Neutral";
+  if (sign === exalted) return "Exalted";
+  if (ZODIAC_LIST[(ZODIAC_LIST.indexOf(exalted) + 6) % 12] === sign) return "Debilitated";
+  const lord = SIGN_LORD[sign];
+  if (lord === planet) return "Own Sign";
+  const relation = NATURAL_FRIENDS[planet];
+  if (relation.friends.includes(lord)) return "Friendly";
+  if (relation.enemies.includes(lord)) return "Enemy";
+  return "Neutral";
+}
+
+const CLASSICAL = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
+
+function wholeSignHouse(signIndex: number, lagnaSignIndex: number): number {
+  return ((signIndex - lagnaSignIndex + 12) % 12) + 1;
+}
+
 /**
- * Generates Vedic (Jyotish) Placements for all planets including D1 and D9 charts
+ * Generates Vedic (Jyotish) placements for all planets including the D1 and D9 charts.
+ * Houses are whole-sign bhavas counted from the sidereal Lagna of the birth place and time.
  */
 export function calculateVedicChart(
   birthDate: string,
@@ -166,50 +232,70 @@ export function calculateVedicChart(
   d1Placements: VedicPlanetaryPlacement[];
   d9Placements: DivisionalChartPlacement;
   divisionalChartCatalog: { code: string; name: string; purpose: string }[];
+  lunarNodes: { name: "Rahu" | "Ketu"; siderealSign: ZodiacSignName; degree: number; nakshatra: NakshatraInfo; house: number }[];
+  lagna: { siderealSign: ZodiacSignName; degree: number; nakshatra: NakshatraInfo; lord: string };
 } {
   const western = calculateCelestialPositions(birthDate, birthTime, city);
   const ayanamsha = calculateLahiriAyanamsha(birthDate);
 
-  const d1Placements: VedicPlanetaryPlacement[] = western.planets.map((p) => {
-    const siderealLong = tropicalToSidereal(p.totalLongitude, ayanamsha);
-    const siderealSignInfo = getSignFromLongitude(siderealLong);
-    const nakshatra = getNakshatraFromSidereal(siderealLong);
+  const sidereal = western.planets.map((p) => ({ planet: p, longitude: tropicalToSidereal(p.totalLongitude, ayanamsha) }));
+  const lagnaLongitude = sidereal.find((entry) => entry.planet.planet === "Ascendant")?.longitude ?? 0;
+  const lagnaSignIndex = Math.floor(lagnaLongitude / 30);
 
-    // Simple dignity estimation
-    let dignity: VedicPlanetaryPlacement["dignity"] = "Neutral";
-    if (p.planet === "Sun" && siderealSignInfo.sign === "Aries") dignity = "Exalted";
-    else if (p.planet === "Sun" && siderealSignInfo.sign === "Libra") dignity = "Debilitated";
-    else if (p.planet === "Moon" && siderealSignInfo.sign === "Taurus") dignity = "Exalted";
-    else if (p.planet === "Moon" && siderealSignInfo.sign === "Scorpio") dignity = "Debilitated";
-    else if (p.planet === "Mars" && siderealSignInfo.sign === "Capricorn") dignity = "Exalted";
-    else if (p.planet === "Jupiter" && siderealSignInfo.sign === "Cancer") dignity = "Exalted";
-    else if (p.planet === "Venus" && siderealSignInfo.sign === "Pisces") dignity = "Exalted";
-    else if (p.planet === "Saturn" && siderealSignInfo.sign === "Libra") dignity = "Exalted";
-    else dignity = "Own Sign";
+  // Chara karakas: the seven classical planets ranked by degree travelled in their sign.
+  const karakaOrder = sidereal
+    .filter((entry) => CLASSICAL.includes(entry.planet.planet))
+    .sort((a, b) => (b.longitude % 30) - (a.longitude % 30))
+    .map((entry) => entry.planet.planet);
 
+  const d1Placements: VedicPlanetaryPlacement[] = sidereal.map(({ planet: p, longitude }) => {
+    const signInfo = getSignFromLongitude(longitude);
+    const rank = karakaOrder.indexOf(p.planet);
     return {
       planet: p.planet,
-      siderealSign: siderealSignInfo.sign,
-      degree: siderealSignInfo.degreeInSign,
-      totalLongitude: siderealLong,
-      nakshatra,
-      house: p.house,
+      siderealSign: signInfo.sign,
+      degree: signInfo.degreeInSign,
+      totalLongitude: longitude,
+      nakshatra: getNakshatraFromSidereal(longitude),
+      house: wholeSignHouse(Math.floor(longitude / 30), lagnaSignIndex),
       isRetrograde: p.isRetrograde,
-      dignity,
-      karaka: p.planet === "Sun" ? "Atmakaraka (Soul)" : "Amatyakaraka (Counsel)",
+      dignity: getVedicDignity(p.planet, signInfo.sign),
+      karaka: rank >= 0 ? CHARA_KARAKAS[rank] : "—",
     };
   });
 
+  const d9LagnaIndex = ZODIAC_LIST.indexOf(getNavamshaSign(lagnaLongitude));
   const d9Placements: DivisionalChartPlacement = {
     chartCode: "D9",
     chartName: "Navamsha Chakra (Spiritual Dharma & Relational Synergy)",
     purpose: "Reveals the inner soul trajectory, marital harmony, and matured secondary destiny.",
-    placements: d1Placements.map((p) => ({
-      planet: p.planet,
-      sign: getNavamshaSign(p.totalLongitude),
-      house: ((ZODIAC_LIST.indexOf(getNavamshaSign(p.totalLongitude)) + 1) % 12) + 1,
-    })),
+    placements: d1Placements.map((p) => {
+      const sign = getNavamshaSign(p.totalLongitude);
+      return {
+        planet: p.planet,
+        sign,
+        house: wholeSignHouse(ZODIAC_LIST.indexOf(sign), d9LagnaIndex),
+        nakshatra: p.nakshatra.name,
+        pada: p.nakshatra.pada,
+        dignity: CLASSICAL.includes(p.planet) ? getVedicDignity(p.planet, sign) : undefined,
+        vargottama: sign === p.siderealSign,
+      };
+    }),
   };
+
+  const rahuLongitude = tropicalToSidereal(lunarNodeLongitude(western.julianDay), ayanamsha);
+  const lunarNodes = ([["Rahu", rahuLongitude], ["Ketu", (rahuLongitude + 180) % 360]] as const).map(([name, longitude]) => {
+    const signInfo = getSignFromLongitude(longitude);
+    return {
+      name,
+      siderealSign: signInfo.sign,
+      degree: signInfo.degreeInSign,
+      nakshatra: getNakshatraFromSidereal(longitude),
+      house: wholeSignHouse(Math.floor(longitude / 30), lagnaSignIndex),
+    };
+  });
+
+  const lagnaSign = getSignFromLongitude(lagnaLongitude);
 
   const divisionalChartCatalog = [
     { code: "D1", name: "Rashi Chakra", purpose: "Physical incarnation, general life path, overt personality." },
@@ -232,157 +318,338 @@ export function calculateVedicChart(
     d1Placements,
     d9Placements,
     divisionalChartCatalog,
+    lunarNodes,
+    lagna: {
+      siderealSign: lagnaSign.sign,
+      degree: lagnaSign.degreeInSign,
+      nakshatra: getNakshatraFromSidereal(lagnaLongitude),
+      lord: SIGN_LORD[lagnaSign.sign],
+    },
   };
 }
 
-/**
- * Calculates Vimshottari Dasha periods starting from birth date and Moon's Nakshatra
- */
-export function calculateVimshottariDasha(birthDateStr: string, moonSiderealLongitude: number): DashaPeriod[] {
-  const nak = getNakshatraFromSidereal(moonSiderealLongitude);
-  const nakshatraSpan = 360 / 27; // 13.3333°
-  const degreeIntoNak = moonSiderealLongitude % nakshatraSpan;
-  const fractionElapsed = degreeIntoNak / nakshatraSpan;
-  const fractionRemaining = 1 - fractionElapsed;
+const YEAR_MS = 365.25 * 86400000;
 
-  // Find index of starting Dasha lord
+function isoDate(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+/**
+ * Vimshottari Dasha from the birth moment and the Moon's sidereal longitude.
+ *
+ * The first mahadasha is the part still to run of the period ruled by the Moon's nakshatra lord;
+ * every mahadasha carries its nine antardashas with real start and end dates.
+ */
+export function calculateVimshottariDasha(
+  birthDateStr: string,
+  moonSiderealLongitude: number,
+  birthTime: string = "12:00",
+  utcOffsetHours: number = 3
+): DashaPeriod[] {
+  const nak = getNakshatraFromSidereal(moonSiderealLongitude);
+  const nakshatraSpan = 360 / 27;
+  const fractionElapsed = (((moonSiderealLongitude % 360) + 360) % nakshatraSpan) / nakshatraSpan;
+
   const lordIndex = DASHA_LORDS.findIndex((d) => d.planet.toLowerCase() === nak.rulingPlanet.toLowerCase());
   const startIndex = lordIndex >= 0 ? lordIndex : 0;
 
   const [yStr, mStr, dStr] = birthDateStr.split("-");
-  const birthYear = parseInt(yStr || "1990", 10);
-  const birthMonth = parseInt(mStr || "1", 10);
-  const birthDay = parseInt(dStr || "1", 10);
+  const [hStr, minStr] = (birthTime || "12:00").split(":");
+  const birthMs = Date.UTC(
+    parseInt(yStr || "1990", 10),
+    parseInt(mStr || "1", 10) - 1,
+    parseInt(dStr || "1", 10),
+    (parseInt(hStr || "12", 10) || 0) - utcOffsetHours,
+    parseInt(minStr || "0", 10) || 0
+  );
+  const nowMs = Date.now();
 
   const periods: DashaPeriod[] = [];
-  let currentYear = birthYear + (birthMonth - 1) / 12 + birthDay / 365;
-  const nowYear = new Date().getFullYear() + new Date().getMonth() / 12;
+  // Where the first mahadasha would have begun had the person been born at its start.
+  let cursor = birthMs - DASHA_LORDS[startIndex].years * fractionElapsed * YEAR_MS;
 
-  // Initial balance of first Dasha
-  const firstLord = DASHA_LORDS[startIndex];
-  const initialDuration = firstLord.years * fractionRemaining;
-  const firstEndYear = currentYear + initialDuration;
+  for (let i = 0; i < DASHA_LORDS.length; i++) {
+    const lordPosition = (startIndex + i) % DASHA_LORDS.length;
+    const lord = DASHA_LORDS[lordPosition];
+    const mahaStart = cursor;
+    const mahaEnd = cursor + lord.years * YEAR_MS;
 
-  periods.push({
-    planet: firstLord.planet,
-    startDate: `${birthYear}-${String(birthMonth).padStart(2, "0")}-${String(birthDay).padStart(2, "0")}`,
-    endDate: `${Math.floor(firstEndYear)}-${String(birthMonth).padStart(2, "0")}-01`,
-    isCurrent: nowYear >= currentYear && nowYear < firstEndYear,
-  });
-
-  currentYear = firstEndYear;
-
-  // Next 8 cycles
-  for (let i = 1; i < 9; i++) {
-    const nextLord = DASHA_LORDS[(startIndex + i) % DASHA_LORDS.length];
-    const endYear = currentYear + nextLord.years;
-    const isCurrent = nowYear >= currentYear && nowYear < endYear;
+    const subPeriods: NonNullable<DashaPeriod["subPeriods"]> = [];
+    let subCursor = mahaStart;
+    for (let k = 0; k < DASHA_LORDS.length; k++) {
+      const sub = DASHA_LORDS[(lordPosition + k) % DASHA_LORDS.length];
+      const subEnd = subCursor + ((lord.years * sub.years) / 120) * YEAR_MS;
+      if (subEnd > birthMs) {
+        subPeriods.push({
+          planet: sub.planet,
+          startDate: isoDate(Math.max(subCursor, birthMs)),
+          endDate: isoDate(subEnd),
+          isCurrent: nowMs >= subCursor && nowMs < subEnd,
+        });
+      }
+      subCursor = subEnd;
+    }
 
     periods.push({
-      planet: nextLord.planet,
-      startDate: `${Math.floor(currentYear)}-01-01`,
-      endDate: `${Math.floor(endYear)}-01-01`,
-      isCurrent,
-      subPeriods: isCurrent
-        ? [
-          { planet: nextLord.planet, startDate: `${Math.floor(currentYear)}-01-01`, endDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, isCurrent: true },
-          { planet: "Jupiter", startDate: `${Math.floor(currentYear + nextLord.years * 0.3)}-01-01`, endDate: `${Math.floor(endYear)}-01-01`, isCurrent: false },
-        ]
-        : undefined,
+      planet: lord.planet,
+      startDate: isoDate(Math.max(mahaStart, birthMs)),
+      endDate: isoDate(mahaEnd),
+      isCurrent: nowMs >= Math.max(mahaStart, birthMs) && nowMs < mahaEnd,
+      subPeriods,
     });
 
-    currentYear = endYear;
+    cursor = mahaEnd;
   }
 
   return periods;
 }
 
+/** Today's civil date (YYYY-MM-DD) at a fixed UTC offset; East Africa Time by default. */
+export function localDateString(utcOffsetHours = 3, when: Date = new Date()): string {
+  return new Date(when.getTime() + utcOffsetHours * 3600000).toISOString().slice(0, 10);
+}
+
+const TITHI_NAMES = [
+  "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami", "Ashtami",
+  "Navami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi",
+];
+
+// The five tithi families repeat through each fortnight.
+const TITHI_GROUPS = [
+  { name: "Nanda", meaning: "a day of gladness: good for beginnings, celebrations and reaching out" },
+  { name: "Bhadra", meaning: "a steady day: good for health routines, practical work and agreements" },
+  { name: "Jaya", meaning: "a day for overcoming: good for effort, competition and clearing obstacles" },
+  { name: "Rikta", meaning: "an emptying day: good for cleaning, ending and letting go rather than starting" },
+  { name: "Purna", meaning: "a day of fullness: good for completing, gathering and giving thanks" },
+];
+
+const YOGA_NAMES = [
+  "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda", "Sukarma", "Dhriti", "Shula",
+  "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra", "Siddhi", "Vyatipata", "Variyan",
+  "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma", "Indra", "Vaidhriti",
+];
+const CHALLENGING_YOGAS = ["Vishkambha", "Atiganda", "Shula", "Ganda", "Vyaghata", "Vajra", "Vyatipata", "Parigha", "Vaidhriti"];
+
+const MOVABLE_KARANAS = ["Bava", "Balava", "Kaulava", "Taitila", "Gara", "Vanija", "Vishti"];
+const KARANA_DEITY: Record<string, string> = {
+  Bava: "Indra", Balava: "Brahma", Kaulava: "Mitra", Taitila: "Aryaman", Gara: "Bhumi (Earth)", Vanija: "Lakshmi",
+  Vishti: "Yama", Shakuni: "Kali", Chatushpada: "Rudra", Naga: "the Nagas", Kimstughna: "Vayu",
+};
+
+const VAARS = [
+  { dayOfWeek: "Sunday", rulingPlanet: "Sun", ethiopianName: "እሑድ (Shems / ፀሐይ)" },
+  { dayOfWeek: "Monday", rulingPlanet: "Moon", ethiopianName: "ሰኞ (Qemer / ጨረቃ)" },
+  { dayOfWeek: "Tuesday", rulingPlanet: "Mars", ethiopianName: "ማክሰኞ (Merikh / ማርስ)" },
+  { dayOfWeek: "Wednesday", rulingPlanet: "Mercury", ethiopianName: "ረቡዕ (Utarid / ሜርኩሪ)" },
+  { dayOfWeek: "Thursday", rulingPlanet: "Jupiter", ethiopianName: "ሐሙስ (Mushtari / ጁፒተር)" },
+  { dayOfWeek: "Friday", rulingPlanet: "Venus", ethiopianName: "ዓርብ (Zuhara / ቬነስ)" },
+  { dayOfWeek: "Saturday", rulingPlanet: "Saturn", ethiopianName: "ቅዳሜ (Zuhal / ሳተርን)" },
+];
+
+// Which eighth of the daytime is Rahu Kalam, by weekday (Sunday first).
+const RAHU_KALAM_SEGMENT = [8, 2, 7, 5, 6, 4, 3];
+
+function weekdayOf(dateStr: string): number {
+  const [y, m, d] = dateStr.split("-").map((part) => parseInt(part, 10));
+  return new Date(Date.UTC(y || 2000, (m || 1) - 1, d || 1)).getUTCDay();
+}
+
+function moonPhaseName(elongation: number): string {
+  if (elongation < 6 || elongation > 354) return "New Moon";
+  if (elongation < 84) return "Waxing Crescent";
+  if (elongation < 96) return "First Quarter";
+  if (elongation < 174) return "Waxing Gibbous";
+  if (elongation < 186) return "Full Moon";
+  if (elongation < 264) return "Waning Gibbous";
+  if (elongation < 276) return "Last Quarter";
+  return "Waning Crescent";
+}
+
 /**
- * Calculates traditional 5-limb Panchang for given date and time
+ * The five limbs of the Panchang for a civil date, taken at sunrise at the given place.
+ * Sunrise, sunset, Abhijit Muhurta and Rahu Kalam are computed for that place's coordinates.
  */
-export function calculatePanchang(dateStr: string = new Date().toISOString().slice(0, 10), cityKey: string = "Addis Ababa"): PanchangData {
-  const positions = calculateCelestialPositions(dateStr, "12:00", cityKey);
+export function calculatePanchang(dateStr: string = localDateString(), cityKey: string = "Addis Ababa"): PanchangData {
+  const place = resolveBirthPlace(cityKey);
+  const day = solarDay(dateStr, place.latitude, place.longitude, place.utcOffsetHours);
+  const sunriseClock = `${String(Math.floor(day.sunrise)).padStart(2, "0")}:${String(Math.floor((day.sunrise % 1) * 60)).padStart(2, "0")}`;
+  const jd = julianDayFromLocal(dateStr, sunriseClock, place.utcOffsetHours);
   const ayanamsha = calculateLahiriAyanamsha(dateStr);
 
-  const sunLong = tropicalToSidereal(positions.planets.find((p) => p.planet === "Sun")?.totalLongitude || 0, ayanamsha);
-  const moonLong = tropicalToSidereal(positions.planets.find((p) => p.planet === "Moon")?.totalLongitude || 0, ayanamsha);
+  const sunLong = tropicalToSidereal(bodyLongitude("Sun", jd), ayanamsha);
+  const moonLong = tropicalToSidereal(bodyLongitude("Moon", jd), ayanamsha);
 
-  // Tithi: (Moon - Sun) / 12 degrees
-  let diff = moonLong - sunLong;
-  if (diff < 0) diff += 360;
+  // Tithi: every 12° the Moon gains on the Sun.
+  const diff = (moonLong - sunLong + 360) % 360;
   const tithiIndex = Math.floor(diff / 12) + 1;
   const isShukla = tithiIndex <= 15;
-  const tithiNames = [
-    "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami",
-    "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami",
-    "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi", isShukla ? "Purnima (Full Moon)" : "Amavasya (New Moon)"
-  ];
-  const tithiName = tithiNames[(tithiIndex - 1) % 15] || "Pratipada";
+  const inFortnight = ((tithiIndex - 1) % 15) + 1;
+  const tithiName = inFortnight === 15 ? (isShukla ? "Purnima (Full Moon)" : "Amavasya (New Moon)") : TITHI_NAMES[inFortnight - 1];
+  const group = TITHI_GROUPS[(inFortnight - 1) % 5];
 
-  // Nakshatra of the Moon
   const nakshatra = getNakshatraFromSidereal(moonLong);
 
-  // Yoga: (Sun + Moon) / 13° 20'
-  const yogaSum = (sunLong + moonLong) % 360;
-  const yogaIndex = Math.floor(yogaSum / (360 / 27)) + 1;
-  const YOGA_NAMES = [
-    "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana",
-    "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda",
-    "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra",
-    "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva",
-    "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma",
-    "Indra", "Vaidhriti"
-  ];
-  const yogaName = YOGA_NAMES[(yogaIndex - 1) % 27] || "Priti";
-  const isAuspiciousYoga = ["Priti", "Ayushman", "Saubhagya", "Shobhana", "Sukarma", "Harshana", "Siddhi", "Shiva", "Shubha", "Brahma"].includes(yogaName);
+  // Yoga: the sum of the two longitudes in 13°20' steps.
+  const yogaIndex = Math.floor(((sunLong + moonLong) % 360) / (360 / 27)) + 1;
+  const yogaName = YOGA_NAMES[yogaIndex - 1] || "Priti";
 
-  // Karana: half tithi (6 degrees)
-  const karanaIndex = Math.floor(diff / 6) + 1;
-  const KARANA_NAMES = ["Bava", "Balava", "Kaulava", "Taitila", "Gara", "Vanija", "Vishti", "Shakuni", "Chatushpada", "Naga", "Kimstughna"];
-  const karanaName = KARANA_NAMES[(karanaIndex - 1) % KARANA_NAMES.length] || "Bava";
+  // Karana: half a tithi. Four fixed karanas frame the month; seven movable ones repeat between them.
+  const karanaIndex = Math.floor(diff / 6);
+  const karanaName =
+    karanaIndex === 0 ? "Kimstughna" : karanaIndex === 57 ? "Shakuni" : karanaIndex === 58 ? "Chatushpada" : karanaIndex === 59 ? "Naga" : MOVABLE_KARANAS[(karanaIndex - 1) % 7];
 
-  // Vaar (Day of week)
-  const dateObj = new Date(dateStr);
-  const dayIndex = dateObj.getDay(); // 0 = Sunday
-  const VAARS = [
-    { dayOfWeek: "Sunday", rulingPlanet: "Sun", ethiopianName: "እሑድ (Shems / ፀሐይ)" },
-    { dayOfWeek: "Monday", rulingPlanet: "Moon", ethiopianName: "ሰኞ (Qemer / ጨረቃ)" },
-    { dayOfWeek: "Tuesday", rulingPlanet: "Mars", ethiopianName: "ማክሰኞ (Merikh / ማርስ)" },
-    { dayOfWeek: "Wednesday", rulingPlanet: "Mercury", ethiopianName: "ረቡዕ (Utarid / ሜርኩሪ)" },
-    { dayOfWeek: "Thursday", rulingPlanet: "Jupiter", ethiopianName: "ሐሙስ (Mushtari / ጁፒተር)" },
-    { dayOfWeek: "Friday", rulingPlanet: "Venus", ethiopianName: "ዓርብ (Zuhara / ቬነስ)" },
-    { dayOfWeek: "Saturday", rulingPlanet: "Saturn", ethiopianName: "ቅዳሜ (Zuhal / ሳተርን)" },
-  ];
-  const vaar = VAARS[dayIndex] || VAARS[0];
+  const weekday = weekdayOf(dateStr);
+  const vaar = VAARS[weekday];
+
+  const muhurta = day.dayLengthHours / 15;
+  const eighth = day.dayLengthHours / 8;
+  const rahuStart = day.sunrise + (RAHU_KALAM_SEGMENT[weekday] - 1) * eighth;
 
   return {
     tithi: {
       number: tithiIndex,
       name: `${tithiName} (${isShukla ? "Shukla Paksha" : "Krishna Paksha"})`,
       paksha: isShukla ? "Shukla (Waxing)" : "Krishna (Waning)",
-      meaning: isShukla ? "Favorable for constructive expansion, nourishment, and beginnings." : "Favorable for introspection, detox, and completing cycles.",
+      meaning: `${group.name} tithi — ${group.meaning}.`,
     },
     nakshatra,
     yoga: {
       number: yogaIndex,
       name: yogaName,
-      auspiciousness: isAuspiciousYoga ? "Auspicious" : "Neutral",
+      auspiciousness: CHALLENGING_YOGAS.includes(yogaName) ? "Challenging" : "Auspicious",
     },
     karana: {
-      number: karanaIndex,
+      number: karanaIndex + 1,
       name: karanaName,
-      rulingDeity: "Vedic & Ethiopian Celestial Regents",
+      rulingDeity: KARANA_DEITY[karanaName] || "—",
     },
     vaar,
-    sunrise: "06:18 AM EAT",
-    sunset: "06:34 PM EAT",
-    auspiciousPeriod: "Abhijit Muhurta: 11:45 AM – 12:35 PM",
+    sunrise: `${formatClock(day.sunrise)} EAT`,
+    sunset: `${formatClock(day.sunset)} EAT`,
+    auspiciousPeriod: `Abhijit Muhurta: ${formatClock(day.solarNoon - muhurta / 2)} – ${formatClock(day.solarNoon + muhurta / 2)}`,
+    date: dateStr,
+    location: { city: place.city, latitude: place.latitude, longitude: place.longitude, matched: place.matched },
+    rahuKalam: `${formatClock(rahuStart)} – ${formatClock(rahuStart + eighth)}`,
+    dayLength: `${Math.floor(Math.round(day.dayLengthHours * 60) / 60)}h ${String(Math.round(day.dayLengthHours * 60) % 60).padStart(2, "0")}m`,
+    moonPhase: { name: moonPhaseName(diff), illumination: Math.round(moonIllumination(diff) * 100) },
   };
+}
+
+const TARA_BALA = [
+  { name: "Janma", favourable: false, meaning: "the Moon returns to your birth star: a sensitive day — keep plans simple and look after your body" },
+  { name: "Sampat", favourable: true, meaning: "the star of gain: a good day for requests, earnings and practical progress" },
+  { name: "Vipat", favourable: false, meaning: "the star of obstacles: avoid risks and double-check arrangements" },
+  { name: "Kshema", favourable: true, meaning: "the star of wellbeing: a good day for rest, care routines and settling matters" },
+  { name: "Pratyak", favourable: false, meaning: "the star of opposition: expect friction and postpone confrontations" },
+  { name: "Sadhana", favourable: true, meaning: "the star of accomplishment: a good day for study, practice and sustained effort" },
+  { name: "Naidhana", favourable: false, meaning: "the star of endings: rest, finish what is open and avoid major new starts" },
+  { name: "Mitra", favourable: true, meaning: "the friendly star: a good day for meetings, visits and asking for help" },
+  { name: "Parama Mitra", favourable: true, meaning: "the star of the great friend: support comes easily — a good day for most undertakings" },
+];
+
+/**
+ * How today's Moon stands in relation to one person's birth Moon (Tara Bala and Chandra Bala),
+ * and which house of their chart it is passing through.
+ */
+export function calculatePersonalDayAlignment(
+  natal: { moonSiderealLongitude: number; ascendantTropicalLongitude: number },
+  when: Date = new Date()
+): PersonalDayAlignment {
+  const jd = julianDayFromDate(when);
+  const date = localDateString(3, when);
+  const ayanamsha = calculateLahiriAyanamsha(date);
+  const moonTropical = bodyLongitude("Moon", jd);
+  const moonSidereal = tropicalToSidereal(moonTropical, ayanamsha);
+  const elongation = (moonTropical - bodyLongitude("Sun", jd) + 360) % 360;
+
+  const birthStar = getNakshatraFromSidereal(natal.moonSiderealLongitude);
+  const todayStar = getNakshatraFromSidereal(moonSidereal);
+  const count = ((todayStar.index - birthStar.index + 27) % 27) + 1;
+  const tara = TARA_BALA[(count - 1) % 9];
+
+  const natalMoonSign = Math.floor(natal.moonSiderealLongitude / 30);
+  const todayMoonSign = Math.floor(moonSidereal / 30);
+  const fromNatalMoon = ((todayMoonSign - natalMoonSign + 12) % 12) + 1;
+  const strong = [1, 3, 6, 7, 10, 11].includes(fromNatalMoon);
+  const weak = [4, 8, 12].includes(fromNatalMoon);
+
+  const natalHouse = Math.floor((((moonTropical - natal.ascendantTropicalLongitude) % 360) + 360) % 360 / 30) + 1;
+  const tropicalSign = getSignFromLongitude(moonTropical).sign;
+
+  return {
+    date,
+    birthStar: { name: birthStar.name, geezName: birthStar.geezName, pada: birthStar.pada, rulingPlanet: birthStar.rulingPlanet, temperament: birthStar.temperament },
+    moonToday: {
+      tropicalSign,
+      siderealSign: ZODIAC_LIST[todayMoonSign],
+      nakshatra: todayStar.name,
+      nakshatraGeez: todayStar.geezName,
+      natalHouse,
+      houseTheme: HOUSE_THEMES[natalHouse],
+    },
+    phase: { name: moonPhaseName(elongation), illumination: Math.round(moonIllumination(elongation) * 100), waxing: elongation < 180 },
+    taraBala: { count, name: tara.name, favourable: tara.favourable, meaning: `Counting from ${birthStar.name}, today's ${todayStar.name} is star ${count} — ${tara.meaning}.` },
+    chandraBala: {
+      houseFromNatalMoon: fromNatalMoon,
+      strength: strong ? "strong" : weak ? "low" : "moderate",
+      meaning: strong
+        ? `The Moon is in the ${ordinal(fromNatalMoon)} sign from your birth Moon: your mind is steady and your judgement can be trusted today.`
+        : weak
+          ? `The Moon is in the ${ordinal(fromNatalMoon)} sign from your birth Moon: emotional reserves run lower — pace yourself and delay weighty decisions.`
+          : `The Moon is in the ${ordinal(fromNatalMoon)} sign from your birth Moon: an ordinary day for the mind — routine matters go best.`,
+    },
+  };
+}
+
+const PLANET_DIRECTION: Record<string, string> = {
+  Sun: "East", Venus: "South-East", Mars: "South", Saturn: "West", Moon: "North-West", Mercury: "North", Jupiter: "North-East",
+};
+const ELEMENT_DIRECTION: Record<HumoralElement, string> = { esat: "East", afere: "South", nifas: "West", may: "North" };
+const CHALDEAN_ORDER = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"];
+
+const PRASHNA_TOPICS: { house: number; topic: string; words: string[] }[] = [
+  { house: 6, topic: "wellbeing & Recovery", words: ["wellbeing", "sick", "cure", "doctor", "health", "illness", "pain", "heal", "recover"] },
+  { house: 7, topic: "Partnership & Affection", words: ["love", "marry", "marriage", "partner", "relationship", "husband", "wife", "spouse"] },
+  { house: 10, topic: "Career & Vocation", words: ["job", "work", "career", "business", "promotion", "boss"] },
+  { house: 2, topic: "Financial Flow", words: ["money", "wealth", "buy", "sell", "salary", "loan", "debt", "invest"] },
+  { house: 9, topic: "Travel & New Horizons", words: ["travel", "journey", "flight", "move", "abroad", "visa", "study", "exam", "school", "university"] },
+  { house: 4, topic: "Home & Family", words: ["house", "home", "land", "rent", "family", "mother", "property"] },
+  { house: 5, topic: "Children & Creativity", words: ["child", "children", "pregnan", "baby", "son", "daughter", "creative"] },
+  { house: 11, topic: "Friends & Gains", words: ["friend", "community", "profit", "gain", "win"] },
+];
+
+/** The next planetary hour ruled by `planet` at a place, starting from `when`. */
+function nextPlanetaryHour(planet: string, place: { latitude: number; longitude: number; utcOffsetHours: number }, when: Date): string | null {
+  const nowHours = ((when.getTime() / 3600000 + place.utcOffsetHours) % 24 + 24) % 24;
+  let dateStr = localDateString(place.utcOffsetHours, when);
+  let day = solarDay(dateStr, place.latitude, place.longitude, place.utcOffsetHours);
+  let clock = nowHours;
+  if (nowHours < day.sunrise) {
+    // Before dawn the hours still belong to the previous day.
+    dateStr = localDateString(place.utcOffsetHours, new Date(when.getTime() - 86400000));
+    day = solarDay(dateStr, place.latitude, place.longitude, place.utcOffsetHours);
+    clock = nowHours + 24;
+  }
+  const dayHour = day.dayLengthHours / 12;
+  const nightHour = (24 - day.dayLengthHours) / 12;
+  let lordIndex = CHALDEAN_ORDER.indexOf(VAARS[weekdayOf(dateStr)].rulingPlanet);
+  let start = day.sunrise;
+  for (let hour = 0; hour < 24; hour++) {
+    const length = hour < 12 ? dayHour : nightHour;
+    const end = start + length;
+    if (CHALDEAN_ORDER[lordIndex] === planet && end > clock) {
+      return `${formatClock(Math.max(start, clock))} – ${formatClock(end)}`;
+    }
+    start = end;
+    lordIndex = (lordIndex + 1) % 7;
+  }
+  return null;
 }
 
 /**
  * Prashna Kundli (Horary Astrology) Engine
- * Casts a chart for a specific query question, instant timestamp, and GPS location.
+ * Casts a chart for the moment a question is asked, at the place it is asked, and reads the
+ * house that governs the matter. Every statement in the answer names the placement it rests on.
  */
 export function generatePrashnaKundli(
   question: string,
@@ -391,58 +658,105 @@ export function generatePrashnaKundli(
   longitude: number = 38.74
 ): PrashnaKundliResult {
   const now = new Date();
-  const dateStr = now.toISOString().slice(0, 10);
-  const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const resolved = resolveBirthPlace(city);
+  const place = resolved.matched ? resolved : { ...resolved, city: city || resolved.city, latitude, longitude };
 
-  const chart = calculateCelestialPositions(dateStr, timeStr, city);
+  const jd = julianDayFromDate(now);
+  const dateStr = localDateString(place.utcOffsetHours, now);
+  const localHours = ((now.getTime() / 3600000 + place.utcOffsetHours) % 24 + 24) % 24;
+  const timeStr = `${String(Math.floor(localHours)).padStart(2, "0")}:${String(Math.floor((localHours % 1) * 60)).padStart(2, "0")}`;
+
   const ayanamsha = calculateLahiriAyanamsha(dateStr);
-  const siderealAscLong = tropicalToSidereal(chart.ascendant.degree, ayanamsha);
-  const ascSign = getSignFromLongitude(siderealAscLong).sign;
+  const siderealAscLong = tropicalToSidereal(chartAngles(jd, place.latitude, place.longitude).ascendant, ayanamsha);
+  const ascInfo = getSignFromLongitude(siderealAscLong);
+  const ascSign = ascInfo.sign;
+  const lagnaIndex = Math.floor(siderealAscLong / 30);
   const nak = getNakshatraFromSidereal(siderealAscLong);
 
-  // Determine query category and relevant house (Karya Bhava)
-  const qLower = question.toLowerCase();
-  let karyaBhava = 1;
-  let topic = "General Endeavor & Vitality";
+  // Where the seven classical planets stand at this moment, by whole-sign house from the Prashna Lagna.
+  const sky = new Map<string, { sign: ZodiacSignName; house: number }>();
+  for (const position of allBodyPositions(jd)) {
+    if (!CLASSICAL.includes(position.body)) continue;
+    const sid = tropicalToSidereal(position.longitude, ayanamsha);
+    sky.set(position.body, { sign: getSignFromLongitude(sid).sign, house: wholeSignHouse(Math.floor(sid / 30), lagnaIndex) });
+  }
+  const elongation = (bodyLongitude("Moon", jd) - bodyLongitude("Sun", jd) + 360) % 360;
+  const waxing = elongation < 180;
 
-  if (qLower.includes("wellbeing") || qLower.includes("sick") || qLower.includes("cure") || qLower.includes("doctor")) {
-    karyaBhava = 6;
-    topic = "wellbeing & Recovery";
-  } else if (qLower.includes("love") || qLower.includes("marry") || qLower.includes("partner") || qLower.includes("relationship")) {
-    karyaBhava = 7;
-    topic = "Partnership & Affection";
-  } else if (qLower.includes("job") || qLower.includes("work") || qLower.includes("career") || qLower.includes("business")) {
-    karyaBhava = 10;
-    topic = "Career & Vocation";
-  } else if (qLower.includes("money") || qLower.includes("wealth") || qLower.includes("buy") || qLower.includes("sell")) {
-    karyaBhava = 2;
-    topic = "Financial Flow";
-  } else if (qLower.includes("travel") || qLower.includes("journey") || qLower.includes("flight") || qLower.includes("move")) {
-    karyaBhava = 9;
-    topic = "Travel & New Horizons";
+  // The house that governs the matter (Karya Bhava).
+  const qLower = question.toLowerCase();
+  const matched = PRASHNA_TOPICS.find((entry) => entry.words.some((word) => qLower.includes(word)));
+  const karyaBhava = matched?.house ?? 1;
+  const topic = matched?.topic ?? "General Endeavor & Vitality";
+
+  const karyaSign = ZODIAC_LIST[(lagnaIndex + karyaBhava - 1) % 12];
+  const karyaLord = SIGN_LORD[karyaSign];
+  const lagnaLord = SIGN_LORD[ascSign];
+  const karyaLordPlace = sky.get(karyaLord)!;
+  const lagnaLordPlace = sky.get(lagnaLord)!;
+  const moonPlace = sky.get("Moon")!;
+
+  const reasoning: string[] = [];
+  let score = 0;
+  const weigh = (points: number, line: string) => {
+    score += points;
+    reasoning.push(`${points > 0 ? "+" : points < 0 ? "−" : "•"} ${line}`);
+  };
+  const houseQuality = (house: number) => ([1, 4, 7, 10].includes(house) ? 2 : [5, 9].includes(house) ? 2 : [6, 8, 12].includes(house) ? -2 : house === 11 ? 1 : 0);
+  const describeHouse = (house: number) =>
+    [1, 4, 7, 10].includes(house) ? "an angular house, where planets act strongly" : [5, 9].includes(house) ? "a house of fortune" : [6, 8, 12].includes(house) ? "a difficult house" : house === 11 ? "the house of gains" : "a neutral house";
+
+  weigh(houseQuality(karyaLordPlace.house), `${karyaLord}, lord of the ${ordinal(karyaBhava)} house of the matter (${karyaSign}), is in ${karyaLordPlace.sign} in the ${ordinal(karyaLordPlace.house)} house — ${describeHouse(karyaLordPlace.house)}.`);
+  const karyaDignity = getVedicDignity(karyaLord, karyaLordPlace.sign);
+  if (["Exalted", "Own Sign", "Friendly"].includes(karyaDignity)) weigh(1, `${karyaLord} is ${karyaDignity.toLowerCase()} there, so it can deliver.`);
+  if (["Debilitated", "Enemy"].includes(karyaDignity)) weigh(-1, `${karyaLord} is ${karyaDignity === "Enemy" ? "in an enemy's sign" : "debilitated"} there, so results come with effort.`);
+  if (lagnaLord !== karyaLord) {
+    weigh(houseQuality(lagnaLordPlace.house) > 0 ? 1 : houseQuality(lagnaLordPlace.house) < 0 ? -1 : 0, `${lagnaLord}, lord of the rising sign ${ascSign} (you, the asker), is in the ${ordinal(lagnaLordPlace.house)} house — ${describeHouse(lagnaLordPlace.house)}.`);
+    const relation = NATURAL_FRIENDS[lagnaLord];
+    if (relation.friends.includes(karyaLord)) weigh(1, `${lagnaLord} and ${karyaLord} are natural friends: you and the matter are in sympathy.`);
+    else if (relation.enemies.includes(karyaLord)) weigh(-1, `${lagnaLord} and ${karyaLord} are natural enemies: expect to negotiate for what you want.`);
+  } else {
+    weigh(1, `${lagnaLord} rules both you and the matter, so the outcome lies largely in your own hands.`);
+  }
+  weigh(waxing ? 1 : -1, `The Moon is ${waxing ? "waxing" : "waning"} (${Math.round(moonIllumination(elongation) * 100)}% lit) in ${moonPlace.sign}, the ${ordinal(moonPlace.house)} house: ${waxing ? "the matter is growing" : "the matter is winding down or needs finishing first"}.`);
+  for (const benefic of ["Jupiter", "Venus"]) {
+    if (sky.get(benefic)!.house === karyaBhava) weigh(1, `${benefic} occupies the house of the matter and protects it.`);
+  }
+  for (const malefic of ["Saturn", "Mars"]) {
+    if (sky.get(malefic)!.house === karyaBhava && malefic !== karyaLord) weigh(-1, `${malefic} occupies the house of the matter and ${malefic === "Saturn" ? "delays" : "heats"} it.`);
   }
 
-  // Calculate planetary indicator
-  const rulingLord = nak.rulingPlanet;
-  const isFavorable = ["Jupiter", "Venus", "Moon", "Sun"].includes(rulingLord);
+  const verdict =
+    score >= 3
+      ? `The chart for this moment favours ${topic}.`
+      : score >= 1
+        ? `The chart for this moment leans in favour of ${topic}, with conditions.`
+        : score >= -1
+          ? `The chart for this moment is evenly balanced on ${topic}: the result depends on how you proceed.`
+          : `The chart for this moment advises patience on ${topic}.`;
+
+  const hour = nextPlanetaryHour(karyaLord, place, now);
 
   return {
     question,
     queryTimestamp: `${dateStr} ${timeStr} EAT`,
-    location: { city, latitude, longitude },
+    location: { city: place.city, latitude: place.latitude, longitude: place.longitude },
     prashnaAscendant: {
       sign: ascSign,
       degree: Number((siderealAscLong % 30).toFixed(2)),
       nakshatra: nak.name,
     },
     karyaBhava,
-    rulingPlanet: rulingLord,
-    outcomePrediction: isFavorable
-      ? `The horary planetary confluence strongly favors this initiative for ${topic}. The Lagna lord is in harmonious reception with the 10th house sphere.`
-      : `Moderate patience required for ${topic}. Take gradual steps; align efforts during the upcoming waxing moon cycle for peak efficacy.`,
-    confidenceScore: isFavorable ? 88 : 74,
-    favorableDirections: ["East (Sunrise)", "North-East (Sacred Portal)"],
-    auspiciousTimingRecommendation: "Initiate major communications between 10:00 AM and 12:30 PM local highland time.",
+    rulingPlanet: karyaLord,
+    outcomePrediction: `${verdict} ${reasoning[0].slice(2)}`,
+    confidenceScore: Math.max(52, Math.min(93, 60 + Math.abs(score) * 6)),
+    favorableDirections: Array.from(new Set([PLANET_DIRECTION[karyaLord], ELEMENT_DIRECTION[ascInfo.element]])).map((direction, index) => `${direction} (${index === 0 ? `direction of ${karyaLord}` : `${ascSign} rising`})`),
+    auspiciousTimingRecommendation: hour
+      ? `Next hour of ${karyaLord} at ${place.city}: ${hour}.`
+      : `No hour of ${karyaLord} remains before sunrise at ${place.city}; act after dawn.`,
+    topic,
+    score,
+    reasoning,
   };
 }
 
@@ -456,44 +770,65 @@ export function calculatePersonalizedHoroscope(
   period: "daily" | "weekly" | "monthly" = "daily"
 ): DetailedHoroscope {
   const natal = calculateCelestialPositions(birthDate, birthTime, city);
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const nowTransits = calculateCelestialPositions(todayStr, "12:00", city);
+  const now = new Date();
+  const todayStr = localDateString(natal.place.utcOffsetHours, now);
 
-  const sunSign = natal.planets.find((p) => p.planet === "Sun")?.sign || "Aries";
-  const moonSign = natal.planets.find((p) => p.planet === "Moon")?.sign || "Taurus";
-  const risingSign = natal.ascendant.sign;
+  const sun = natal.planets.find((p) => p.planet === "Sun")!;
+  const moon = natal.planets.find((p) => p.planet === "Moon")!;
+  const ascendant = natal.planets.find((p) => p.planet === "Ascendant")!;
 
-  // Active transits vs natal
-  const activeTransits: TransitForecastItem[] = nowTransits.transits.slice(0, 4);
+  // Fast contacts matter for a day; the slow planets set the tone of a month.
+  const fast: string[] = ["Sun", "Mercury", "Venus", "Mars"];
+  const all = calculateTransits(natal.planets, now, 12);
+  const ranked =
+    period === "daily"
+      ? [...all].sort((a, b) => Number(fast.includes(b.transitingPlanet)) - Number(fast.includes(a.transitingPlanet)))
+      : period === "monthly"
+        ? all.filter((t) => !fast.includes(t.transitingPlanet) || t.transitingPlanet === "Mars")
+        : all;
+  const activeTransits: TransitForecastItem[] = (ranked.length ? ranked : all).slice(0, 4);
 
-  let vitality = 82;
-  if (natal.ascendant.sign === nowTransits.planets.find((p) => p.planet === "Sun")?.sign) {
-    vitality += 10;
-  }
+  const ayanamsha = calculateLahiriAyanamsha(birthDate);
+  const alignment = calculatePersonalDayAlignment(
+    { moonSiderealLongitude: tropicalToSidereal(moon.totalLongitude, ayanamsha), ascendantTropicalLongitude: ascendant.totalLongitude },
+    now
+  );
+
+  const supportive = all.filter((t) => t.nature === "harmonious").length;
+  const testing = all.filter((t) => t.nature === "challenging").length;
+  const vitality = 74 + (supportive - testing) * 3 + (alignment.taraBala.favourable ? 4 : -3) + (alignment.chandraBala.strength === "strong" ? 4 : alignment.chandraBala.strength === "low" ? -4 : 0);
+
+  const lead = activeTransits[0];
+  const pick = (targets: string[], fallback: string) => {
+    const hit = all.find((t) => targets.includes(t.targetPlanetOrPoint));
+    return hit ? `${hit.headline}. ${hit.balancingAdvice}` : fallback;
+  };
 
   const overview =
     period === "daily"
-      ? `Today, the transiting Moon illuminates your ${moonSign} sphere, providing enhanced emotional attunement and clarity in your interactions.`
-      : period === "weekly"
-        ? `This week centers on grounding your energetic reserves. The solar currents through your chart highlight collaborative initiatives and personal wellness.`
-        : `This month marks a progressive cycle for long-range planning, somatic rejuvenation, and aligning your personal endeavors with ancestral cycles.`;
+      ? `Today the Moon is in ${alignment.moonToday.tropicalSign}, crossing your ${ordinal(alignment.moonToday.natalHouse)} house of ${alignment.moonToday.houseTheme}. ${alignment.taraBala.meaning}`
+      : lead
+        ? `${period === "weekly" ? "This week" : "This month"} the leading influence on your chart is: ${lead.wellbeingForecast}`
+        : `${period === "weekly" ? "This week" : "This month"} no major planet is in close aspect to your chart: a quiet stretch in which your own routines set the tone.`;
 
   return {
     period,
     targetDate: todayStr,
-    sunSign,
-    moonSign,
-    risingSign,
+    sunSign: sun.sign,
+    moonSign: moon.sign,
+    risingSign: natal.ascendant.sign,
     overview,
-    vitalityScore: Math.min(vitality, 98),
+    vitalityScore: Math.max(45, Math.min(vitality, 98)),
     focusAreas: {
-      physicalWellness: "Incorporate warming highland teas (Zingibil, Tosign) and maintain hydration throughout your daily rhythm.",
-      emotionalEquilibrium: "Honor your inner rhythm. Step away from overstimulation during late afternoon hours.",
-      purposeAndCareer: "Favorable window for structured presentations, clear project blueprints, and ethical team coordination.",
-      socialAndRelational: "Warm communications flow naturally; express appreciation to close companions and mentors.",
+      physicalWellness: pick(["Ascendant", "Sun", "Mars"], `No planet is pressing on your Sun, Mars or ${natal.ascendant.sign} Ascendant: keep to the routines that already suit you.`),
+      emotionalEquilibrium: pick(["Moon"], alignment.chandraBala.meaning),
+      purposeAndCareer: pick(["Midheaven", "Saturn", "Jupiter"], `Your ${natal.midheaven.sign} Midheaven is undisturbed: steady, unhurried work suits this period.`),
+      socialAndRelational: pick(["Venus", "Mercury"], `Your natal Venus and Mercury are free of strong contacts: relationships follow their usual rhythm.`),
     },
     planetaryTransitsActive: activeTransits,
-    auspiciousHours: "07:30 AM – 09:15 AM & 02:00 PM – 03:45 PM",
-    cautionaryAdvice: "Avoid impulsive decisions in fast-moving commercial discussions; verify all details twice.",
+    auspiciousHours: `Hours of ${SIGN_LORD[natal.ascendant.sign]}, ruler of your ${natal.ascendant.sign} Ascendant: ${nextPlanetaryHour(SIGN_LORD[natal.ascendant.sign], natal.place, now) ?? "after sunrise tomorrow"}.`,
+    cautionaryAdvice:
+      all.find((t) => t.nature === "challenging")?.balancingAdvice ??
+      (alignment.taraBala.favourable ? "No testing aspect is active; the main risk is doing too much because things feel easy." : alignment.taraBala.meaning),
   };
 }

@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildCaseAnalysis, caseStatements, detectFactors, groundFindings } from "../server/cases/analysis.ts";
+import { buildEnhancedReportSections, reportStatistics } from "../server/cases/reportEnhancer.ts";
 import { createCase } from "../server/cases/machine.ts";
 import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 import { createCaseService } from "../server/cases/service.ts";
@@ -112,6 +113,172 @@ test("analysis: career and legal cases are marked reflection-only for publicatio
   const analysis = await buildCaseAnalysis({ ...record, messages: [{ id: "m1", from: "owner", authorId: "user-1", kind: "message", body: "My brothers and I dispute the land we inherited from our father.", via: "app", at: NOW.toISOString() }] }, config, {}, { now: () => NOW });
   assert.equal(analysis.publishScope, "reflection_only");
   assert.ok(analysis.causes.some((cause) => cause.id === "property_family"), "a follow-up reply is analysed like an answer");
+});
+
+test("report enhancement: builds editable, profile-aware detail without crossing reflection-only scope", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, {
+    age: 34,
+    demographics: { age: 34, gender: "female" },
+    location: { region: "Oromia", city: "Adama" },
+  }, { now: () => NOW });
+
+  const sections = buildEnhancedReportSections(analysis, true);
+  assert.ok(sections.some((entry) => entry.title === "Your situation, summarized"));
+  assert.ok(sections.some((entry) => entry.title === "Patterns to consider together"));
+  assert.ok(sections.some((entry) => entry.title === "Possible next steps"));
+  const profileSection = sections.find((entry) => entry.title === "Personal context and what to verify");
+  assert.ok(profileSection?.body?.includes("age"));
+  assert.ok(!JSON.stringify(profileSection).includes("Adama"), "sensitive profile values are not copied into the report");
+  assert.ok(sections.every((entry) => !entry.locked), "generated content stays editable");
+
+  const legalConfig = DOMAIN_CONFIGS.legal;
+  const legalRecord = createCase({
+    id: "case-legal-report",
+    userId: "user-1",
+    config: legalConfig,
+    safetyAnswers: { immediateHarm: "no", criminalMatter: "no", evictionRisk: "no", childWelfare: "no_children" },
+    answers: {},
+  });
+  const legalAnalysis = await buildCaseAnalysis({
+    ...legalRecord,
+    messages: [{ id: "m1", from: "owner", authorId: "user-1", kind: "message", body: "My brothers and I dispute land inherited from our father.", via: "app", at: NOW.toISOString() }],
+  }, legalConfig, {}, { now: () => NOW });
+  const reflectiveSections = buildEnhancedReportSections(legalAnalysis, false);
+  assert.ok(reflectiveSections.every((entry) => !["Patterns to consider together", "Possible next steps", "How different areas may connect"].includes(entry.title)));
+  assert.ok(reflectiveSections.filter((entry) => entry.cultural).every((entry) => entry.title === "Cultural and spiritual reflections"));
+});
+
+// ── Aligning the analysis and the report with the person ─────────────────────
+
+const RICH_PROFILE = {
+  age: 34,
+  language: "am",
+  demographics: { age: 34, gender: "female" },
+  location: { region: "Oromia", city: "Adama", altitude: 1712 },
+  medications: ["Metformin"],
+  conditions: ["Diabetes"],
+  wellbeing: { allergies: [] },
+  cultural: { birthDate: "1992-03-10", birthTime: "06:40", birthLocation: "Adama" },
+};
+
+test("person context: carries bands and cautions, never the raw profile values", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const person = analysis.person;
+  assert.ok(person, "a consented profile produces a person context");
+  assert.equal(person.lifeStage.band, "25–39");
+  assert.ok(person.lifeStage.considerations.some((line) => /money pressure/.test(line)), "life-stage notes follow the themes of this case");
+  assert.equal(person.place.region, "Oromia");
+  assert.match(person.place.season, /Tsedey/);
+  assert.deepEqual(person.care.map((entry) => entry.id), ["medicines", "conditions"]);
+
+  const text = JSON.stringify(person);
+  for (const secret of ["Adama", "Metformin", "Diabetes", "female", "1992", "06:40"]) assert.ok(!text.includes(secret), `${secret} is not copied into the context`);
+  assert.ok(!/\b34\b/.test(text), "the exact age is not copied");
+
+  // The reading is turned towards the kind of matter: partnership for a relationship case.
+  assert.match(person.reading.signature, /Sun in Pisces/);
+  assert.equal(person.reading.matter.house, 7);
+  assert.ok(person.reading.timing.some((line) => /Life period \(Vimshottari\)/.test(line)));
+  assert.ok(person.reading.timing.some((line) => /^Today \(6 Oct 2026\)/.test(line)), "timing is computed for the day of the analysis");
+});
+
+test("person context: no reading without birth details, without consent, or while a safety signal is active", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const { cultural: _cultural, ...withoutBirth } = RICH_PROFILE;
+  assert.equal((await buildCaseAnalysis(record, config, withoutBirth, { now: () => NOW })).person.reading, undefined);
+  assert.equal((await buildCaseAnalysis(record, config, {}, { now: () => NOW })).person, undefined, "no profile, no context");
+
+  const unsafe = relationshipCase("My husband hit me last week and he threatens me when we argue about money.");
+  const analysis = await buildCaseAnalysis(unsafe.record, unsafe.config, RICH_PROFILE, { now: () => NOW });
+  assert.equal(analysis.person.reading, undefined, "reflection is withheld");
+  assert.ok(analysis.person.care.length > 0, "cautions are still shown to the reviewer");
+
+  // Without a birth time nothing leans on the Ascendant or houses.
+  const untimed = await buildCaseAnalysis(record, config, { ...RICH_PROFILE, cultural: { birthDate: "1992-03-10", birthLocation: "Adama" } }, { now: () => NOW });
+  assert.equal(untimed.person.reading.matter, undefined);
+  assert.ok(!/rising/.test(untimed.person.reading.signature));
+  assert.ok(untimed.person.reading.timing.every((line) => !/in your \d+(st|nd|rd|th) house/.test(line)));
+});
+
+test("detailed report: elaborated, aligned to the person, and within what a draft may hold", async () => {
+  const { draftInput } = await import("../server/cases/schemas.ts");
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const sections = buildEnhancedReportSections(analysis, true);
+  const byTitle = Object.fromEntries(sections.map((entry) => [entry.title, entry]));
+
+  for (const title of [
+    "Your situation, summarized",
+    "What stands out, theme by theme",
+    "Patterns to consider together",
+    "Possible next steps",
+    "When to seek help sooner",
+    "Personal context and what to verify",
+    "Timing and temperament from your personal profile",
+    "Questions that could make this more specific",
+  ]) assert.ok(byTitle[title], `${title} is built`);
+
+  // Each pattern says why it is suggested and what would confirm it.
+  const pattern = byTitle["Patterns to consider together"].items[0];
+  assert.match(pattern, /Money pressure is feeding the conflict \(moderate confidence\)/);
+  assert.match(pattern, /What you shared that suggests it: “My husband and I argue/);
+  assert.match(pattern, /What would confirm or rule it out:/);
+
+  // The profile shapes the report without its raw values appearing in it.
+  const context = byTitle["Personal context and what to verify"];
+  assert.ok(context.items.some((item) => /^Life stage — Early adulthood \(25–39\)/.test(item)));
+  assert.ok(context.items.some((item) => /^Where you live — Oromia/.test(item)));
+  assert.ok(context.items.some((item) => /prefers Amharic/.test(item)));
+  const all = JSON.stringify(sections);
+  for (const secret of ["Adama", "Metformin", "Diabetes", "female"]) assert.ok(!all.includes(secret), `${secret} does not reach the report`);
+
+  // Medicines on the profile: the caution is stated and catalogue advice needing a professional is left out.
+  assert.match(byTitle["Possible next steps"].body, /lists medicines you take/);
+  assert.ok(!byTitle["Possible next steps"].items.some((item) => /reference guidance under/.test(item) && /Confirm with a qualified professional/.test(item)));
+  assert.ok(!byTitle["Timing and temperament from your personal profile"].items.some((item) => /Foods that tradition favours/.test(item)), "no food advice beside a medicines caution");
+  assert.equal(byTitle["Timing and temperament from your personal profile"].cultural, true);
+
+  // Reference entries are only those the person named or strongly supported.
+  for (const item of byTitle["Reference knowledge behind this report"]?.items ?? []) assert.match(item, /Included because of —/);
+
+  // The whole set can be saved as a draft.
+  const parsed = draftInput.safeParse({ title: "Report", summary: "Summary", sections, disclaimer: "Disclaimer", generatedAt: NOW.toISOString(), aiAssisted: false });
+  assert.ok(parsed.success, parsed.success ? "" : JSON.stringify(parsed.error.issues.slice(0, 2)));
+  const stats = reportStatistics({ summary: "", sections });
+  assert.ok(stats.words > 1500, `a detailed report, got ${stats.words} words`);
+
+  // Building again replaces sections rather than piling up: ids are stable.
+  assert.deepEqual(buildEnhancedReportSections(analysis, true).map((entry) => entry.id), sections.map((entry) => entry.id));
+
+  // Without consent the person context is ignored even if an analysis carries one.
+  const withheld = buildEnhancedReportSections(analysis, false);
+  assert.ok(!withheld.some((entry) => entry.title === "Timing and temperament from your personal profile"));
+  assert.match(withheld.find((entry) => entry.title === "Personal context and what to verify").body, /were not used/);
+});
+
+test("detailed report: reflection-only case types receive reflection and context, not evidence sections", async () => {
+  const legalConfig = DOMAIN_CONFIGS.legal;
+  const legalRecord = createCase({
+    id: "case-legal-detail",
+    userId: "user-1",
+    config: legalConfig,
+    safetyAnswers: { immediateHarm: "no", criminalMatter: "no", evictionRisk: "no", childWelfare: "no_children" },
+    answers: {},
+  });
+  const analysis = await buildCaseAnalysis({
+    ...legalRecord,
+    messages: [{ id: "m1", from: "owner", authorId: "user-1", kind: "message", body: "My brothers and I dispute land inherited from our father.", via: "app", at: NOW.toISOString() }],
+  }, legalConfig, RICH_PROFILE, { now: () => NOW });
+
+  assert.equal(analysis.person.reading.matter.house, 9, "a legal matter is read from the ninth house");
+  const sections = buildEnhancedReportSections(analysis, true);
+  const titles = sections.map((entry) => entry.title);
+  for (const evidence of ["What stands out, theme by theme", "Patterns to consider together", "Possible next steps", "When to seek help sooner", "Reference knowledge behind this report", "How different areas may connect"]) {
+    assert.ok(!titles.includes(evidence), `${evidence} is not generated for a reflection-only case`);
+  }
+  assert.ok(titles.includes("Timing and temperament from your personal profile"));
 });
 
 // ── Review desk: dossier, editing, conversation ──────────────────────────────

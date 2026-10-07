@@ -94,6 +94,17 @@ export interface TransitForecastItem {
   durationWindow: string;
   wellbeingForecast: string;
   balancingAdvice: string;
+  /** Present when the transit was computed against the person's own natal chart. */
+  nature?: "harmonious" | "challenging" | "dynamic";
+  orb?: number;
+  isApplying?: boolean;
+  isRetrograde?: boolean;
+  /** Date (YYYY-MM-DD) the aspect is closest; `exactOrb` is how close it gets. */
+  peakDate?: string;
+  peakOrb?: number;
+  natalSign?: ZodiacSignName;
+  natalHouse?: number;
+  headline?: string;
 }
 
 export interface DabtaraHealingScrollPrescription {
@@ -125,6 +136,13 @@ export interface AstrologicalProfile {
   sunSign: ZodiacSignName;
   moonSign: ZodiacSignName;
   risingSign: ZodiacSignName;
+  /** Angles cast for the birth place and time. */
+  ascendant?: { sign: ZodiacSignName; degree: number };
+  midheaven?: { sign: ZodiacSignName; degree: number };
+  /** The place the chart was actually cast for; `matched` is false when the typed place was not recognised. */
+  castFor?: { city: string; region: string; altitudeMeters: number; utcOffsetHours: number; matched: boolean; query: string };
+  /** True when no birth time was given and noon was assumed (Ascendant, houses and Moon degree are then approximate). */
+  birthTimeAssumed?: boolean;
   elementalBalance: {
     fire: number; // percentage
     earth: number;
@@ -251,12 +269,16 @@ export interface NameSuggestionResult {
 // ==========================================
 
 export interface SeasonalwellbeingPattern {
-  season: "Kiremt (Rainy)" | "Bega (Dry & Sunny)" | "Belg (Short Rains)" | "Pagume (Renewal)";
+  season: "Kiremt (Rainy)" | "Tsedey (Bloom & Harvest)" | "Bega (Dry & Sunny)" | "Belg (Short Rains)" | "Pagume (Renewal)";
   ethiopianMonths: string;
   potentialVulnerabilities: string[];
   dietaryAdjustments: string[];
   botanicalSupports: string[];
   dailyPacing: string;
+  /** The season in progress on the day the profile was generated. */
+  isCurrent?: boolean;
+  /** How this season sits with the person's own humoral constitution. */
+  personalNote?: string;
 }
 
 export interface IntegratedPersonalProfile {

@@ -8,6 +8,8 @@ interface NatalChartWheelProps {
   aspects: AstrologicalAspect[];
   ascendant: { sign: ZodiacSignName; degree: number };
   midheaven: { sign: ZodiacSignName; degree: number };
+  /** Where and for what time the chart was cast, shown under the angles. */
+  castNote?: string;
 }
 
 const ZODIAC_DATA: { name: ZodiacSignName; symbol: string; color: string; geez: string }[] = [
@@ -40,7 +42,7 @@ const PLANET_GLYPHS: Record<CelestialBody, string> = {
   Midheaven: "MC",
 };
 
-export default function NatalChartWheel({ planets, aspects, ascendant, midheaven }: NatalChartWheelProps) {
+export default function NatalChartWheel({ planets, aspects, ascendant, midheaven, castNote }: NatalChartWheelProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetaryPosition | null>(planets[0] || null);
   const [showAspectGrid, setShowAspectGrid] = useState(false);
 
@@ -51,14 +53,26 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
   const innerRadius = radius - 55;
   const aspectInnerRadius = innerRadius - 40;
 
-  // Convert longitude (0-360) to radians for SVG positioning
-  // Adjust so 0° (Aries) is at 9 o'clock or aligned with Ascendant
-  const ascDegree = ascendant.degree || 0;
-  const getAngle = (deg: number) => {
-    // Standard astrological orientation: Ascendant on left (180 deg in standard polar, or counter-clockwise from east)
-    const angleDeg = (deg - ascDegree + 180) % 360;
-    return (angleDeg * Math.PI) / 180;
-  };
+  // Standard orientation: the Ascendant sits at 9 o'clock and the zodiac runs counter-clockwise from it,
+  // which puts the Midheaven near the top. SVG's y axis points down, hence the subtraction.
+  const ascLongitude =
+    planets.find((p) => p.planet === "Ascendant")?.totalLongitude ??
+    ZODIAC_DATA.findIndex((sign) => sign.name === ascendant.sign) * 30 + (ascendant.degree || 0);
+  const getAngle = (deg: number) => ((180 - (deg - ascLongitude)) * Math.PI) / 180;
+
+  // Planets that share a few degrees are stepped inwards so their glyphs do not cover each other.
+  const glyphLevels = new Map<CelestialBody, number>();
+  [...planets]
+    .sort((a, b) => a.totalLongitude - b.totalLongitude)
+    .forEach((planet, index, sorted) => {
+      let level = 0;
+      const clash = (other: PlanetaryPosition) => {
+        const gap = Math.abs(other.totalLongitude - planet.totalLongitude);
+        return Math.min(gap, 360 - gap) < 9 && glyphLevels.get(other.planet) === level;
+      };
+      while (level < 3 && sorted.slice(0, index).some(clash)) level++;
+      glyphLevels.set(planet.planet, level);
+    });
 
   const getCoordinates = (deg: number, r: number) => {
     const angle = getAngle(deg);
@@ -75,13 +89,14 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-bold text-slate-100">Interactive Natal Chart Wheel</h3>
             <span className="px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full">
-              Time Passages Precision
+              Cast for your birth data
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Ascendant: <strong className="text-slate-200">{ascendant.sign} {ascendant.degree.toFixed(1)}°</strong> •
             Midheaven: <strong className="text-slate-200">{midheaven.sign} {midheaven.degree.toFixed(1)}°</strong>
           </p>
+          {castNote && <p className="text-[11px] text-slate-400 mt-1 max-w-xl">{castNote}</p>}
         </div>
 
         <div className="flex items-center gap-2">
@@ -118,8 +133,8 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
 
                 {/* 12 Zodiac Sign Wedges */}
                 {ZODIAC_DATA.map((sign, i) => {
-                  const startAngle = ((i * 30 - ascDegree + 180) * Math.PI) / 180;
-                  const endAngle = (((i + 1) * 30 - ascDegree + 180) * Math.PI) / 180;
+                  const startAngle = getAngle(i * 30);
+                  const endAngle = getAngle((i + 1) * 30);
                   const midAngle = (startAngle + endAngle) / 2;
 
                   const x1 = center + radius * Math.cos(startAngle);
@@ -137,7 +152,7 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                   return (
                     <g key={sign.name}>
                       <path
-                        d={`M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 0 0 ${x4} ${y4} Z`}
+                        d={`M ${x1} ${y1} A ${radius} ${radius} 0 0 0 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 0 1 ${x4} ${y4} Z`}
                         fill={i % 2 === 0 ? "rgba(15, 23, 42, 0.6)" : "rgba(30, 41, 59, 0.4)"}
                         stroke="#334155"
                         strokeWidth="0.8"
@@ -199,7 +214,7 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
 
                 {/* Planetary Glyphs */}
                 {planets.map((p) => {
-                  const coords = getCoordinates(p.totalLongitude, innerRadius - 20);
+                  const coords = getCoordinates(p.totalLongitude, innerRadius - 20 - (glyphLevels.get(p.planet) ?? 0) * 22);
                   const isSelected = selectedPlanet?.planet === p.planet;
 
                   return (

@@ -4,7 +4,7 @@
  */
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { users, wellbeingProfiles } from "@/lib/db/schema";
+import { userProfiles, users, wellbeingProfiles } from "@/lib/db/schema";
 import type { UserProfile } from "@/lib/knowledge/types";
 import { decryptRestrictedField } from "@/lib/security/encryption";
 
@@ -18,10 +18,17 @@ function ageFrom(dateOfBirth: string | Date | null): number | undefined {
   return age >= 0 && age < 130 ? age : undefined;
 }
 
+function isoDate(value: string | Date | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString().slice(0, 10);
+}
+
 export async function loadAnalysisProfile(userId: string): Promise<UserProfile> {
-  const [[account], [wellbeing]] = await Promise.all([
+  const [[account], [wellbeing], [personal]] = await Promise.all([
     db.select({ dateOfBirth: users.dateOfBirth, gender: users.gender, region: users.region, city: users.city, language: users.preferredLanguage }).from(users).where(eq(users.id, userId)).limit(1),
     db.select().from(wellbeingProfiles).where(eq(wellbeingProfiles.userId, userId)).orderBy(desc(wellbeingProfiles.updatedAt)).limit(1),
+    db.select({ birthDate: userProfiles.birthDate, birthTime: userProfiles.birthTime, birthLocation: userProfiles.birthLocation, consent: userProfiles.consent, consentSpiritual: userProfiles.consentSpiritual }).from(userProfiles).where(eq(userProfiles.userId, userId)).limit(1),
   ]);
   if (!account) return {};
   const age = wellbeing?.age ?? ageFrom(account.dateOfBirth);
@@ -29,6 +36,9 @@ export async function loadAnalysisProfile(userId: string): Promise<UserProfile> 
   const region = wellbeing?.region ?? account.region ?? undefined;
   const medications = wellbeing ? list(decryptRestrictedField(wellbeing.medications)) : [];
   const conditions = wellbeing ? list(decryptRestrictedField(wellbeing.medicalHistory)) : [];
+  // Birth details feed the cultural reading only when the person agreed to that kind of reflection.
+  const spiritual = Boolean(personal?.consent?.spiritual ?? personal?.consentSpiritual);
+  const birthDate = isoDate(personal?.birthDate ?? account.dateOfBirth);
   return {
     userId,
     age: age ?? undefined,
@@ -39,5 +49,6 @@ export async function loadAnalysisProfile(userId: string): Promise<UserProfile> 
     pregnant: wellbeing ? Boolean(wellbeing.pregnancyOrLactation && wellbeing.pregnancyOrLactation !== "none") : undefined,
     wellbeing: { medications, conditions, allergies: wellbeing ? list(wellbeing.allergies) : [] },
     location: region ? { region, city: account.city ?? undefined, altitude: wellbeing?.altitudeMeters ?? undefined } : undefined,
+    cultural: spiritual && birthDate ? { birthDate, birthTime: personal?.birthTime ?? undefined, birthLocation: personal?.birthLocation ?? account.city ?? undefined } : undefined,
   };
 }

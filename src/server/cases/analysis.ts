@@ -19,6 +19,7 @@ import { evaluateFastingStatus } from "@/lib/engines/fastingMetabolismEngine";
 import { evaluateRiftValleyFluoride, resolveAgroEcologicalZone } from "@/lib/engines/agroEcologicalEngine";
 import { isBionicConfigured } from "@/lib/ai/bionicGPT";
 import { FACTORS, GENERIC_FOLLOW_UPS, PATTERNS, type Factor } from "./analysisLexicon";
+import { buildPersonContext } from "./personContext";
 import { CONTACTS } from "./support";
 import type {
   AnalysisCause,
@@ -462,5 +463,6 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     engines: contextEngines(detected, enriched, record, now()),
     safety: { warnings, interactions, domainBSuppressed: safetyActive },
     dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body))),
+    person: buildPersonContext({ profile, domain: record.domain, factors: detected.map((entry) => entry.factor.id), now: now(), allowReflection: !safetyActive }),
   };
 }
