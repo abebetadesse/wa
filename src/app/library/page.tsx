@@ -78,6 +78,7 @@ export default function LibraryPage() {
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-stone-700 bg-stone-950/80 p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://archive.org/services/img/awede-negest"
                 alt="Awde Negest manuscript cover"
@@ -117,6 +118,7 @@ export default function LibraryPage() {
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-amber-500/30 bg-stone-950/90 p-3 relative flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/telsem/telsem_p13_1.png"
                 alt="Ethiopian Telsem Talisman"

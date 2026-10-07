@@ -105,6 +105,7 @@ export function TelsemSacredSeal({
 
           {viewMode === "plate" && seal.sourceImage ? (
             <div className="relative w-full h-full flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={seal.sourceImage}
                 alt={seal.nameAm}
@@ -217,6 +218,7 @@ export function TelsemSacredSeal({
           onClick={() => setIsZoomed(false)}
         >
           <div className="relative max-w-4xl max-h-[85vh] overflow-auto rounded-2xl border border-amber-500/40 p-2 bg-stone-950">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={seal.sourceImage}
               alt={seal.nameAm}

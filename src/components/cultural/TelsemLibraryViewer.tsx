@@ -150,6 +150,7 @@ export function TelsemLibraryViewer() {
                   <div className="flex items-start gap-3">
                     <div className="w-16 h-16 rounded-xl border border-stone-700 bg-stone-950 overflow-hidden flex items-center justify-center shrink-0 p-1">
                       {seal.sourceImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={seal.sourceImage}
                           alt={seal.nameAm}
@@ -256,6 +257,7 @@ export function TelsemLibraryViewer() {
 
                 {showFullManuscriptPage && (
                   <div className="rounded-xl overflow-hidden border border-stone-700 bg-stone-950 p-2 animate-fadeIn">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={selectedSeal.manuscriptPageImage}
                       alt={`Mets'hafe Asmat Page ${selectedSeal.sourcePage}`}

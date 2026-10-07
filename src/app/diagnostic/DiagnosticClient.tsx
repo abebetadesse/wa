@@ -1218,6 +1218,7 @@ export default function DiagnosticClient() {
                         <div className="mt-3 space-y-2">
                           {finding.evidenceItems.map((item, itemIdx) => (
                             <div key={itemIdx} className="flex gap-3 items-start p-2 rounded-lg bg-black/20 border border-white/5">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={item.imageUrl}
                                 alt={item.imageAlt}

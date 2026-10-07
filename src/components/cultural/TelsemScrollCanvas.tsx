@@ -132,6 +132,7 @@ export function TelsemScrollCanvas({
               <div className="w-full max-w-sm rounded-2xl border-2 border-[#92400e] bg-[#f5ecda] p-4 shadow-inner">
                 {seal.sourceImage ? (
                   <div className="space-y-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={seal.sourceImage}
                       alt={seal.nameAm}

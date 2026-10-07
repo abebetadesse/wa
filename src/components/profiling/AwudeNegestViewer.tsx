@@ -147,6 +147,7 @@ export default function AwudeNegestViewer({ initialName = "Tigist Mulugeta", ini
             {AWDE_NEGEST_VISUALS.map((visual) => (
               <a key={visual.title} href={visual.source} target="_blank" rel="noreferrer" className="group overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80">
                 <div className="aspect-[4/3] overflow-hidden bg-slate-950">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={visual.image} alt={`${visual.title}, ${visual.caption}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
                 <div className="p-3">
@@ -159,6 +160,7 @@ export default function AwudeNegestViewer({ initialName = "Tigist Mulugeta", ini
 
           <div className="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-900/80 overflow-hidden">
             <a href={ETHIOPIA_MAP_SOURCE} target="_blank" rel="noreferrer" className="block aspect-[16/10] bg-slate-950">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={ETHIOPIA_MAP_IMAGE} alt="Map of Ethiopia showing the highland geography around Gondar" loading="lazy" className="h-full w-full object-cover opacity-90 hover:opacity-100" />
             </a>
             <div className="p-3">

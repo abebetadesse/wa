@@ -588,6 +588,7 @@ export default function HexacoreCameraScanner({
               ) : (
                 <div className="relative w-full max-w-[560px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/20 group">
                   {/* Base Photo */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={capturedImage}
                     alt="Captured Scan"
