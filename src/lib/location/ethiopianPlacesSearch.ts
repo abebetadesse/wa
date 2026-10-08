@@ -18,16 +18,13 @@ export function getAllRegions(): string[] {
 }
 
 export function searchEthiopianPlaces(query: string, limit = 12): EthiopianAdministrativePlace[] {
-  const q = query.trim().toLowerCase();
-  if (!q || q.length < 2) return [];
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/u).filter(Boolean);
+  if (!terms.length || terms.some((term) => term.length < 2)) return [];
 
   const results: EthiopianAdministrativePlace[] = [];
   for (const place of ETHIOPIAN_ADMINISTRATIVE_PLACES) {
-    if (
-      place.town.toLowerCase().includes(q) ||
-      place.zone.toLowerCase().includes(q) ||
-      place.region.toLowerCase().includes(q)
-    ) {
+    const searchable = `${place.town} ${place.zone} ${place.region}`.toLocaleLowerCase();
+    if (terms.every((term) => searchable.includes(term))) {
       results.push(place);
       if (results.length >= limit) break;
     }

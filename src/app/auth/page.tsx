@@ -7,6 +7,7 @@ import { Eye, EyeOff, LogIn, Send, UserPlus } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { notifyAuthStateChanged } from "@/lib/auth/clientEvents";
 import { Alert, Button, Card, CardContent, Field, Input, LoadingState, Select } from "@/components/ui";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { TelegramLogin, type TelegramUser } from "@/features/session/TelegramLogin";
 import { cn } from "@/lib/utils";
 
@@ -258,7 +259,12 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Field label="Date of birth">{(control) => <Input {...control} type="date" value={dateOfBirth} onChange={(event) => setDateOfBirth(event.target.value)} />}</Field>
           <Field label="Birth time" hint="Optional; an approximate time limits chart detail.">{(control) => <Input {...control} type="time" value={birthTime} onChange={(event) => setBirthTime(event.target.value)} />}</Field>
-          <Field label="Birth location" hint="Town or city">{(control) => <Input {...control} value={birthLocation} onChange={(event) => setBirthLocation(event.target.value)} />}</Field>
+          <EthiopianLocationInput
+            label="Birth location"
+            value={birthLocation}
+            onChange={(location) => setBirthLocation(location)}
+            placeholder="Search birth region, zone, district, or town..."
+          />
           <Field label="Mother's name (optional, for cultural naming reflection)">{(control) => <Input {...control} value={motherName} onChange={(event) => setMotherName(event.target.value)} />}</Field>
         </div>
         <label className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">

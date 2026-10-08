@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { Language } from "@/lib/i18n/translations";
 
 declare global {
@@ -40,8 +40,39 @@ function applyLanguage(language: Language, refresh = false) {
   document.documentElement.lang = language;
 }
 
+function isGoogleTranslateNode(node: Node) {
+  if (!(node instanceof Element)) return false;
+  return node.matches(
+    'font[style*="vertical-align"], .skiptranslate, [class*="goog-te"], [class*="VIpgJd"]',
+  );
+}
+
+function isApplicationContentMutation(mutation: MutationRecord) {
+  const target =
+    mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
+  if (
+    target?.closest(
+      '#google_translate_element, .skiptranslate, iframe, script, style, font[style*="vertical-align"]',
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    mutation.type === "childList" &&
+    mutation.addedNodes.length > 0 &&
+    Array.from(mutation.addedNodes).every(isGoogleTranslateNode)
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
 export default function GoogleTranslate() {
   const pathname = usePathname();
+  const contentObserver = useRef<MutationObserver | null>(null);
+  const refreshTimeout = useRef<number | null>(null);
   const initialize = useCallback(() => {
     const TranslateElement = window.google?.translate?.TranslateElement;
     const host = document.getElementById("google_translate_element");
@@ -58,6 +89,23 @@ export default function GoogleTranslate() {
     const applyWhenReady = () => {
       if (!host.querySelector(".goog-te-combo")) return false;
       applyLanguage(readLanguage());
+      if (!contentObserver.current && document.body) {
+        contentObserver.current = new MutationObserver((mutations) => {
+          if (!mutations.some(isApplicationContentMutation)) return;
+          if (refreshTimeout.current !== null) {
+            window.clearTimeout(refreshTimeout.current);
+          }
+          refreshTimeout.current = window.setTimeout(() => {
+            refreshTimeout.current = null;
+            applyLanguage(readLanguage(), true);
+          }, 200);
+        });
+        contentObserver.current.observe(document.body, {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+      }
       return true;
     };
     if (!applyWhenReady()) {
@@ -82,6 +130,18 @@ export default function GoogleTranslate() {
     return () => window.removeEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
   }, []);
 
+  useEffect(
+    () => () => {
+      contentObserver.current?.disconnect();
+      contentObserver.current = null;
+      if (refreshTimeout.current !== null) {
+        window.clearTimeout(refreshTimeout.current);
+        refreshTimeout.current = null;
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     const timeout = window.setTimeout(() => applyLanguage(readLanguage(), true), 0);
     return () => window.clearTimeout(timeout);
@@ -92,7 +152,7 @@ export default function GoogleTranslate() {
       <div id="google_translate_element" className="notranslate" aria-hidden="true" />
       <Script
         src="https://translate.google.com/translate_a/element.js"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         onReady={initialize}
         onError={() => {
           // Gracefully ignore script load failure (e.g. adblocker, strict CSP, or offline)

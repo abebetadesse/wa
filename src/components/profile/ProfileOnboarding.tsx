@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 
 const CASE_TYPES = [
   ["wellbeing", "wellbeing & wellness"],
@@ -96,7 +97,13 @@ export default function ProfileOnboarding() {
             <div className="space-y-2"><Label htmlFor="profile-name">Full name</Label><Input id="profile-name" required value={name} onChange={(e) => setName(e.target.value)} /></div>
             <div className="space-y-2"><Label htmlFor="profile-phone">Phone number</Label><Input id="profile-phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+251 9..." /></div>
             <div className="space-y-2"><Label htmlFor="profile-case">Case type</Label><Select id="profile-case" value={caseType} onChange={(e) => setCaseType(e.target.value)}>{CASE_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</Select></div>
-            <div className="space-y-2"><Label htmlFor="profile-birth-location">Birth location</Label><Input id="profile-birth-location" required value={birthLocation} onChange={(e) => setBirthLocation(e.target.value)} placeholder="Town, region, country" /></div>
+            <EthiopianLocationInput
+              label="Birth location"
+              required
+              value={birthLocation}
+              onChange={(location) => setBirthLocation(location)}
+              placeholder="Search birth region, zone, district, or town..."
+            />
           </div>
           <div className="space-y-2"><Label htmlFor="profile-mother">Mother&apos;s name <span className="text-muted-foreground">(identity and cultural matching)</span></Label><Input id="profile-mother" required value={motherName} onChange={(e) => setMotherName(e.target.value)} /></div>
           <div className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">

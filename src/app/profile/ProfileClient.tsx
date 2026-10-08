@@ -7,7 +7,6 @@ import {
   HumoralElement,
   NameSuggestionResult,
 } from "@/lib/profiling/types";
-import { ETHIOPIAN_CITIES } from "@/lib/profiling/astrology/chartCalculator";
 import { buildPersonalProfile } from "@/lib/profiling/synthesis/profileBuilder";
 
 // Visual Components & Calculation Engines
@@ -17,6 +16,7 @@ import NumerologyView from "@/components/profiling/NumerologyView";
 import AwudeNegestViewer from "@/components/profiling/AwudeNegestViewer";
 import AIChatView from "@/components/profiling/AIChatView";
 import CompatibilityView from "@/components/profiling/CompatibilityView";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 
 import { ChartCalibration, LifestyleAndTradition, TodayForYou, TransitList, castDescription } from "@/components/profiling/PersonalSkyPanels";
 
@@ -688,22 +688,18 @@ export default function ProfileClient() {
                     <option value="so">Somali</option>
                   </select>
                 </label>
-                <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Region</span>
-                  <input
-                    value={accountProfile.region}
-                    onChange={(event) => setAccountProfile({ ...accountProfile, region: event.target.value })}
-                    className="input-warm w-full"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">City</span>
-                  <input
-                    value={accountProfile.city}
-                    onChange={(event) => setAccountProfile({ ...accountProfile, city: event.target.value })}
-                    className="input-warm w-full"
-                  />
-                </label>
+                <EthiopianLocationInput
+                  label="Where you live"
+                  value={accountProfile.city}
+                  regionValue={accountProfile.region}
+                  className="sm:col-span-2"
+                  placeholder="Search region, zone, district, or town..."
+                  onChange={(location, region, place) => setAccountProfile({
+                    ...accountProfile,
+                    city: place ? `${place.town}, ${place.zone}` : location,
+                    region: place?.region ?? region,
+                  })}
+                />
                 <label className="space-y-1">
                   <span className="text-xs font-medium text-slate-400">Gender identity (optional)</span>
                   <input
@@ -854,22 +850,13 @@ export default function ProfileClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Birth Location (Open Text Field)</label>
-              <input
-                type="text"
-                list="ethiopian-cities-list"
+              <EthiopianLocationInput
+                label="Birth location"
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Addis Ababa, Gondar, Hawassa, Mekelle..."
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-sm focus:border-amber-400 focus:outline-none"
+                regionValue={accountProfile?.region}
+                placeholder="Search birth region, zone, district, or town..."
+                onChange={(location) => setCity(location)}
               />
-              <datalist id="ethiopian-cities-list">
-                {Object.keys(ETHIOPIAN_CITIES).map((c) => (
-                  <option key={c} value={c}>
-                    {c} ({ETHIOPIAN_CITIES[c].altitudeMeters}m)
-                  </option>
-                ))}
-              </datalist>
             </div>
           </div>
 

@@ -25,8 +25,10 @@ import {
   Sparkles,
   ExternalLink,
 } from "lucide-react";
+import { getAllRegions } from "@/lib/location/ethiopianPlacesSearch";
 
 export default function UserManagementPage() {
+  const regions = getAllRegions();
   const [usersList, setUsersList] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [page, setPage] = useState(1);
@@ -635,13 +637,14 @@ export default function UserManagementPage() {
 
               <div>
                 <label className="block text-slate-300 font-medium mb-1">Region</label>
-                <input
-                  type="text"
+                <select
                   value={newRegion}
                   onChange={(e) => setNewRegion(e.target.value)}
-                  placeholder="e.g. Addis Ababa"
                   className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500"
-                />
+                >
+                  {!regions.includes(newRegion) && newRegion && <option value={newRegion}>{newRegion}</option>}
+                  {regions.map((region) => <option key={region} value={region}>{region}</option>)}
+                </select>
               </div>
 
               <div>
@@ -853,12 +856,14 @@ export default function UserManagementPage() {
                 </div>
                 <div>
                   <label className="block text-slate-300 font-medium mb-1">Region</label>
-                  <input
-                    type="text"
+                  <select
                     value={editRegion}
                     onChange={(e) => setEditRegion(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500"
-                  />
+                  >
+                    {!regions.includes(editRegion) && editRegion && <option value={editRegion}>{editRegion}</option>}
+                    {regions.map((region) => <option key={region} value={region}>{region}</option>)}
+                  </select>
                 </div>
               </div>
 

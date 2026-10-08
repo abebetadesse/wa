@@ -25,6 +25,10 @@ The platform supports:
 - Biblical, Ethiopian, Amharic, Ge’ez-linked, and culturally contextual name suggestions with transparent scoring.
 - Administrative knowledge, profile, user, audit, role, analytics, and export tools.
 
+## Languages
+
+The language selector offers English, Amharic, Oromo, Tigrinya, and Somali. Amharic is the default. Google Translate is used to translate the full rendered interface, including content added during client-side navigation and live updates; the selector preference is saved in the browser. Translation requires an internet connection and the Google Translate script to be available. Safety-critical or clinical content should be reviewed by a qualified human translator before being relied on.
+
 ## Core user workflow
 
 The normal user journey is:

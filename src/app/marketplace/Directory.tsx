@@ -21,6 +21,7 @@ import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Button, EmptyState, ErrorState, LoadingState, Select } from "@/components/ui";
 import { BusinessCard, LANGUAGE_LABELS, MODE_LABELS, formatEtb, type BusinessSummary } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
+import { getAllRegions } from "@/lib/location/ethiopianPlacesSearch";
 
 interface Facets {
   categories: { slug: string; name: string; nameAm: string | null; sector: string; count: number }[];
@@ -72,6 +73,10 @@ export function Directory() {
   // Price input local states
   const [minPriceInput, setMinPriceInput] = useState(params.get("minPrice") ?? "");
   const [maxPriceInput, setMaxPriceInput] = useState(params.get("maxPrice") ?? "");
+  const regions = [...new Set([
+    ...getAllRegions(),
+    ...(facets?.regions.flatMap((entry) => entry.region ? [entry.region] : []) ?? []),
+  ])].sort((a, b) => a.localeCompare(b));
 
   const queryString = params.toString();
 
@@ -238,8 +243,10 @@ export function Directory() {
         Region
         <Select value={params.get("region") ?? ""} onChange={(event) => setParam({ region: event.target.value || null })}>
           <option value="">Anywhere</option>
-          {facets?.regions.filter((r) => r.region).map((region) => (
-            <option key={region.region} value={region.region!}>{region.region} ({region.count})</option>
+          {regions.map((region) => (
+            <option key={region} value={region}>
+              {region}{facets?.regions.find((entry) => entry.region === region)?.count ? ` (${facets.regions.find((entry) => entry.region === region)?.count})` : ""}
+            </option>
           ))}
         </Select>
       </label>

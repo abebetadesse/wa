@@ -1,12 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { MapPin, Search, Check, ChevronDown } from "lucide-react";
-import {
-  searchEthiopianPlaces,
-  getAllRegions,
-  estimateAgroEcology,
-} from "@/lib/location/ethiopianPlacesSearch";
+import { useState, useEffect, useRef, useId } from "react";
+import { ChevronDown, MapPin } from "lucide-react";
+import { searchEthiopianPlaces } from "@/lib/location/ethiopianPlacesSearch";
 import type { EthiopianAdministrativePlace } from "@/lib/location/ethiopianAdministrativePlaces";
 
 interface EthiopianLocationInputProps {
@@ -14,6 +10,9 @@ interface EthiopianLocationInputProps {
   regionValue?: string;
   onChange: (location: string, region: string, place?: EthiopianAdministrativePlace) => void;
   required?: boolean;
+  label?: string;
+  placeholder?: string;
+  className?: string;
 }
 
 export function EthiopianLocationInput({
@@ -21,12 +20,16 @@ export function EthiopianLocationInput({
   regionValue,
   onChange,
   required = false,
+  label = "Where are you currently living in Ethiopia?",
+  placeholder = "Search a district, town, zone, or region (e.g. Bole, Hawassa, Oromia)...",
+  className = "",
 }: EthiopianLocationInputProps) {
   const [searchTerm, setSearchTerm] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<EthiopianAdministrativePlace[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<EthiopianAdministrativePlace | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputId = useId();
+  const listId = useId();
 
   useEffect(() => {
     if (value !== searchTerm && !isOpen) {
@@ -54,20 +57,16 @@ export function EthiopianLocationInput({
   }, []);
 
   const handleSelect = (place: EthiopianAdministrativePlace) => {
-    setSelectedPlace(place);
     const locString = `${place.town}, ${place.zone} (${place.region})`;
     setSearchTerm(locString);
     setIsOpen(false);
     onChange(locString, place.region, place);
   };
 
-  const currentRegion = selectedPlace?.region || regionValue || "Addis Ababa";
-  const agro = estimateAgroEcology(currentRegion, selectedPlace?.zone);
-
   return (
-    <div ref={containerRef} className="space-y-2 relative">
-      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-        Where are you currently living in Ethiopia? {required && <span className="text-amber-400">*</span>}
+    <div ref={containerRef} className={`relative space-y-2 ${className}`}>
+      <label htmlFor={inputId} className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
+        {label} {required && <span className="text-amber-400">*</span>}
       </label>
 
       <div className="relative">
@@ -75,16 +74,22 @@ export function EthiopianLocationInput({
           <MapPin className="w-4 h-4" />
         </div>
         <input
+          id={inputId}
           type="text"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setIsOpen(true);
-            onChange(e.target.value, regionValue || "Addis Ababa");
+            onChange(e.target.value, regionValue || "");
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search by Town, Wereda, Zone, or Region (e.g. Bole, Hawassa, Nifas Slik)..."
+          placeholder={placeholder}
           required={required}
+          autoComplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={isOpen && suggestions.length > 0}
+          aria-controls={listId}
           className="w-full rounded-xl bg-black/40 border border-white/10 pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600"
         />
         {suggestions.length > 0 && (
@@ -100,15 +105,17 @@ export function EthiopianLocationInput({
 
       {/* Autocomplete Dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-xl border border-emerald-500/40 bg-zinc-950/95 shadow-2xl backdrop-blur-xl p-1.5 space-y-1">
+        <div id={listId} role="listbox" className="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-xl border border-emerald-500/40 bg-zinc-950/95 shadow-2xl backdrop-blur-xl p-1.5 space-y-1">
           <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-mono text-emerald-400 flex items-center justify-between border-b border-white/10">
-            <span>Ethiopian Administrative Places (ወረዳ / ዞን / ክልል)</span>
+            <span>Region / Zone / District or town</span>
             <span>{suggestions.length} matches</span>
           </div>
           {suggestions.map((place) => (
             <button
               key={place.id}
               type="button"
+              role="option"
+              aria-selected={false}
               onClick={() => handleSelect(place)}
               className="w-full text-left px-3 py-2 rounded-lg hover:bg-emerald-950/40 transition-colors flex items-center justify-between group"
             >
@@ -117,7 +124,7 @@ export function EthiopianLocationInput({
                   {place.town}
                 </span>
                 <span className="text-xs text-slate-400 ml-2">
-                  Zone: {place.zone}
+                  {place.zone}
                 </span>
               </div>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -127,18 +134,7 @@ export function EthiopianLocationInput({
           ))}
         </div>
       )}
-
-      {/* Agro-Ecological Climate Context Tag */}
-      {(selectedPlace || searchTerm.length > 2) && (
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
-          <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono">
-            🌍 {agro.zoneName} (~{agro.altitudeMeters}m)
-          </span>
-          <span className="text-xs text-slate-400 italic">
-            {agro.climateNote}
-          </span>
-        </div>
-      )}
+      <p className="text-[11px] text-slate-500">Choose a result to save its official region, zone, and district/town. You can enter a place outside the list as text.</p>
     </div>
   );
 }

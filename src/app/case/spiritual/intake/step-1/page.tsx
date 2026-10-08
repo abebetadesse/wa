@@ -9,6 +9,7 @@ import { AnimatedGematriaPreview } from "@/components/cultural/AnimatedGematriaP
 import { AmharicKeyboardModal } from "@/components/cultural/AmharicKeyboardModal";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
 import VoiceCaptureConsent from "@/components/case/VoiceCaptureConsent";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { getTelsemByCategory, type TelsemCategory } from "@/lib/cultural/telsemData";
 
 const FIDEL_NAME_MIN_LENGTH = 2;
@@ -107,6 +108,7 @@ export default function SpiritualStep1Page() {
   const [motherNameGeez, setMotherNameGeez] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [birthLocationName, setBirthLocationName] = useState("");
+  const [birthAdministrativeTown, setBirthAdministrativeTown] = useState("");
   const [birthLatitude, setBirthLatitude] = useState<number | null>(null);
   const [birthLongitude, setBirthLongitude] = useState<number | null>(null);
   const [locationStatus, setLocationStatus] = useState("");
@@ -204,14 +206,15 @@ export default function SpiritualStep1Page() {
     }
     setLocationStatus("Finding a matching Ethiopian location...");
     try {
-      const response = await fetch(`/api/locations?id=${encodeURIComponent(birthLocationName.trim())}`, { cache: "no-store" });
+      const lookupName = birthAdministrativeTown || birthLocationName.trim();
+      const response = await fetch(`/api/locations?id=${encodeURIComponent(lookupName)}`, { cache: "no-store" });
       const payload = await response.json() as { selectedLocation?: { name?: string; latitude?: number; longitude?: number } | null };
       const location = payload.selectedLocation;
       if (!location || typeof location.latitude !== "number" || typeof location.longitude !== "number") {
         setLocationStatus("No exact local match found. Coordinates were not guessed.");
         return;
       }
-      setBirthLocationName(location.name || birthLocationName.trim());
+      if (!birthAdministrativeTown) setBirthLocationName(location.name || birthLocationName.trim());
       setBirthLatitude(location.latitude);
       setBirthLongitude(location.longitude);
       setLocationStatus(`Coordinates found: ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`);
@@ -447,13 +450,21 @@ export default function SpiritualStep1Page() {
                       Birth year, month and day
                       <input type="date" value={birthDate} onChange={(event) => setBirthDate(event.target.value)} className="input-warm w-full" />
                     </label>
-                    <label className="space-y-2 text-sm text-stone-300">
-                      Birth location name
-                      <div className="flex gap-2">
-                        <input value={birthLocationName} onChange={(event) => { setBirthLocationName(event.target.value); setBirthLatitude(null); setBirthLongitude(null); }} placeholder="Addis Ababa" className="input-warm min-w-0 flex-1" />
-                        <button type="button" onClick={autofetchLocation} className="rounded-xl border border-sky-500/40 px-3 text-xs font-semibold text-sky-200 hover:bg-sky-500/10">Autofetch</button>
-                      </div>
-                    </label>
+                    <div className="space-y-2 text-sm text-stone-300">
+                      <EthiopianLocationInput
+                        label="Birth location name"
+                        value={birthLocationName}
+                        placeholder="Search birth region, zone, district, or town..."
+                        onChange={(location, _region, place) => {
+                          setBirthLocationName(location);
+                          setBirthAdministrativeTown(place?.town ?? "");
+                          setBirthLatitude(null);
+                          setBirthLongitude(null);
+                          setLocationStatus("");
+                        }}
+                      />
+                      <button type="button" onClick={autofetchLocation} className="rounded-xl border border-sky-500/40 px-3 py-2 text-xs font-semibold text-sky-200 hover:bg-sky-500/10">Autofetch verified coordinates for known towns</button>
+                    </div>
                   </div>
                   {locationStatus && <p role="status" className="mt-3 text-xs text-sky-300">{locationStatus}</p>}
                   {birthLatitude !== null && birthLongitude !== null && <p className="mt-2 font-mono text-[11px] text-emerald-300">Verified local coordinates: {birthLatitude.toFixed(5)}, {birthLongitude.toFixed(5)}</p>}

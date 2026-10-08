@@ -21,6 +21,7 @@ import {
   Star,
   Gavel,
 } from "lucide-react";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 
 // ════════════════════════════════════════════════════════════
 // Types
@@ -610,16 +611,15 @@ export default function LegalIntakePage() {
 
               {/* Jurisdiction */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-200 flex items-center gap-1.5">
+                <div className="text-sm font-medium text-zinc-200 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-zinc-500" />
                   Area or Jurisdiction
-                </label>
-                <input
-                  type="text"
+                </div>
+                <EthiopianLocationInput
+                  label="Search Ethiopian administrative locations"
                   value={answers.jurisdiction ?? ""}
-                  onChange={(e) => setAnswers((p) => ({ ...p, jurisdiction: e.target.value }))}
-                  placeholder="Addis Ababa, Oromia, etc."
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-700 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-purple-500 text-sm"
+                  onChange={(location) => setAnswers((current) => ({ ...current, jurisdiction: location }))}
+                  placeholder="Search region, zone, district, or town..."
                 />
               </div>
 

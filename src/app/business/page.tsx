@@ -11,6 +11,7 @@ import { useApi } from "@/features/workspace/useApi";
 import { MODE_LABELS, Monogram } from "@/features/marketplace/shared";
 import { BUSINESS_STATUS } from "@/features/workspace/labels";
 import { cn } from "@/lib/utils";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 
 interface MyBusiness {
   id: string;
@@ -148,12 +149,18 @@ function CreateBusinessForm({ onCancel }: { onCancel?: () => void }) {
           <Field label="One-line description" hint="Shown on your card in the marketplace." className="sm:col-span-2">
             {(control) => <Input {...control} maxLength={240} value={form.tagline} onChange={set("tagline")} placeholder="Traditional herbal care with respect for modern medicine" />}
           </Field>
-          <Field label="Region">
-            {(control) => <Input {...control} value={form.region} onChange={set("region")} placeholder="e.g. Addis Ababa, Amhara, Oromia" />}
-          </Field>
-          <Field label="City or town">
-            {(control) => <Input {...control} value={form.city} onChange={set("city")} />}
-          </Field>
+          <EthiopianLocationInput
+            label="Business location"
+            value={form.city}
+            regionValue={form.region}
+            className="sm:col-span-2"
+            placeholder="Search region, zone, district, or town..."
+            onChange={(location, region, place) => setForm((current) => ({
+              ...current,
+              city: place ? `${place.town}, ${place.zone}` : location,
+              region: place?.region ?? region,
+            }))}
+          />
           <Field label="Business phone">
             {(control) => <Input {...control} type="tel" value={form.phone} onChange={set("phone")} placeholder="+251 9…" />}
           </Field>

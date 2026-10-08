@@ -26,6 +26,7 @@ import {
   getEthiopianAdministrativeHierarchy,
   searchEthiopianAdministrativePlaces,
 } from "../lib/location/ethiopianAdministrativePlaces.ts";
+import { searchEthiopianPlaces } from "../lib/location/ethiopianPlacesSearch.ts";
 
 describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
   // Enhancement 1
@@ -74,6 +75,10 @@ describe("Ethiopian Wisdom 20-Point Enterprise Enhancements Suite", () => {
     const wereda = searchEthiopianAdministrativePlaces("Wereda 01", "Addis Ababa", "Addis Ketema");
     assert.ok(wereda.length > 0);
     assert.ok(wereda.every((place) => place.zone === "Addis Ketema"));
+    const combined = searchEthiopianAdministrativePlaces("Wereda 01 Addis Ketema", "Addis Ababa");
+    assert.ok(combined.some((place) => place.town === "Wereda 01" && place.zone === "Addis Ketema"));
+    const composed = searchEthiopianPlaces("Wereda 01 Addis Ketema");
+    assert.ok(composed.some((place) => place.town === "Wereda 01" && place.zone === "Addis Ketema" && place.region === "Addis Ababa"));
   });
 
   test("ODT administrative hierarchy aggregates every region, zone, and town", () => {

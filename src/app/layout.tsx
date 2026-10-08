@@ -69,7 +69,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased min-h-screen flex flex-col justify-between" suppressHydrationWarning>
+      <body
+        className="antialiased min-h-screen flex flex-col justify-between"
+        translate="yes"
+        suppressHydrationWarning
+      >
         <GlobalLayers />
         <ClientProviders>
           <PwaRegister />

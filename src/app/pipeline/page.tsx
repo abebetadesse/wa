@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { StatusTimeline } from "@/components/pipeline/StatusTimeline";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { getPipelineI18n, PipelineI18nCatalog } from "@/lib/i18n/pipeline";
 import { CaseStatus } from "@/lib/pipeline/types";
 import {
@@ -39,6 +40,8 @@ export default function UserPipelinePage() {
   const [region, setRegion] = useState("Amhara");
   const [zone, setZone] = useState("North Gondar");
   const [woreda, setWoreda] = useState("Debark");
+  const [administrativeLocation, setAdministrativeLocation] = useState("");
+  const [administrativeLocationSelected, setAdministrativeLocationSelected] = useState(false);
   const [currentMeds, setCurrentMeds] = useState("Metformin 500mg BID");
   const [traditionalRemedies, setTraditionalRemedies] = useState("Kosso (Hagenia abyssinica) infusion");
   const [spiritualOptIn, setSpiritualOptIn] = useState(true);
@@ -315,51 +318,29 @@ export default function UserPipelinePage() {
               </div>
 
               {/* Geographic Location Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    {i18n.profile.region} *
-                  </label>
-                  <select
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value="Amhara">Amhara</option>
-                    <option value="Oromia">Oromia</option>
-                    <option value="Addis Ababa">Addis Ababa</option>
-                    <option value="Tigray">Tigray</option>
-                    <option value="Sidama">Sidama</option>
-                    <option value="Afar">Afar</option>
-                    <option value="Somali">Somali</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    {i18n.profile.zone} *
-                  </label>
-                  <input
-                    type="text"
-                    value={zone}
-                    onChange={(e) => setZone(e.target.value)}
-                    placeholder="e.g. North Gondar"
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    {i18n.profile.woreda} *
-                  </label>
-                  <input
-                    type="text"
-                    value={woreda}
-                    onChange={(e) => setWoreda(e.target.value)}
-                    placeholder="e.g. Debark"
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <EthiopianLocationInput
+                  label={`${i18n.profile.region} / ${i18n.profile.zone} / ${i18n.profile.woreda} *`}
+                  required
+                  value={administrativeLocation || (woreda && zone && region ? `${woreda}, ${zone} (${region})` : "")}
+                  regionValue={region}
+                  placeholder="Search region, zone, district, or town..."
+                  onChange={(location, _region, place) => {
+                    setAdministrativeLocation(location);
+                    if (place) {
+                      setAdministrativeLocationSelected(true);
+                      setRegion(place.region);
+                      setZone(place.zone);
+                      setWoreda(place.town);
+                    } else {
+                      setAdministrativeLocationSelected(false);
+                      setRegion("");
+                      setZone("");
+                      setWoreda("");
+                    }
+                  }}
+                />
+                {!administrativeLocationSelected && <p className="mt-2 text-xs text-amber-200">Select a matching region, zone, and district/town result to continue.</p>}
               </div>
 
               {/* Medications & Traditional Use */}
@@ -424,7 +405,7 @@ export default function UserPipelinePage() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !administrativeLocationSelected}
                 className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-900/30 transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (

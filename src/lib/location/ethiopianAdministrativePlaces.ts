@@ -9799,12 +9799,12 @@ export function getEthiopianAdministrativeHierarchy(): EthiopianAdministrativeRe
 const normalize = (value: string) => value.trim().toLocaleLowerCase();
 
 export function searchEthiopianAdministrativePlaces(query: string, region?: string, zone?: string): EthiopianAdministrativePlace[] {
-  const q = normalize(query);
+  const terms = normalize(query).split(/\s+/u).filter(Boolean);
   const regionQuery = region ? normalize(region) : "";
   const zoneQuery = zone ? normalize(zone) : "";
   return ETHIOPIAN_ADMINISTRATIVE_PLACES.filter((place) =>
     (!regionQuery || normalize(place.region) === regionQuery) &&
     (!zoneQuery || normalize(place.zone) === zoneQuery) &&
-    (!q || [place.region, place.zone, place.town].some((value) => normalize(value).includes(q))),
+    (!terms.length || terms.every((term) => [place.region, place.zone, place.town].some((value) => normalize(value).includes(term)))),
   );
 }

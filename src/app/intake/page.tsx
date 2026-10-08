@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ETHIOPIAN_REGION_ALTITUDES } from "@/lib/evaluation/stage1Normalize";
 import { ETHIOPIAN_LOCATIONS, resolveEthiopianLocation } from "@/lib/location/ethiopiaLocations";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { useLanguage } from "@/lib/i18n/context";
 
 const SAMPLE_FOODS = [
@@ -43,6 +44,7 @@ export default function IntakePage() {
   const [submitting, setSubmitting] = useState(false);
   const [progressStageIdx, setProgressStageIdx] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
+  const [administrativeLocationSelected, setAdministrativeLocationSelected] = useState(true);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -83,14 +85,21 @@ export default function IntakePage() {
     disclaimerAccepted: true,
   });
 
-  const handleRegionChange = (newRegion: string) => {
-    const location = resolveEthiopianLocation(newRegion);
-    const alt = location.altitudeMeters || ETHIOPIAN_REGION_ALTITUDES[newRegion] || 2000;
+  const handleAdministrativePlaceChange = (locationText: string, region: string, place?: { town: string }) => {
+    if (!place) {
+      setAdministrativeLocationSelected(false);
+      setFormData((prev) => ({ ...prev, cultural: { ...prev.cultural, birthLocation: locationText } }));
+      return;
+    }
+    setAdministrativeLocationSelected(true);
+    const knownTown = ETHIOPIAN_LOCATIONS.find((entry) => entry.name.toLocaleLowerCase() === place.town.toLocaleLowerCase());
+    const regionalEstimate = resolveEthiopianLocation(region);
+    const altitude = knownTown?.altitudeMeters ?? regionalEstimate.altitudeMeters ?? ETHIOPIAN_REGION_ALTITUDES[region] ?? 2000;
     setFormData((prev) => ({
       ...prev,
-      region: newRegion,
-      altitudeMeters: alt,
-      cultural: { ...prev.cultural, birthLocation: location.name },
+      region,
+      altitudeMeters: altitude,
+      cultural: { ...prev.cultural, birthLocation: locationText },
     }));
   };
 
@@ -286,20 +295,14 @@ export default function IntakePage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Ethiopian Region / Elevation Zone</label>
-                <select
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
-                  value={formData.region}
-                  onChange={(e) => handleRegionChange(e.target.value)}
-                >
-                  {ETHIOPIAN_LOCATIONS.map((location) => (
-                    <option key={location.id} value={location.name}>
-                      {location.name} · {location.region} (~{location.altitudeMeters}m)
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <EthiopianLocationInput
+                label="Administrative location"
+                value={formData.cultural.birthLocation}
+                regionValue={formData.region}
+                className="md:col-span-2"
+                placeholder="Search region, zone, district, or town..."
+                onChange={handleAdministrativePlaceChange}
+              />
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">
@@ -349,7 +352,7 @@ export default function IntakePage() {
             </div>
 
             <div className="flex justify-end mt-8">
-              <button onClick={() => setStep(2)} className="btn-primary">
+              <button onClick={() => setStep(2)} disabled={!administrativeLocationSelected} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50">
                 Proceed to Diet Log &rarr;
               </button>
             </div>

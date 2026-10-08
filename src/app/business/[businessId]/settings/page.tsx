@@ -11,6 +11,7 @@ import { useToast } from "@/features/feedback/Toaster";
 import { MODE_LABELS } from "@/features/marketplace/shared";
 import { BUSINESS_STATUS } from "@/features/workspace/labels";
 import { cn } from "@/lib/utils";
+import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 
 interface Category {
   id: string;
@@ -104,8 +105,18 @@ export default function SettingsPage() {
           </Field>
           <Field label="One-line description">{(control) => <Input {...control} maxLength={240} value={form.tagline} onChange={set("tagline")} />}</Field>
           <Field label="About" className="sm:col-span-2">{(control) => <Textarea {...control} rows={5} value={form.description} onChange={set("description")} />}</Field>
-          <Field label="Region">{(control) => <Input {...control} value={form.region} onChange={set("region")} />}</Field>
-          <Field label="City or town">{(control) => <Input {...control} value={form.city} onChange={set("city")} />}</Field>
+          <EthiopianLocationInput
+            label="Business location"
+            value={form.city}
+            regionValue={form.region}
+            className="sm:col-span-2"
+            placeholder="Search region, zone, district, or town..."
+            onChange={(location, region, place) => setForm((current) => ({
+              ...current,
+              city: place ? `${place.town}, ${place.zone}` : location,
+              region: place?.region ?? region,
+            }))}
+          />
           <Field label="Address" hint="Shown to clients with in-person bookings." className="sm:col-span-2">{(control) => <Input {...control} value={form.address} onChange={set("address")} />}</Field>
           <Field label="Phone">{(control) => <Input {...control} type="tel" value={form.phone} onChange={set("phone")} />}</Field>
           <Field label="Email">{(control) => <Input {...control} type="email" value={form.email} onChange={set("email")} />}</Field>
