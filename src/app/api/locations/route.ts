@@ -37,9 +37,14 @@ export async function GET(request: NextRequest) {
       ) ?? null
       : administrativePlaces.length === 1 ? administrativePlaces[0] : null;
     const requestedRegionReference = region ?? selected?.region ?? id;
+    const norm = (s: string) => s.toLowerCase().replace(/[\s\-_]/g, "");
     const regionReference = requestedRegionReference
       ? ETHIOPIAN_REGION_REFERENCE.find((entry) =>
-        [entry.name, entry.code].some((value) => value.toLowerCase() === requestedRegionReference.toLowerCase()),
+        [entry.name, entry.code].some((value) => {
+          const l1 = value.toLowerCase();
+          const l2 = requestedRegionReference.toLowerCase();
+          return l1 === l2 || norm(l1) === norm(l2) || l1.includes(l2) || l2.includes(l1);
+        }),
       ) ?? null
       : null;
 

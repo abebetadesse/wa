@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Pencil, Plus, RefreshCw, RotateCcw, Send, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Pencil, Plus, RefreshCw, RotateCcw, Search, Send, Trash2 } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Dialog, EmptyState, ErrorState, Field, Input, LoadingState, PageHeader, PageShell, Select, Textarea } from "@/components/ui";
 import { useApi } from "@/features/workspace/useApi";
@@ -71,32 +71,88 @@ export default function AdminToolkitPage() {
   );
 }
 
-// ── Marketplace visibility ───────────────────────────────────────────────────
+// ── Marketplace & search visibility ──────────────────────────────────────────
 
 function CulturalVisibility() {
   const toast = useToast();
-  const { data, setData } = useApi<{ value: { culturalVisibility: "admins" | "everyone" } }>("/api/admin/settings/marketplace");
+  const { data, setData } = useApi<{ value: { culturalVisibility: "admins" | "everyone"; searchVisibility?: "admins" | "everyone" } }>("/api/admin/settings/marketplace");
   if (!data) return null;
-  const hidden = data.value.culturalVisibility === "admins";
-  async function toggle() {
+  const culturalHidden = data.value.culturalVisibility === "admins";
+  const searchHidden = (data.value.searchVisibility ?? "admins") === "admins";
+
+  async function toggleCultural() {
+    if (!data) return;
     try {
-      setData(await apiFetch("/api/admin/settings/marketplace", { method: "PUT", json: { value: { culturalVisibility: hidden ? "everyone" : "admins" } } }));
-      toast({ tone: "success", title: hidden ? "Cultural services are now visible to everyone" : "Cultural services are now hidden from clients" });
+      const next = culturalHidden ? "everyone" : "admins";
+      setData(await apiFetch("/api/admin/settings/marketplace", {
+        method: "PUT",
+        json: { value: { ...data.value, culturalVisibility: next } },
+      }));
+      toast({
+        tone: "success",
+        title: culturalHidden ? "Cultural services are now visible to everyone" : "Cultural services are now hidden from clients",
+      });
     } catch (err) {
       toast({ tone: "error", title: "Could not save", body: errorMessage(err) });
     }
   }
+
+  async function toggleSearch() {
+    if (!data) return;
+    try {
+      const next = searchHidden ? "everyone" : "admins";
+      setData(await apiFetch("/api/admin/settings/marketplace", {
+        method: "PUT",
+        json: { value: { ...data.value, searchVisibility: next } },
+      }));
+      toast({
+        tone: "success",
+        title: searchHidden ? "Search bar is now visible to everyone" : "Search bar is now hidden from clients",
+      });
+    } catch (err) {
+      toast({ tone: "error", title: "Could not save", body: errorMessage(err) });
+    }
+  }
+
   return (
-    <Card>
-      <CardContent className="flex flex-wrap items-center gap-4 pt-6">
-        {hidden ? <EyeOff className="size-6 text-muted-foreground" aria-hidden="true" /> : <Eye className="size-6 text-success" aria-hidden="true" />}
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold text-foreground">Cultural services are {hidden ? "visible to administrators only" : "visible to everyone"}</p>
-          <p className="text-sm text-muted-foreground">Covers the &ldquo;Cultural services&rdquo; menu, cultural categories in the directory, and cultural business pages. Their own teams can always open their workspace.</p>
-        </div>
-        <Button variant="outline" onClick={toggle}>{hidden ? "Show to everyone" : "Hide from clients"}</Button>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="flex flex-wrap items-center gap-4 pt-6">
+          {searchHidden ? <EyeOff className="size-6 text-muted-foreground" aria-hidden="true" /> : <Eye className="size-6 text-success" aria-hidden="true" />}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <Search className="size-4 text-brand" />
+              <p className="font-semibold text-foreground">
+                Search bar is {searchHidden ? "visible to administrators only (hidden by default)" : "visible to everyone"}
+              </p>
+            </div>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Controls the main search bar and quick search tags across the home page and directory for visitors and clients.
+            </p>
+          </div>
+          <Button variant="outline" onClick={toggleSearch}>
+            {searchHidden ? "Show to everyone" : "Hide from clients"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex flex-wrap items-center gap-4 pt-6">
+          {culturalHidden ? <EyeOff className="size-6 text-muted-foreground" aria-hidden="true" /> : <Eye className="size-6 text-success" aria-hidden="true" />}
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-foreground">
+              Cultural services are {culturalHidden ? "visible to administrators only (hidden by default)" : "visible to everyone"}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Covers the 6 cultural categories: Artisan &amp; crafts (የእጅ ጥበብ), Coffee ceremony (የቡና ሥነ ሥርዓት), Music &amp; dance (ሙዚቃና ውዝዋዜ), Ceremonies &amp; events (ሥነ ሥርዓትና ዝግጅት), Ge&apos;ez &amp; manuscripts (ግዕዝና ብራና), and Heritage tours (የቅርስ ጉብኝት).
+            </p>
+          </div>
+          <Button variant="outline" onClick={toggleCultural}>
+            {culturalHidden ? "Show to everyone" : "Hide from clients"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

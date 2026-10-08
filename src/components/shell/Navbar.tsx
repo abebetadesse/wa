@@ -33,8 +33,6 @@ import { cn } from "@/lib/utils";
 
 const PRIMARY = [
   { href: "/marketplace", label: "Find a healer", icon: Search },
-  // Shown only while cultural listings are visible to the viewer (administrators by default).
-  { href: "/marketplace?sector=cultural", label: "Cultural services", icon: Sparkles, cultural: true },
   { href: "/business", label: "For businesses", icon: Store },
 ];
 
@@ -91,7 +89,7 @@ export default function Navbar() {
   };
 
   const explore = useExplore();
-  const primary = PRIMARY.filter((link) => !link.cultural || explore?.culturalVisible);
+  const primary = PRIMARY;
   const exploreGroups = explore?.groups ?? [];
 
   const accountLinks = [

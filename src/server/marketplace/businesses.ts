@@ -20,6 +20,12 @@ export async function culturalVisibleTo(viewer: Pick<AuthenticatedUser, "role"> 
   return (await getSettings("marketplace")).culturalVisibility === "everyone";
 }
 
+/** Search bar is shown to administrators only unless the platform opens it to everyone. */
+export async function searchVisibleTo(viewer: Pick<AuthenticatedUser, "role"> | null) {
+  if (viewer && PLATFORM_ADMINS.includes(viewer.role)) return true;
+  return (await getSettings("marketplace")).searchVisibility === "everyone";
+}
+
 export const DELIVERY_MODES = ["in_person", "home_visit", "video", "voice", "chat"] as const;
 export const BUSINESS_STATUSES = ["draft", "pending_verification", "verified", "suspended"] as const;
 
@@ -546,7 +552,7 @@ export async function directoryFacets(viewer: Pick<AuthenticatedUser, "role"> | 
   for (const row of languageRows) for (const language of row.languages ?? []) languageCounts.set(language, (languageCounts.get(language) ?? 0) + 1);
   const languages = [...languageCounts].map(([language, count]) => ({ language, count })).sort((a, b) => b.count - a.count || a.language.localeCompare(b.language));
   const categories = cultural ? allCategories : allCategories.filter((category) => category.sector !== "cultural");
-  return { categories, regions, languages, culturalVisible: cultural };
+  return { categories, regions, languages, culturalVisible: cultural, searchVisible: await searchVisibleTo(viewer) };
 }
 
 export async function getPublicBusiness(slug: string, viewer: AuthenticatedUser | null) {

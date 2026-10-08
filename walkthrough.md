@@ -104,12 +104,41 @@ We enhanced the **Ethiopian Wisdom Platform** with a focus on the **Career & Bus
 
 ---
 
-## 6. Verification & Testing
+---
+
+## 7. Administrative Hierarchy & Location System Integration
+
+### Overview & Data Ingestion
+- Ingested 1,217 distinct administrative location records from `Region, Zone, Town.odt` into [`src/lib/location/ethiopianAdministrativePlaces.ts`](file:///c:/Users/abebe/Desktop/wa/src/lib/location/ethiopianAdministrativePlaces.ts).
+- Re-exported `EthiopianAdministrativePlace`, `EthiopianAdministrativeZone`, and `EthiopianAdministrativeRegion` interfaces from [`src/lib/location/ethiopiaLocations.ts`](file:///c:/Users/abebe/Desktop/wa/src/lib/location/ethiopiaLocations.ts).
+
+### Location Model Upgrades
+- **15 Region Coverage**: Added first-class profiles for `Sheger City` (Sheger), `Hosaena` (Central Ethiopia), and `Bonga` (Southwest Ethiopia Peoples) into `RAW_ETHIOPIAN_LOCATIONS`, ensuring all 15 regions from `ETHIOPIAN_REGION_REFERENCE` are fully covered.
+- **Administrative Slices**: Attached filtered `administrativePlaces` to each `EthiopianLocation`.
+- **Administrative Hierarchy in Systems Profile**: Added `administrativeHierarchy` (`totalDistricts`, `zoneCount`, `zones` array with sorted district names, and `source: "Region, Zone, Town.odt"`) to `EthiopianLocationSystemsProfile`.
+- **3-Tier Spatial Units**: Populated `denseData.spatialUnits` with structured `region` (level 1), `zone` (level 2), and `woreda` (level 3) records.
+
+### Resolution & Query Utilities
+- **`normalizeRegionName(region)`**: Bridges orthographic variants across datasets (e.g. `Benishangul Gumuz` vs `Benishangul-Gumuz`, `Dire Dawa Astedadar` vs `Dire Dawa`, `Ethiopia Somali` vs `Somali`, `Hareri` vs `Harari`, `Gambela` vs `Gambella`, `South West Ethiopia People` vs `Southwest Ethiopia Peoples`).
+- **`resolveEthiopianLocation(input?)`**: Implemented two-pass resolution with punctuation/whitespace-insensitive fuzzy matching and administrative places fallback. Free-text inputs like `"Sida Awash"`, `"Wereda 01"`, `"Kibet Ketema Astedader"`, and `"Dawro"` automatically resolve to their parent regions and primary locations.
+- **Lookup Helpers**: Exported `getAdministrativePlacesByRegion`, `getZonesForRegion`, `getWoredasForZone`, `getAdministrativeRegionProfile`, and `getLocationByAdministrativePlace`.
+
+---
+
+## 8. Marketplace & Cultural Services Visibility Settings
+
+### Overview
+- Configured default hiding of the marketplace search bar and Cultural services (`Artisan & crafts`, `Coffee ceremony`, `Music & dance`, `Ceremonies & events`, `Ge'ez & manuscripts`, `Heritage tours`) for regular users and visitors.
+- Provided administration toggles in `/admin/marketplace` and `/admin/toolkit` allowing admins to manage visibility dynamically.
+- Hardened React client handlers with null guards against async state transitions.
+
+---
+
+## 9. Verification & Testing
 
 | Verification Gate | Result | Notes |
 | :--- | :--- | :--- |
-| `npm test` | **155 / 155 passed** | All 14 test suites passed with 0 failures, 0 skipped |
-| `POST /api/auth/login` | **200 OK** | Demo accounts (Almaz, Dr. Yemane, Mekonnen) log in seamlessly |
-| `GET /api/auth/me` | **200 OK** | Authenticated profile and wellbeing case statistics load |
+| `npx tsc --noEmit` | **0 errors** | Entire project compiles cleanly with strict TypeScript checks |
+| `scripts/validateLocations.ts` | **Passed** | 16 locations, 1,217 admin places, all resolution queries pass |
+| `npm test` | **Passed** | Marketplace rules, search, and core test suites green |
 | Static Assets (`_next/static`) | **200 OK** | Clean CSS (`text/css`) and JS chunks (`application/javascript`) |
-| Dev Server (`http://localhost:5500`) | **Active** | Serving on port 5500 |

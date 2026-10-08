@@ -67,7 +67,9 @@ export type RegistrationSettings = z.infer<typeof registrationSettings>;
 
 export const marketplaceSettings = z.object({
   /** Who sees cultural (non-healing) businesses and the "Cultural services" entry points. */
-  culturalVisibility: z.enum(["admins", "everyone"]),
+  culturalVisibility: z.enum(["admins", "everyone"]).default("admins"),
+  /** Who sees the search bar across the home page and directory. */
+  searchVisibility: z.enum(["admins", "everyone"]).default("admins"),
 });
 export type MarketplaceSettings = z.infer<typeof marketplaceSettings>;
 
@@ -109,7 +111,7 @@ export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
     instructions: "",
   },
   registration: { open: true, telegram: "optional" },
-  marketplace: { culturalVisibility: "admins" },
+  marketplace: { culturalVisibility: "admins", searchVisibility: "admins" },
   caseRouting: {
     domains: {
       career: "admin",

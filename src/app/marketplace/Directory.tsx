@@ -27,6 +27,8 @@ interface Facets {
   categories: { slug: string; name: string; nameAm: string | null; sector: string; count: number }[];
   regions: { region: string | null; count: number }[];
   languages: { language: string; count: number }[];
+  culturalVisible?: boolean;
+  searchVisible?: boolean;
 }
 
 interface Results {
@@ -192,7 +194,25 @@ export function Directory() {
     });
   }
 
-  const active = FILTER_KEYS.filter((key) => key !== "sort" && key !== "page" && params.get(key));
+  const CULTURAL_CATEGORY_SLUGS = new Set([
+    "artisan",
+    "coffee-ceremony",
+    "music-dance",
+    "ceremony-events",
+    "language-manuscripts",
+    "heritage-tours",
+  ]);
+
+  const active = FILTER_KEYS.filter((key) => {
+    if (key === "sort" || key === "page") return false;
+    const val = params.get(key);
+    if (!val) return false;
+    if (facets && facets.culturalVisible === false) {
+      if (key === "sector" && val === "cultural") return false;
+      if (key === "category" && CULTURAL_CATEGORY_SLUGS.has(val)) return false;
+    }
+    return true;
+  });
   const categoryName = (slug: string) => facets?.categories.find((c) => c.slug === slug)?.name ?? slug;
   const chipLabel = (key: string, value: string) =>
     key === "category" ? categoryName(value)
@@ -337,7 +357,8 @@ export function Directory() {
       </div>
 
       {/* Main Search Bar with Live Autocomplete */}
-      <div ref={searchContainerRef} className="relative mt-6">
+      {facets?.searchVisible && (
+        <div ref={searchContainerRef} className="relative mt-6">
         <form
           onSubmit={onSearch}
           className="flex items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-sm transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-ring"
@@ -462,28 +483,31 @@ export function Directory() {
           </div>
         )}
       </div>
+    )}
 
-      {/* Quick Search Suggestions Pills */}
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-        <span className="text-muted-foreground">Try:</span>
-        {QUICK_SEARCH_PILLS.map((pill) => (
-          <button
-            key={pill.label}
-            type="button"
-            onClick={() => {
-              if (pill.region) setParam({ region: pill.region });
-              else if (pill.mode) setParam({ mode: pill.mode });
-              else if (pill.q) {
-                setQuery(pill.q);
-                setParam({ q: pill.q });
-              }
-            }}
-            className="rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand-strong"
-          >
-            {pill.label}
-          </button>
-        ))}
-      </div>
+      {facets?.searchVisible && (
+        /* Quick Search Suggestions Pills */
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="text-muted-foreground">Try:</span>
+          {QUICK_SEARCH_PILLS.map((pill) => (
+            <button
+              key={pill.label}
+              type="button"
+              onClick={() => {
+                if (pill.region) setParam({ region: pill.region });
+                else if (pill.mode) setParam({ mode: pill.mode });
+                else if (pill.q) {
+                  setQuery(pill.q);
+                  setParam({ q: pill.q });
+                }
+              }}
+              className="rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand-strong"
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Active filters and sort */}
       <div className="mt-4 flex flex-wrap items-center gap-2">

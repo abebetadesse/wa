@@ -1,4 +1,8 @@
 import { buildDenseLocationData, type LocationObservation, type ProvenanceRecord, type DataQualitySummary, type SpatialUnit, type SourceComparison, type FoodConsumptionObservation, type NutritionSurvey } from "./denseLocationData";
+import { ETHIOPIAN_ADMINISTRATIVE_PLACES, type EthiopianAdministrativePlace, type EthiopianAdministrativeZone, type EthiopianAdministrativeRegion } from "./ethiopianAdministrativePlaces";
+
+// Re-export administrative types for downstream consumers
+export type { EthiopianAdministrativePlace, EthiopianAdministrativeZone, EthiopianAdministrativeRegion };
 
 export type EthiopianAgroZone = "dega" | "weina_dega" | "kolla" | "bereha";
 
@@ -26,9 +30,29 @@ export const ETHIOPIAN_REGION_REFERENCE: EthiopianRegionReference[] = [
   { code: "SI", name: "Sidama", nameAmharic: "ሲዳማ", capital: "Hawassa", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Corbetti", "Aluto Langano"], source: "user_provided_region_reference" },
   { code: "SO", name: "Somali", nameAmharic: "ሶማሊ", capital: "Jigjiga", agroClimaticZones: ["kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
   { code: "SE", name: "South Ethiopia", nameAmharic: "ደቡብ ኢትዮጵያ", capital: "Arba Minch", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: true, knownGeothermalFields: ["Abaya", "Chamo", "Chew Bahir"], source: "user_provided_region_reference" },
+  { code: "SH", name: "Sheger", nameAmharic: "ሸገር", capital: "Sheger City", agroClimaticZones: ["weina_dega", "dega"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
   { code: "SW", name: "Southwest Ethiopia Peoples", nameAmharic: "ደቡብ ምዕራብ ኢትዮጵያ ህዝቦች", capital: "Bonga", agroClimaticZones: ["dega", "weina_dega", "kolla"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
-  { code: "TI", name: "Tigray", nameAmharic: "ትግራይ", capital: "Mekelle", agroClimaticZones: ["dega", "weina_dega", "kolla", "bereha"], riftValleyExposure: false, knownGeothermalFields: [], source: "user_provided_region_reference" },
 ];
+
+/**
+ * Normalizes an Ethiopian administrative region name across common spelling
+ * variants (e.g. "Benishangul Gumuz" vs "Benishangul-Gumuz", "Dire Dawa Astedadar" vs "Dire Dawa",
+ * "Ethiopia Somali" vs "Somali", "Hareri" vs "Harari", "Gambela" vs "Gambella",
+ * "South West Ethiopia People" vs "Southwest Ethiopia Peoples").
+ */
+export function normalizeRegionName(region: string): string {
+  const norm = region.toLowerCase().replace(/[-_]/g, " ").trim();
+  if (norm.includes("somali")) return "somali";
+  if (norm.includes("gumuz")) return "benishangul-gumuz";
+  if (norm.includes("dire dawa")) return "dire dawa";
+  if (norm.includes("harer") || norm.includes("harar")) return "harari";
+  if (norm.includes("gambel")) return "gambella";
+  if (norm.includes("south west") || norm.includes("southwest")) return "southwest ethiopia peoples";
+  if (norm.includes("central")) return "central ethiopia";
+  if (norm.includes("south ethiopia")) return "south ethiopia";
+  return norm;
+}
+
 export interface EthiopianLocationSystemsProfile {
   dataLabel: "indicative_planning_estimate";
   referenceYear: number;
@@ -77,6 +101,20 @@ export interface EthiopianLocationSystemsProfile {
     rivers: string[];
     lakes: string[];
     culturalPractices: string[];
+  };
+  /** Structured administrative hierarchy built from the Region, Zone, Town reference data. */
+  administrativeHierarchy: {
+    /** Total number of districts (weredas/towns) in the region. */
+    totalDistricts: number;
+    /** Number of distinct zones in the region. */
+    zoneCount: number;
+    /** Ordered list of zones; each zone lists its district names. */
+    zones: Array<{
+      name: string;
+      districts: string[];
+    }>;
+    /** Source provenance tag for this hierarchy slice. */
+    source: "Region, Zone, Town.odt";
   };
   foodSystem: {
     locationFoods: LocationFoodProfile[];
@@ -136,9 +174,15 @@ export interface EthiopianLocation {
   commonLanguages: string[];
   wellbeingProfile: EthiopianLocationWellbeingProfile;
   systemsProfile: EthiopianLocationSystemsProfile;
+  /** Slice of ETHIOPIAN_ADMINISTRATIVE_PLACES filtered to this location's region. */
+  administrativePlaces: EthiopianAdministrativePlace[];
   denseData: {
     observations: LocationObservation[];
     sourceComparisons: SourceComparison[];
+    /**
+     * Spatial units at region, zone, and woreda levels derived from the
+     * Region, Zone, Town.odt reference data for this location's region.
+     */
     spatialUnits: SpatialUnit[];
     provenance: ProvenanceRecord[];
     dataQuality: DataQualitySummary;
@@ -295,7 +339,7 @@ const nonCommunicable = (hypertension: number, diabetes: number, cvdMortality: n
 ];
 
 const buildSystemsProfile = (
-  location: Pick<EthiopianLocation, "name" | "aliases" | "agroZone" | "riftValley">,
+  location: Pick<EthiopianLocation, "name" | "aliases" | "agroZone" | "riftValley" | "region">,
 ): EthiopianLocationSystemsProfile => {
   const zoneData: Record<EthiopianAgroZone, Omit<EthiopianLocationSystemsProfile["ecology"], "geography" | "riversAndWaterBodies"> & {
     crops: string[];
@@ -495,10 +539,33 @@ const buildSystemsProfile = (
     },
   ];
 
+  // --- Administrative hierarchy from reference data ---
+  const normLocRegion = normalizeRegionName(location.region);
+  const normLocName = normalizeRegionName(location.name);
+  const regionPlaces = ETHIOPIAN_ADMINISTRATIVE_PLACES.filter((place) => {
+    const normPlaceRegion = normalizeRegionName(place.region);
+    return normPlaceRegion === normLocRegion || normPlaceRegion === normLocName;
+  });
+  const zoneMap = new Map<string, string[]>();
+  for (const place of regionPlaces) {
+    const towns = zoneMap.get(place.zone) ?? [];
+    towns.push(place.town);
+    zoneMap.set(place.zone, towns);
+  }
+  const hierarchyZones = Array.from(zoneMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, districts]) => ({ name, districts: districts.sort((a, b) => a.localeCompare(b)) }));
+
   return {
     dataLabel: "indicative_planning_estimate",
     referenceYear: 2024,
     sourceNote: "Ecological, agricultural, industrial, urbanization, food-system, traditional-medicine, heritage, and cultural fields are indicative planning references; verify against local surveys, cultural authorities, and official datasets before operational decisions.",
+    administrativeHierarchy: {
+      totalDistricts: regionPlaces.length,
+      zoneCount: zoneMap.size,
+      zones: hierarchyZones,
+      source: "Region, Zone, Town.odt",
+    },
     ecology: {
       ecosystem: base.ecosystem,
       geography,
@@ -558,7 +625,7 @@ const buildSystemsProfile = (
   };
 };
 
-const RAW_ETHIOPIAN_LOCATIONS: Omit<EthiopianLocation, "systemsProfile" | "denseData">[] = [
+const RAW_ETHIOPIAN_LOCATIONS: Omit<EthiopianLocation, "systemsProfile" | "denseData" | "administrativePlaces">[] = [
   { id: "addis-ababa", region: "Addis Ababa", name: "Addis Ababa", nameAmharic: "አዲስ አበባ", aliases: ["Finfinnee"], latitude: 9.03, longitude: 38.74, altitudeMeters: 2400, agroZone: "dega", riftValley: false, commonLanguages: ["Amharic", "Afaan Oromo", "English"], wellbeingProfile: profile(3600000, 79, 20, 4.0, communicable(12, 145, 3.2, 8200), nonCommunicable(24, 5.8, 310, 92)) },
   { id: "bahir-dar", region: "Amhara", name: "Bahir Dar", nameAmharic: "ባሕር ዳር", aliases: [], latitude: 11.57, longitude: 37.36, altitudeMeters: 1800, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], wellbeingProfile: profile(500000, 58, 19, 4.7, communicable(65, 170, 2.1, 11500), nonCommunicable(18, 3.9, 360, 65)) },
   { id: "gondar", region: "Amhara", name: "Gondar", nameAmharic: "ጎንደር", aliases: [], latitude: 12.61, longitude: 37.47, altitudeMeters: 2133, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic"], wellbeingProfile: profile(500000, 62, 19, 4.8, communicable(48, 190, 2.0, 10800), nonCommunicable(19, 4.2, 375, 70)) },
@@ -572,57 +639,195 @@ const RAW_ETHIOPIAN_LOCATIONS: Omit<EthiopianLocation, "systemsProfile" | "dense
   { id: "assosa", region: "Benishangul-Gumuz", name: "Assosa", nameAmharic: "አሶሳ", aliases: [], latitude: 10.07, longitude: 34.53, altitudeMeters: 1570, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Amharic", "Berta"], wellbeingProfile: profile(70000, 42, 18, 5.3, communicable(180, 220, 2.2, 15800), nonCommunicable(15, 2.8, 250, 48)) },
   { id: "gambella", region: "Gambella", name: "Gambella", nameAmharic: "ጋምቤላ", aliases: [], latitude: 8.25, longitude: 34.59, altitudeMeters: 526, agroZone: "kolla", riftValley: false, commonLanguages: ["Nuer", "Anywaa", "Amharic"], wellbeingProfile: profile(75000, 48, 18, 5.5, communicable(260, 240, 3.0, 18300), nonCommunicable(14, 2.6, 220, 42)) },
   { id: "harar", region: "Harari", name: "Harar", nameAmharic: "ሐረሪ", aliases: [], latitude: 9.31, longitude: 42.13, altitudeMeters: 1885, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Harari", "Afaan Oromo", "Amharic"], wellbeingProfile: profile(125000, 85, 22, 3.9, communicable(44, 130, 2.8, 7600), nonCommunicable(29, 7.2, 390, 120)) },
+  { id: "sheger", region: "Sheger", name: "Sheger City", nameAmharic: "ሸገር", aliases: ["Sheger", "Shaggar"], latitude: 9.03, longitude: 38.74, altitudeMeters: 2350, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Afaan Oromo", "Amharic"], wellbeingProfile: profile(1200000, 65, 20, 4.3, communicable(30, 150, 2.5, 8800), nonCommunicable(23, 5.5, 320, 95)) },
+  { id: "hosaena", region: "Central Ethiopia", name: "Hosaena", nameAmharic: "ሆሳዕና", aliases: ["Hosanna", "Hadiya", "Central Ethiopia"], latitude: 7.55, longitude: 37.85, altitudeMeters: 2276, agroZone: "weina_dega", riftValley: true, commonLanguages: ["Hadiyya", "Gurage", "Amharic"], wellbeingProfile: profile(350000, 52, 19, 4.8, communicable(55, 160, 2.3, 10200), nonCommunicable(20, 4.5, 330, 75)) },
+  { id: "bonga", region: "Southwest Ethiopia Peoples", name: "Bonga", nameAmharic: "ቦንጋ", aliases: ["Kaffa", "Southwest Ethiopia Peoples", "South West Ethiopia People"], latitude: 7.28, longitude: 36.24, altitudeMeters: 1714, agroZone: "weina_dega", riftValley: false, commonLanguages: ["Kafa", "Bench", "Sheko", "Amharic"], wellbeingProfile: profile(110000, 40, 18, 5.2, communicable(110, 180, 2.0, 12500), nonCommunicable(17, 3.5, 270, 55)) },
 ];
 
-export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.map((location) => ({
-  ...location,
-  systemsProfile: buildSystemsProfile(location),
-  denseData: {
-    ...buildDenseLocationData(location.id),
-    observations: [
-      ...location.wellbeingProfile.communicableDiseaseRates,
-      ...location.wellbeingProfile.nonCommunicableDiseaseRates,
-    ].map((rate, index): LocationObservation => ({
-      observationUid: `urn:obs:et:${location.id}:${index + 1}`,
-      observationId: `${location.id}-${rate.condition.toLowerCase().replaceAll(" ", "-")}-${location.wellbeingProfile.referenceYear}-${index + 1}`,
-      locationId: location.id,
-      spatialId: `urn:loc:et:${location.id}`,
-      indicatorCode: `health.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
-      value: rate.value,
-      unit: rate.measure === "prevalence_pct" ? "pct" : rate.measure === "mortality_per_100k" ? "per_100k" : "per_100k",
-      method: "estimate",
-      methodFamily: "estimate",
-      methodDetail: "Town-level planning estimate generated from the existing location profile.",
-      disaggregation: rate.populationScope,
-      disaggregationAxes: { population_scope: rate.populationScope },
-      periodType: "year",
-      periodValue: String(location.wellbeingProfile.referenceYear),
-      validFrom: `${location.wellbeingProfile.referenceYear}-01-01`,
-      validTo: `${location.wellbeingProfile.referenceYear}-12-31`,
-      transactionFrom: "2026-09-18T00:00:00Z",
-      referenceYear: location.wellbeingProfile.referenceYear,
-      dataStatus: "estimated",
-      confidenceLevel: "very_low",
-      confidenceBasis: "inferred",
-      confidenceRationale: "Planning estimate; no source citation or survey microdata is currently linked.",
-      rightsCode: "internal-reference",
-      sensitivityClass: "internal",
-      note: "Population-level planning estimate; not an individual diagnosis.",
-    })),
-  },
-}));
+/** Builds SpatialUnit[] from the administrative places data for a given region name. */
+function buildAdminSpatialUnits(regionName: string, locationId: string): SpatialUnit[] {
+  const targetNorm = normalizeRegionName(regionName);
+  const regionPlaces = ETHIOPIAN_ADMINISTRATIVE_PLACES.filter(
+    (place) => normalizeRegionName(place.region) === targetNorm,
+  );
+  if (!regionPlaces.length) return [];
+
+  const regionUid = `urn:loc:et:${locationId}`;
+  const units: SpatialUnit[] = [
+    // Region-level spatial unit (level 1)
+    {
+      spatialId: regionUid,
+      locationId,
+      level: "region",
+      levelNumber: 1,
+      name: regionName,
+      authority: "national",
+      validFrom: "2020-01-01",
+    },
+  ];
+
+  // Collect unique zones
+  const zonesSeen = new Set<string>();
+  for (const place of regionPlaces) {
+    if (!zonesSeen.has(place.zone)) {
+      zonesSeen.add(place.zone);
+      const zoneUid = `urn:loc:et:${locationId}:zone:${place.zone.toLowerCase().replace(/\s+/g, "-")}` ;
+      units.push({
+        spatialId: zoneUid,
+        locationId,
+        parentId: regionUid,
+        level: "zone",
+        levelNumber: 2,
+        name: place.zone,
+        authority: "national",
+        validFrom: "2020-01-01",
+      });
+    }
+  }
+
+  // Woreda / district level (level 3)
+  for (const place of regionPlaces) {
+    const zoneUid = `urn:loc:et:${locationId}:zone:${place.zone.toLowerCase().replace(/\s+/g, "-")}`;
+    units.push({
+      spatialId: `urn:loc:et:${place.id}`,
+      locationId,
+      parentId: zoneUid,
+      level: "woreda",
+      levelNumber: 3,
+      name: place.town,
+      authority: "national",
+      validFrom: "2020-01-01",
+    });
+  }
+
+  return units;
+}
+
+export const ETHIOPIAN_LOCATIONS: EthiopianLocation[] = RAW_ETHIOPIAN_LOCATIONS.map((location) => {
+  const targetNorm = normalizeRegionName(location.region);
+  const adminPlaces = ETHIOPIAN_ADMINISTRATIVE_PLACES.filter(
+    (place) => normalizeRegionName(place.region) === targetNorm,
+  );
+  const adminSpatialUnits = buildAdminSpatialUnits(location.region, location.id);
+
+  return {
+    ...location,
+    administrativePlaces: adminPlaces,
+    systemsProfile: buildSystemsProfile(location),
+    denseData: {
+      ...buildDenseLocationData(location.id),
+      // Override spatialUnits with the rich admin hierarchy
+      spatialUnits: adminSpatialUnits.length > 0
+        ? adminSpatialUnits
+        : [{ spatialId: `urn:loc:et:${location.id}`, locationId: location.id, level: "region", levelNumber: 1, name: location.region, authority: "project", validFrom: "2020-01-01" }],
+      observations: [
+        ...location.wellbeingProfile.communicableDiseaseRates,
+        ...location.wellbeingProfile.nonCommunicableDiseaseRates,
+      ].map((rate, index): LocationObservation => ({
+        observationUid: `urn:obs:et:${location.id}:${index + 1}`,
+        observationId: `${location.id}-${rate.condition.toLowerCase().replaceAll(" ", "-")}-${location.wellbeingProfile.referenceYear}-${index + 1}`,
+        locationId: location.id,
+        spatialId: `urn:loc:et:${location.id}`,
+        indicatorCode: `health.${rate.condition.toLowerCase().replaceAll(" ", ".")}`,
+        value: rate.value,
+        unit: rate.measure === "prevalence_pct" ? "pct" : rate.measure === "mortality_per_100k" ? "per_100k" : "per_100k",
+        method: "estimate",
+        methodFamily: "estimate",
+        methodDetail: "Town-level planning estimate generated from the existing location profile.",
+        disaggregation: rate.populationScope,
+        disaggregationAxes: { population_scope: rate.populationScope },
+        periodType: "year",
+        periodValue: String(location.wellbeingProfile.referenceYear),
+        validFrom: `${location.wellbeingProfile.referenceYear}-01-01`,
+        validTo: `${location.wellbeingProfile.referenceYear}-12-31`,
+        transactionFrom: "2026-09-18T00:00:00Z",
+        referenceYear: location.wellbeingProfile.referenceYear,
+        dataStatus: "estimated",
+        confidenceLevel: "very_low",
+        confidenceBasis: "inferred",
+        confidenceRationale: "Planning estimate; no source citation or survey microdata is currently linked.",
+        rightsCode: "internal-reference",
+        sensitivityClass: "internal",
+        note: "Population-level planning estimate; not an individual diagnosis.",
+      })),
+    },
+  };
+});
 
 export const ETHIOPIAN_REGION_LOCATIONS = Array.from(
   new Map(ETHIOPIAN_LOCATIONS.map((location) => [location.region, location])).values(),
 );
 
+function simplifyKey(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9\u1200-\u137F]/g, "");
+}
+
+/**
+ * Resolves any free-text location string to the best-matching EthiopianLocation.
+ * Accepts city/region names, Amharic names, aliases, zone names, or woreda names
+ * (the last two are looked up via ETHIOPIAN_ADMINISTRATIVE_PLACES and then
+ * matched to the owning location by region).
+ */
 export function resolveEthiopianLocation(input?: string): EthiopianLocation {
   const normalized = String(input || "").trim().toLowerCase();
-  return ETHIOPIAN_LOCATIONS.find((location) =>
-    [location.name, location.region, ...location.aliases].some((value) =>
-      value.toLowerCase() === normalized || normalized.includes(value.toLowerCase()) || value.toLowerCase().includes(normalized),
-    ),
-  ) || ETHIOPIAN_LOCATIONS[0];
+  if (!normalized) return ETHIOPIAN_LOCATIONS[0];
+  const simpInput = simplifyKey(normalized);
+
+  // 1. Direct match on city name, region, or alias
+  const direct = ETHIOPIAN_LOCATIONS.find((location) =>
+    [location.name, location.region, location.nameAmharic, ...location.aliases].some((value) => {
+      const lower = value.toLowerCase();
+      if (lower === normalized || normalized.includes(lower) || lower.includes(normalized)) {
+        return true;
+      }
+      if (simpInput) {
+        const simpVal = simplifyKey(value);
+        if (simpVal === simpInput || simpVal.includes(simpInput) || simpInput.includes(simpVal)) {
+          return true;
+        }
+      }
+      return false;
+    }),
+  );
+  if (direct) return direct;
+
+  // 2. Match via administrative places (zone or woreda/town name)
+  const adminMatch = ETHIOPIAN_ADMINISTRATIVE_PLACES.find((place) => {
+    const townLower = place.town.toLowerCase();
+    const zoneLower = place.zone.toLowerCase();
+    if (
+      townLower === normalized ||
+      zoneLower === normalized ||
+      townLower.includes(normalized) ||
+      normalized.includes(zoneLower)
+    ) {
+      return true;
+    }
+    if (simpInput) {
+      const simpTown = simplifyKey(place.town);
+      const simpZone = simplifyKey(place.zone);
+      if (
+        simpTown === simpInput ||
+        simpZone === simpInput ||
+        simpTown.includes(simpInput) ||
+        simpInput.includes(simpTown) ||
+        simpZone.includes(simpInput) ||
+        simpInput.includes(simpZone)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  });
+  if (adminMatch) {
+    const targetNorm = normalizeRegionName(adminMatch.region);
+    const byRegion = ETHIOPIAN_LOCATIONS.find(
+      (location) => normalizeRegionName(location.region) === targetNorm,
+    );
+    if (byRegion) return byRegion;
+  }
+
+  return ETHIOPIAN_LOCATIONS[0];
 }
 
 export type DataProvenanceLevel = "high" | "medium" | "low" | "unknown";
@@ -706,6 +911,103 @@ export function getEthiopianLocationById(id: string): EthiopianLocation | undefi
 
 export function getEthiopianLocationProfile(id: string): EthiopianLocation | undefined {
   return getEthiopianLocationById(id);
+}
+
+// ---------------------------------------------------------------------------
+// Administrative places lookup utilities
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns all `EthiopianAdministrativePlace` records for a given region name.
+ * Normalizes common spelling variations across official and colloquial names.
+ */
+export function getAdministrativePlacesByRegion(region: string): EthiopianAdministrativePlace[] {
+  const norm = normalizeRegionName(region);
+  return ETHIOPIAN_ADMINISTRATIVE_PLACES.filter(
+    (place) => normalizeRegionName(place.region) === norm,
+  );
+}
+
+/**
+ * Returns the distinct zone names for a region, sorted alphabetically.
+ */
+export function getZonesForRegion(region: string): string[] {
+  const places = getAdministrativePlacesByRegion(region);
+  return [...new Set(places.map((place) => place.zone))].sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Returns the distinct district/town names within a specific zone of a region.
+ */
+export function getWoredasForZone(region: string, zone: string): string[] {
+  const norm = zone.trim().toLowerCase();
+  return getAdministrativePlacesByRegion(region)
+    .filter((place) => place.zone.toLowerCase() === norm)
+    .map((place) => place.town)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Returns a structured `EthiopianAdministrativeRegion` object for a region,
+ * grouping zones and their districts. Returns `undefined` if the region has
+ * no matching records in the administrative places dataset.
+ */
+export function getAdministrativeRegionProfile(region: string): EthiopianAdministrativeRegion | undefined {
+  const places = getAdministrativePlacesByRegion(region);
+  if (!places.length) return undefined;
+
+  const zoneMap = new Map<string, string[]>();
+  for (const place of places) {
+    const towns = zoneMap.get(place.zone) ?? [];
+    towns.push(place.town);
+    zoneMap.set(place.zone, towns);
+  }
+
+  const zones: EthiopianAdministrativeZone[] = Array.from(zoneMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, towns]) => ({ name, towns: towns.sort((a, b) => a.localeCompare(b)) }));
+
+  return {
+    name: places[0].region,
+    zones,
+    townCount: places.length,
+  };
+}
+
+/**
+ * Looks up an `EthiopianLocation` by a zone or woreda name from the
+ * administrative places dataset, returning the location whose region contains
+ * that zone/woreda. Returns `undefined` if no match is found.
+ */
+export function getLocationByAdministrativePlace(
+  zone?: string,
+  woreda?: string,
+): EthiopianLocation | undefined {
+  const normZone = (zone ?? "").trim().toLowerCase();
+  const normWoreda = (woreda ?? "").trim().toLowerCase();
+  if (!normZone && !normWoreda) return undefined;
+  const simpZone = simplifyKey(normZone);
+  const simpWoreda = simplifyKey(normWoreda);
+
+  const match = ETHIOPIAN_ADMINISTRATIVE_PLACES.find((place) => {
+    const zoneMatch = normZone
+      ? place.zone.toLowerCase() === normZone ||
+        place.zone.toLowerCase().includes(normZone) ||
+        (simpZone ? simplifyKey(place.zone) === simpZone : false)
+      : true;
+    const woredaMatch = normWoreda
+      ? place.town.toLowerCase() === normWoreda ||
+        place.town.toLowerCase().includes(normWoreda) ||
+        (simpWoreda ? simplifyKey(place.town) === simpWoreda : false)
+      : true;
+    return zoneMatch && woredaMatch;
+  });
+
+  if (!match) return undefined;
+  const targetNorm = normalizeRegionName(match.region);
+  return ETHIOPIAN_LOCATIONS.find(
+    (location) => normalizeRegionName(location.region) === targetNorm,
+  );
 }
 
 export function getEthiopianLocationDataset(): EthiopianLocationDatasetEntry[] {

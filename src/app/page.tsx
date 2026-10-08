@@ -49,28 +49,32 @@ export default async function HomePage() {
               Discover verified herbalists, debteras, bone setters, artisans and ceremony hosts. Book a time that suits you, message them directly and pay the way you prefer.
             </p>
 
-            <form action="/marketplace" className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-xl shadow-brand/5 focus-within:ring-2 focus-within:ring-ring">
-              <Search className="ml-3 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-              <label htmlFor="home-search" className="sr-only">Search healers and cultural services</label>
-              <input
-                id="home-search"
-                name="q"
-                placeholder="Herbalist, Awde Negest reading, coffee ceremony…"
-                className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-              <button type="submit" className="h-11 shrink-0 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-brand-strong">
-                Search
-              </button>
-            </form>
+            {data?.facets.searchVisible && (
+              <>
+                <form action="/marketplace" className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-xl shadow-brand/5 focus-within:ring-2 focus-within:ring-ring">
+                  <Search className="ml-3 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <label htmlFor="home-search" className="sr-only">Search healers and cultural services</label>
+                  <input
+                    id="home-search"
+                    name="q"
+                    placeholder="Herbalist, Awde Negest reading, coffee ceremony…"
+                    className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  />
+                  <button type="submit" className="h-11 shrink-0 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-brand-strong">
+                    Search
+                  </button>
+                </form>
 
-            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
-              <span>Popular:</span>
-              <Link href="/marketplace?q=herbal" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🌿 Herbal</Link>
-              <Link href="/marketplace?q=Awde+Negest" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📜 Awde Negest</Link>
-              <Link href="/marketplace?q=bone+setting" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🦴 Bone setting</Link>
-              <Link href="/marketplace?q=ceremony" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">☕ Ceremony</Link>
-              <Link href="/marketplace?region=Addis+Ababa" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📍 Addis Ababa</Link>
-            </div>
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
+                  <span>Popular:</span>
+                  <Link href="/marketplace?q=herbal" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🌿 Herbal</Link>
+                  <Link href="/marketplace?q=Awde+Negest" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📜 Awde Negest</Link>
+                  <Link href="/marketplace?q=bone+setting" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🦴 Bone setting</Link>
+                  <Link href="/marketplace?q=ceremony" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">☕ Ceremony</Link>
+                  <Link href="/marketplace?region=Addis+Ababa" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📍 Addis Ababa</Link>
+                </div>
+              </>
+            )}
 
             <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <li className="inline-flex items-center gap-1.5"><BadgeCheck className="size-4 text-brand" aria-hidden="true" /> Every business is verified</li>

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BadgeCheck, ExternalLink, Pencil, Plus, ShieldOff, Undo2 } from "lucide-react";
+import { BadgeCheck, ExternalLink, Eye, EyeOff, Pencil, Plus, Search, ShieldOff, Undo2 } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
-import { Alert, Badge, Button, Dialog, EmptyState, ErrorState, Field, Input, LoadingState, PageHeader, PageShell, Select, Textarea } from "@/components/ui";
+import { Alert, Badge, Button, Card, CardContent, Dialog, EmptyState, ErrorState, Field, Input, LoadingState, PageHeader, PageShell, Select, Textarea } from "@/components/ui";
 import { useApi } from "@/features/workspace/useApi";
 import { useToast } from "@/features/feedback/Toaster";
 import { BUSINESS_STATUS } from "@/features/workspace/labels";
@@ -50,6 +50,9 @@ export default function MarketplaceAdminPage() {
   return (
     <PageShell width="wide">
       <PageHeader eyebrow="Administration" title="Marketplace" description="Verify businesses and manage the categories and service types everyone uses." />
+      <div className="mb-6">
+        <MarketplaceVisibilityControl />
+      </div>
       <div className="mb-6 flex flex-wrap gap-1 rounded-full border border-border bg-card p-1" role="tablist">
         {([
           ["pending_verification", "Awaiting verification"],
@@ -271,3 +274,91 @@ function CatalogueEditor({ kind }: { kind: "categories" | "service-kinds" }) {
     </>
   );
 }
+
+function MarketplaceVisibilityControl() {
+  const toast = useToast();
+  const { data, setData } = useApi<{ value: { culturalVisibility: "admins" | "everyone"; searchVisibility?: "admins" | "everyone" } }>("/api/admin/settings/marketplace");
+  if (!data) return null;
+  const culturalHidden = data.value.culturalVisibility === "admins";
+  const searchHidden = (data.value.searchVisibility ?? "admins") === "admins";
+
+  async function toggleCultural() {
+    if (!data) return;
+    try {
+      const next = culturalHidden ? "everyone" : "admins";
+      setData(await apiFetch("/api/admin/settings/marketplace", {
+        method: "PUT",
+        json: { value: { ...data.value, culturalVisibility: next } },
+      }));
+      toast({
+        tone: "success",
+        title: culturalHidden ? "Cultural services are now visible to everyone" : "Cultural services are now hidden from clients",
+      });
+    } catch (err) {
+      toast({ tone: "error", title: "Could not save", body: errorMessage(err) });
+    }
+  }
+
+  async function toggleSearch() {
+    if (!data) return;
+    try {
+      const next = searchHidden ? "everyone" : "admins";
+      setData(await apiFetch("/api/admin/settings/marketplace", {
+        method: "PUT",
+        json: { value: { ...data.value, searchVisibility: next } },
+      }));
+      toast({
+        tone: "success",
+        title: searchHidden ? "Search bar is now visible to everyone" : "Search bar is now hidden from clients",
+      });
+    } catch (err) {
+      toast({ tone: "error", title: "Could not save", body: errorMessage(err) });
+    }
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Card>
+        <CardContent className="flex flex-col justify-between gap-3 p-5">
+          <div className="flex items-start gap-3">
+            {searchHidden ? <EyeOff className="size-5 shrink-0 text-muted-foreground mt-0.5" /> : <Eye className="size-5 shrink-0 text-success mt-0.5" />}
+            <div>
+              <div className="flex items-center gap-1.5">
+                <Search className="size-4 text-brand" />
+                <p className="font-semibold text-foreground text-sm">
+                  Search Bar: {searchHidden ? "Admins only (hidden by default)" : "Visible to everyone"}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Controls the main search input on the homepage and directory for visitors and clients.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={toggleSearch} className="self-end">
+            {searchHidden ? "Show to everyone" : "Hide from clients"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex flex-col justify-between gap-3 p-5">
+          <div className="flex items-start gap-3">
+            {culturalHidden ? <EyeOff className="size-5 shrink-0 text-muted-foreground mt-0.5" /> : <Eye className="size-5 shrink-0 text-success mt-0.5" />}
+            <div>
+              <p className="font-semibold text-foreground text-sm">
+                Cultural Services: {culturalHidden ? "Admins only (hidden by default)" : "Visible to everyone"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Covers Artisan, Coffee ceremony, Music &amp; dance, Ceremonies, Ge&apos;ez, and Heritage tours.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={toggleCultural} className="self-end">
+            {culturalHidden ? "Show to everyone" : "Hide from clients"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
