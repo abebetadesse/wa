@@ -15,7 +15,66 @@
     margin: 14mm;
   }
 
-  body * {
+  body:has(.spiritual-report-page) * {
+    visibility: hidden !important;
+  }
+
+  .spiritual-report-page,
+  .spiritual-report-page * {
+    visibility: visible !important;
+  }
+
+  .spiritual-report-page {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    z-index: 99999 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #21170f !important;
+    font-family: "Noto Sans Ethiopic", sans-serif !important;
+    print-color-adjust: exact;
+  }
+
+  .spiritual-report-page * {
+    color: #21170f !important;
+    text-shadow: none !important;
+  }
+
+  .spiritual-report-page .print-hidden {
+    display: none !important;
+  }
+
+  .spiritual-report-page .print-section {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .spiritual-report-page .print-section,
+  .spiritual-report-page .print-section * {
+    border-color: #d6c8b5 !important;
+    box-shadow: none !important;
+  }
+
+  .spiritual-report-page .print-section [class*="bg-"]:not(.seal-print):not(.seal-print *) {
+    background-color: #fff !important;
+    background-image: none !important;
+  }
+
+  .spiritual-report-page .print-section .seal-print,
+  .spiritual-report-page .print-section .seal-print * {
+    color: #f3e8d0 !important;
+    print-color-adjust: exact;
+  }
+
+  .spiritual-report-page img {
+    max-height: 85mm !important;
+    object-fit: contain !important;
+  }
+
+  body:has(.telsem-print-root) * {
     visibility: hidden !important;
   }
 

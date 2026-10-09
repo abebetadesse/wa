@@ -220,7 +220,7 @@ export default function IntakePage() {
         {/* Progress Bar & Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-2">
-            <span>STEP {step} OF 5</span>
+            <span>{t.intake.stepOf.replace("{step}", String(step))}</span>
             <span>
               {step === 1 && t.intake.step1}
               {step === 2 && t.intake.step2}
@@ -246,15 +246,15 @@ export default function IntakePage() {
         {/* Step 1: Demographics & Altitude */}
         {step === 1 && (
           <div className="glass-panel p-8">
-            <div className="badge badge-safe mb-3">Stage 1 Normalization</div>
+            <div className="badge badge-safe mb-3">{t.intake.normalization}</div>
             <h2 className="text-2xl font-bold text-white mb-2">{t.intake.title}</h2>
             <p className="text-sm text-slate-400 mb-6">
-              Altitude directly alters human oxygen transport physiology. Highland elevations stimulate erythropoiesis, calibrating baseline micronutrient requirements.
+              {t.intake.altitudePhysiology}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.fullName}</label>
                 <input
                   type="text"
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
@@ -264,7 +264,7 @@ export default function IntakePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Email Address</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.emailAddress}</label>
                 <input
                   type="email"
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
@@ -274,7 +274,7 @@ export default function IntakePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Age</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.age}</label>
                 <input
                   type="number"
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
@@ -284,29 +284,29 @@ export default function IntakePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Biological Sex</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.biologicalSex}</label>
                 <select
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
                   value={formData.gender}
                   onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
                 >
-                  <option value="female">Female (Premenopausal Turnover Baseline)</option>
-                  <option value="male">Male (Standard Iron Turnover)</option>
+                  <option value="female">{t.intake.female}</option>
+                  <option value="male">{t.intake.male}</option>
                 </select>
               </div>
 
               <EthiopianLocationInput
-                label="Administrative location"
+                label={t.intake.administrativeLocation}
                 value={formData.cultural.birthLocation}
                 regionValue={formData.region}
                 className="md:col-span-2"
-                placeholder="Search region, zone, district, or town..."
+                placeholder={t.intake.locationPlaceholder}
                 onChange={handleAdministrativePlaceChange}
               />
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">
-                  Altitude (Meters Above Sea Level)
+                  {t.intake.altitudeMeters}
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -316,44 +316,44 @@ export default function IntakePage() {
                     onChange={(e) => setFormData({ ...formData, altitudeMeters: Number(e.target.value) })}
                   />
                   <span className="text-xs text-emerald-400 font-mono whitespace-nowrap">
-                    {formData.altitudeMeters >= 2000 ? "+15–25% Iron Target" : "Standard Target"}
+                    {formData.altitudeMeters >= 2000 ? t.intake.ironTarget : t.intake.standardTarget}
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Physical Activity Level</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.physicalActivity}</label>
                 <select
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
                   value={formData.activityLevel}
                   onChange={(e) => setFormData({ ...formData, activityLevel: e.target.value as any })}
                 >
-                  <option value="sedentary">Sedentary (Desk-based, low exertion)</option>
-                  <option value="moderate">Moderate (Standard daily walking &amp; errands)</option>
-                  <option value="active">Active (Rigorous daily physical labor / exercise)</option>
-                  <option value="very_active">Very Active (Heavy manual agricultural or endurance)</option>
+                  <option value="sedentary">{t.intake.sedentary}</option>
+                  <option value="moderate">{t.intake.moderateActivity}</option>
+                  <option value="active">{t.intake.active}</option>
+                  <option value="very_active">{t.intake.veryActive}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Maternal / Reproductive Stage</label>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.reproductiveStage}</label>
                 <select
                   className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
                   value={formData.pregnancyOrLactation}
                   onChange={(e) => setFormData({ ...formData, pregnancyOrLactation: e.target.value as any })}
                 >
-                  <option value="none">Not Pregnant or Lactating</option>
-                  <option value="pregnant_t1">Pregnant (Trimester 1)</option>
-                  <option value="pregnant_t2">Pregnant (Trimester 2 - Blood volume expansion)</option>
-                  <option value="pregnant_t3">Pregnant (Trimester 3 - Maximum fetal demand)</option>
-                  <option value="lactating">Lactating (High protein &amp; mineral turnover)</option>
+                  <option value="none">{t.intake.notPregnant}</option>
+                  <option value="pregnant_t1">{t.intake.pregnantFirstTrimester}</option>
+                  <option value="pregnant_t2">{t.intake.pregnantSecondTrimester}</option>
+                  <option value="pregnant_t3">{t.intake.pregnantThirdTrimester}</option>
+                  <option value="lactating">{t.intake.lactating}</option>
                 </select>
               </div>
             </div>
 
             <div className="flex justify-end mt-8">
               <button onClick={() => setStep(2)} disabled={!administrativeLocationSelected} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50">
-                Proceed to Diet Log &rarr;
+                {t.intake.nextDiet}
               </button>
             </div>
           </div>
@@ -362,15 +362,15 @@ export default function IntakePage() {
         {/* Step 2: Diet Log & Lifestyle */}
         {step === 2 && (
           <div className="glass-panel p-8">
-            <div className="badge badge-safe mb-3">Stage 3 Gap Detection Inputs</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Daily Dietary Intake &amp; Habits (EFCT 2025)</h2>
+            <div className="badge badge-safe mb-3">{t.intake.gapDetection}</div>
+            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.dailyDiet}</h2>
             <p className="text-sm text-slate-400 mb-6">
               Select your typical daily staple foods and consumption habits. The engine adjusts for traditional food preparation methods (such as Ersho yeast fermentation).
             </p>
 
             {/* Food Selector Cards */}
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">Ethiopian Staple Foods</h3>
+              <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">{t.intake.stapleFoods}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SAMPLE_FOODS.map((food) => {
                   const selected = formData.selectedFoods.find((f) => f.foodName === food.name);
@@ -391,7 +391,7 @@ export default function IntakePage() {
 
                       {selected && (
                         <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
-                          <span className="text-xs text-slate-300">Portion (Grams):</span>
+                          <span className="text-xs text-slate-300">{t.intake.portionGrams}</span>
                           <input
                             type="number"
                             className="w-24 px-2 py-1 rounded bg-black/60 border border-white/20 text-white text-xs text-right"
@@ -468,8 +468,8 @@ export default function IntakePage() {
         {/* Step 3: Medications & Safety Gate Context */}
         {step === 3 && (
           <div className="glass-panel p-8">
-            <div className="badge badge-flagged mb-3">Stage 5 Safety Gate Auditing</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Active Medications &amp; scientific Safety</h2>
+            <div className="badge badge-flagged mb-3">{t.intake.safetyAudit}</div>
+            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.activeMedications}</h2>
             <p className="text-sm text-slate-400 mb-6">
               Certain prescription medications deplete specific nutrients (e.g. Metformin depletes B12) or produce severe adverse reactions when combined with traditional Ethiopian herbs (e.g. Warfarin + Tena Adam).
             </p>
@@ -502,7 +502,7 @@ export default function IntakePage() {
             </div>
 
             <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs text-slate-300 mb-8">
-              <strong className="text-emerald-400">Zero-Interaction Guarantee:</strong> The platform will verify every traditional remedy candidate against your selections. Any herb presenting bleeding risks, hypoglycemia amplification, or additive hypotension will be systematically blocked from your recommendations.
+              <strong className="text-emerald-400">{t.intake.zeroInteraction}</strong> The platform will verify every traditional remedy candidate against your selections. Any herb presenting bleeding risks, hypoglycemia amplification, or additive hypotension will be systematically blocked from your recommendations.
             </div>
 
             <div className="flex justify-between mt-8">
@@ -522,7 +522,7 @@ export default function IntakePage() {
             <div className="badge bg-amber-500/20 text-amber-300 border border-amber-500/40 mb-3">
               Domain B: Structurally Firewalled
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Cultural &amp; Heritage Personalization</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.culturalPersonalization}</h2>
 
             {/* Architectural Firewall Alert */}
             <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed mb-6">
@@ -622,8 +622,8 @@ export default function IntakePage() {
         {/* Step 5: Review & Background Job Execution */}
         {step === 5 && (
           <div className="glass-panel p-8">
-            <div className="badge badge-safe mb-3">Pre-Flight Audit</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Assessment Review &amp; Consent</h2>
+            <div className="badge badge-safe mb-3">{t.intake.preflightAudit}</div>
+            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.assessmentReview}</h2>
             <p className="text-sm text-slate-400 mb-6">
               Review your demographic profile, active medications, and food log before the deterministic evaluation engine executes.
             </p>

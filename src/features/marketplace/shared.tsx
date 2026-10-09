@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, Home, MapPin, MessageSquare, Phone, Star, UserRound, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const MODE_LABELS: Record<string, { label: string; icon: typeof Video }> = {
   in_person: { label: "In person", icon: UserRound },
@@ -22,10 +23,11 @@ export const formatEtb = (value: number | string | null | undefined) =>
   value === null || value === undefined || value === "" ? "—" : `${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })} ETB`;
 
 export function Stars({ value, count, size = "sm" }: { value: number | string | null; count?: number; size?: "sm" | "lg" }) {
+  const { t } = useLanguage();
   const rating = value === null ? null : Number(value);
-  if (rating === null || !count) return <span className="text-xs text-muted-foreground">New</span>;
+  if (rating === null || !count) return <span className="text-xs text-muted-foreground">{t.marketplace.newListing}</span>;
   return (
-    <span className="inline-flex items-center gap-1" aria-label={`Rated ${rating.toFixed(1)} out of 5 from ${count} reviews`}>
+    <span className="inline-flex items-center gap-1" aria-label={t.marketplace.ratedOutOfFive.replace("{rating}", rating.toFixed(1)).replace("{count}", String(count))}>
       <Star className={cn("fill-gold text-gold", size === "lg" ? "size-5" : "size-3.5")} aria-hidden="true" />
       <span className={cn("font-bold text-foreground", size === "lg" ? "text-lg" : "text-sm")}>{rating.toFixed(1)}</span>
       <span className="text-xs text-muted-foreground">({count})</span>
@@ -46,6 +48,7 @@ export interface BusinessSummary {
   coverUrl: string | null;
   ratingAverage: string | null;
   ratingCount: number;
+  demoSample?: boolean;
   categoryName: string;
   categoryNameAm: string | null;
   sector: string;
@@ -64,7 +67,10 @@ export function Monogram({ name, className }: { name: string; className?: string
 }
 
 export function BusinessCard({ business }: { business: BusinessSummary }) {
+  const { language, t } = useLanguage();
   const cultural = business.sector === "cultural";
+  const categoryName = language === "am" ? business.categoryNameAm ?? business.categoryName : business.categoryName;
+  const businessName = language === "am" ? business.nameAm ?? business.name : business.name;
   return (
     <Link
       href={`/b/${business.slug}`}
@@ -78,7 +84,7 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
         style={business.coverUrl ? { backgroundImage: `url(${business.coverUrl})` } : undefined}
       >
         <span className={cn("absolute left-4 top-3 rounded-full px-2.5 py-0.5 text-[11px] font-bold backdrop-blur", cultural ? "bg-gold/90 text-inverse" : "bg-card/90 text-brand-strong")}>
-          {business.categoryName}
+          {categoryName}
         </span>
       </div>
       <div className="-mt-8 flex flex-1 flex-col gap-2 px-5 pb-5">
@@ -86,15 +92,19 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={business.logoUrl} alt="" className="size-14 rounded-2xl border-4 border-card object-cover" />
         ) : (
-          <Monogram name={business.name} className="size-14 border-4 border-card text-xl" />
+          <Monogram name={businessName} className="size-14 border-4 border-card text-xl" />
         )}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="flex items-center gap-1 font-display text-lg font-bold leading-tight text-foreground group-hover:text-brand-strong">
-              <span className="truncate">{business.name}</span>
-              <BadgeCheck className="size-4 shrink-0 text-brand" aria-label="Verified" />
+              <span className="truncate">{businessName}</span>
+              {business.demoSample ? (
+                <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">{t.marketplace.sample}</span>
+              ) : (
+                <BadgeCheck className="size-4 shrink-0 text-brand" aria-label={t.marketplace.verified} />
+              )}
             </h3>
-            {business.nameAm && <p lang="am" className="truncate font-geez text-sm text-muted-foreground">{business.nameAm}</p>}
+            {language !== "am" && business.nameAm && <p lang="am" className="truncate font-geez text-sm text-muted-foreground">{business.nameAm}</p>}
           </div>
           <Stars value={business.ratingAverage} count={business.ratingCount} />
         </div>
@@ -113,9 +123,9 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
         <div className="mt-auto flex items-center justify-between gap-2 pt-2 text-xs text-muted-foreground">
           <span className="inline-flex min-w-0 items-center gap-1">
             <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-            <span className="truncate">{[business.city, business.region].filter(Boolean).join(", ") || "Ethiopia"}</span>
+            <span className="truncate">{[business.city, business.region].filter(Boolean).join(", ") || t.marketplace.ethiopia}</span>
           </span>
-          {business.fromPriceEtb && <span className="shrink-0 font-semibold text-foreground">from {formatEtb(business.fromPriceEtb)}</span>}
+          {business.fromPriceEtb && <span className="shrink-0 font-semibold text-foreground">{t.marketplace.from} {formatEtb(business.fromPriceEtb)}</span>}
         </div>
       </div>
     </Link>

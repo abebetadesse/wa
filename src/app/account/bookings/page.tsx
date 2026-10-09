@@ -9,6 +9,7 @@ import { useRealtime } from "@/features/realtime/RealtimeProvider";
 import { BookingStatusBadge, formatWhen } from "@/features/marketplace/status";
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
 
 interface ClientBooking {
   id: string;
@@ -24,6 +25,7 @@ interface ClientBooking {
 }
 
 export default function MyBookingsPage() {
+  const { t } = useLanguage();
   const [scope, setScope] = useState<"upcoming" | "past">("upcoming");
   const [bookings, setBookings] = useState<ClientBooking[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +48,9 @@ export default function MyBookingsPage() {
 
   return (
     <PageShell>
-      <PageHeader eyebrow="Your account" title="My bookings" description="Status changes appear here instantly." actions={<ButtonLink href="/marketplace" variant="outline">Book something new</ButtonLink>} />
+      <PageHeader eyebrow={t.bookings.yourAccount} title={t.bookings.myBookings} description={t.bookings.statusChangesAppear} actions={<ButtonLink href="/marketplace" variant="outline">{t.bookings.bookSomethingNew}</ButtonLink>} />
 
-      <div className="mb-6 inline-flex rounded-full border border-border bg-card p-1" role="tablist" aria-label="Bookings">
+      <div className="mb-6 inline-flex rounded-full border border-border bg-card p-1" role="tablist" aria-label={t.bookings.myBookings}>
         {(["upcoming", "past"] as const).map((value) => (
           <button
             key={value}
@@ -57,18 +59,18 @@ export default function MyBookingsPage() {
             onClick={() => setScope(value)}
             className={cn("rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition-colors", scope === value ? "bg-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
           >
-            {value}
+            {value === "upcoming" ? t.bookings.upcoming : t.bookings.past}
           </button>
         ))}
       </div>
 
       {error && <ErrorState message={error} onRetry={load} />}
-      {!error && !bookings && <LoadingState label="Loading your bookings…" />}
+      {!error && !bookings && <LoadingState label={t.bookings.loadingYourBookings} />}
       {bookings && bookings.length === 0 && (
         <EmptyState
-          title={scope === "upcoming" ? "No upcoming bookings" : "No past bookings"}
-          description="When you book a healer or cultural service it appears here."
-          action={<ButtonLink href="/marketplace">Find a healer</ButtonLink>}
+          title={scope === "upcoming" ? t.bookings.noUpcomingBookings : t.bookings.noPastBookings}
+          description={t.bookings.whenYouBook}
+          action={<ButtonLink href="/marketplace">{t.bookings.findAHealer}</ButtonLink>}
         />
       )}
       {bookings && bookings.length > 0 && (

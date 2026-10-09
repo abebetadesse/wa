@@ -19,6 +19,7 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
@@ -295,8 +296,22 @@ const caseDepthOption = {
 };
 
 export default function HudDashboard() {
+  const { t } = useLanguage();
   const [activeSignalTab, setActiveSignalTab] = useState<"telemetry" | "analysis" | "archive">("telemetry");
   const [showNotice, setShowNotice] = useState(true);
+  const metricLabels = [
+    t.dashboard.signalIntegrity,
+    t.dashboard.caseReadiness,
+    t.dashboard.advisoryLoop,
+    t.dashboard.recordsProcessed,
+  ];
+  const actionCopy = [
+    [t.dashboard.launchCase, t.dashboard.launchCaseDescription],
+    [t.dashboard.personalProfile, t.dashboard.personalProfileDescription],
+    [t.dashboard.safetyMatrix, t.dashboard.safetyMatrixDescription],
+    [t.dashboard.foodComposition, t.dashboard.foodCompositionDescription],
+    [t.dashboard.auditLedger, t.dashboard.auditLedgerDescription],
+  ];
 
   const particles = Array.from({ length: 18 }, (_, index) => ({
     id: index,
@@ -348,14 +363,14 @@ export default function HudDashboard() {
           <div className="flex items-center gap-2.5">
             <Sparkles size={16} className="text-amber-400 shrink-0" />
             <span>
-              <strong>Ancestral Resonance Active:</strong> Ethiopian highland altitude baseline calibrated at 2,400m. 726 EFCT foods and Stage 5 Herb-Drug safety filters operational.
+              {t.dashboard.ancestralNotice}
             </span>
           </div>
           <button
             type="button"
             onClick={() => setShowNotice(false)}
             className="text-amber-400/70 hover:text-amber-300 p-1 rounded transition"
-            title="Dismiss notice"
+            title={t.dashboard.dismissNotice}
           >
             <X size={14} />
           </button>
@@ -373,11 +388,11 @@ export default function HudDashboard() {
           <div className="max-w-3xl">
             <div className="status-pill mb-4 ancestral-pill">
               <span className="status-dot" />
-              Ancestral intelligence core
+              {t.dashboard.coreActive}
             </div>
-            <h1 className="dashboard-title ancestral-title">Ethiopian Wellbeing Intelligence</h1>
+            <h1 className="dashboard-title ancestral-title">{t.dashboard.heroTitle}</h1>
             <p className="dashboard-subtitle">
-              Precision nutrition, safety-aware traditional medicine guidance, and cultural context fused into a living command view for care decisions.
+              {t.dashboard.description}
             </p>
 
             <div className="ancestral-signal-row mt-6">
@@ -413,11 +428,11 @@ export default function HudDashboard() {
       <div className="mb-8">
         <div className="text-xs font-mono uppercase tracking-wider text-stone-400 mb-3 flex items-center gap-2">
           <Layers size={14} className="text-amber-400" />
-          QUICK ACCESS TILES • ፈጣን መዳረሻ
+          {t.dashboard.quickAccess}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {quickActions.map((action, idx) => (
-            <Link key={action.title} href={action.href}>
+            <Link key={action.href} href={action.href}>
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -430,11 +445,11 @@ export default function HudDashboard() {
                     <div className="rounded-lg bg-white/5 p-2">{action.icon}</div>
                     <ArrowRight size={14} className="text-stone-500 opacity-60" />
                   </div>
-                  <div className="text-sm font-bold text-white">{action.title}</div>
+                  <div className="text-sm font-bold text-white">{actionCopy[idx][0]}</div>
                   <div className="text-[11px] font-mono text-amber-400/80">{action.amharic}</div>
                 </div>
                 <div className="mt-3 text-[11px] text-stone-400 leading-tight">
-                  {action.description}
+                  {actionCopy[idx][1]}
                 </div>
               </motion.div>
             </Link>
@@ -456,7 +471,7 @@ export default function HudDashboard() {
             <div className="flex items-end justify-between">
               <div>
                 <div className="metric-value">{metric.value}</div>
-                <div className="metric-label">{metric.label}</div>
+                <div className="metric-label">{metricLabels[index]}</div>
               </div>
               <svg className="h-7 w-16 opacity-70 mb-2" viewBox="0 0 60 24" fill="none">
                 <path
@@ -521,15 +536,15 @@ export default function HudDashboard() {
               <div className="chart-grid mt-6">
                 <div className="mini-chart-panel">
                   <div className="chart-header">
-                    <span>Case signal</span>
-                    <span className="chart-tag">Live</span>
+                    <span>{t.dashboard.caseSignal}</span>
+                    <span className="chart-tag">{t.dashboard.live}</span>
                   </div>
                   <ReactECharts option={lineOption} style={{ height: 210 }} notMerge lazyUpdate />
                 </div>
                 <div className="mini-chart-panel">
                   <div className="chart-header">
-                    <span>Micronutrient index</span>
-                    <span className="chart-tag chart-tag--amber">Focus</span>
+                    <span>{t.dashboard.micronutrientIndex}</span>
+                    <span className="chart-tag chart-tag--amber">{t.dashboard.focus}</span>
                   </div>
                   <ReactECharts option={barOption} style={{ height: 210 }} notMerge lazyUpdate />
                 </div>
@@ -656,7 +671,7 @@ export default function HudDashboard() {
           className="sci-fi-panel p-5 dashboard-panel space-y-6"
         >
           <div>
-            <div className="dashboard-side-header">Live state</div>
+            <div className="dashboard-side-header">{t.dashboard.liveState}</div>
             <ul className="data-list">
               {overlayList.map((item) => (
                 <li key={item.label}>
@@ -669,8 +684,8 @@ export default function HudDashboard() {
 
           <div className="radar-panel">
             <div className="chart-header">
-              <span>System readiness</span>
-              <span className="chart-tag chart-tag--blue">Stable</span>
+              <span>{t.dashboard.systemReadiness}</span>
+              <span className="chart-tag chart-tag--blue">{t.dashboard.stable}</span>
             </div>
             <ReactECharts option={radarOption} style={{ height: 220 }} notMerge lazyUpdate />
           </div>
@@ -682,7 +697,7 @@ export default function HudDashboard() {
                 <Clock size={13} className="text-amber-400" />
                 RECENT ACTIVITY
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono">● Live</span>
+              <span className="text-[10px] text-emerald-400 font-mono">● {t.dashboard.live}</span>
             </div>
             <div className="space-y-2.5">
               {recentActivities.map((act) => (
@@ -721,7 +736,7 @@ export default function HudDashboard() {
           className="sci-fi-panel p-5 dashboard-panel"
         >
           <div className="chart-header">
-            <span>Trend summary</span>
+            <span>{t.dashboard.trendSummary}</span>
             <span className="chart-tag chart-tag--blue">7-day</span>
           </div>
           <ReactECharts option={trendSummaryOption} style={{ height: 220 }} notMerge lazyUpdate />
@@ -734,8 +749,8 @@ export default function HudDashboard() {
           className="sci-fi-panel p-5 dashboard-panel"
         >
           <div className="chart-header">
-            <span>Case depth</span>
-            <span className="chart-tag chart-tag--amber">Composite</span>
+            <span>{t.dashboard.caseDepth}</span>
+            <span className="chart-tag chart-tag--amber">{t.dashboard.composite}</span>
           </div>
           <ReactECharts option={caseDepthOption} style={{ height: 220 }} notMerge lazyUpdate />
         </motion.div>

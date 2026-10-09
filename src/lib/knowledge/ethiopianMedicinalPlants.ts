@@ -30,6 +30,11 @@ export type MedicinalPlant = {
   diseasesTreated: string[];
   source: string;
   sourceUrl?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageAttribution?: string;
+  imageLicenseUrl?: string;
+  imageSourceUrl?: string;
   pubmedEvidence?: PubMedEvidence[];
 };
 

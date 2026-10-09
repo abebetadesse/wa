@@ -67,7 +67,7 @@ export function TelsemSacredSeal({
         </div>
 
         {/* View Toggle */}
-        {seal.sourceImage && (
+        {interactive && seal.sourceImage && (
           <div className="flex items-center rounded-xl bg-stone-950 border border-stone-800 p-1 shrink-0">
             <button
               type="button"
@@ -111,14 +111,16 @@ export function TelsemSacredSeal({
                 alt={seal.nameAm}
                 className="max-w-full max-h-full object-contain filter contrast-125 sepia-[0.35] brightness-90 transition-transform duration-500 group-hover:scale-105"
               />
-              <button
-                type="button"
-                onClick={() => setIsZoomed(true)}
-                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 border border-stone-700 text-stone-300 hover:text-amber-300 opacity-80 group-hover:opacity-100 transition-opacity z-20"
-                title="View full plate"
-              >
-                <Maximize2 size={16} />
-              </button>
+              {interactive && (
+                <button
+                  type="button"
+                  onClick={() => setIsZoomed(true)}
+                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 border border-stone-700 text-stone-300 hover:text-amber-300 opacity-80 group-hover:opacity-100 transition-opacity z-20"
+                  title="View full plate"
+                >
+                  <Maximize2 size={16} />
+                </button>
+              )}
             </div>
           ) : (
             <div className="relative w-full h-full flex items-center justify-center">
@@ -129,7 +131,7 @@ export function TelsemSacredSeal({
       </div>
 
       {/* Interactive Tabs */}
-      {showDetails && (
+      {showDetails && interactive && (
         <div className="mt-4 space-y-3">
           <div className="flex items-center gap-1 border-b border-stone-800 pb-2 text-xs">
             <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n/context";
 
 interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -8,6 +9,7 @@ interface InstallPromptEvent extends Event {
 }
 
 export default function PwaRegister() {
+  const { t } = useLanguage();
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [showIosHelp, setShowIosHelp] = useState(false);
 
@@ -106,16 +108,16 @@ export default function PwaRegister() {
   return (
     <aside className="fixed inset-x-3 bottom-3 z-[100] mx-auto flex max-w-xl items-center gap-3 rounded-2xl border border-border bg-background/95 p-4 shadow-2xl backdrop-blur">
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-foreground">Use Ethiopian Wisdom Atlas as an app</p>
+        <p className="font-semibold text-foreground">{t.pwa.installTitle}</p>
         {showIosHelp && !installPrompt ? (
-          <p className="mt-1 text-sm text-muted-foreground">Tap Share, then choose &quot;Add to Home Screen&quot;.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.pwa.iosHelp}</p>
         ) : (
-          <p className="mt-1 text-sm text-muted-foreground">Install for quick access from your home screen.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.pwa.installHelp}</p>
         )}
       </div>
       {installPrompt && (
         <button type="button" onClick={() => void install()} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
-          Install
+          {t.pwa.install}
         </button>
       )}
       <button

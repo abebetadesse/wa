@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type { RegionData } from "@/lib/location/atlas";
 import type { EthiopianAdministrativeRegion } from "@/lib/location/ethiopianAdministrativePlaces";
 import AdministrativeExplorer from "./AdministrativeExplorer";
+import { useLanguage } from "@/lib/i18n/context";
 
 interface AtlasClientProps {
   regions: RegionData[];
@@ -78,6 +79,7 @@ function findAdministrativeRegion(region: RegionData, administrativeRegions: Eth
 }
 
 export default function AtlasClient({ regions, administrativeRegions }: AtlasClientProps) {
+  const { t } = useLanguage();
   const [selected, setSelected] = useState<RegionData | null>(null);
   const [selectedAdministrativeRegion, setSelectedAdministrativeRegion] =
     useState<EthiopianAdministrativeRegion | null>(null);
@@ -128,12 +130,9 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
             <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
             EPHI DHS 2019 · MiNDO Survey · WHO SEARO
           </div>
-          <h1 className="text-3xl font-extrabold text-white mb-2">
-            Ethiopian wellbeing <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Nutrition Atlas</span>
-          </h1>
+          <h1 className="text-3xl font-extrabold text-white mb-2">{t.atlas.title}</h1>
           <p className="text-slate-400 text-sm max-w-2xl">
-            Population-level nutritional deficiency rates, stunting, and anaemia prevalence across all Ethiopian regions.
-            Select a region for detailed breakdown and food recommendations.
+            {t.atlas.subtitle}
           </p>
         </div>
 

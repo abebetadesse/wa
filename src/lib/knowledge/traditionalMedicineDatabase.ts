@@ -10,6 +10,7 @@
  */
 
 import type { MedicinalPlant, PubMedEvidence } from "./ethiopianMedicinalPlants";
+import plantImageManifest from "./medicinalPlantImageManifest.json";
 
 export type TraditionalTherapeuticCategory =
   | "digestive_helminthic" // የሆድ ቁርጠትና የትል ፈውስ (Tapeworm, amoeba, colic, indigestion)
@@ -91,6 +92,11 @@ export interface TraditionalMedicineItem {
   contraindications: string[];
   herbDrugInteractions: HerbDrugInteraction[];
   source: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageAttribution?: string;
+  imageLicenseUrl?: string;
+  imageSourceUrl?: string;
   pubmedEvidence?: PubMedEvidence[];
 }
 
@@ -2877,6 +2883,18 @@ export const INTENSIVE_TRADITIONAL_MEDICINES: TraditionalMedicineItem[] = [
   },
 ];
 
+const plantImagesById = new Map(plantImageManifest.map((image) => [image.id, image]));
+
+for (const item of INTENSIVE_TRADITIONAL_MEDICINES) {
+  const image = plantImagesById.get(item.id);
+  if (!image) continue;
+  item.imageUrl = image.imageUrl;
+  item.imageAlt = image.imageAlt;
+  item.imageAttribution = image.attribution;
+  item.imageLicenseUrl = image.license;
+  item.imageSourceUrl = image.sourceUrl;
+}
+
 /**
  * Maps a TraditionalMedicineItem cleanly into the legacy MedicinalPlant structure
  * so all existing components and engines work with full backwards compatibility.
@@ -2903,6 +2921,11 @@ export function toMedicinalPlant(item: TraditionalMedicineItem): MedicinalPlant 
     diseasesTreated: item.diseasesTreated,
     source: `${item.source} ${item.manuscriptReference ? `• ${item.manuscriptReference.bookTitle} ${item.manuscriptReference.chapterOrSection}` : ""}`,
     sourceUrl: "https://ephi.gov.et/research/traditional-modern-medicine/",
+    imageUrl: item.imageUrl,
+    imageAlt: item.imageAlt,
+    imageAttribution: item.imageAttribution,
+    imageLicenseUrl: item.imageLicenseUrl,
+    imageSourceUrl: item.imageSourceUrl,
     pubmedEvidence: item.pubmedEvidence,
   };
 }

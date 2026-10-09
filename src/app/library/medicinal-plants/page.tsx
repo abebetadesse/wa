@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Leaf,
@@ -40,6 +41,53 @@ const PREPARATION_ICONS: Record<string, string> = {
   mastication: "🌿",
   fresh_juice: "🧪",
 };
+
+function PlantPhoto({
+  item,
+  imageClassName,
+}: {
+  item: TraditionalMedicineItem;
+  imageClassName: string;
+}) {
+  return (
+    <figure className="mt-3 overflow-hidden rounded-2xl border border-stone-700 bg-stone-950/80">
+      {item.imageUrl ? (
+        <Image
+          src={item.imageUrl}
+          alt={item.imageAlt ?? `${item.vernacularName} (${item.scientificName}) plant photograph`}
+          width={800}
+          height={550}
+          className={imageClassName}
+          unoptimized
+          loading="lazy"
+        />
+      ) : (
+        <div
+          className={`${imageClassName} flex flex-col items-center justify-center gap-1 text-stone-500`}
+          role="img"
+          aria-label={`No photograph available for ${item.vernacularName}`}
+        >
+          <Leaf size={20} aria-hidden="true" />
+          <span className="text-[10px]">Photo unavailable</span>
+        </div>
+      )}
+      {(item.imageAttribution || item.imageLicenseUrl) && (
+        <figcaption className="flex flex-wrap items-center gap-x-1 px-2.5 py-1.5 text-[9px] leading-tight text-stone-400">
+          {item.imageAttribution && (
+            <a href={item.imageSourceUrl} target="_blank" rel="noreferrer" className="hover:text-stone-200">
+              {item.imageAttribution}
+            </a>
+          )}
+          {item.imageLicenseUrl && (
+            <a href={item.imageLicenseUrl} target="_blank" rel="noreferrer" className="underline hover:text-stone-200">
+              License
+            </a>
+          )}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
 
 export default function MedicinalPlantsPage() {
   const [query, setQuery] = useState("");
@@ -278,6 +326,8 @@ export default function MedicinalPlantsPage() {
                       )}
                     </div>
 
+                    <PlantPhoto item={item} imageClassName="h-28 w-full object-cover" />
+
                     {/* Plant Titles */}
                     <div className="mt-3">
                       <div className="flex items-baseline gap-2">
@@ -359,6 +409,8 @@ export default function MedicinalPlantsPage() {
                 {selectedItem.growthForm}
               </span>
             </div>
+
+            <PlantPhoto item={selectedItem} imageClassName="h-40 w-full object-cover" />
 
             <div className="mt-3">
               <h2 className="text-3xl font-black text-white font-serif tracking-tight">

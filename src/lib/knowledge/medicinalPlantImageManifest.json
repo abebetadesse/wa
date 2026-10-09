@@ -1,0 +1,533 @@
+[
+  {
+    "id": "acacia-nilotica-girar",
+    "scientificName": "Acacia nilotica (L.) Delile",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747688020/medium.jpg",
+    "imageAlt": "Photograph of Acacia nilotica (L.) Delile",
+    "attribution": "(c) P Jeganathan, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406914460"
+  },
+  {
+    "id": "acanthus-sennii-kosheshila",
+    "scientificName": "Acanthus sennii Chiov.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/612335419/medium.jpg",
+    "imageAlt": "Photograph of Acanthus sennii Chiov.",
+    "attribution": "(c) avocat, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/336908172"
+  },
+  {
+    "id": "acmella-caulirhiza-yemidir-berbere",
+    "scientificName": "Acmella caulirhiza Delile",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/26388776/medium.jpeg",
+    "imageAlt": "Photograph of Acmella caulirhiza Delile",
+    "attribution": "(c) Mattia Menchetti, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/17374201"
+  },
+  {
+    "id": "adhatoda-schimperiana-sensel",
+    "scientificName": "Adhatoda schimperiana Hochst. ex Nees",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1739074/format/large",
+    "imageAlt": "Digitized herbarium specimen of Adhatoda schimperiana Hochst. ex Nees",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2516111856"
+  },
+  {
+    "id": "albizia-gummifera-embis",
+    "scientificName": "Albizia gummifera (J.F. Gmel.) C.A. Sm.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/728962445/medium.jpg",
+    "imageAlt": "Photograph of Albizia gummifera (J.F. Gmel.) C.A. Sm.",
+    "attribution": "(c) Mathew Rees, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/397444858"
+  },
+  {
+    "id": "allium-sativum-nech-shinkurt",
+    "scientificName": "Allium sativum L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/745922417/medium.jpg",
+    "imageAlt": "Photograph of Allium sativum L.",
+    "attribution": "(c) naturalist_ua_97, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406036860"
+  },
+  {
+    "id": "aloe-macrocarpa-ret",
+    "scientificName": "Aloe macrocarpa Tod. (and indigenous Aloe spp.)",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/609903/medium.JPG",
+    "imageAlt": "Photograph of Aloe macrocarpa Tod. (and indigenous Aloe spp.)",
+    "attribution": "(c) Duarte Frade, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/482431"
+  },
+  {
+    "id": "artemisia-abyssinica-chikugn",
+    "scientificName": "Artemisia abyssinica Sch. Bip. ex A. Rich.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1304599/format/large",
+    "imageAlt": "Digitized herbarium specimen of Artemisia abyssinica Sch. Bip. ex A. Rich.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2517743459"
+  },
+  {
+    "id": "artemisia-rehan-ariti",
+    "scientificName": "Artemisia rehan Chiov.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1485124/format/large",
+    "imageAlt": "Digitized herbarium specimen of Artemisia rehan Chiov.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2515904668"
+  },
+  {
+    "id": "boswellia-papyrifera-itan",
+    "scientificName": "Boswellia papyrifera (Delile) Hochst.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1960289/format/large",
+    "imageAlt": "Digitized herbarium specimen of Boswellia papyrifera (Delile) Hochst.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2516200287"
+  },
+  {
+    "id": "brucea-antidysenterica-abalo",
+    "scientificName": "Brucea antidysenterica J.F. Mill.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/662676223/medium.jpg",
+    "imageAlt": "Photograph of Brucea antidysenterica J.F. Mill.",
+    "attribution": "(c) Philippe Hornus, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/363049470"
+  },
+  {
+    "id": "calpurnia-aurea-aluma",
+    "scientificName": "Calpurnia aurea (Ait.) Benth.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/714329941/medium.jpg",
+    "imageAlt": "Photograph of Calpurnia aurea (Ait.) Benth.",
+    "attribution": "(c) Henry de Lange, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/389940899"
+  },
+  {
+    "id": "carissa-spinarum-agam",
+    "scientificName": "Carissa spinarum L. (syn. C. edulis)",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747748883/medium.jpg",
+    "imageAlt": "Photograph of Carissa spinarum L. (syn. C. edulis)",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406944244"
+  },
+  {
+    "id": "cirsium-englerianum-weynagufta",
+    "scientificName": "Cirsium englerianum O. Hoffm.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1322601/format/large",
+    "imageAlt": "Digitized herbarium specimen of Cirsium englerianum O. Hoffm.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2515930320"
+  },
+  {
+    "id": "clausena-anisata-limich",
+    "scientificName": "Clausena anisata (Willd.) Hook. f. ex Benth.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/744680720/medium.jpg",
+    "imageAlt": "Photograph of Clausena anisata (Willd.) Hook. f. ex Benth.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/405422195"
+  },
+  {
+    "id": "clematis-simensis-azo-hareg",
+    "scientificName": "Clematis simensis Fresen.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1374960/format/large",
+    "imageAlt": "Digitized herbarium specimen of Clematis simensis Fresen.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2516020365"
+  },
+  {
+    "id": "commiphora-myrrha-kerbe",
+    "scientificName": "Commiphora myrrha (Nees) Engl.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1961754/format/large",
+    "imageAlt": "Digitized herbarium specimen of Commiphora myrrha (Nees) Engl.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2516213080"
+  },
+  {
+    "id": "cordia-africana-wanza",
+    "scientificName": "Cordia africana Lam.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/721667326/medium.jpg",
+    "imageAlt": "Photograph of Cordia africana Lam.",
+    "attribution": "(c) Mathew Rees, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/393703509"
+  },
+  {
+    "id": "croton-macrostachyus-bisana",
+    "scientificName": "Croton macrostachyus Hochst. ex Delile",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/360991238/medium.jpeg",
+    "imageAlt": "Photograph of Croton macrostachyus Hochst. ex Delile",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/204246285"
+  },
+  {
+    "id": "cucurbita-pepo-duba-fre",
+    "scientificName": "Cucurbita pepo L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747575258/medium.jpg",
+    "imageAlt": "Photograph of Cucurbita pepo L.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406859874"
+  },
+  {
+    "id": "curcuma-longa-ird",
+    "scientificName": "Curcuma longa L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/740793367/medium.jpg",
+    "imageAlt": "Photograph of Curcuma longa L.",
+    "attribution": "(c) Yu-Huang Wang, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/403463801"
+  },
+  {
+    "id": "datura-stramonium-astenagir",
+    "scientificName": "Datura stramonium L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747713304/medium.jpg",
+    "imageAlt": "Photograph of Datura stramonium L.",
+    "attribution": "(c) Matthew Gerke, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406926636"
+  },
+  {
+    "id": "dodonaea-viscosa-kitkita",
+    "scientificName": "Dodonaea viscosa Jacq.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747751431/medium.jpg",
+    "imageAlt": "Photograph of Dodonaea viscosa Jacq.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406945467"
+  },
+  {
+    "id": "echinops-kebericho-kebercho",
+    "scientificName": "Echinops kebericho Mesfin",
+    "imageUrl": "https://bs.plantnet.org/image/o/f68069d2d40026166590dc341109f98d0ce7347a",
+    "imageAlt": "Photograph of Echinops kebericho Mesfin",
+    "attribution": "Solomon Mekonnen",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/3949774746"
+  },
+  {
+    "id": "embelia-schimperi-enkoko",
+    "scientificName": "Embelia schimperi Vatke",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/336302528/medium.jpeg",
+    "imageAlt": "Photograph of Embelia schimperi Vatke",
+    "attribution": "Odile Weber",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/photos/336302528"
+  },
+  {
+    "id": "ensete-ventricosum-enset",
+    "scientificName": "Ensete ventricosum (Welw.) Cheesman",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/739184882/medium.jpg",
+    "imageAlt": "Photograph of Ensete ventricosum (Welw.) Cheesman",
+    "attribution": "(c) Patrick Jackson, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/402645447"
+  },
+  {
+    "id": "eucalyptus-globulus-bahr-zaf",
+    "scientificName": "Eucalyptus globulus Labill.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747377243/medium.jpg",
+    "imageAlt": "Photograph of Eucalyptus globulus Labill.",
+    "attribution": "(c) ANGEL MARCOS LUENGO BELLO, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406761102"
+  },
+  {
+    "id": "glinus-lotoides-metere",
+    "scientificName": "Glinus lotoides L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747733680/medium.jpg",
+    "imageAlt": "Photograph of Glinus lotoides L.",
+    "attribution": "(c) Annika Lindqvist, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406936165"
+  },
+  {
+    "id": "hagenia-abyssinica-kosso",
+    "scientificName": "Hagenia abyssinica (Bruce) J.F.Gmel.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/450639207/medium.jpeg",
+    "imageAlt": "Photograph of Hagenia abyssinica (Bruce) J.F.Gmel.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/251811666"
+  },
+  {
+    "id": "juniperus-procera-tsid",
+    "scientificName": "Juniperus procera Hochst. ex Endl.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/469533169/medium.jpg",
+    "imageAlt": "Photograph of Juniperus procera Hochst. ex Endl.",
+    "attribution": "(c) Petra Holland, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/261362658"
+  },
+  {
+    "id": "kalanchoe-petitiana-yeberet-siga",
+    "scientificName": "Kalanchoe petitiana A. Rich.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/631982318/medium.jpg",
+    "imageAlt": "Photograph of Kalanchoe petitiana A. Rich.",
+    "attribution": "(c) nebrooks, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/346680214"
+  },
+  {
+    "id": "lepidium-sativum-feto",
+    "scientificName": "Lepidium sativum L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/740839398/medium.jpg",
+    "imageAlt": "Photograph of Lepidium sativum L.",
+    "attribution": "(c) Patrick Schwager, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/403487878"
+  },
+  {
+    "id": "linum-usitatissimum-telba",
+    "scientificName": "Linum usitatissimum L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747026208/medium.jpg",
+    "imageAlt": "Photograph of Linum usitatissimum L.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406589515"
+  },
+  {
+    "id": "lippia-adoensis-koseret",
+    "scientificName": "Lippia adoensis Hochst. ex Walp.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1954050/format/large",
+    "imageAlt": "Digitized herbarium specimen of Lippia adoensis Hochst. ex Walp.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2516225167"
+  },
+  {
+    "id": "moringa-stenopetala-shiferaw",
+    "scientificName": "Moringa stenopetala (Baker f.) Cufod.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/278344461/medium.jpg",
+    "imageAlt": "Photograph of Moringa stenopetala (Baker f.) Cufod.",
+    "attribution": "(c) Kevin Faccenda, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/161047929"
+  },
+  {
+    "id": "nigella-sativa-tikur-azmud",
+    "scientificName": "Nigella sativa L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/511371206/medium.jpg",
+    "imageAlt": "Photograph of Nigella sativa L.",
+    "attribution": "(c) kardelen, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/284534318"
+  },
+  {
+    "id": "ocimum-basilicum-besobila",
+    "scientificName": "Ocimum basilicum L. var. thyrsiflorum",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747136884/medium.jpg",
+    "imageAlt": "Photograph of Ocimum basilicum L. var. thyrsiflorum",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406640904"
+  },
+  {
+    "id": "ocimum-lamiifolium-damakesse",
+    "scientificName": "Ocimum lamiifolium Hochst. ex Benth.",
+    "imageUrl": "https://object.jacq.org/europeana/PI/1421815.jpg",
+    "imageAlt": "Digitized herbarium specimen of Ocimum lamiifolium Hochst. ex Benth.",
+    "attribution": "JACQ virtual herbarium",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://api.jacq.org/v1/images/show/1421815?withredirect=1"
+  },
+  {
+    "id": "olea-europaea-cuspidata-woira",
+    "scientificName": "Olea europaea L. subsp. cuspidata (Wall. & G.Don) Cif.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747352347/medium.jpg",
+    "imageAlt": "Photograph of Olea europaea L. subsp. cuspidata (Wall. & G.Don) Cif.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406745586"
+  },
+  {
+    "id": "otostegia-integrifolia-chekocheko",
+    "scientificName": "Otostegia integrifolia Benth.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/67269667/medium.jpg",
+    "imageAlt": "Photograph of Otostegia integrifolia Benth.",
+    "attribution": "(c) stephen, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/42368924"
+  },
+  {
+    "id": "phytolacca-dodecandra-endod",
+    "scientificName": "Phytolacca dodecandra L'Hér.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/645162731/medium.jpg",
+    "imageAlt": "Photograph of Phytolacca dodecandra L'Hér.",
+    "attribution": "(c) Elliot Kulakow, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/353609650"
+  },
+  {
+    "id": "rhamnus-prinoides-gesho",
+    "scientificName": "Rhamnus prinoides L'Hér.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/734484915/medium.jpg",
+    "imageAlt": "Photograph of Rhamnus prinoides L'Hér.",
+    "attribution": "(c) douglaseustonbrown, some rights reserved (CC BY-SA)",
+    "license": "https://creativecommons.org/licenses/cc-by-sa/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/400269230"
+  },
+  {
+    "id": "ricinus-communis-qobbo-gulo",
+    "scientificName": "Ricinus communis L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/747406205/medium.jpg",
+    "imageAlt": "Photograph of Ricinus communis L.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/406811885"
+  },
+  {
+    "id": "rumex-abyssinicus-mekmiko",
+    "scientificName": "Rumex abyssinicus Jacq.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/712871761/medium.jpg",
+    "imageAlt": "Photograph of Rumex abyssinicus Jacq.",
+    "attribution": "Mitiku Muanenda",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/photos/712871761"
+  },
+  {
+    "id": "rumex-nepalensis-tult",
+    "scientificName": "Rumex nepalensis Spreng.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/700188048/medium.jpg",
+    "imageAlt": "Photograph of Rumex nepalensis Spreng.",
+    "attribution": "(c) Wang.QG, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/382604316"
+  },
+  {
+    "id": "rumex-nervosus-embacho",
+    "scientificName": "Rumex nervosus Vahl",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/610320429/medium.jpg",
+    "imageAlt": "Photograph of Rumex nervosus Vahl",
+    "attribution": "(c) avocat, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/335907838"
+  },
+  {
+    "id": "ruta-chalepensis-tena-adam",
+    "scientificName": "Ruta chalepensis L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/741755855/medium.jpg",
+    "imageAlt": "Photograph of Ruta chalepensis L.",
+    "attribution": "(c) Daniel Cahen, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/403960158"
+  },
+  {
+    "id": "senna-alexandrina-sena",
+    "scientificName": "Senna alexandrina Mill.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/745262999/medium.jpg",
+    "imageAlt": "Photograph of Senna alexandrina Mill.",
+    "attribution": "(c) Paulmathi Vinod, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/405711418"
+  },
+  {
+    "id": "sida-rhombifolia-chifrig",
+    "scientificName": "Sida rhombifolia L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/745504553/medium.jpg",
+    "imageAlt": "Photograph of Sida rhombifolia L.",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/405834474"
+  },
+  {
+    "id": "solanum-incanum-embuay",
+    "scientificName": "Solanum incanum L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/738909283/medium.jpg",
+    "imageAlt": "Photograph of Solanum incanum L.",
+    "attribution": "(c) Krzysztof Ziarnek, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/402502701"
+  },
+  {
+    "id": "stephania-abyssinica-ayechimir",
+    "scientificName": "Stephania abyssinica (Quart.-Dill. & A. Rich.) Walp.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/706775265/medium.jpg",
+    "imageAlt": "Photograph of Stephania abyssinica (Quart.-Dill. & A. Rich.) Walp.",
+    "attribution": "(c) Tony Rebelo, some rights reserved (CC BY-SA)",
+    "license": "https://creativecommons.org/licenses/cc-by-sa/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/386046249"
+  },
+  {
+    "id": "taverniera-abyssinica-dingetegna",
+    "scientificName": "Taverniera abyssinica A. Rich.",
+    "imageUrl": "https://medialib.naturalis.nl/file/id/WAG.1044872/format/large",
+    "imageAlt": "Digitized herbarium specimen of Taverniera abyssinica A. Rich.",
+    "attribution": "Naturalis Biodiversity Center",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.gbif.org/occurrence/2517374599"
+  },
+  {
+    "id": "thymus-schimperi-tosign",
+    "scientificName": "Thymus schimperi Ronniger",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/469494340/medium.jpg",
+    "imageAlt": "Photograph of Thymus schimperi Ronniger",
+    "attribution": "(c) Petra Holland, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/261342350"
+  },
+  {
+    "id": "trachyspermum-ammi-nech-azmud",
+    "scientificName": "Trachyspermum ammi (L.) Sprague",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/717863991/medium.jpg",
+    "imageAlt": "Photograph of Trachyspermum ammi (L.) Sprague",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/391753049"
+  },
+  {
+    "id": "trigonella-foenum-graecum-abish",
+    "scientificName": "Trigonella foenum-graecum L.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/628571601/medium.jpg",
+    "imageAlt": "Photograph of Trigonella foenum-graecum L.",
+    "attribution": "(c) Eleftherios Katsillis, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/344952646"
+  },
+  {
+    "id": "vernonia-amygdalina-grawa",
+    "scientificName": "Vernonia amygdalina Delile",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/360991309/medium.jpeg",
+    "imageAlt": "Photograph of Vernonia amygdalina Delile",
+    "attribution": "no rights reserved",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/204246286"
+  },
+  {
+    "id": "withania-somnifera-gizawa",
+    "scientificName": "Withania somnifera (L.) Dunal",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/735952337/medium.jpg",
+    "imageAlt": "Photograph of Withania somnifera (L.) Dunal",
+    "attribution": "(c) Jake Armstrong, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/400998167"
+  },
+  {
+    "id": "zingiber-officinale-zinjibil",
+    "scientificName": "Zingiber officinale Roscoe",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/743690147/medium.jpg",
+    "imageAlt": "Photograph of Zingiber officinale Roscoe",
+    "attribution": "(c) vrxz, some rights reserved (CC BY-SA)",
+    "license": "https://creativecommons.org/licenses/cc-by-sa/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/404926190"
+  },
+  {
+    "id": "ziziphus-spina-christi-qurqura",
+    "scientificName": "Ziziphus spina-christi (L.) Desf.",
+    "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/743332426/medium.jpg",
+    "imageAlt": "Photograph of Ziziphus spina-christi (L.) Desf.",
+    "attribution": "(c) amantedarmanin, some rights reserved (CC BY)",
+    "license": "https://creativecommons.org/licenses/cc-by/4.0/",
+    "sourceUrl": "https://www.inaturalist.org/observations/404814997"
+  }
+]

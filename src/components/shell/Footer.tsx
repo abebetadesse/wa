@@ -6,8 +6,10 @@ import { Sparkles, ShieldCheck, Mail, ArrowRight, Check } from "lucide-react";
 import { ETHIOPIAN_LOCATIONS } from "@/lib/location/ethiopiaLocations";
 import { KNOWLEDGE_STRANDS } from "@/lib/knowledge/catalog";
 import { useExplore } from "@/features/toolkit/useExplore";
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function Footer() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [currentYear, setCurrentYear] = useState(2026);
@@ -50,13 +52,13 @@ export default function Footer() {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-amber-300 mb-1">
               <Sparkles size={13} className="text-amber-400" />
-              ETHIOPIAN WISDOM &amp; CARE DISPATCH
+              {t.footer.dispatchLabel}
             </div>
             <h3 className="text-lg md:text-xl font-bold text-white">
-              Seasonal guidance for fasting, herbs, and living safely
+              {t.footer.dispatchTitle}
             </h3>
             <p className="text-xs text-stone-400 mt-1">
-              Receive updates on fasting calendars, medicinal safety, cultural rituals, and professional care insights grounded in both heritage and evidence.
+              {t.footer.dispatchBody}
             </p>
           </div>
 
@@ -67,7 +69,7 @@ export default function Footer() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address..."
+                placeholder={t.footer.emailPlaceholder}
                 className="w-full rounded-xl border border-white/15 bg-stone-900/80 px-4 py-2.5 pl-10 text-xs text-white placeholder-stone-500 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               />
               <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" />
@@ -79,11 +81,11 @@ export default function Footer() {
               {subscribed ? (
                 <>
                   <Check size={14} />
-                  <span>Subscribed!</span>
+                  <span>{t.footer.subscribed}</span>
                 </>
               ) : (
                 <>
-                  <span>Join Dispatch</span>
+                  <span>{t.footer.joinDispatch}</span>
                   <ArrowRight size={13} />
                 </>
               )}
@@ -97,18 +99,18 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="font-bold text-slate-100 text-base">
-                Ethiopian Wisdom &amp; Healing House
+                {t.footer.platformLabel}
               </span>
             </div>
             <span className="inline-block text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">
-              Traditional practice • evidence-based care
+              {t.footer.platformTagline}
             </span>
             <p className="text-xs text-slate-400 leading-relaxed">
-              A professional platform that brings together Ethiopian food knowledge, healing practice, seasonal rhythm, ritual memory, and modern biological and Scientific safety for practitioners and clients.
+              {t.footer.platformDescription}
             </p>
             <div className="flex flex-col gap-1 text-[11px] font-mono">
-              <span className="text-emerald-400 font-medium">Domain A: Scientific &amp; safety review</span>
-              <span className="text-amber-400 font-medium">Domain B: Heritage & cultural context</span>
+              <span className="text-emerald-400 font-medium">{t.footer.domainAStrong}</span>
+              <span className="text-amber-400 font-medium">{t.footer.domainBStrong}</span>
             </div>
           </div>
 
@@ -137,25 +139,25 @@ export default function Footer() {
           {/* Col 4: Platform Scale & Community Verification */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4 font-mono">
-              Platform Verification
+              {t.footer.verification}
             </h4>
             <div className="grid grid-cols-3 gap-2.5">
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
                 <div className="text-base font-black text-amber-400 font-mono">{foodCount ?? "–"}</div>
-                <div className="text-[10px] text-stone-400 uppercase font-mono">Foods</div>
+                <div className="text-[10px] text-stone-400 uppercase font-mono">{t.footer.foods}</div>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
                 <div className="text-base font-black text-cyan-400 font-mono">{ETHIOPIAN_LOCATIONS.length}</div>
-                <div className="text-[10px] text-stone-400 uppercase font-mono">Districts</div>
+                <div className="text-[10px] text-stone-400 uppercase font-mono">{t.footer.districts}</div>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
                 <div className="text-base font-black text-emerald-400 font-mono">{KNOWLEDGE_STRANDS.length}</div>
-                <div className="text-[10px] text-stone-400 uppercase font-mono">Strands</div>
+                <div className="text-[10px] text-stone-400 uppercase font-mono">{t.footer.strands}</div>
               </div>
             </div>
             <div className="pt-2 flex items-center gap-2 text-[11px] text-emerald-400 font-mono">
               <ShieldCheck size={14} />
-              <span>Full Domain A/B Isolation Verified</span>
+              <span>{t.footer.verificationStatus}</span>
             </div>
           </div>
         </div>
@@ -168,12 +170,12 @@ export default function Footer() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
             <p>
-              &copy; {currentYear} Ethiopian Wisdom &amp; Wellness Platform. All rights reserved.
+              &copy; {currentYear} {t.nav.brand}. {t.footer.rights}
             </p>
           </div>
 
           <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl text-rose-300/80 text-[11px] max-w-xl leading-relaxed">
-            <strong>Scientific &amp; Legal Notice:</strong> The evaluation engine outputs dietary risk patterns and educational attributions. It does not provide medical diagnoses or replace emergency medical care. All traditional herbal recommendations are strictly gated against known pharmaceutical interactions.
+            <strong>{t.footer.legalNoticeTitle}</strong> {t.footer.legalNoticeBody}
           </div>
         </div>
       </div>

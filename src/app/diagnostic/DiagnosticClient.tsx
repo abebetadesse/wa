@@ -3,102 +3,46 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DiagnosticSolution, DiagnosticUrgencyLevel, KnowledgeStrandType } from "@/lib/knowledge/types";
+import { useLanguage } from "@/lib/i18n/context";
 
 type InputMode = "text" | "voice" | "image" | "symptom";
 
 const symptomOptions = [
-  { id: "headache", label: "Headache / ራስ ምታት", category: "Neurological" },
-  { id: "fever", label: "High Fever / ትኩሳት", category: "Infectious" },
-  { id: "cough", label: "Cough / ሳል", category: "Respiratory" },
-  { id: "breathing_difficulty", label: "Shortness of Breath / መተንፈስ መቸገር", category: "Respiratory" },
-  { id: "chest_pain", label: "Chest Pain / የደረት ህመም", category: "Cardiovascular" },
-  { id: "stomach_pain", label: "Stomach Burning / የጨጓራ ህመም", category: "Digestive" },
-  { id: "vomiting", label: "Vomiting / ማስመለስ", category: "Digestive" },
-  { id: "diarrhea", label: "Diarrhea / ተቅማጥ", category: "Digestive" },
-  { id: "fatigue", label: "Chronic Fatigue / ከፍተኛ ድካም", category: "General" },
-  { id: "chills", label: "Rigors & Chills / ብርድ ብርድ ማለት", category: "Infectious" },
-  { id: "jaundice", label: "Yellowing of Eyes / ወፍ በሽታ", category: "Hepatic" },
-  { id: "bleeding", label: "Uncontrolled Bleeding / ደም መፍሰስ", category: "Critical" },
-  { id: "joint_pain", label: "Joint Stiffness / ቁርጥማት", category: "Musculoskeletal" },
-  { id: "rash", label: "Skin Eruption / አለርጂ ሽፍታ", category: "Dermatological" },
-  { id: "insomnia", label: "Insomnia / እንቅልፍ ማጣት", category: "Neurological" },
-  { id: "heart_palpitations", label: "Heart Racing / የልብ ምት መጨመር", category: "Cardiovascular" },
-];
-
-const quickSuggestions = [
-  "High fever and severe headache after visiting Awash lowland",
-  "Severe epigastric heartburn after meals and during religious fasting",
-  "I am taking Warfarin blood thinner and want to drink Tena Adam tea",
-  "Crushing chest pain radiating to left arm with shortness of breath",
-  "Extreme fatigue, pale eyes, and weakness despite eating injera daily",
-  "Heart palpitations and insomnia after long afternoon khat chewing",
+  { id: "headache" },
+  { id: "fever" },
+  { id: "cough" },
+  { id: "breathing_difficulty" },
+  { id: "chest_pain" },
+  { id: "stomach_pain" },
+  { id: "vomiting" },
+  { id: "diarrhea" },
+  { id: "fatigue" },
+  { id: "chills" },
+  { id: "jaundice" },
+  { id: "bleeding" },
+  { id: "joint_pain" },
+  { id: "rash" },
+  { id: "insomnia" },
+  { id: "heart_palpitations" },
 ];
 
 const domainOptions = [
-  { id: "wellbeing", label: "wellbeing", icon: "✚", description: "Symptoms, recovery, nutrition, medication safety, and preventive care." },
-  { id: "peace", label: "Peace", icon: "☼", description: "Stress, safety, sleep, emotional steadiness, and restoration." },
-  { id: "power", label: "Power", icon: "◇", description: "Agency, boundaries, energy, motivation, and leadership." },
-  { id: "money", label: "Money", icon: "◈", description: "Stability, obligations, planning, and resource pressure." },
-  { id: "career", label: "Money & Business Reflection", icon: "◈", description: "Work, livelihood, business pressures, and sustainable next steps." },
-  { id: "relationships", label: "Relationships & Family", icon: "❤", description: "Communication, conflict, family roles, safety, and partnership dynamics." },
-  { id: "spiritual", label: "Spiritual & Life Direction", icon: "✦", description: "Purpose, ritual, life direction, and cultural reflection with clear safety boundaries." },
-  { id: "legal", label: "Peace & Harmony", icon: "☮", description: "Family and community conflict, reconciliation, and safety-aware support." },
-  { id: "social", label: "Social", icon: "◎", description: "Belonging, relationships, family patterns, and community support." },
+  { id: "wellbeing", icon: "✚" },
+  { id: "peace", icon: "☼" },
+  { id: "power", icon: "◇" },
+  { id: "money", icon: "◈" },
+  { id: "career", icon: "◈" },
+  { id: "relationships", icon: "❤" },
+  { id: "spiritual", icon: "✦" },
+  { id: "legal", icon: "☮" },
+  { id: "social", icon: "◎" },
 ];
 
-const domainInsightMap: Record<string, { headline: string; emphasis: string; questions: string[] }> = {
-  wellbeing: {
-    headline: "wellbeing-focused synthesis",
-    emphasis: "The analysis is anchored on symptoms, physiology, medication-herb safety, nutrition, and recovery patterns.",
-    questions: ["What is changing most in your body or daily function?", "Have you started any new medicines, herbs, supplements, or fasting patterns?", "What is making symptoms worse or better?"],
-  },
-  peace: {
-    headline: "Peace-focused synthesis",
-    emphasis: "The review emphasizes stress, emotional regulation, sleep disruption, conflict patterns, and safety.",
-    questions: ["What feels most destabilizing right now?", "What support or routine helps you feel more grounded?", "What pattern is draining your sense of calm or safety?"],
-  },
-  power: {
-    headline: "Power-focused synthesis",
-    emphasis: "This lens prioritizes personal agency, decision fatigue, boundaries, momentum, and practical action.",
-    questions: ["Where do you feel least able to act or choose?", "What is draining your energy or confidence?", "What one decision would improve your agency this week?"],
-  },
-  money: {
-    headline: "Money-focused synthesis",
-    emphasis: "This review centers financial pressure, obligations, cash flow, planning, and the next workable step.",
-    questions: ["What is creating the most pressure right now?", "What bills, commitments, or burdens feel most urgent?", "What would reduce your stress within the next 30 days?"],
-  },
-  career: {
-    headline: "Money & Business reflection synthesis",
-    emphasis: "The plan emphasizes work fit, direction, burnout, skill-building, and sustainable professional decisions.",
-    questions: ["What part of work or study feels least aligned?", "Where are you stuck between exploration and action?", "What would make the path more sustainable and clear?"],
-  },
-  relationships: {
-    headline: "Relationships & Family synthesis",
-    emphasis: "This lens prioritizes communication, safety, boundaries, family roles, and conflict patterns with trauma-aware framing.",
-    questions: ["What pattern is repeating in the relationship or family dynamic?", "Where do you feel safest or least safe?", "What would help the communication feel more steady and fair?"],
-  },
-  spiritual: {
-    headline: "Spiritual & Life Direction synthesis",
-    emphasis: "This lens emphasizes purpose, life direction, ritual meaning, and reflective guidance while keeping mental-wellbeing safety distinct.",
-    questions: ["What area of life feels most unclear or spiritually heavy right now?", "What traditions or questions feel most meaningful to you?", "What would help you feel more grounded in purpose?"],
-  },
-  legal: {
-    headline: "Peace & Harmony synthesis",
-    emphasis: "This review focuses on safety, communication, and options for peaceful resolution without replacing formal legal advice.",
-    questions: ["What conflict or relationship strain would you like help navigating?", "Is anyone in immediate danger or at risk of harm?", "What would a safer, more peaceful next step look like?"],
-  },
-  social: {
-    headline: "Social-focused synthesis",
-    emphasis: "This lens prioritizes family ties, belonging, support networks, boundaries, and relationship dynamics.",
-    questions: ["Who feels supportive and who contributes to strain?", "What connection feels missing or difficult?", "What would make you feel more seen, included, or safe?"],
-  },
-};
-
 const sampleBotanicals = [
-  { name: "Tena Adam (Ruta chalepensis)", category: "Herb Sample", detectedEffect: "Furanocoumarins • High Warfarin Interaction Risk", icon: "🌿" },
-  { name: "Kosso (Hagenia abyssinica)", category: "Anthelmintic Flower", detectedEffect: "Kosotoxin • Hepatotoxic & Anticoagulant Bleeding Risk", icon: "🌸" },
-  { name: "Tikur Azmud (Nigella sativa)", category: "Black Seed", detectedEffect: "Thymoquinone • Hypoglycemic Potentiation", icon: "🌱" },
-  { name: "Habesha Gomen (Brassica carinata)", category: "Collard Leaf", detectedEffect: "Glucosinolates • Bioavailable Calcium & Lutein", icon: "🥬" },
+  { id: "tenaAdam", name: "Tena Adam (Ruta chalepensis)", icon: "🌿" },
+  { id: "kosso", name: "Kosso (Hagenia abyssinica)", icon: "🌸" },
+  { id: "tikurAzmud", name: "Tikur Azmud (Nigella sativa)", icon: "🌱" },
+  { id: "habeshaGomen", name: "Habesha Gomen (Brassica carinata)", icon: "🥬" },
 ];
 
 const urgencyBadgeStyles: Record<DiagnosticUrgencyLevel, { border: string; bg: string; text: string; badgeBg: string }> = {
@@ -147,6 +91,8 @@ type SpeechRecognitionInstance = {
 type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 export default function DiagnosticClient() {
+  const { t } = useLanguage();
+  const td = t.diagnostic;
   const [mode, setMode] = useState<InputMode>("text");
   const [query, setQuery] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("wellbeing");
@@ -195,7 +141,7 @@ export default function DiagnosticClient() {
     };
     const Recognition = browserWindow.SpeechRecognition || browserWindow.webkitSpeechRecognition;
     if (!Recognition) {
-      setError("Voice recognition is not natively supported by your browser. Please type your inquiry.");
+      setError(td.voiceUnsupported);
       return;
     }
 
@@ -214,7 +160,7 @@ export default function DiagnosticClient() {
 
       recognition.onerror = () => {
         setIsListening(false);
-        setError("Voice input could not be captured. Check your microphone permissions or type your symptoms.");
+        setError(td.voiceCaptureError);
       };
 
       recognition.onresult = (event: SpeechRecognitionResultEvent) => {
@@ -224,7 +170,7 @@ export default function DiagnosticClient() {
 
       recognition.start();
     } catch {
-      setError("Unable to initialize microphone speech recognition.");
+      setError(td.microphoneInitError);
       setIsListening(false);
     }
   }
@@ -234,14 +180,14 @@ export default function DiagnosticClient() {
     if (mode === "symptom" && selectedSymptoms.length > 0) {
       const symptomLabels = symptomOptions
         .filter((s) => selectedSymptoms.includes(s.id))
-        .map((s) => s.label);
+        .map((s) => td.symptoms[s.id].label);
       finalQuery = `Patient reports experiencing: ${symptomLabels.join(", ")}. ${query}`.trim();
     } else if (mode === "image" && selectedBotanical) {
       finalQuery = `Botanical photo inspection of ${selectedBotanical}. Scientific inquiry: ${query || "Assess medicinal safety and interactions"}`.trim();
     }
 
     if (!finalQuery || finalQuery.trim().length < 2) {
-      setError("Please describe your wellbeing concern or select symptoms first.");
+      setError(td.emptyQueryError);
       return;
     }
 
@@ -260,7 +206,7 @@ export default function DiagnosticClient() {
         ? userMedications.split(",").map((m) => m.trim()).filter(Boolean)
         : [];
 
-      const domainLabel = domainOptions.find((d) => d.id === selectedDomain)?.label || "wellbeing";
+      const domainLabel = td.domains[selectedDomain]?.label ?? "wellbeing";
 
       const response = await fetch("/api/diagnostic/analyze", {
         method: "POST",
@@ -284,7 +230,7 @@ export default function DiagnosticClient() {
 
       const payload = await response.json();
       if (!response.ok || !payload.success) {
-        throw new Error(payload.error || "Failed to complete multi-strand diagnostic analysis.");
+        throw new Error(payload.error || td.genericDiagnosisError);
       }
 
       setResult(payload.data);
@@ -293,7 +239,7 @@ export default function DiagnosticClient() {
         setShowEmergencyModal(true);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Diagnostic evaluation failed.");
+      setError(err instanceof Error ? err.message : td.genericDiagnosisError);
     } finally {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -345,13 +291,13 @@ export default function DiagnosticClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              MULTI-STRAND KNOWLEDGE RETRIEVAL &amp; DIAGNOSTIC PORTAL (v4.0)
+              {td.portalBadge}
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-              Intelligent Diagnostic Portal
+              {td.portalTitle}
             </h1>
             <p className="text-sm md:text-base text-slate-400 mt-2 max-w-2xl leading-relaxed">
-              Processes wellbeing concerns across <strong className="text-emerald-400">11 specialized knowledge domains</strong> with cross-strand causal inference, ETM-DB safety gates, and 5-stage action plans.
+              {td.portalDescription}
             </p>
           </div>
 
@@ -362,7 +308,7 @@ export default function DiagnosticClient() {
               className="px-4 py-2 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs font-bold hover:bg-rose-900/80 transition-all flex items-center gap-2 shadow-lg shadow-rose-950/40"
             >
               <span className="text-base">🚨</span>
-              <span>Emergency SOS (907)</span>
+              <span>{td.emergencySos}</span>
             </button>
             <button
               type="button"
@@ -373,7 +319,7 @@ export default function DiagnosticClient() {
               className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs font-medium hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5"
             >
               <span>🕒</span>
-              <span>History ({historyItems.length})</span>
+              <span>{td.history.replace("{count}", String(historyItems.length))}</span>
             </button>
           </div>
         </header>
@@ -396,7 +342,7 @@ export default function DiagnosticClient() {
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <span>{m === "text" ? "⌨️ Text" : m === "voice" ? "🎙️ Voice" : m === "image" ? "📷 Botanical Photo" : "🩺 Symptom Grid"}</span>
+                  <span>{m === "text" ? `⌨️ ${td.textMode}` : m === "voice" ? `🎙️ ${td.voiceMode}` : m === "image" ? `📷 ${td.botanicalPhotoMode}` : `🩺 ${td.symptomGridMode}`}</span>
                 </button>
               ))}
             </div>
@@ -404,7 +350,7 @@ export default function DiagnosticClient() {
             {/* Context Calibrations */}
             <div className="flex flex-wrap items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/10">
-                <span className="text-slate-500">Domain:</span>
+                <span className="text-slate-500">{td.domain}</span>
                 <select
                   value={selectedDomain}
                   onChange={(e) => setSelectedDomain(e.target.value)}
@@ -412,29 +358,27 @@ export default function DiagnosticClient() {
                 >
                   {domainOptions.map((domain) => (
                     <option key={domain.id} value={domain.id} className="bg-slate-900">
-                      {domain.label}
+                      {td.domains[domain.id].label}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/10">
-                <span className="text-slate-500">Region:</span>
+                <span className="text-slate-500">{td.region}</span>
                 <select
                   value={userRegion}
                   onChange={(e) => setUserRegion(e.target.value)}
                   className="bg-transparent text-emerald-300 font-semibold outline-none cursor-pointer"
                 >
-                  <option value="Addis Ababa (2,400m)" className="bg-slate-900">Addis Ababa (2,400m)</option>
-                  <option value="Amhara Highlands (2,600m)" className="bg-slate-900">Amhara Highlands (2,600m)</option>
-                  <option value="Oromia Agrarian (2,000m)" className="bg-slate-900">Oromia Agrarian (2,000m)</option>
-                  <option value="Rift Valley Basin (1,600m)" className="bg-slate-900">Rift Valley Basin (1,600m)</option>
-                  <option value="Afar / Somali Lowlands (600m)" className="bg-slate-900">Afar / Somali Lowlands (600m)</option>
+                  {Object.entries(td.regions).map(([value, label]) => (
+                    <option key={value} value={value} className="bg-slate-900">{label}</option>
+                  ))}
                 </select>
               </div>
 
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/10">
-                <span className="text-slate-500">Detected Language:</span>
+                <span className="text-slate-500">{td.detectedLanguage}</span>
                 <span className="text-amber-300 font-bold">{detectedLangName}</span>
               </div>
             </div>
@@ -455,10 +399,10 @@ export default function DiagnosticClient() {
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <span className="text-xl">{domain.icon}</span>
-                    <span className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Focus</span>
+                    <span className="text-[10px] uppercase tracking-[0.16em] text-slate-400">{td.focus}</span>
                   </div>
-                  <div className="text-sm font-bold text-white">{domain.label}</div>
-                  <p className="text-[11px] mt-1 leading-relaxed text-slate-400">{domain.description}</p>
+                  <div className="text-sm font-bold text-white">{td.domains[domain.id].label}</div>
+                  <p className="text-[11px] mt-1 leading-relaxed text-slate-400">{td.domains[domain.id].description}</p>
                 </button>
               );
             })}
@@ -467,13 +411,13 @@ export default function DiagnosticClient() {
           {/* Active Medication Input Bar */}
           <div className="mb-4 px-4 py-3 rounded-xl bg-black/30 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-              <span>💊</span> Active Medications:
+              <span>💊</span> {td.activeMedications}
             </span>
             <input
               type="text"
               value={userMedications}
               onChange={(e) => setUserMedications(e.target.value)}
-              placeholder="e.g. Warfarin, Metformin, Enalapril (for Herb-Drug safety checks)"
+              placeholder={td.medicationPlaceholder}
               className="w-full bg-transparent text-xs text-white placeholder:text-slate-600 outline-none"
             />
           </div>
@@ -482,20 +426,20 @@ export default function DiagnosticClient() {
           {mode === "text" && (
             <div>
               <label htmlFor="wellbeing-query" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                Describe your symptoms, duration, triggers &amp; concerns
+                {td.symptomsLabel}
               </label>
               <textarea
                 id="wellbeing-query"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={domainInsightMap[selectedDomain]?.questions[0] || "Describe what is happening and what you need help with..."}
+                placeholder={td.domainInsights[selectedDomain]?.questions[0] || td.symptomPlaceholder}
                 maxLength={3000}
                 rows={5}
                 className="w-full rounded-xl bg-black/50 border border-white/10 p-4 text-sm text-white placeholder:text-slate-600 outline-none focus:border-emerald-500 transition-all resize-y leading-relaxed"
               />
               {(assist.suggestions.length > 0 || assist.urgencyHint || assist.safetyFlags.length > 0) && (
                 <div className="mt-3 rounded-xl border border-sky-500/30 bg-sky-950/20 p-3 space-y-2" aria-live="polite">
-                  <p className="text-xs font-semibold text-sky-200">Live safety and completeness check</p>
+                  <p className="text-xs font-semibold text-sky-200">{td.liveCheck}</p>
                   {assist.urgencyHint && <p className="text-xs text-rose-200">{assist.urgencyHint}</p>}
                   {assist.safetyFlags.map((flag) => <p key={flag} className="text-xs text-amber-200">{flag}</p>)}
                   {assist.suggestions.map((suggestion) => (
@@ -512,14 +456,14 @@ export default function DiagnosticClient() {
           {mode === "voice" && (
             <div className="p-6 rounded-2xl bg-black/40 border border-white/10 text-center">
               <div className="flex justify-center items-center gap-3 mb-4">
-                <span className="text-xs text-slate-400">Speech Language:</span>
+                <span className="text-xs text-slate-400">{td.speechLanguage}</span>
                 <button
                   type="button"
                   onClick={() => setSpeechLang("en-US")}
                   className={`px-3 py-1 rounded-lg text-xs font-bold ${speechLang === "en-US" ? "bg-emerald-600 text-white" : "bg-white/5 text-slate-400"
                     }`}
                 >
-                  English (US)
+                  {td.englishUs}
                 </button>
                 <button
                   type="button"
@@ -527,7 +471,7 @@ export default function DiagnosticClient() {
                   className={`px-3 py-1 rounded-lg text-xs font-bold ${speechLang === "am-ET" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400"
                     }`}
                 >
-                  Amharic (አማርኛ)
+                  {td.amharic}
                 </button>
               </div>
 
@@ -544,14 +488,14 @@ export default function DiagnosticClient() {
                   🎙️
                 </button>
                 <p className="text-xs font-medium text-slate-300 mt-3">
-                  {isListening ? "Listening... Speak clearly into your microphone" : "Tap the microphone to start voice recording"}
+                  {isListening ? td.listening : td.startRecording}
                 </p>
               </div>
 
               <textarea
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Transcribed voice inquiry will appear here..."
+                placeholder={td.transcribedPlaceholder}
                 rows={3}
                 className="w-full rounded-xl bg-black/60 border border-white/10 p-3 text-xs text-white placeholder:text-slate-600 outline-none resize-none"
               />
@@ -562,9 +506,9 @@ export default function DiagnosticClient() {
           {mode === "image" && (
             <div className="p-6 rounded-2xl bg-black/40 border border-white/10">
               <div className="mb-4">
-                <h3 className="text-sm font-bold text-white mb-1">Botanical Specimen &amp; Herb Recognition</h3>
+                <h3 className="text-sm font-bold text-white mb-1">{td.botanicalRecognition}</h3>
                 <p className="text-xs text-slate-400">
-                  Select a candidate specimen or upload a photo to verify botanical species and screen against drug interactions.
+                  {td.botanicalInstructions}
                 </p>
               </div>
 
@@ -584,8 +528,8 @@ export default function DiagnosticClient() {
                   >
                     <span className="text-2xl mb-2 block">{specimen.icon}</span>
                     <h4 className="text-xs font-bold text-white">{specimen.name}</h4>
-                    <p className="text-[10px] text-emerald-400 font-mono mt-1">{specimen.category}</p>
-                    <p className="text-[10px] text-slate-400 mt-2 leading-tight">{specimen.detectedEffect}</p>
+                    <p className="text-[10px] text-emerald-400 font-mono mt-1">{td.botanicals[specimen.id].category}</p>
+                    <p className="text-[10px] text-slate-400 mt-2 leading-tight">{td.botanicals[specimen.id].detectedEffect}</p>
                   </button>
                 ))}
               </div>
@@ -594,7 +538,7 @@ export default function DiagnosticClient() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Add additional questions about this herb or food specimen..."
+                placeholder={td.additionalBotanicalQuestion}
                 className="w-full rounded-xl bg-black/50 border border-white/10 p-3 text-xs text-white outline-none"
               />
             </div>
@@ -605,7 +549,7 @@ export default function DiagnosticClient() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Select all active symptoms ({selectedSymptoms.length} selected)
+                  {td.selectSymptoms.replace("{count}", String(selectedSymptoms.length))}
                 </label>
                 {selectedSymptoms.length > 0 && (
                   <button
@@ -613,7 +557,7 @@ export default function DiagnosticClient() {
                     onClick={() => setSelectedSymptoms([])}
                     className="text-[10px] text-rose-400 hover:underline"
                   >
-                    Clear all
+                    {td.clearAll}
                   </button>
                 )}
               </div>
@@ -621,7 +565,8 @@ export default function DiagnosticClient() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 mb-4">
                 {symptomOptions.map((sym) => {
                   const isSelected = selectedSymptoms.includes(sym.id);
-                  const isCritical = sym.category === "Critical" || sym.id === "breathing_difficulty" || sym.id === "chest_pain";
+                  const isCritical = sym.id === "bleeding" || sym.id === "breathing_difficulty" || sym.id === "chest_pain";
+                  const localizedSymptom = td.symptoms[sym.id];
 
                   return (
                     <button
@@ -636,10 +581,9 @@ export default function DiagnosticClient() {
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold">{sym.label.split("/")[0]}</span>
-                        <span className="text-[10px] opacity-70 font-mono">{sym.category}</span>
+                        <span className="font-semibold">{localizedSymptom.label}</span>
+                        <span className="text-[10px] opacity-70 font-mono">{localizedSymptom.category}</span>
                       </div>
-                      <div className="text-[10px] opacity-75">{sym.label.split("/")[1] || ""}</div>
                     </button>
                   );
                 })}
@@ -649,7 +593,7 @@ export default function DiagnosticClient() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Optional: add duration, severity or additional details here..."
+                placeholder={td.symptomPlaceholder}
                 className="w-full rounded-xl bg-black/50 border border-white/10 p-3 text-xs text-white outline-none"
               />
             </div>
@@ -658,10 +602,10 @@ export default function DiagnosticClient() {
           {/* Quick Suggestions Pills */}
           <div className="mt-5 pt-4 border-t border-white/10">
             <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Common Inquiries (Click to populate)
+              {td.commonInquiries}
             </div>
             <div className="flex flex-wrap gap-2">
-              {quickSuggestions.map((sug) => (
+              {td.quickSuggestions.map((sug) => (
                 <button
                   key={sug}
                   type="button"
@@ -688,7 +632,7 @@ export default function DiagnosticClient() {
           {/* Action Trigger */}
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <span className="text-xs text-slate-500 font-mono">
-              Deterministic Stage 1-5 Firewall Verified • ETM-DB Safety Matrix Active
+              {td.firewallStatus}
             </span>
 
             <button
@@ -700,12 +644,12 @@ export default function DiagnosticClient() {
               {loading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  <span>Synthesizing Multi-Strand Reasoning...</span>
+                  <span>{td.synthesizing}</span>
                 </>
               ) : (
                 <>
                   <span>🚀</span>
-                  <span>Run Multi-Strand Diagnosis</span>
+                  <span>{td.runDiagnosis}</span>
                 </>
               )}
             </button>
@@ -716,14 +660,14 @@ export default function DiagnosticClient() {
         {loading && (
           <section className="glass-panel p-6 mb-8 border border-emerald-500/40 bg-emerald-950/20" aria-live="polite">
             <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-4">
-              Multi-Domain Processing Pipeline (Simultaneous 11 Strands)
+              {td.processingPipeline}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { step: 1, title: "🔍 Query Parsing", desc: "Intent, entities & urgency score detection" },
-                { step: 2, title: "📊 10+ Strand Retrieval", desc: "Biochemical, pharmacological, ecological & dietary" },
-                { step: 3, title: "🧠 Cross-Strand Causal Graph", desc: "Detecting multi-domain intersections & risk chains" },
-                { step: 4, title: "💡 Solution Synthesis", desc: "Safety gate verification & 5-stage action plan" },
+                { step: 1, title: `🔍 ${td.queryParsing}`, desc: td.queryParsingDescription },
+                { step: 2, title: `📊 ${td.knowledgeRetrieval}`, desc: td.knowledgeRetrievalDescription },
+                { step: 3, title: `🧠 ${td.causalGraph}`, desc: td.causalGraphDescription },
+                { step: 4, title: `💡 ${td.solutionSynthesis}`, desc: td.solutionSynthesisDescription },
               ].map((s) => {
                 const isCurrent = processingStep === s.step;
                 const isDone = processingStep > s.step;
@@ -739,7 +683,7 @@ export default function DiagnosticClient() {
                       }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold">Step {s.step}</span>
+                      <span className="text-xs font-bold">{td.step} {s.step}</span>
                       <span>{isDone ? "✓" : isCurrent ? "⏳" : "○"}</span>
                     </div>
                     <div className="text-xs font-semibold text-white">{s.title}</div>
@@ -767,15 +711,15 @@ export default function DiagnosticClient() {
                         }`}
                     >
                       {result.summary.urgency === "critical"
-                        ? "🔥 CRITICAL EMERGENCY"
+                        ? `🔥 ${td.urgencyCritical}`
                         : result.summary.urgency === "high"
-                          ? "⚠️ HIGH URGENCY"
+                          ? `⚠️ ${td.urgencyHigh}`
                           : result.summary.urgency === "medium"
-                            ? "ℹ️ MODERATE REVIEW"
-                            : "✅ ROUTINE GUIDANCE"}
+                            ? `ℹ️ ${td.urgencyModerate}`
+                            : `✅ ${td.urgencyRoutine}`}
                     </span>
                     <span className="text-xs font-mono text-slate-300">
-                      Urgency Score: <strong className="text-white">{result.summary.urgencyScore}/100</strong>
+                      {td.urgencyScore} <strong className="text-white">{result.summary.urgencyScore}/100</strong>
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-extrabold text-white">
@@ -790,13 +734,13 @@ export default function DiagnosticClient() {
                     className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg transition-all flex items-center gap-2"
                   >
                     <span>📞</span>
-                    <span>Emergency Contacts</span>
+                    <span>{td.emergencyContacts}</span>
                   </button>
                   <Link
                     href="/safety"
                     className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-colors"
                   >
-                    Safety Gate
+                    {td.safetyGate}
                   </Link>
                 </div>
               </div>
@@ -807,7 +751,7 @@ export default function DiagnosticClient() {
 
               {result.summary.matchedSignals.length > 0 && (
                 <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2 items-center text-xs">
-                  <span className="text-slate-400">Signals identified:</span>
+                  <span className="text-slate-400">{td.signalsIdentified}</span>
                   {result.summary.matchedSignals.map((sig) => (
                     <span key={sig} className="px-2.5 py-0.5 rounded-md bg-white/10 text-slate-200 font-mono text-[11px]">
                       {sig}
@@ -820,52 +764,52 @@ export default function DiagnosticClient() {
             {/* 2. Diagnostic Summary Card */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="glass-panel p-5 col-span-1 md:col-span-2">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Synthesized Problem</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{td.synthesizedProblem}</div>
                 <h3 className="text-lg font-bold text-white leading-snug">{result.summary.problem}</h3>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                   {result.reasoning.summaryReasoning}
                 </p>
                 <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3">
-                  <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 font-bold mb-2">Domain lens</div>
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 font-bold mb-2">{td.domainLens}</div>
                   <div className="text-sm font-semibold text-white">
-                    {domainInsightMap[analyzedDomain]?.headline || "wellbeing-focused synthesis"}
+                    {td.domainInsights[analyzedDomain]?.headline || td.domains.wellbeing.label}
                   </div>
                   <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                    {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
+                    {td.domainInsights[analyzedDomain]?.emphasis || td.domains.wellbeing.description}
                   </p>
                 </div>
               </div>
 
               <div className="glass-panel p-5 text-center flex flex-col justify-between">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Evaluation Confidence</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{td.confidence}</div>
                 <div className="my-2">
                   <span className="text-4xl font-extrabold text-emerald-400">{result.summary.confidence}%</span>
                   <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
                     <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${result.summary.confidence}%` }}></div>
                   </div>
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">11-Strand Bayesian Synthesis</div>
+                <div className="text-[10px] text-slate-400 font-mono">{td.bayesianSynthesis}</div>
               </div>
 
               <div className="glass-panel p-5 text-center flex flex-col justify-between">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Scientific Intent</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{td.scientificIntent}</div>
                 <div className="my-2">
                   <span className="text-xl font-extrabold text-amber-300 capitalize">{result.summary.intent}</span>
-                  <p className="text-xs text-slate-400 mt-1">Language: {result.language.toUpperCase()}</p>
+                  <p className="text-xs text-slate-400 mt-1">{td.language} {result.language.toUpperCase()}</p>
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">{result.crossStrandIntersections.length} Intersections</div>
+                <div className="text-[10px] text-slate-400 font-mono">{result.crossStrandIntersections.length} {td.intersections}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="glass-panel p-6">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">What this domain is asking</div>
-                <h3 className="text-lg font-bold text-white mb-3">{domainInsightMap[analyzedDomain]?.headline || "wellbeing-focused synthesis"}</h3>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">{td.domainQuestions}</div>
+                <h3 className="text-lg font-bold text-white mb-3">{td.domainInsights[analyzedDomain]?.headline || td.domains.wellbeing.label}</h3>
                 <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                  {domainInsightMap[analyzedDomain]?.emphasis || "The analysis is anchored on symptoms, physiology, and recovery pattern review."}
+                  {td.domainInsights[analyzedDomain]?.emphasis || td.domains.wellbeing.description}
                 </p>
                 <ul className="space-y-2">
-                  {(domainInsightMap[analyzedDomain]?.questions || []).map((question) => (
+                  {(td.domainInsights[analyzedDomain]?.questions || []).map((question) => (
                     <li key={question} className="flex items-start gap-2 text-xs text-slate-300">
                       <span className="mt-0.5 text-emerald-400">•</span>
                       <span>{question}</span>
@@ -875,18 +819,18 @@ export default function DiagnosticClient() {
               </div>
 
               <div className="glass-panel p-6">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">Response detail</div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">{td.responseDetail}</div>
                 <div className="space-y-3">
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Primary focus</div>
-                    <div className="text-sm font-semibold text-white">{domainOptions.find((d) => d.id === analyzedDomain)?.label || "wellbeing"}</div>
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">{td.primaryFocus}</div>
+                    <div className="text-sm font-semibold text-white">{td.domains[analyzedDomain]?.label || td.domains.wellbeing.label}</div>
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Urgency signal</div>
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">{td.urgencySignal}</div>
                     <div className="text-sm font-semibold text-amber-300 uppercase">{result.summary.urgency}</div>
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">Recommended next step</div>
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400 mb-1">{td.recommendedNextStep}</div>
                     <div className="text-sm text-slate-200">{result.referral.message}</div>
                   </div>
                 </div>
@@ -897,10 +841,10 @@ export default function DiagnosticClient() {
             <div className="glass-panel p-6 md:p-8">
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
                 <div>
-                  <div className="badge badge-safe mb-1">Causal Inference Engine</div>
-                  <h3 className="text-xl font-extrabold text-white">Probabilistic Root Causes &amp; Causal Chains</h3>
+                  <div className="badge badge-safe mb-1">{td.causalEngine}</div>
+                  <h3 className="text-xl font-extrabold text-white">{td.rootCauses}</h3>
                 </div>
-                <span className="text-xs text-slate-400 font-mono">Multi-Domain Causal Mapping</span>
+                <span className="text-xs text-slate-400 font-mono">{td.causalMapping}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -908,7 +852,7 @@ export default function DiagnosticClient() {
                   <div key={cause.name} className="p-4 rounded-xl bg-black/40 border border-white/10">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-white">{cause.name}</span>
-                      <span className="text-xs font-mono font-bold text-amber-400">{cause.probability}% probability</span>
+                      <span className="text-xs font-mono font-bold text-amber-400">{cause.probability}% {td.probability}</span>
                     </div>
                     <div className="w-full bg-slate-800 rounded-full h-1.5 mb-2 overflow-hidden">
                       <div className="bg-gradient-to-r from-emerald-500 to-amber-500 h-full rounded-full" style={{ width: `${cause.probability}%` }}></div>
@@ -916,13 +860,13 @@ export default function DiagnosticClient() {
                     <p className="text-xs text-slate-400 leading-relaxed">{cause.evidence}</p>
                     {cause.culturalContext && (
                       <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-950/15 p-3">
-                        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Domain B context</div>
+                        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">{td.domainContext}</div>
                         <p className="mt-1 text-[11px] leading-relaxed text-amber-100/80">{cause.culturalContext.interpretation}</p>
-                        <p className="mt-2 text-[10px] leading-relaxed text-amber-200/70">Reflection: {cause.culturalContext.practice}</p>
+                        <p className="mt-2 text-[10px] leading-relaxed text-amber-200/70">{td.reflection} {cause.culturalContext.practice}</p>
                       </div>
                     )}
                     <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400 uppercase">
-                      Domain: {cause.domain}
+                      {td.domain} {cause.domain}
                     </span>
                   </div>
                 ))}
@@ -942,7 +886,7 @@ export default function DiagnosticClient() {
                       <div key={node.id} className="flex-1 flex flex-col lg:flex-row items-center gap-2">
                         <div className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/10 text-left">
                           <span className="text-[9px] uppercase font-mono text-emerald-400 block mb-1">
-                            Node {i + 1} &bull; {node.domain}
+                            {td.node} {i + 1} &bull; {node.domain}
                           </span>
                           <span className="text-xs font-bold text-white block">{node.label}</span>
                           {node.description && <p className="text-[10px] text-slate-400 mt-1 leading-tight">{node.description}</p>}
@@ -961,10 +905,10 @@ export default function DiagnosticClient() {
             <div className="glass-panel p-6 md:p-8">
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
                 <div>
-                  <div className="badge badge-safe mb-1">Targeted Interventions</div>
-                  <h3 className="text-xl font-extrabold text-white">Prioritized Holistic Solutions</h3>
+                  <div className="badge badge-safe mb-1">{td.targetedInterventions}</div>
+                  <h3 className="text-xl font-extrabold text-white">{td.prioritizedSolutions}</h3>
                 </div>
-                <span className="text-xs text-slate-400 font-mono">Filtered by Safety Gate</span>
+                <span className="text-xs text-slate-400 font-mono">{td.safetyFiltered}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -983,25 +927,25 @@ export default function DiagnosticClient() {
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="text-[10px] font-extrabold font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-black/40 text-slate-200">
-                            {sol.priority.toUpperCase()} PRIORITY
+                            {sol.priority.toUpperCase()} {td.priority}
                           </span>
                           {sol.safetyGatePassed && (
-                            <span className="badge badge-safe text-[9px]">ETM-DB Passed</span>
+                            <span className="badge badge-safe text-[9px]">{td.etmPassed}</span>
                           )}
                         </div>
                         <h4 className="text-sm font-bold text-white mb-2">{sol.title}</h4>
                         <p className="text-xs text-slate-300 leading-relaxed">{sol.description}</p>
                         {sol.culturalContext && (
                           <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-950/15 p-3">
-                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Cultural reflection</div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">{td.culturalReflection}</div>
                             <p className="mt-1 text-[11px] leading-relaxed text-amber-100/80">{sol.culturalContext.interpretation}</p>
-                            <p className="mt-2 text-[10px] leading-relaxed text-amber-200/70">Reflection: {sol.culturalContext.practice}</p>
+                            <p className="mt-2 text-[10px] leading-relaxed text-amber-200/70">{td.reflection} {sol.culturalContext.practice}</p>
                           </div>
                         )}
                       </div>
                       {sol.sourceRef && (
                         <div className="mt-4 pt-2 border-t border-white/5 text-[10px] font-mono text-slate-500">
-                          Evidence Citation: {sol.sourceRef}
+                          {td.evidenceCitation} {sol.sourceRef}
                         </div>
                       )}
                     </div>
@@ -1014,21 +958,21 @@ export default function DiagnosticClient() {
             <div className="glass-panel p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-white/10">
                 <div>
-                  <div className="badge badge-safe mb-1">Structured Timeline</div>
-                  <h3 className="text-xl font-extrabold text-white">5-Stage Action Plan</h3>
+                  <div className="badge badge-safe mb-1">{td.structuredTimeline}</div>
+                  <h3 className="text-xl font-extrabold text-white">{td.actionPlan}</h3>
                 </div>
                 <div className="text-xs text-slate-400">
-                  <span>Mark items complete as you proceed</span>
+                  <span>{td.markComplete}</span>
                 </div>
               </div>
 
               <div className="space-y-6">
                 {[
-                  { key: "immediate_actions", label: "Stage 1: NOW (0–24 Hours)", color: "text-rose-400 border-rose-500/40", items: result.action_plan.immediate_actions },
-                  { key: "short_term", label: "Stage 2: Short-Term (3–7 Days)", color: "text-orange-400 border-orange-500/40", items: result.action_plan.short_term },
-                  { key: "medium_term", label: "Stage 3: Medium-Term (1–4 Weeks)", color: "text-amber-400 border-amber-500/40", items: result.action_plan.medium_term },
-                  { key: "long_term", label: "Stage 4: Long-Term (1–6 Months)", color: "text-teal-400 border-teal-500/40", items: result.action_plan.long_term },
-                  { key: "ongoing", label: "Stage 5: Ongoing (6+ Months)", color: "text-emerald-400 border-emerald-500/40", items: result.action_plan.ongoing },
+                  { key: "immediate_actions", label: td.stageNow, color: "text-rose-400 border-rose-500/40", items: result.action_plan.immediate_actions },
+                  { key: "short_term", label: td.stageShort, color: "text-orange-400 border-orange-500/40", items: result.action_plan.short_term },
+                  { key: "medium_term", label: td.stageMedium, color: "text-amber-400 border-amber-500/40", items: result.action_plan.medium_term },
+                  { key: "long_term", label: td.stageLong, color: "text-teal-400 border-teal-500/40", items: result.action_plan.long_term },
+                  { key: "ongoing", label: td.stageOngoing, color: "text-emerald-400 border-emerald-500/40", items: result.action_plan.ongoing },
                 ].map((stage) => (
                   <div key={stage.key} className="border-l-2 pl-4 border-slate-700">
                     <h4 className={`text-xs font-extrabold uppercase tracking-wider mb-3 ${stage.color}`}>
@@ -1072,14 +1016,14 @@ export default function DiagnosticClient() {
             {result.safety.herbDrugInteractions.length > 0 && (
               <div className="p-6 rounded-2xl bg-rose-950/40 border-2 border-rose-500/50 shadow-xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="badge badge-moderate text-xs">Certified Safety Intercept</span>
-                  <span className="text-xs font-mono text-rose-300">ETM-DB Pharmacopoeia Guardrail</span>
+                  <span className="badge badge-moderate text-xs">{td.certifiedSafety}</span>
+                  <span className="text-xs font-mono text-rose-300">{td.pharmacopoeiaGuardrail}</span>
                 </div>
                 <h3 className="text-lg font-extrabold text-white mb-2">
-                  Potential Herb-Drug &amp; Nutrient Interactions Detected
+                  {td.interactionWarningTitle}
                 </h3>
                 <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-                  The Scientific safety gate intercepted potential adverse biochemical interactions between traditional remedies and prescription drugs:
+                  {td.interactionWarningBody}
                 </p>
                 <div className="space-y-3">
                   {result.safety.herbDrugInteractions.map((hdi) => (
@@ -1087,7 +1031,7 @@ export default function DiagnosticClient() {
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-rose-200">{hdi.herb} &times; {hdi.drug}</span>
                         <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">
-                          {hdi.severity} SEVERITY
+                          {hdi.severity} {td.severity}
                         </span>
                       </div>
                       <p className="text-slate-300 leading-relaxed">{hdi.mechanism}</p>
@@ -1104,7 +1048,7 @@ export default function DiagnosticClient() {
               <div className="glass-panel p-6 border-l-4 border-l-amber-500">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[10px] font-extrabold font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-500/30">
-                    Domain B &bull; Cultural Heritage Layer
+                    {td.domainHeritage}
                   </span>
                 </div>
                 <h4 className="text-base font-bold text-white mb-2">{result.cultural_context.title}</h4>
@@ -1119,12 +1063,12 @@ export default function DiagnosticClient() {
               <div className="glass-panel p-6 border-l-4 border-l-violet-500">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[10px] font-extrabold font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-violet-950/60 text-violet-300 border border-violet-500/30">
-                    Domain B &bull; Awde Negest Cosmology
+                    {td.domainHeritage} • Awde Negest
                   </span>
                 </div>
                 <h4 className="text-base font-bold text-white mb-2">{result.astrological_context.title}</h4>
                 <p className="text-xs text-slate-300 leading-relaxed mb-3">
-                  Constitutional Temperament: <strong className="text-violet-300">{result.astrological_context.humoralElement}</strong>
+                  {td.constitutionalTemperament} <strong className="text-violet-300">{result.astrological_context.humoralElement}</strong>
                 </p>
                 <p className="text-xs text-slate-400 leading-relaxed mb-4">{result.astrological_context.seasonalAdvice}</p>
                 <div className="p-2.5 rounded-lg bg-black/40 border border-white/5 text-[10px] text-slate-500 leading-normal">
@@ -1136,8 +1080,8 @@ export default function DiagnosticClient() {
             <div className="glass-panel p-6 md:p-8 border border-amber-500/30 bg-amber-950/10">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
-                  <div className="badge badge-moderate mb-2">Unified Domain B report</div>
-                  <h3 className="text-xl font-extrabold text-white">Cultural, AwudeNegest, astrology &amp; numerology layer</h3>
+                  <div className="badge badge-moderate mb-2">{td.unifiedDomainReport}</div>
+                  <h3 className="text-xl font-extrabold text-white">{td.culturalLayersTitle}</h3>
                 </div>
                 <span className="text-[10px] font-mono uppercase tracking-wider text-amber-300">
                   {result.culturalLayers?.[0]?.status || "included"}
@@ -1152,13 +1096,13 @@ export default function DiagnosticClient() {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="rounded-xl bg-black/25 border border-white/10 p-4">
-                  <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-2">Interpretation</div>
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-2">{td.interpretation}</div>
                   <p className="text-xs text-slate-200 leading-relaxed">
                     {result.culturalLayers?.[0]?.interpretation || result.cultural_context.culturalSignificance}
                   </p>
                 </div>
                 <div className="rounded-xl bg-black/25 border border-white/10 p-4">
-                  <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-2">Reflective practice</div>
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400 mb-2">{td.reflectivePractice}</div>
                   <p className="text-xs text-slate-200 leading-relaxed">
                     {result.culturalLayers?.[0]?.practice || result.astrological_context.seasonalAdvice}
                   </p>
@@ -1173,11 +1117,11 @@ export default function DiagnosticClient() {
             <div className="glass-panel p-6 md:p-8">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
                 <div>
-                  <div className="badge badge-safe mb-1">Full Evidence Breakdown</div>
-                  <h3 className="text-xl font-extrabold text-white">11 Knowledge Strands Deep Dive</h3>
+                  <div className="badge badge-safe mb-1">{td.evidenceBreakdown}</div>
+                  <h3 className="text-xl font-extrabold text-white">{td.knowledgeStrandsDeepDive}</h3>
                 </div>
                 <span className="text-xs text-slate-400 font-mono">
-                  {Object.values(result.rawFindings).flat().length} Total Verified Findings
+                  {Object.values(result.rawFindings).flat().length} {td.totalVerifiedFindings}
                 </span>
               </div>
 
@@ -1202,7 +1146,7 @@ export default function DiagnosticClient() {
               <div className="space-y-3">
                 {(!result.rawFindings[activeStrandTab] || result.rawFindings[activeStrandTab].length === 0) ? (
                   <p className="text-xs text-slate-500 py-6 text-center">
-                    No specific findings triggered for the {activeStrandTab} strand in this inquiry.
+                    {td.noFindings.replace("{strand}", activeStrandTab)}
                   </p>
                 ) : (
                   result.rawFindings[activeStrandTab].map((finding, idx) => (
@@ -1210,7 +1154,7 @@ export default function DiagnosticClient() {
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <span className="text-xs font-bold text-white">{finding.name}</span>
                         <span className="text-[10px] font-mono text-emerald-400">
-                          {Math.round(finding.relevanceScore * 100)}% relevance
+                          {Math.round(finding.relevanceScore * 100)}% {td.relevance}
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">{finding.description}</p>
@@ -1235,7 +1179,7 @@ export default function DiagnosticClient() {
                                 )}
                                 <p className="text-[11px] text-slate-400 font-mono leading-relaxed">{item.description}</p>
                                 {item.source && (
-                                  <p className="text-[10px] text-slate-500 mt-0.5">Source: {item.source}</p>
+                                  <p className="text-[10px] text-slate-500 mt-0.5">{td.source} {item.source}</p>
                                 )}
                               </div>
                             </div>
@@ -1245,12 +1189,12 @@ export default function DiagnosticClient() {
                         <>
                           {finding.evidence && (
                             <p className="text-[11px] text-slate-400 mt-2 font-mono leading-relaxed">
-                              Evidence: {finding.evidence}
+                              {td.evidence} {finding.evidence}
                             </p>
                           )}
                           {finding.ethiopian_context && (
                             <div className="mt-2 text-[10px] text-amber-300/90 font-medium">
-                              Ethiopian Context: {Array.isArray(finding.ethiopian_context) ? finding.ethiopian_context.join(" • ") : finding.ethiopian_context}
+                              {td.ethiopianContext} {Array.isArray(finding.ethiopian_context) ? finding.ethiopian_context.join(" • ") : finding.ethiopian_context}
                             </div>
                           )}
                         </>
@@ -1264,9 +1208,9 @@ export default function DiagnosticClient() {
             {/* 9. Export & Share Actions */}
             <div className="glass-panel p-6 flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h4 className="text-sm font-bold text-white">Save or Share Your Diagnostic Report</h4>
+                <h4 className="text-sm font-bold text-white">{td.saveOrShare}</h4>
                 <p className="text-xs text-slate-400">
-                  Export machine-readable JSON or generate a printable Scientific summary for your practitioner.
+                  {td.exportDescription}
                 </p>
               </div>
 
@@ -1285,7 +1229,7 @@ export default function DiagnosticClient() {
                   className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-500/40 text-xs font-bold text-slate-200 transition-all flex items-center gap-2"
                 >
                   <span>⬇️</span>
-                  <span>Export JSON</span>
+                  <span>{td.exportJson}</span>
                 </button>
 
                 <button
@@ -1294,7 +1238,7 @@ export default function DiagnosticClient() {
                   className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-teal-500/40 text-xs font-bold text-slate-200 transition-all flex items-center gap-2"
                 >
                   <span>🖨️</span>
-                  <span>Print Summary</span>
+                  <span>{td.printSummary}</span>
                 </button>
 
                 <button
@@ -1302,26 +1246,26 @@ export default function DiagnosticClient() {
                   onClick={() => {
                     if (navigator.share) {
                       navigator.share({
-                        title: "Ethiopian Wisdom Diagnostic Summary",
+                        title: td.scientificSummaryTitle,
                         text: `Diagnostic Result: ${result.summary.problem} (${result.summary.urgency.toUpperCase()} priority). Consult: ${result.referral.type}`,
                       }).catch(() => { });
                     } else {
                       navigator.clipboard.writeText(
                         `Ethiopian Wisdom Diagnostic Summary:\n${result.summary.problem}\nUrgency: ${result.summary.urgency.toUpperCase()}\nRecommendation: ${result.referral.message}`
                       );
-                      alert("Diagnostic summary copied to clipboard!");
+                      alert(td.copiedToClipboard);
                     }
                   }}
                   className="btn-primary text-xs py-2.5 px-5"
                 >
-                  Share Summary
+                  {td.shareSummary}
                 </button>
               </div>
             </div>
 
             {/* Legal Disclaimers */}
             <div className="text-[11px] text-slate-500 space-y-1.5 p-4 rounded-xl bg-black/30 border border-white/5">
-              <p className="font-bold text-slate-400">Official Scientific Governance Notice:</p>
+              <p className="font-bold text-slate-400">{td.governanceNotice}</p>
               {result.safety.disclaimers.map((disc, idx) => (
                 <p key={idx} className="leading-relaxed">&bull; {disc}</p>
               ))}
@@ -1336,7 +1280,7 @@ export default function DiagnosticClient() {
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-rose-500/30">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl animate-bounce">🚨</span>
-                  <h3 className="text-xl font-extrabold text-white">Ethiopian Emergency Hotlines</h3>
+                  <h3 className="text-xl font-extrabold text-white">{td.emergencyHotlines}</h3>
                 </div>
                 <button
                   type="button"
@@ -1348,15 +1292,15 @@ export default function DiagnosticClient() {
               </div>
 
               <p className="text-xs text-slate-300 mb-6 leading-relaxed">
-                If you or someone nearby is experiencing acute chest pain, shortness of breath, severe bleeding, or loss of consciousness, contact emergency services immediately:
+                {td.emergencyInstructions}
               </p>
 
               <div className="space-y-3 mb-6">
                 {[
-                  { name: "EPHI Toll-Free Public health Hotline", number: "907", desc: "Ethiopian Public health Institute (24/7 National Dispatch)" },
-                  { name: "Ethiopian Red Cross Ambulance", number: "991", desc: "Emergency medical transport across major cities" },
-                  { name: "National Emergency Police", number: "911", desc: "Addis Ababa & Regional Emergency Response" },
-                  { name: "Tikur Anbessa Hospital Emergency Desk", number: "+251-11-551-1211", desc: "Central tertiary trauma & acute care referral center" },
+                  { name: td.hotlineEphi, number: "907", desc: td.hotlineEphiDescription },
+                  { name: td.hotlineRedCross, number: "991", desc: td.hotlineRedCrossDescription },
+                  { name: td.hotlinePolice, number: "911", desc: td.hotlinePoliceDescription },
+                  { name: td.hotlineTikurAnbessa, number: "+251-11-551-1211", desc: td.hotlineTikurAnbessaDescription },
                 ].map((hl) => (
                   <div key={hl.number} className="p-3.5 rounded-xl bg-black/60 border border-rose-500/30 flex items-center justify-between gap-3">
                     <div>
@@ -1379,7 +1323,7 @@ export default function DiagnosticClient() {
                 onClick={() => setShowEmergencyModal(false)}
                 className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-colors"
               >
-                Close Emergency Notice
+                {td.closeEmergencyNotice}
               </button>
             </div>
           </div>
@@ -1393,7 +1337,7 @@ export default function DiagnosticClient() {
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <span>🕒</span>
-                    <h3 className="text-base font-bold text-white">Diagnostic Inquiry History</h3>
+                    <h3 className="text-base font-bold text-white">{td.inquiryHistory}</h3>
                   </div>
                   <button
                     type="button"
@@ -1405,7 +1349,7 @@ export default function DiagnosticClient() {
                 </div>
 
                 {historyItems.length === 0 ? (
-                  <p className="text-xs text-slate-500 text-center py-10">No previous inquiries saved in this session.</p>
+                  <p className="text-xs text-slate-500 text-center py-10">{td.noHistory}</p>
                 ) : (
                   <div className="space-y-3">
                     {historyItems.map((item) => (
@@ -1443,7 +1387,7 @@ export default function DiagnosticClient() {
                 onClick={() => setShowHistoryDrawer(false)}
                 className="btn-secondary text-xs py-2.5 mt-6 w-full"
               >
-                Close Drawer
+                {td.closeDrawer}
               </button>
             </div>
           </div>

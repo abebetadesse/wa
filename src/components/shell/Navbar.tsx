@@ -67,7 +67,7 @@ function useOutsideClose(open: boolean, close: () => void) {
 export default function Navbar() {
   const pathname = usePathname();
   const { user, loading, signOut } = useSession();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme, highContrast, toggleHighContrast } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
@@ -93,16 +93,16 @@ export default function Navbar() {
   const exploreGroups = explore?.groups ?? [];
 
   const accountLinks = [
-    { href: "/account", label: "Account & Telegram", icon: UserCog },
-    { href: "/account/bookings", label: "My bookings", icon: CalendarCheck },
-    { href: "/messages", label: "Messages", icon: MessageCircle },
+    { href: "/account", label: t.nav.account, icon: UserCog },
+    { href: "/account/bookings", label: t.nav.bookings, icon: CalendarCheck },
+    { href: "/messages", label: t.nav.messages, icon: MessageCircle },
     { href: "/business", label: "My business", icon: Briefcase },
     { href: "/case/workflows", label: "My cases", icon: BookOpen },
     ...(user?.permissions?.includes("cases:review") || user?.role === "admin" || user?.role === "super_admin"
       ? [{ href: "/case-review", label: "Case request review", icon: FileText }]
       : []),
-    { href: "/profile", label: "Profile", icon: User },
-    ...(user && ADMIN_ROLES.includes(user.role) ? [{ href: "/admin", label: "Administration", icon: Shield }] : []),
+    { href: "/profile", label: t.nav.profile, icon: User },
+    ...(user && ADMIN_ROLES.includes(user.role) ? [{ href: "/admin", label: t.nav.admin, icon: Shield }] : []),
   ];
 
   return (
@@ -113,8 +113,8 @@ export default function Navbar() {
             ጥ
           </span>
           <span className="hidden flex-col leading-tight sm:flex">
-            <span className="font-display text-[15px] font-extrabold tracking-tight text-foreground">Ethiopian Wisdom</span>
-            <span className="text-[11px] font-medium text-muted-foreground">Healers & cultural makers</span>
+            <span className="font-display text-[15px] font-extrabold tracking-tight text-foreground">{t.nav.brand}</span>
+            <span className="text-[11px] font-medium text-muted-foreground">{t.nav.tagline}</span>
           </span>
         </Link>
 
@@ -139,11 +139,11 @@ export default function Navbar() {
               aria-expanded={exploreOpen}
               className="inline-flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
-              Explore <ChevronDown className={cn("size-4 transition-transform", exploreOpen && "rotate-180")} aria-hidden="true" />
+              {t.nav.overview} <ChevronDown className={cn("size-4 transition-transform", exploreOpen && "rotate-180")} aria-hidden="true" />
             </button>
             {exploreOpen && (
               <div className="absolute left-0 mt-2 max-h-[70vh] w-[40rem] overflow-y-auto rounded-2xl border border-border bg-card p-3 shadow-2xl backdrop-blur-xl">
-                {exploreGroups.length === 0 && <p className="px-3 py-2 text-sm text-muted-foreground">Loading…</p>}
+                {exploreGroups.length === 0 && <p className="px-3 py-2 text-sm text-muted-foreground">{t.common.loading}</p>}
                 <div className="grid grid-cols-2 gap-x-3 gap-y-4">
                   {exploreGroups.map((group) => (
                     <div key={group.group}>
@@ -231,14 +231,14 @@ export default function Navbar() {
                     }}
                     className="mt-1 flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-danger hover:bg-danger/10"
                   >
-                    <LogOut className="size-4" aria-hidden="true" /> Sign out
+                    <LogOut className="size-4" aria-hidden="true" /> {t.auth.signOut}
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <Link href={`/auth?next=${encodeURIComponent(pathname)}&via=menu`} className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-brand-strong">
-              <LogIn className="size-4" aria-hidden="true" /> Sign in
+              <LogIn className="size-4" aria-hidden="true" /> {t.auth.login}
             </Link>
           )}
 

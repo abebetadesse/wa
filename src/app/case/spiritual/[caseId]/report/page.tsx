@@ -18,9 +18,26 @@ export default function SpiritualReportPage({
   const { caseId } = use(params);
 
   const [activeTab, setActiveTab] = useState<"report" | "scroll" | "context" | "hatata">("report");
+  const [isPrintView, setIsPrintView] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [draftReport, setDraftReport] = useState<any>(null);
+
+  useEffect(() => {
+    if (!isPrintView) return;
+
+    const handleAfterPrint = () => setIsPrintView(false);
+    window.addEventListener("afterprint", handleAfterPrint);
+    const timeout = window.setTimeout(() => window.print(), 250);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener("afterprint", handleAfterPrint);
+    };
+  }, [isPrintView]);
 
   useEffect(() => {
     let active = true;
@@ -35,7 +52,10 @@ export default function SpiritualReportPage({
         return payload.data;
       })
       .then((data) => {
-        if (active && data) setReportData(data);
+        if (active && data) {
+          setReportData(data);
+          setDraftReport(data.report ?? null);
+        }
       })
       .catch((caught) => {
         if (active) setError(caught instanceof Error ? caught.message : "The full report is unavailable.");
@@ -73,11 +93,49 @@ export default function SpiritualReportPage({
 
   const report = reportData?.report;
   const gematria = reportData?.gematria;
+  const canDownloadPdf = reportData?.canDownloadPdf === true;
+  const canEdit = reportData?.canEdit === true;
   const expert = reportData?.assignedExpert || report?.expert;
   const selectedService = report?.serviceChoice;
 
+  const handleSaveReport = async () => {
+    if (!draftReport || !canEdit) return;
+    setIsSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch(`/api/case/spiritual/${caseId}/report`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reviewerId: reportData?.reviewerId ?? null,
+          report: draftReport,
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error || "The report could not be saved.");
+      }
+
+      setReportData((previous: any) => ({
+        ...previous,
+        report: payload.data.report,
+        reviewerId: payload.data.reviewerId ?? previous?.reviewerId ?? null,
+        canEdit: payload.data.canEdit ?? previous?.canEdit,
+      }));
+      setDraftReport(payload.data.report ?? draftReport);
+      setIsEditing(false);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The report could not be saved.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="spiritual-report-page min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800 pb-5">
@@ -95,14 +153,33 @@ export default function SpiritualReportPage({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="px-4 py-2 rounded-xl bg-stone-900 border border-stone-700 hover:bg-stone-800 text-xs font-medium text-stone-200 transition-colors flex items-center gap-1.5"
-            >
-              <span>🖨️</span> <span>Print Reading</span>
-            </button>
+          <div className="flex items-center gap-2 print-hidden">
+            {canDownloadPdf && (
+              <button
+                type="button"
+                onClick={() => setIsPrintView(true)}
+                className="px-4 py-2 rounded-xl bg-stone-900 border border-stone-700 hover:bg-stone-800 text-xs font-medium text-stone-200 transition-colors flex items-center gap-1.5"
+                title="Choose Save as PDF in the print dialog"
+              >
+                <span>⬇️</span> <span>Download PDF</span>
+              </button>
+            )}
+            {canEdit && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isEditing) {
+                    setDraftReport(report);
+                    setIsEditing(false);
+                    return;
+                  }
+                  setIsEditing(true);
+                }}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+              >
+                {isEditing ? "Cancel edit" : "Edit report"}
+              </button>
+            )}
             <Link
               href={`/case/spiritual/${caseId}/consult`}
               className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20"
@@ -112,8 +189,104 @@ export default function SpiritualReportPage({
           </div>
         </div>
 
+        {isEditing && canEdit && (
+          <div className="rounded-3xl border border-amber-500/30 bg-stone-900 p-6 space-y-5 print-hidden">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-300">Editor mode</div>
+                <h2 className="mt-2 text-xl font-bold text-amber-50">Update report content</h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleSaveReport}
+                disabled={isSaving}
+                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-60"
+              >
+                {isSaving ? "Saving..." : "Save changes"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <label className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
+                Divination summary narrative
+                <textarea
+                  value={draftReport?.divinationSummary?.narrative ?? ""}
+                  onChange={(event) => setDraftReport((previous: any) => ({
+                    ...previous,
+                    divinationSummary: {
+                      ...previous?.divinationSummary,
+                      narrative: event.target.value,
+                    },
+                  }))}
+                  className="mt-2 min-h-[120px] w-full rounded-2xl border border-stone-700 bg-stone-950 p-3 text-sm text-stone-100"
+                />
+              </label>
+
+              <label className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
+                Cultural interpretation
+                <textarea
+                  value={draftReport?.culturalInterpretation?.narrative ?? ""}
+                  onChange={(event) => setDraftReport((previous: any) => ({
+                    ...previous,
+                    culturalInterpretation: {
+                      ...previous?.culturalInterpretation,
+                      narrative: event.target.value,
+                    },
+                  }))}
+                  className="mt-2 min-h-[160px] w-full rounded-2xl border border-stone-700 bg-stone-950 p-3 text-sm text-stone-100"
+                />
+              </label>
+
+              <label className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
+                Expert notes
+                <textarea
+                  value={draftReport?.practicalGuidance?.expertNotes ?? ""}
+                  onChange={(event) => setDraftReport((previous: any) => ({
+                    ...previous,
+                    practicalGuidance: {
+                      ...previous?.practicalGuidance,
+                      expertNotes: event.target.value,
+                    },
+                  }))}
+                  className="mt-2 min-h-[120px] w-full rounded-2xl border border-stone-700 bg-stone-950 p-3 text-sm text-stone-100"
+                />
+              </label>
+
+              <label className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
+                Ritual title
+                <input
+                  value={draftReport?.recommendedRitual?.title ?? ""}
+                  onChange={(event) => setDraftReport((previous: any) => ({
+                    ...previous,
+                    recommendedRitual: {
+                      ...previous?.recommendedRitual,
+                      title: event.target.value,
+                    },
+                  }))}
+                  className="mt-2 w-full rounded-2xl border border-stone-700 bg-stone-950 p-3 text-sm text-stone-100"
+                />
+              </label>
+
+              <label className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
+                Ritual description
+                <textarea
+                  value={draftReport?.recommendedRitual?.description ?? ""}
+                  onChange={(event) => setDraftReport((previous: any) => ({
+                    ...previous,
+                    recommendedRitual: {
+                      ...previous?.recommendedRitual,
+                      description: event.target.value,
+                    },
+                  }))}
+                  className="mt-2 min-h-[120px] w-full rounded-2xl border border-stone-700 bg-stone-950 p-3 text-sm text-stone-100"
+                />
+              </label>
+            </div>
+          </div>
+        )}
+
         {selectedService && (
-          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-stone-900 to-stone-900 p-6">
+          <div className="print-section rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-stone-900 to-stone-900 p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-300">Selected service</div>
@@ -134,7 +307,7 @@ export default function SpiritualReportPage({
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-stone-800 gap-2 text-sm font-medium overflow-x-auto pb-1">
+        <div className="print-hidden flex border-b border-stone-800 gap-2 text-sm font-medium overflow-x-auto pb-1">
           {[
             { id: "report", label: "Full Report (ሙሉ ሪፖርት)", icon: "📖" },
             { id: "scroll", label: "Personalized Healing Scroll (ክታብ)", icon: "📜" },
@@ -158,8 +331,8 @@ export default function SpiritualReportPage({
         </div>
 
         {/* TAB 1: FULL REPORT */}
-        {activeTab === "report" && (
-          <div className="space-y-6">
+        {(isPrintView || activeTab === "report") && (
+          <div className="print-section space-y-6">
             {/* Section 1: Divination Summary */}
             <div className="p-6 sm:p-8 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-stone-800 pb-3">
@@ -271,8 +444,8 @@ export default function SpiritualReportPage({
         )}
 
         {/* TAB 2: PERSONALIZED HEALING SCROLL */}
-        {activeTab === "scroll" && (
-          <div className="space-y-6">
+        {(isPrintView || activeTab === "scroll") && (
+          <div className="print-section space-y-6">
             <div className="p-8 sm:p-12 rounded-3xl bg-[#1c1813] border-4 border-[#8c6d3b] text-[#f2e6cf] shadow-2xl space-y-8 font-serif">
               {/* Scroll Banner */}
               <div className="text-center space-y-2 border-b-2 border-[#8c6d3b]/40 pb-6">
@@ -330,7 +503,14 @@ export default function SpiritualReportPage({
                         Explore 22 Manuscript Seals ↗
                       </Link>
                     </div>
-                    <TelsemSacredSeal seal={activeTelsem} size="md" />
+                    <TelsemSacredSeal
+                      seal={activeTelsem}
+                      size="md"
+                      interactive={!isPrintView}
+                      showDetails={!isPrintView}
+                      defaultView="plate"
+                      className="seal-print"
+                    />
                   </div>
                 );
               })()}
@@ -348,23 +528,13 @@ export default function SpiritualReportPage({
                 </div>
               </div>
 
-              {/* Download / Print */}
-              <div className="flex justify-center gap-3 pt-4 border-t-2 border-[#8c6d3b]/40">
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="px-6 py-3 rounded-2xl bg-[#8c6d3b] hover:bg-[#a68249] text-black font-bold text-xs transition-colors"
-                >
-                  Download PDF / Print Scroll
-                </button>
-              </div>
             </div>
           </div>
         )}
 
         {/* TAB 3: DIVINATION CONTEXT */}
-        {activeTab === "context" && (
-          <div className="space-y-6">
+        {(isPrintView || activeTab === "context") && (
+          <div className="print-section space-y-6">
             <AwdeCircleVisualizer circle={gematria?.awdeCircle} segment={gematria?.awdeSegment} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -423,7 +593,7 @@ export default function SpiritualReportPage({
         )}
 
         {/* TAB 4: SPIRIT COMMENTARY & AWDE NEGEST CHAPTER GUIDANCE */}
-        {activeTab === "hatata" && (() => {
+        {(isPrintView || activeTab === "hatata") && (() => {
           const circleNumber = gematria?.awdeCircle || 1;
           const chapter = getAwdeChapter(circleNumber) || getAwdeChapter(1);
           const allSpirits = getAllSpiritCommentary();
@@ -432,7 +602,7 @@ export default function SpiritualReportPage({
           const eyeShield = allSpirits.find((s) => s.spiritClass === "buda_ayne");
 
           return (
-            <div className="space-y-6">
+            <div className="print-section space-y-6">
               {/* Awde Negest Chapter Card */}
               <div className="p-6 sm:p-8 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-800 pb-4">
@@ -615,7 +785,7 @@ export default function SpiritualReportPage({
         })()}
 
         {/* Book Consultation Banner */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950/60 border border-amber-500/40 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="print-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950/60 border border-amber-500/40 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="space-y-1">
             <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold">
               👤 Deepen Your Reading with Personal Dialogue

@@ -1,6 +1,31 @@
+import en from "./locales/en.json";
+import am from "./locales/am.json";
+import om from "./locales/om.json";
+import ti from "./locales/ti.json";
+import so from "./locales/so.json";
+
 export type Language = "en" | "am" | "om" | "ti" | "so";
 
 export interface Translations {
+  common: {
+    loading: string;
+    save: string;
+    cancel: string;
+    back: string;
+    next: string;
+    submit: string;
+    edit: string;
+    delete: string;
+    search: string;
+    filter: string;
+    status: string;
+    actions: string;
+    done: string;
+    review: string;
+    retry: string;
+    errorTitle: string;
+    tryAgain: string;
+  };
   nav: {
     brand: string;
     tagline: string;
@@ -15,6 +40,11 @@ export interface Translations {
     atlas: string;
     emergency: string;
     evaluateBtn: string;
+    account: string;
+    messages: string;
+    bookings: string;
+    profile: string;
+    admin: string;
   };
   hero: {
     badge: string;
@@ -33,6 +63,42 @@ export interface Translations {
     step3: string;
     step4: string;
     step5: string;
+    stepOf: string;
+    normalization: string;
+    altitudePhysiology: string;
+    fullName: string;
+    emailAddress: string;
+    age: string;
+    biologicalSex: string;
+    female: string;
+    male: string;
+    administrativeLocation: string;
+    locationPlaceholder: string;
+    altitudeMeters: string;
+    ironTarget: string;
+    standardTarget: string;
+    physicalActivity: string;
+    sedentary: string;
+    moderateActivity: string;
+    active: string;
+    veryActive: string;
+    reproductiveStage: string;
+    notPregnant: string;
+    pregnantFirstTrimester: string;
+    pregnantSecondTrimester: string;
+    pregnantThirdTrimester: string;
+    lactating: string;
+    nextDiet: string;
+    gapDetection: string;
+    dailyDiet: string;
+    stapleFoods: string;
+    portionGrams: string;
+    safetyAudit: string;
+    activeMedications: string;
+    zeroInteraction: string;
+    culturalPersonalization: string;
+    preflightAudit: string;
+    assessmentReview: string;
   };
   report: {
     title: string;
@@ -52,6 +118,289 @@ export interface Translations {
     title: string;
     subtitle: string;
     sosBtn: string;
+    offlineProtocols: string;
+    protocolsHint: string;
+    emergencyContacts: string;
+    addContact: string;
+    contact: string;
+    remove: string;
+    fullName: string;
+    phonePlaceholder: string;
+    relationshipPlaceholder: string;
+    bloodType: string;
+    unknown: string;
+    activeConditions: string;
+    conditionPlaceholder: string;
+    add: string;
+    activeMedications: string;
+    drugName: string;
+    dose: string;
+    preferredHospital: string;
+    localStorageNote: string;
+    savedOffline: string;
+    saveProfile: string;
+    immediateActions: string;
+  };
+  account: {
+    yourAccount: string;
+    verified: string;
+    notVerifiedYet: string;
+    welcomeTitle: string;
+    welcomeBody: string;
+    findHealer: string;
+    findHealerBody: string;
+    listYourBusiness: string;
+    listYourBusinessBody: string;
+    startCase: string;
+    startCaseBody: string;
+    telegram: string;
+    connectTelegram: string;
+    telegramConnected: string;
+    telegramDisconnected: string;
+    connectedAs: string;
+    verifiedOn: string;
+    disconnect: string;
+    sendNotificationsToTelegram: string;
+    sendNotificationsBody: string;
+    tapToConfirm: string;
+    connecting: string;
+    orConnectByOpeningBot: string;
+    pressStart: string;
+    notSetUp: string;
+    retry: string;
+    noPaymentsYet: string;
+    payment: string;
+    whatsapp: string;
+    connectWhatsApp: string;
+    whatsappDisconnected: string;
+    sendNotificationsToWhatsApp: string;
+    preparing: string;
+    connectApp: string;
+    openApp: string;
+    chatConnectInstructions: string;
+    doneConnecting: string;
+    whatsappNotSetUp: string;
+    sendWhatsAppMessage: string;
+    paymentsTitle: string;
+    paymentsDescription: string;
+    myCases: string;
+  };
+  bookings: {
+    yourAccount: string;
+    myBookings: string;
+    bookSomethingNew: string;
+    statusChangesAppear: string;
+    upcoming: string;
+    past: string;
+    loadingYourBookings: string;
+    noUpcomingBookings: string;
+    noPastBookings: string;
+    whenYouBook: string;
+    findAHealer: string;
+  };
+  business: {
+    forHealers: string;
+    yourBusinesses: string;
+    listYourBusiness: string;
+    openWorkspace: string;
+    createListing: string;
+    addAnotherBusiness: string;
+    createYourBusiness: string;
+    changeLater: string;
+    businessName: string;
+    nameInAmharic: string;
+    whatDoYouPractice: string;
+    chooseCategory: string;
+    oneLineDescription: string;
+    oneLineDescriptionHint: string;
+    businessLocation: string;
+    locationPlaceholder: string;
+    createBusinessButton: string;
+    createBusiness: string;
+    businessPhone: string;
+    languagesYouServe: string;
+    howMeetClients: string;
+    aboutPractice: string;
+    aboutPracticePlaceholder: string;
+    cancel: string;
+    creating: string;
+    healingTraditions: string;
+    culturalServices: string;
+    all: string;
+  };
+  marketplace: {
+    sample: string;
+    verified: string;
+    newListing: string;
+    ratedOutOfFive: string;
+    from: string;
+    ethiopia: string;
+  };
+  safety: {
+    matrix: string;
+    title: string;
+    description: string;
+    modernMedicines: string;
+    traditionalItems: string;
+    documentedPairs: string;
+    checkCombination: string;
+    remediesByMedicine: string;
+    browseLibrary: string;
+    views: string;
+    loading: string;
+    neverCombine: string;
+    major: string;
+    moderate: string;
+    minor: string;
+    documented: string;
+    predicted: string;
+  };
+  diagnostic: {
+    symptoms: Record<string, { label: string; category: string }>;
+    botanicals: Record<string, { category: string; detectedEffect: string }>;
+    regions: Record<string, string>;
+    domains: Record<string, { label: string; description: string }>;
+    domainInsights: Record<string, { headline: string; emphasis: string; questions: string[] }>;
+    quickSuggestions: string[];
+    voiceUnsupported: string;
+    voiceCaptureError: string;
+    microphoneInitError: string;
+    emptyQueryError: string;
+    genericDiagnosisError: string;
+    portalBadge: string;
+    portalTitle: string;
+    portalDescription: string;
+    emergencySos: string;
+    history: string;
+    textMode: string;
+    voiceMode: string;
+    botanicalPhotoMode: string;
+    symptomGridMode: string;
+    domain: string;
+    region: string;
+    detectedLanguage: string;
+    focus: string;
+    activeMedications: string;
+    medicationPlaceholder: string;
+    symptomsLabel: string;
+    symptomPlaceholder: string;
+    liveCheck: string;
+    speechLanguage: string;
+    englishUs: string;
+    amharic: string;
+    listening: string;
+    startRecording: string;
+    transcribedPlaceholder: string;
+    botanicalRecognition: string;
+    botanicalInstructions: string;
+    additionalBotanicalQuestion: string;
+    selectSymptoms: string;
+    selected: string;
+    clearAll: string;
+    commonInquiries: string;
+    firewallStatus: string;
+    synthesizing: string;
+    runDiagnosis: string;
+    processingPipeline: string;
+    queryParsing: string;
+    queryParsingDescription: string;
+    knowledgeRetrieval: string;
+    knowledgeRetrievalDescription: string;
+    causalGraph: string;
+    causalGraphDescription: string;
+    solutionSynthesis: string;
+    solutionSynthesisDescription: string;
+    emergencyContacts: string;
+    safetyGate: string;
+    signalsIdentified: string;
+    synthesizedProblem: string;
+    domainLens: string;
+    confidence: string;
+    bayesianSynthesis: string;
+    scientificIntent: string;
+    language: string;
+    intersections: string;
+    domainQuestions: string;
+    responseDetail: string;
+    primaryFocus: string;
+    urgencySignal: string;
+    recommendedNextStep: string;
+    causalEngine: string;
+    rootCauses: string;
+    causalMapping: string;
+    probability: string;
+    domainContext: string;
+    reflection: string;
+    node: string;
+    targetedInterventions: string;
+    prioritizedSolutions: string;
+    safetyFiltered: string;
+    priority: string;
+    etmPassed: string;
+    evidenceCitation: string;
+    structuredTimeline: string;
+    actionPlan: string;
+    markComplete: string;
+    culturalReflection: string;
+    interpretation: string;
+    reflectivePractice: string;
+    fullEvidenceBreakdown: string;
+    knowledgeStrandsDeepDive: string;
+    saveOrShare: string;
+    exportDescription: string;
+    exportJson: string;
+    printSummary: string;
+    shareSummary: string;
+    copiedToClipboard: string;
+    governanceNotice: string;
+    emergencyHotlines: string;
+    inquiryHistory: string;
+    noHistory: string;
+    source: string;
+    evidence: string;
+    relevance: string;
+    noFindings: string;
+    urgencyCritical: string;
+    urgencyHigh: string;
+    urgencyModerate: string;
+    urgencyRoutine: string;
+    urgencyScore: string;
+    stageNow: string;
+    stageShort: string;
+    stageMedium: string;
+    stageLong: string;
+    stageOngoing: string;
+    certifiedSafety: string;
+    pharmacopoeiaGuardrail: string;
+    interactionWarningTitle: string;
+    interactionWarningBody: string;
+    domainHeritage: string;
+    evidenceBreakdown: string;
+    scientificSummaryTitle: string;
+    emergencyInstructions: string;
+    hotlineEphi: string;
+    hotlineEphiDescription: string;
+    hotlineRedCross: string;
+    hotlineRedCrossDescription: string;
+    hotlinePolice: string;
+    hotlinePoliceDescription: string;
+    hotlineTikurAnbessa: string;
+    hotlineTikurAnbessaDescription: string;
+    closeEmergencyNotice: string;
+    step: string;
+    severity: string;
+    constitutionalTemperament: string;
+    unifiedDomainReport: string;
+    culturalLayersTitle: string;
+    totalVerifiedFindings: string;
+    ethiopianContext: string;
+    closeDrawer: string;
+  };
+  pwa: {
+    installTitle: string;
+    iosHelp: string;
+    installHelp: string;
+    install: string;
   };
   governance: {
     title: string;
@@ -59,307 +408,165 @@ export interface Translations {
     mabSignoff: string;
     thresholdsTitle: string;
   };
+  auth: {
+    login: string;
+    register: string;
+    forgotPassword: string;
+    signOut: string;
+    welcomeBack: string;
+    createAccount: string;
+  };
+  dashboard: {
+    title: string;
+    heroTitle: string;
+    overview: string;
+    recentCases: string;
+    upcomingBookings: string;
+    notifications: string;
+    quickActions: string;
+    description: string;
+    coreActive: string;
+    quickAccess: string;
+    launchCase: string;
+    launchCaseDescription: string;
+    personalProfile: string;
+    personalProfileDescription: string;
+    safetyMatrix: string;
+    safetyMatrixDescription: string;
+    foodComposition: string;
+    foodCompositionDescription: string;
+    auditLedger: string;
+    auditLedgerDescription: string;
+    signalIntegrity: string;
+    caseReadiness: string;
+    advisoryLoop: string;
+    recordsProcessed: string;
+    ancestralNotice: string;
+    dismissNotice: string;
+    caseSignal: string;
+    live: string;
+    micronutrientIndex: string;
+    focus: string;
+    liveState: string;
+    systemReadiness: string;
+    stable: string;
+    trendSummary: string;
+    caseDepth: string;
+    composite: string;
+  };
+  profile: {
+    personalInfo: string;
+    clinicalContext: string;
+    culturalContext: string;
+    emergencyContact: string;
+    saveChanges: string;
+  };
+  messages: {
+    inbox: string;
+    compose: string;
+    sent: string;
+    unread: string;
+  };
+  admin: {
+    panel: string;
+    overview: string;
+    users: string;
+    safety: string;
+    marketplace: string;
+  };
+  home: {
+    badge: string;
+    headline: string;
+    headlineAccent: string;
+    description: string;
+    searchPlaceholder: string;
+    search: string;
+    popular: string;
+    herbal: string;
+    awdeNegest: string;
+    boneSetting: string;
+    ceremony: string;
+    addis: string;
+    everyBusinessVerified: string;
+    verifiedHeritage: string;
+    liveAvailability: string;
+    knowledgeCarried: string;
+    verifiedBusinesses: string;
+    beFirstVerified: string;
+    browseByTradition: string;
+    healingTraditions: string;
+    culturalServices: string;
+    highlyRatedNearYou: string;
+    seeAll: string;
+    firstBusinessesJoining: string;
+    marketplaceUnavailable: string;
+    listYourBusiness: string;
+    howItWorks: string;
+    findRightPerson: string;
+    findRightPersonBody: string;
+    bookRealTime: string;
+    bookRealTimeBody: string;
+    stayInTouch: string;
+    stayInTouchBody: string;
+    forHealers: string;
+    forHealersTitle: string;
+    forHealersBody: string;
+    startForFree: string;
+    browseMarketplace: string;
+  };
+  footer: {
+    dispatchLabel: string;
+    dispatchTitle: string;
+    dispatchBody: string;
+    emailPlaceholder: string;
+    joinDispatch: string;
+    subscribed: string;
+    platformLabel: string;
+    platformTagline: string;
+    platformDescription: string;
+    domainAStrong: string;
+    domainBStrong: string;
+    verification: string;
+    foods: string;
+    districts: string;
+    strands: string;
+    verificationStatus: string;
+    rights: string;
+    legalNoticeTitle: string;
+    legalNoticeBody: string;
+  };
+}
+
+type DeepPartial<T> = {
+  [Key in keyof T]?: T[Key] extends object ? DeepPartial<T[Key]> : T[Key];
+};
+
+function withEnglishFallback(locale: DeepPartial<Translations>): Translations {
+  const merge = (fallback: unknown, translated: unknown): unknown => {
+    if (typeof fallback !== "object" || fallback === null || Array.isArray(fallback)) {
+      return translated ?? fallback;
+    }
+
+    const translatedObject =
+      typeof translated === "object" && translated !== null && !Array.isArray(translated)
+        ? (translated as Record<string, unknown>)
+        : {};
+
+    return Object.fromEntries(
+      Object.entries(fallback as Record<string, unknown>).map(([key, value]) => [
+        key,
+        merge(value, translatedObject[key]),
+      ]),
+    );
+  };
+
+  return merge(en, locale) as Translations;
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
-  en: {
-    nav: {
-      brand: "Ethiopian Wisdom",
-      tagline: "Heritage, healing & daily wisdom",
-      overview: "Overview",
-      diagnostic: "Knowledge review",
-      intake: "Client intake",
-      safety: "Care safety",
-      foods: "Food wisdom",
-      cultural: "Heritage layer",
-      audit: "Audit log",
-      governance: "Ethics & governance",
-      atlas: "Heritage atlas",
-      emergency: "Emergency care",
-      evaluateBtn: "Evaluate profile",
-    },
-    hero: {
-      badge: "ETHIOPIAN WISDOM • HERITAGE-LED, EVIDENCE-AWARE",
-      title: "Living Ethiopian wellbeing &",
-      titleHighlight: "knowledge-guided care",
-      subtitle: "Evaluates client intake against authentic Ethiopian food composition data (EFCT 2025), cultural context, and traditional medicine safety data (ETM-DB) to reveal meaningful patterns, likely drivers, and responsible guidance.",
-      startBtn: "Begin a guided care intake",
-      viewReportBtn: "View the latest guidance report",
-      testSafetyBtn: "Review care-safety boundaries",
-    },
-    intake: {
-      title: "Client Intake Assessment",
-      subtitle: "Altitude-calibrated nutritional and pharmaceutical screening",
-      step1: "Demographics & Altitude",
-      step2: "Diet Log & Lifestyle",
-      step3: "Medications & Safety",
-      step4: "Cultural Layer (Domain B)",
-      step5: "Review & Evaluate",
-    },
-    report: {
-      title: "Biochemical Wellbeing Gap & Safety Report",
-      statusAudited: "REPORT STATUS: AUDITED & CERTIFIED",
-      safetyGateVerified: "Safety Gate Verified",
-      zeroInteractionGuarantee: "Zero-Interaction Guarantee",
-      gapsTitle: "Identified Nutritional Gaps",
-      causesTitle: "Identified Causal Drivers",
-      solutionsTitle: "Ranked & Verified Solutions",
-      exportSummary: "Export Scientific Encounter Summary",
-    },
-    governance: {
-      title: "Medical Advisory Board & Scientific Governance",
-      subtitle: "Regulatory oversight, threshold versioning, and ETM-DB interaction changelogs",
-      mabSignoff: "MAB Certified & Signed Off",
-      thresholdsTitle: "Evaluation Thresholds & Biomarkers",
-    },
-    atlas: {
-      title: "Ethiopian Wellbeing Nutrition Atlas",
-      subtitle: "Regional nutritional deficiency rates and traditional medicine usage",
-    },
-    emergency: {
-      title: "Emergency Wellbeing Profile",
-      subtitle: "Your contacts, conditions, and medications for emergency responders",
-      sosBtn: "Send SOS Alert",
-    },
-  },
-  am: {
-    nav: {
-      brand: "የኢትዮጵያ ሁለንተናዊ ጤና",
-      tagline: "ባዮኬሚካላዊ እና ባህላዊ ትክክለኛነት",
-      overview: "አጠቃላይ እይታ",
-      diagnostic: "ምርመራ ፖርታል",
-      intake: "የግምገማ ቅጽ",
-      safety: "የደህንነት መቆጣጠሪያ",
-      foods: "የኢትዮጵያ ምግቦች",
-      cultural: "ባህላዊ ቅርስ (Domain B)",
-      audit: "የኦዲት መዝገብ",
-      governance: "የሕክምና አስተዳደር",
-      atlas: "የጤና ካርታ",
-      emergency: "አስቸኳይ",
-      evaluateBtn: "መገለጫ ገምግም",
-    },
-    hero: {
-      badge: "የኢንተርፕራይዝ እትም 3.0 • የሕክምና ደረጃ ግምገማ",
-      title: "የኢትዮጵያ ትክክለኛ ጤና እና",
-      titleHighlight: "የሥነ-ምግብ ክፍተት ትንተና",
-      subtitle: "የተጠቃሚዎችን የምግብ አወሳሰድ ከኢትዮጵያ የምግብ ጥንቅር ሰንጠረዥ (EFCT 2025) እና ከባህላዊ መድኃኒቶች የደህንነት መረጃ (ETM-DB) ጋር በማገናዘብ ትክክለኛ የጤና ክፍተቶች → ምክንያቶች → የተረጋገጡ መፍትሄዎችን ያመነጫል።",
-      startBtn: "ሁለንተናዊ ግምገማ ጀምር",
-      viewReportBtn: "የቅርብ ጊዜ ሪፖርት ተመልከት",
-      testSafetyBtn: "የዕፅዋት-መድኃኒት ደህንነት ፈትሽ",
-    },
-    intake: {
-      title: "የተጠቃሚ የጤና እና ምግብ ግምገማ",
-      subtitle: "ከፍታን ያገናዘበ የሥነ-ምግብ እና የመድኃኒት ደህንነት ምርመራ",
-      step1: "መሰረታዊ መረጃ እና ከፍታ",
-      step2: "የምግብ አወሳሰድ እና ልማዶች",
-      step3: "መድኃኒቶች እና ደህንነት",
-      step4: "ባህላዊ እሴቶች (Domain B)",
-      step5: "ግምገማ እና ማረጋገጫ",
-    },
-    report: {
-      title: "የባዮኬሚካል ጤና ክፍተት እና ደህንነት ሪፖርት",
-      statusAudited: "የሪፖርት ሁኔታ፡ የተረጋገጠ እና በኦዲት የተፈተሸ",
-      safetyGateVerified: "በደህንነት መቆጣጠሪያ የተረጋገጠ",
-      zeroInteractionGuarantee: "ከግጭት ነፃ የመሆን ዋስትና",
-      gapsTitle: "የተለዩ የሥነ-ምግብ ክፍተቶች",
-      causesTitle: "አስተዋጽኦ ያደረጉ ምክንያቶች",
-      solutionsTitle: "ደረጃ የተሰጣቸው እና የተረጋገጡ መፍትሄዎች",
-      exportSummary: "የሕክምና ማጠቃለያ ሰነድ አውርድ (PDF)",
-    },
-    governance: {
-      title: "የሕክምና አማካሪ ቦርድ እና ክሊኒካዊ አስተዳደር",
-      subtitle: "የቁጥጥር ክትትል፣ የመለኪያ ደንቦች እና የባህላዊ መድኃኒቶች ደህንነት ማሻሻያ",
-      mabSignoff: "በሕክምና ቦርዱ የተፈረመበት",
-      thresholdsTitle: "የግምገማ መለኪያዎች እና ደረጃዎች",
-    },
-    atlas: {
-      title: "የኢትዮጵያ የጤና ካርታ",
-      subtitle: "በክልሎች ያለው የሥነ-ምግብ ክፍተት ወና ባህላዊ መድኃኒት አጠቃቀም",
-    },
-    emergency: {
-      title: "አስቸኳይ የጤና መረጃ",
-      subtitle: "ለድንገተኛ ጉዳይ አስፈላጊ ሰዎች፣ ሁኔታዎች እና መድኃኒቶች",
-      sosBtn: "አስቸኳይ ጥሪ ላክ",
-    },
-  },
-  om: {
-    nav: {
-      brand: "Fayyaa Guutuu Itoophiyaa",
-      tagline: "Sirrummaa Baayookeemikaalaa fi Aadaa",
-      overview: "Waliigala",
-      diagnostic: "Qorannoo Fayyaa",
-      intake: "Unka Qorannoo",
-      safety: "Qorannoo Nageenyaa",
-      foods: "Nyaata Itoophiyaa",
-      cultural: "Aadaa (Domain B)",
-      audit: "Galmee Oodiitii",
-      governance: "Bulchiinsa Yaalaa",
-      atlas: "Kaartaa Fayyaa",
-      emergency: "Ariifannoo",
-      evaluateBtn: "Itti Fufi",
-    },
-    hero: {
-      badge: "ENTERPRISE v3.0 • MOOTORA YAALAA",
-      title: "Fayyaa fi Nageenya Itoophiyaa &",
-      titleHighlight: "Xiinxala Hanqina Nyaataa",
-      subtitle: "Soorata keessan gabatee qabiyyee nyaata Itoophiyaa (EFCT 2025) fi daataa nageenya qoricha aadaa (ETM-DB) waliin xiinxaluun Hanqina Fayyaa → Sababoota → Furmaata mirkanaa'e kenna.",
-      startBtn: "Qorannoo Jalqabi",
-      viewReportBtn: "Gabaasa Dhihoo Ilaali",
-      testSafetyBtn: "Nageenya Qorichaa Qori",
-    },
-    intake: {
-      title: "Qorannoo Soorata Fayyaa",
-      subtitle: "Sadarkaa olka'iinsa lafaa fi nageenya qorichaa",
-      step1: "Oodeeffannoo fi Olka'iinsa",
-      step2: "Soorata fi Amala",
-      step3: "Qorichoota fi Nageenya",
-      step4: "Kutaa Aadaa (Domain B)",
-      step5: "Mirkaneessuu",
-    },
-    report: {
-      title: "Gabaasa Hanqina Soorataa fi Nageenyaa",
-      statusAudited: "HAALA GABAASAA: MIRKANAA'EERA",
-      safetyGateVerified: "Nageenyi Mirkanaa'eera",
-      zeroInteractionGuarantee: "Wal-faallessuu Irraa Bilisa",
-      gapsTitle: "Hanqinaalee Soorataa Argaman",
-      causesTitle: "Sababoota Gumaachan",
-      solutionsTitle: "Furmaataalee Filatamoo",
-      exportSummary: "Gabaasa Yaalaa Baasi",
-    },
-    governance: {
-      title: "Bulchiinsa Yaalaa fi Boordii Fayyaa",
-      subtitle: "To'annoo seeraa fi nageenya qorichoota aadaa",
-      mabSignoff: "Boordiin Mirkanaa'e",
-      thresholdsTitle: "Ulaagaalee Madaallii",
-    },
-    atlas: {
-      title: "Kaartaa Fayyaa Itoophiyaa",
-      subtitle: "Hanqina soorataa fi fayyadama qoricha aadaa naannoodhaan",
-    },
-    emergency: {
-      title: "Odeeffannoo Ariifannoo",
-      subtitle: "Dhaabbilee, haala fayyaa fi qorichoota yeroo balaa",
-      sosBtn: "Beeksisa Ariifannoo Ergi",
-    },
-  },
-  ti: {
-    nav: {
-      brand: "ሕሙማዊ ጥዕና ኢትዮጵያ",
-      tagline: "ባዮኬሚካላዊ ትኽክለኛ ምርምር",
-      overview: "ድምር",
-      diagnostic: "ምርመራ ፖርታል",
-      intake: "ቅጽ ምግምጋም",
-      safety: "ድሕነት ምርምር",
-      foods: "ምግቢ ኢትዮጵያ",
-      cultural: "ወጋዊ ክፍሊ (Domain B)",
-      audit: "መዝገብ ምርምር",
-      governance: "ሕክምናዊ ምምሕዳር",
-      atlas: "ካርታ ጥዕና",
-      emergency: "ህጹጽ",
-      evaluateBtn: "ምርምር ጀምር",
-    },
-    hero: {
-      badge: "ENTERPRISE v3.0 • ሕክምናዊ ምርምር",
-      title: "ትኽክለኛ ጥዕና ኢትዮጵያ &",
-      titleHighlight: "ምምርምር ናይ ስነ-ምግቢ ጉድለት",
-      subtitle: "ናይ ተጠቃሚ ምግቢ ምስ ናይ ኢትዮጵያ ምግቢ ሰሌዳ (EFCT 2025) ኣነጻጺሩ ናይ ጥዕና ጉድለት → ምኽንያቶቹ → ዉሑስ መፍትሒ ይህብ።",
-      startBtn: "ምርምር ጀምር",
-      viewReportBtn: "ናይ መጨረሽታ ሪፖርት ርአ",
-      testSafetyBtn: "ድሕነት ምርምር ፈትን",
-    },
-    intake: {
-      title: "ምዝጋብ ጥዕና ተጠቃሚ",
-      subtitle: "ምምርምር ናይ ስነ-ምግቢ ምስ ልዕልነት ሃገር",
-      step1: "ሓበሬታ ሰብ",
-      step2: "ምግቢ ሂወት",
-      step3: "መድሃኒት ድሕነት",
-      step4: "ወጋዊ ክፍሊ (Domain B)",
-      step5: "ምርምር",
-    },
-    report: {
-      title: "ሪፖርት ናይ ጥዕና ጉድለት",
-      statusAudited: "ሪፖርት ዳሕራዊ ምርምር ተሓቲቱ",
-      safetyGateVerified: "ድሕነት ተረጋጊጹ",
-      zeroInteractionGuarantee: "ናጻ ካብ ሕልኽ",
-      gapsTitle: "ናይ ስነ-ምግቢ ጉድለት",
-      causesTitle: "ምኽንያቶቹ",
-      solutionsTitle: "ዉሑሳት መፍትሒ",
-      exportSummary: "ወጺኡ ዘውጽእ",
-    },
-    governance: {
-      title: "ቦርድ ሕክምና ምምሕዳር",
-      subtitle: "ቁጽጽር ሕጊ ምስ ናይ ETM-DB ምዕባለ",
-      mabSignoff: "ቦርድ ሓሲምዎ",
-      thresholdsTitle: "ናይ ምምርምር መለክዒ",
-    },
-    atlas: {
-      title: "ካርታ ጥዕና ኢትዮጵያ",
-      subtitle: "ናይ ናይ ስነ-ምግቢ ጉድለት ብዙሕነት ብዞባ",
-    },
-    emergency: {
-      title: "ናይ ህጹጽ ሕክምና ሓበሬታ",
-      subtitle: "ኣድራሻ ህጹጽ ሰባት ምስ ሕሙምነት",
-      sosBtn: "ናይ ህጹጽ መልእኽቲ ስደድ",
-    },
-  },
-  so: {
-    nav: {
-      brand: "Caafimaadka Guud ee Itoobiya",
-      tagline: "Saxnaanta Kiimikada & Dhaqanka",
-      overview: "Guudmar",
-      diagnostic: "Xarunta Baaritaanka",
-      intake: "Foomka Qiimaynta",
-      safety: "Ilaalada Badbaadada",
-      foods: "Cuntooyinka EFCT",
-      cultural: "Dhaqanka (Domain B)",
-      audit: "Diiwaanka Hubinta",
-      governance: "Maamulka Caafimaadka",
-      atlas: "Khariidadda Caafimaadka",
-      emergency: "Xaalad Degdeg",
-      evaluateBtn: "Bilaab Qiimaynta",
-    },
-    hero: {
-      badge: "ENTERPRISE v3.0 • QIIMAYNTA CAAFIMAADKA",
-      title: "Caafimaadka Saxda ah ee Itoobiya &",
-      titleHighlight: "Falanqaynta Nusqaanta Nafaqada",
-      subtitle: "Qiimaynta cuntada iyadoo la barbardhigayo shaxda nafaqada Itoobiya (EFCT 2025) iyo badbaadada dhirta (ETM-DB).",
-      startBtn: "Bilaab Qiimaynta",
-      viewReportBtn: "Arag Warbixinta",
-      testSafetyBtn: "Tijaabi Badbaadada Dhirta",
-    },
-    intake: {
-      title: "Diiwaangelinta Caafimaadka",
-      subtitle: "Heerka joogga iyo badbaadada dawooyinka",
-      step1: "Xogta Guud",
-      step2: "Cuntada & Qaabnololeedka",
-      step3: "Dawooyinka & Badbaadada",
-      step4: "Qaybta Dhaqanka (Domain B)",
-      step5: "Xaqiijinta",
-    },
-    report: {
-      title: "Warbixinta Nusqaanta Caafimaadka",
-      statusAudited: "HEERKA WARBIXINTA: LA HUBIYEY",
-      safetyGateVerified: "Badbaadada La Xaqiijiyey",
-      zeroInteractionGuarantee: "Khatar La'aan",
-      gapsTitle: "Nusqaamaha La Helay",
-      causesTitle: "Sababaha Keena",
-      solutionsTitle: "Xalka Badbaadada Leh",
-      exportSummary: "Dhoofso Warbixinta",
-    },
-    governance: {
-      title: "Guddiga Maamulka Caafimaadka",
-      subtitle: "Ilaalinta xeerarka iyo horumarinta ETM-DB",
-      mabSignoff: "Guddigu Saxeexay",
-      thresholdsTitle: "Heerarka Qiimaynta",
-    },
-    atlas: {
-      title: "Khariidadda Caafimaadka Itoobiya",
-      subtitle: "Nusqaanta nafaqada iyo isticmaalka dawo-dhaqameedka ee deegaannada",
-    },
-    emergency: {
-      title: "Xogta Xaaladda Degdegga",
-      subtitle: "Dadka lala xiriiro, xanuunnada, iyo dawooyinka",
-      sosBtn: "Dir Digniinta SOS",
-    },
-  },
+  en: withEnglishFallback(en),
+  am: withEnglishFallback(am),
+  om: withEnglishFallback(om),
+  ti: withEnglishFallback(ti),
+  so: withEnglishFallback(so),
 };

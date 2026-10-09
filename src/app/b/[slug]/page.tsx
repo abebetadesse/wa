@@ -38,6 +38,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const { business, reviews } = await load(slug);
   const cultural = business.category.sector === "cultural";
+  const demoSample = business.description?.startsWith("[DEMO SAMPLE]") ?? false;
 
   return (
     <div className="pb-20">
@@ -54,6 +55,11 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
             Only your team can see this page until the business is verified.
           </Alert>
         )}
+        {demoSample && (
+          <Alert tone="warning" title="Fictional sample profile" className="mb-4">
+            This profile, its owner, background, and listed service are fictional demo data. No identity or qualifications were verified; this is not a real provider or bookable service.
+          </Alert>
+        )}
 
         <div className="relative flex flex-col gap-5 rounded-3xl border border-border bg-card p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-end sm:p-8">
           {business.logoUrl ? (
@@ -65,9 +71,10 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={cultural ? "gold" : "brand"}>{business.category.name}</Badge>
-              {!business.preview && (
+              {!business.preview && !demoSample && (
                 <Badge tone="success"><BadgeCheck className="size-3.5" aria-hidden="true" /> Verified</Badge>
               )}
+              {demoSample && <Badge tone="warning">Sample · not credential-verified</Badge>}
             </div>
             <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{business.name}</h1>
             {business.nameAm && <p lang="am" className="font-geez text-lg text-muted-foreground">{business.nameAm}</p>}
@@ -83,8 +90,8 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
           <div className="flex flex-wrap gap-2 sm:flex-col">
-            {!business.preview && business.services.length > 0 && <ButtonLink href={`/b/${business.slug}/book`} size="lg">Book now</ButtonLink>}
-            {!business.preview && <MessageButton slug={business.slug} />}
+            {!business.preview && !demoSample && business.services.length > 0 && <ButtonLink href={`/b/${business.slug}/book`} size="lg">Book now</ButtonLink>}
+            {!business.preview && !demoSample && <MessageButton slug={business.slug} />}
           </div>
         </div>
 
@@ -120,7 +127,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
                       </div>
                       <div className="flex items-center gap-4 sm:flex-col sm:items-end">
                         <span className="font-display text-xl font-extrabold text-foreground">{formatEtb(service.priceEtb)}</span>
-                        {!business.preview && (
+                        {!business.preview && !demoSample && (
                           <ButtonLink href={`/b/${business.slug}/book?service=${service.id}`} variant="outline" size="sm">Book</ButtonLink>
                         )}
                       </div>

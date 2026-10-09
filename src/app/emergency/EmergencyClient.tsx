@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { EMERGENCY_PROTOCOLS } from "@/lib/offline/knowledgeBase";
+import { useLanguage } from "@/lib/i18n/context";
 
 interface EmergencyContact {
   name: string;
@@ -25,12 +26,13 @@ const ETHIOPIAN_HOSPITALS = [
 ];
 
 export default function EmergencyClient() {
+  const { t } = useLanguage();
   const [contacts, setContacts] = useState<EmergencyContact[]>([
     { name: "", phone: "", relationship: "" },
   ]);
   const [conditions, setConditions] = useState<string[]>([]);
   const [medications, setMedications] = useState<{ name: string; dose: string }[]>([]);
-  const [bloodType, setBloodType] = useState("Unknown");
+  const [bloodType, setBloodType] = useState(t.emergency.unknown);
   const [preferredHospital, setPreferredHospital] = useState("");
   const [newCondition, setNewCondition] = useState("");
   const [newMed, setNewMed] = useState({ name: "", dose: "" });
@@ -89,13 +91,11 @@ export default function EmergencyClient() {
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/30 text-rose-400 text-xs font-semibold mb-3">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            OFFLINE-READY · EPHI EMERGENCY PROTOCOLS
+            {t.emergency.offlineProtocols}
           </div>
-          <h1 className="text-3xl font-extrabold text-white mb-2">
-            Emergency <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">Wellbeing Profile</span>
-          </h1>
+          <h1 className="text-3xl font-extrabold text-white mb-2">{t.emergency.title}</h1>
           <p className="text-slate-400 text-sm max-w-2xl">
-            Your emergency contacts, active conditions, medications, and blood type — stored locally on your device for immediate offline access by first responders.
+            {t.emergency.subtitle}
           </p>
         </div>
 
@@ -110,8 +110,8 @@ export default function EmergencyClient() {
                 🚨
               </div>
               <div>
-                <h2 className="text-base font-bold text-rose-300">Emergency Protocols (Offline Available)</h2>
-                <p className="text-xs text-slate-500">Tap to view first-response protocols for common emergencies</p>
+                <h2 className="text-base font-bold text-rose-300">{t.emergency.offlineProtocols}</h2>
+                <p className="text-xs text-slate-500">{t.emergency.protocolsHint}</p>
               </div>
             </div>
             <span className="text-slate-500 text-sm">{showSOS ? "▲" : "▼"}</span>
@@ -138,7 +138,7 @@ export default function EmergencyClient() {
                 <div className="mt-3 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 space-y-3">
                   <h3 className="text-sm font-bold text-rose-300">{protocol.title}</h3>
                   <div>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-1.5">Immediate Actions</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-1.5">{t.emergency.immediateActions}</p>
                     <ul className="space-y-1.5">
                       {protocol.immediate.map((step, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
@@ -168,12 +168,12 @@ export default function EmergencyClient() {
           {/* Emergency Contacts */}
           <div className="glass-panel p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white">Emergency Contacts</h2>
+              <h2 className="text-sm font-bold text-white">{t.emergency.emergencyContacts}</h2>
               <button
                 onClick={addContact}
                 className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-medium"
               >
-                + Add Contact
+                + {t.emergency.addContact}
               </button>
             </div>
 
@@ -181,30 +181,30 @@ export default function EmergencyClient() {
               {contacts.map((contact, i) => (
                 <div key={i} className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-600 font-mono">Contact {i + 1}</span>
+                    <span className="text-[10px] text-slate-600 font-mono">{t.emergency.contact} {i + 1}</span>
                     {contacts.length > 1 && (
                       <button
                         onClick={() => removeContact(i)}
                         className="text-[10px] text-rose-600 hover:text-rose-400 transition-colors"
                       >
-                        Remove
+                        {t.emergency.remove}
                       </button>
                     )}
                   </div>
                   <input
-                    placeholder="Full name"
+                    placeholder={t.emergency.fullName}
                     value={contact.name}
                     onChange={(e) => updateContact(i, "name", e.target.value)}
                     className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
                   />
                   <input
-                    placeholder="Phone (+251...)"
+                    placeholder={t.emergency.phonePlaceholder}
                     value={contact.phone}
                     onChange={(e) => updateContact(i, "phone", e.target.value)}
                     className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
                   />
                   <input
-                    placeholder="Relationship (e.g. spouse, doctor)"
+                    placeholder={t.emergency.relationshipPlaceholder}
                     value={contact.relationship}
                     onChange={(e) => updateContact(i, "relationship", e.target.value)}
                     className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
@@ -218,7 +218,7 @@ export default function EmergencyClient() {
           <div className="glass-panel p-5 space-y-5">
             {/* Blood type */}
             <div>
-              <h2 className="text-sm font-bold text-white mb-2">Blood Type</h2>
+              <h2 className="text-sm font-bold text-white mb-2">{t.emergency.bloodType}</h2>
               <div className="flex flex-wrap gap-2">
                 {BLOOD_TYPES.map((bt) => (
                   <button
@@ -229,7 +229,7 @@ export default function EmergencyClient() {
                         : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                       }`}
                   >
-                    {bt}
+                    {bt === "Unknown" ? t.emergency.unknown : bt}
                   </button>
                 ))}
               </div>
@@ -237,10 +237,10 @@ export default function EmergencyClient() {
 
             {/* Active conditions */}
             <div>
-              <h2 className="text-sm font-bold text-white mb-2">Active Conditions</h2>
+              <h2 className="text-sm font-bold text-white mb-2">{t.emergency.activeConditions}</h2>
               <div className="flex gap-2 mb-2">
                 <input
-                  placeholder="e.g. anemia, diabetes..."
+                  placeholder={t.emergency.conditionPlaceholder}
                   value={newCondition}
                   onChange={(e) => setNewCondition(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addCondition()}
@@ -250,7 +250,7 @@ export default function EmergencyClient() {
                   onClick={addCondition}
                   className="px-3 py-1.5 rounded-lg bg-emerald-700/40 border border-emerald-600/40 text-emerald-300 text-xs font-medium hover:bg-emerald-700/60 transition-all"
                 >
-                  Add
+                  {t.emergency.add}
                 </button>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -268,16 +268,16 @@ export default function EmergencyClient() {
 
             {/* Medications */}
             <div>
-              <h2 className="text-sm font-bold text-white mb-2">Active Medications</h2>
+              <h2 className="text-sm font-bold text-white mb-2">{t.emergency.activeMedications}</h2>
               <div className="flex gap-2 mb-2">
                 <input
-                  placeholder="Drug name"
+                  placeholder={t.emergency.drugName}
                   value={newMed.name}
                   onChange={(e) => setNewMed({ ...newMed, name: e.target.value })}
                   className="flex-1 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
                 />
                 <input
-                  placeholder="Dose"
+                  placeholder={t.emergency.dose}
                   value={newMed.dose}
                   onChange={(e) => setNewMed({ ...newMed, dose: e.target.value })}
                   className="w-24 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
@@ -286,7 +286,7 @@ export default function EmergencyClient() {
                   onClick={addMedication}
                   className="px-3 py-1.5 rounded-lg bg-emerald-700/40 border border-emerald-600/40 text-emerald-300 text-xs font-medium hover:bg-emerald-700/60 transition-all"
                 >
-                  Add
+                  {t.emergency.add}
                 </button>
               </div>
               <div className="space-y-1">
@@ -303,7 +303,7 @@ export default function EmergencyClient() {
 
         {/* Preferred Hospital */}
         <div className="glass-panel p-5 mt-6">
-          <h2 className="text-sm font-bold text-white mb-3">Preferred Hospital / health Facility</h2>
+          <h2 className="text-sm font-bold text-white mb-3">{t.emergency.preferredHospital}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {ETHIOPIAN_HOSPITALS.map((h) => (
               <button
@@ -323,7 +323,7 @@ export default function EmergencyClient() {
         {/* Save */}
         <div className="mt-6 flex items-center justify-between">
           <p className="text-xs text-slate-600">
-            Saved locally on this device (offline-first). Sync to server from your profile settings.
+            {t.emergency.localStorageNote}
           </p>
           <button
             id="save-emergency-profile-btn"
@@ -333,7 +333,7 @@ export default function EmergencyClient() {
                 : "bg-rose-700/30 border-rose-500/40 text-rose-200 hover:bg-rose-700/50"
               }`}
           >
-            {saved ? "✓ Saved Offline" : "Save Emergency Profile"}
+            {saved ? `✓ ${t.emergency.savedOffline}` : t.emergency.saveProfile}
           </button>
         </div>
       </div>

@@ -40,8 +40,8 @@ interface Results {
 
 interface Suggestions {
   popular: { label: string; category?: string; query?: string; icon: string }[];
-  businesses: { id: string; slug: string; name: string; nameAm: string | null; city: string | null; categoryName: string }[];
-  services: { id: string; name: string; nameAm: string | null; businessName: string; businessSlug: string; priceEtb: string }[];
+  businesses: { id: string; slug: string; name: string; nameAm: string | null; city: string | null; categoryName: string; demoSample: boolean }[];
+  services: { id: string; name: string; nameAm: string | null; businessName: string; businessSlug: string; priceEtb: string; demoSample: boolean }[];
   categories: { slug: string; name: string; nameAm: string | null; sector: string }[];
 }
 
@@ -445,6 +445,7 @@ export function Directory() {
                     >
                       <div>
                         <span className="font-semibold">{biz.name}</span>
+                        {biz.demoSample && <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">Sample</span>}
                         {biz.nameAm && <span className="ml-1.5 text-xs text-muted-foreground">({biz.nameAm})</span>}
                         <span className="ml-2 text-xs text-muted-foreground">· {biz.categoryName}</span>
                       </div>
@@ -473,6 +474,7 @@ export function Directory() {
                       <div>
                         <span className="font-semibold text-brand-strong">{srv.name}</span>
                         <span className="ml-2 text-xs text-muted-foreground">at {srv.businessName}</span>
+                        {srv.demoSample && <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">Sample</span>}
                       </div>
                       <span className="font-display text-xs font-bold text-foreground">{formatEtb(srv.priceEtb)}</span>
                     </button>

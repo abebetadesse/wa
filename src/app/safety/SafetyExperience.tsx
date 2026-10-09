@@ -6,6 +6,7 @@ import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Dialog, EmptyState, ErrorState, Input, LoadingState, Select, Textarea } from "@/components/ui";
 import { CONDITIONS, CONDITION_LABELS, PROPERTIES, type Condition, type Finding, type Severity } from "@/server/safety/rules";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
 
 // ── Types from the API ───────────────────────────────────────────────────────
 
@@ -75,10 +76,17 @@ function KindIcon({ kind, className }: { kind: string; className?: string }) {
 }
 
 function SeverityBadge({ severity, basis }: { severity: Severity; basis?: "documented" | "predicted" | null }) {
+  const { t } = useLanguage();
+  const severityLabels: Record<Severity, string> = {
+    contraindicated: t.safety.neverCombine,
+    major: t.safety.major,
+    moderate: t.safety.moderate,
+    minor: t.safety.minor,
+  };
   return (
     <span className="inline-flex items-center gap-1">
-      <Badge tone={SEVERITY_STYLE[severity].badge}>{SEVERITY_STYLE[severity].label}</Badge>
-      {basis && <Badge tone={basis === "documented" ? "gold" : "neutral"}>{basis === "documented" ? "Documented" : "Predicted"}</Badge>}
+      <Badge tone={SEVERITY_STYLE[severity].badge}>{severityLabels[severity]}</Badge>
+      {basis && <Badge tone={basis === "documented" ? "gold" : "neutral"}>{basis === "documented" ? t.safety.documented : t.safety.predicted}</Badge>}
     </span>
   );
 }
@@ -94,6 +102,7 @@ function matches(substance: Substance, query: string) {
 type Tab = "check" | "map" | "library";
 
 export default function SafetyExperience() {
+  const { t } = useLanguage();
   const [tab, setTab] = useState<Tab>("check");
   const [library, setLibrary] = useState<{ substances: Substance[]; counts: { modern: number; traditional: number; documented: number } } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -125,22 +134,22 @@ export default function SafetyExperience() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
       <header className="mb-6 max-w-3xl">
-        <Badge tone="danger" className="mb-3"><ShieldAlert className="size-3.5" aria-hidden="true" /> Safety matrix</Badge>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">Medicine & remedy safety matrix</h1>
+        <Badge tone="danger" className="mb-3"><ShieldAlert className="size-3.5" aria-hidden="true" /> {t.safety.matrix}</Badge>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{t.safety.title}</h1>
         <p className="mt-2 text-muted-foreground">
-          Check any mix of modern medicines, traditional remedies, foods and drinks. Every pair is compared, using documented interactions and the properties each one is known to have.
+          {t.safety.description}
         </p>
         {library && (
           <p className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><Pill className="size-4 text-brand" aria-hidden="true" /> {library.counts.modern} modern medicines</span>
-            <span className="inline-flex items-center gap-1.5"><Leaf className="size-4 text-success" aria-hidden="true" /> {library.counts.traditional} traditional remedies, foods & drinks</span>
-            <span className="inline-flex items-center gap-1.5"><FlaskConical className="size-4 text-gold" aria-hidden="true" /> {library.counts.documented} documented pairs</span>
+            <span className="inline-flex items-center gap-1.5"><Pill className="size-4 text-brand" aria-hidden="true" /> {library.counts.modern} {t.safety.modernMedicines}</span>
+            <span className="inline-flex items-center gap-1.5"><Leaf className="size-4 text-success" aria-hidden="true" /> {library.counts.traditional} {t.safety.traditionalItems}</span>
+            <span className="inline-flex items-center gap-1.5"><FlaskConical className="size-4 text-gold" aria-hidden="true" /> {library.counts.documented} {t.safety.documentedPairs}</span>
           </p>
         )}
       </header>
 
-      <div role="tablist" aria-label="Safety views" className="mb-6 flex flex-wrap gap-2">
-        {([["check", "Check a combination", ShieldAlert], ["map", "Remedies × medicine groups", Grid3x3], ["library", "Browse the library", Library]] as const).map(([id, label, Icon]) => (
+      <div role="tablist" aria-label={t.safety.views} className="mb-6 flex flex-wrap gap-2">
+        {([["check", t.safety.checkCombination, ShieldAlert], ["map", t.safety.remediesByMedicine, Grid3x3], ["library", t.safety.browseLibrary, Library]] as const).map(([id, label, Icon]) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={cn("inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors", tab === id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground")}>
             <Icon className="size-4" aria-hidden="true" /> {label}
           </button>
@@ -150,7 +159,7 @@ export default function SafetyExperience() {
       {error ? (
         <ErrorState message={error} onRetry={load} />
       ) : !library ? (
-        <LoadingState label="Loading the reference…" />
+        <LoadingState label={t.safety.loading} />
       ) : tab === "check" ? (
         <Checker substances={library.substances} bySlug={bySlug} selected={selected} setSelected={setSelected} profile={profile} setProfile={setProfile} onOpen={setDetailSlug} />
       ) : tab === "map" ? (

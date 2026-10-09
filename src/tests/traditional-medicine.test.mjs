@@ -38,6 +38,20 @@ test("Intensive Traditional Medicine Database: contains comprehensive authentic 
   }
 });
 
+test("Medicinal plant photos are external, taxon-specific, and properly attributed", () => {
+  const plantsWithPhotos = INTENSIVE_TRADITIONAL_MEDICINES.filter((plant) => plant.imageUrl);
+  assert.equal(plantsWithPhotos.length, INTENSIVE_TRADITIONAL_MEDICINES.length);
+
+  for (const plant of plantsWithPhotos) {
+    assert.equal(new URL(plant.imageUrl).protocol, "https:", `${plant.id}: photo must use HTTPS`);
+    assert.match(plant.imageAlt ?? "", /photograph|herbarium specimen/i, `${plant.id}: photo must have descriptive alt text`);
+    assert.ok(plant.imageAttribution, `${plant.id}: photo must credit its contributor`);
+    assert.equal(new URL(plant.imageLicenseUrl).protocol, "https:", `${plant.id}: license must be linked`);
+    assert.equal(new URL(plant.imageSourceUrl).protocol, "https:", `${plant.id}: source must be linked`);
+    assert.ok(!plant.imageUrl.startsWith("data:"), `${plant.id}: generated artwork is not a plant photo`);
+  }
+});
+
 test("Metsehafe Fewus (መጽሐፈ ፈውስ) manuscript linkages: cross-referenced remedies have chapters and pages", () => {
   const manuscriptCited = INTENSIVE_TRADITIONAL_MEDICINES.filter((m) => !!m.manuscriptReference);
   assert.ok(
@@ -123,6 +137,9 @@ test("Backwards compatibility: toMedicinalPlant correctly formats for legacy com
   assert.equal(mapped.scientificName, kosso.scientificName);
   assert.equal(mapped.amharicName, kosso.amharicName);
   assert.equal(mapped.growthForm, kosso.growthForm);
+  assert.equal(mapped.imageUrl, kosso.imageUrl);
+  assert.equal(mapped.imageAttribution, kosso.imageAttribution);
+  assert.equal(mapped.imageLicenseUrl, kosso.imageLicenseUrl);
   assert.ok(mapped.diseasesTreated.length > 0);
   assert.ok(mapped.modeOfPreparation?.includes("ማዘፍዘፍ"));
   assert.ok(mapped.source.includes("መጽሐፈ ፈውስ"));

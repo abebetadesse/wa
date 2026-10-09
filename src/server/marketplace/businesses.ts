@@ -236,6 +236,7 @@ const publicColumns = {
   coverUrl: businesses.coverUrl,
   ratingAverage: businesses.ratingAverage,
   ratingCount: businesses.ratingCount,
+  demoSample: sql<boolean>`${businesses.description} like '[DEMO SAMPLE]%'`,
   categorySlug: businessCategories.slug,
   categoryName: businessCategories.name,
   categoryNameAm: businessCategories.nameAm,
@@ -444,6 +445,7 @@ export async function searchSuggestions(queryText: string, viewer: Pick<Authenti
         nameAm: businesses.nameAm,
         city: businesses.city,
         categoryName: businessCategories.name,
+        demoSample: sql<boolean>`${businesses.description} like '[DEMO SAMPLE]%'`,
       })
       .from(businesses)
       .innerJoin(businessCategories, eq(businessCategories.id, businesses.categoryId))
@@ -458,6 +460,7 @@ export async function searchSuggestions(queryText: string, viewer: Pick<Authenti
         businessName: businesses.name,
         businessSlug: businesses.slug,
         priceEtb: services.priceEtb,
+        demoSample: sql<boolean>`${businesses.description} like '[DEMO SAMPLE]%'`,
       })
       .from(services)
       .innerJoin(businesses, eq(businesses.id, services.businessId))

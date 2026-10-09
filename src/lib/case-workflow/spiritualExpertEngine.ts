@@ -137,6 +137,7 @@ export interface SpiritualReport {
 export interface SpiritualCaseSession {
   id: string;
   userId?: string;
+  reviewerId?: string | null;
   createdAt: string;
   lastUpdated: string;
   status: SpiritualCaseStatus;
@@ -531,6 +532,69 @@ export function getOwnedSpiritualCase(id: string, userId?: string | null): Spiri
   const session = getSpiritualCase(id);
   if (!session) return undefined;
   return session.userId === userId ? session : undefined;
+}
+
+export function canEditSpiritualReport(
+  caseId: string,
+  user?: { id: string; role: string } | null
+): boolean {
+  if (!user) return false;
+  const session = getSpiritualCase(caseId);
+  if (!session) return false;
+
+  if (["admin", "super_admin"].includes(user.role)) return true;
+  if (user.role !== "reviewer") return false;
+  return Boolean(session.reviewerId && session.reviewerId === user.id);
+}
+
+export function setSpiritualCaseReviewer(caseId: string, reviewerId: string | null): SpiritualCaseSession {
+  const session = getSpiritualCase(caseId);
+  if (!session) throw new Error("Case not found");
+  session.reviewerId = reviewerId;
+  session.lastUpdated = new Date().toISOString();
+  persistCaseToDisk(session);
+  return session;
+}
+
+export function updateSpiritualReport(
+  caseId: string,
+  updates: Partial<SpiritualReport> & { reviewerId?: string | null }
+): SpiritualCaseSession {
+  const session = getSpiritualCase(caseId);
+  if (!session) throw new Error("Case not found");
+  if (!session.report) throw new Error("Report not found");
+
+  const { reviewerId, ...reportUpdates } = updates;
+
+  if (reviewerId !== undefined) {
+    session.reviewerId = reviewerId;
+  }
+
+  const mergedReport = {
+    ...session.report,
+    ...reportUpdates,
+    divinationSummary: {
+      ...session.report.divinationSummary,
+      ...(reportUpdates.divinationSummary ?? {}),
+    },
+    culturalInterpretation: {
+      ...session.report.culturalInterpretation,
+      ...(reportUpdates.culturalInterpretation ?? {}),
+    },
+    practicalGuidance: {
+      ...session.report.practicalGuidance,
+      ...(reportUpdates.practicalGuidance ?? {}),
+    },
+    recommendedRitual: {
+      ...session.report.recommendedRitual,
+      ...(reportUpdates.recommendedRitual ?? {}),
+    },
+  };
+
+  session.report = mergedReport;
+  session.lastUpdated = new Date().toISOString();
+  persistCaseToDisk(session);
+  return session;
 }
 
 /**
