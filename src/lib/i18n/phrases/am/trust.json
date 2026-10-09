@@ -1,0 +1,22 @@
+{
+  "20 connected trust and care capabilities": "20 የተያያዙ የታማኝነት እና የእንክብካቤ አቅሞች",
+  "AI reliability": "የAI አስተማማኝነት",
+  "Bionic GPT with fallback": "Bionic GPT ከመጠባበቂያ ጋር",
+  "Deterministic safety-aware fallback": "ቆራጥ እና ደህንነትን ያገናዘበ መጠባበቂያ",
+  "Get fast guidance that explains its sources, protects your safety, and connects you to a verified professional when human expertise is needed.": "ምንጮቹን የሚያብራራ፣ ደህንነትዎን የሚጠብቅ እና የሰው ባለሙያ ሲያስፈልግ ከተረጋገጠ ባለሙያ ጋር የሚያገናኝ ፈጣን መመሪያ ያግኙ።",
+  "Human escalation": "ወደ ሰው ባለሙያ ማስተላለፍ",
+  "Loading trust and safety information...": "የታማኝነት እና የደህንነት መረጃ በመጫን ላይ...",
+  "Mode: {}": "ሁነታ፦ {0}",
+  "Privacy aware": "ግላዊነትን ያገናዘበ",
+  "Recent context retained: {} messages": "የተያዘ የቅርብ ጊዜ አውድ፦ {0} መልዕክቶች",
+  "Safe, explainable, culturally aware support": "ደህንነቱ የተጠበቀ፣ ሊብራራ የሚችል እና ባህልን ያገናዘበ ድጋፍ",
+  "Scientific and cultural reasoning are firewalled": "ሳይንሳዊ እና ባህላዊ አመክንዮ ተለያይተዋል",
+  "Sensitive profile fields are protected.": "ስሱ የመገለጫ መስኮች የተጠበቁ ናቸው።",
+  "Sources and explanations stay attached.": "ምንጮች እና ማብራሪያዎች ተያይዘው ይቆያሉ።",
+  "Start a guided case": "የተመራ ጉዳይ ጀምር",
+  "Triage runs before advice.": "ከምክር በፊት የቅድሚያ ልየታ ይካሄዳል።",
+  "Trust & Care Center": "የታማኝነት እና የእንክብካቤ ማዕከል",
+  "Unable to load trust information.": "የታማኝነት መረጃን መጫን አልተቻለም።",
+  "Verified providers remain in control.": "የተረጋገጡ አገልግሎት ሰጪዎች ቁጥጥሩን ይይዛሉ።",
+  "What you can inspect": "ሊመረምሩት የሚችሉት"
+}

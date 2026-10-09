@@ -6,12 +6,14 @@ import { SessionProvider } from "@/features/session/SessionProvider";
 import { RealtimeProvider } from "@/features/realtime/RealtimeProvider";
 import { Toaster } from "@/features/feedback/Toaster";
 import GoogleTranslate from "./GoogleTranslate";
+import LocalTranslate from "./LocalTranslate";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <LanguageProvider>
         <>
+          <LocalTranslate />
           <GoogleTranslate />
           <SessionProvider>
             <RealtimeProvider>

@@ -3,7 +3,9 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
+import { useLanguage } from "@/lib/i18n/context";
 import type { Language } from "@/lib/i18n/translations";
+import { isLocalLanguage } from "./LocalTranslate";
 
 declare global {
   interface Window {
@@ -18,19 +20,29 @@ declare global {
   }
 }
 
-const LANGUAGES: Language[] = ["en", "am", "om", "ti", "so"];
+// Amharic comes from the local phrase catalogue (LocalTranslate) and English is the source text,
+// so Google Translate is only loaded for the languages that have no local catalogue yet.
+const LANGUAGES: Language[] = ["om", "ti", "so"];
 const LANGUAGE_CHANGE_EVENT = "ethio:language-change";
 
-function isLanguage(value: unknown): value is Language {
-  return typeof value === "string" && LANGUAGES.some((language) => language === value);
+function isGoogleLanguage(value: unknown): value is Language {
+  return typeof value === "string" && LANGUAGES.some((language) => language === value) && !isLocalLanguage(value);
 }
 
-function readLanguage(): Language {
+function readLanguage(): Language | null {
   const stored = window.localStorage.getItem("ethio_lang");
-  return isLanguage(stored) ? stored : "am";
+  return isGoogleLanguage(stored) ? stored : null;
 }
 
-function applyLanguage(language: Language, refresh = false) {
+function clearGoogleCookie() {
+  const host = window.location.hostname;
+  for (const domain of ["", `;domain=${host}`, `;domain=.${host}`]) {
+    document.cookie = `googtrans=;path=/;max-age=0${domain}`;
+  }
+}
+
+function applyLanguage(language: Language | null, refresh = false) {
+  if (!language) return;
   document.cookie = `googtrans=/en/${language};path=/;max-age=31536000;SameSite=Lax`;
   const selector = document.querySelector<HTMLSelectElement>(".goog-te-combo");
   if (selector && (refresh || selector.value !== language)) {
@@ -71,6 +83,9 @@ function isApplicationContentMutation(mutation: MutationRecord) {
 
 export default function GoogleTranslate() {
   const pathname = usePathname();
+  const { language } = useLanguage();
+  const remote = isGoogleLanguage(language);
+  const wasRemote = useRef(false);
   const contentObserver = useRef<MutationObserver | null>(null);
   const refreshTimeout = useRef<number | null>(null);
   const initialize = useCallback(() => {
@@ -78,8 +93,7 @@ export default function GoogleTranslate() {
     const host = document.getElementById("google_translate_element");
     if (!TranslateElement || !host || host.dataset.initialized === "true") return;
 
-    const language = readLanguage();
-    applyLanguage(language);
+    applyLanguage(readLanguage());
     new TranslateElement(
       { pageLanguage: "en", includedLanguages: LANGUAGES.join(","), autoDisplay: false },
       "google_translate_element",
@@ -122,9 +136,19 @@ export default function GoogleTranslate() {
   }, []);
 
   useEffect(() => {
+    if (remote) {
+      wasRemote.current = true;
+      return;
+    }
+    clearGoogleCookie();
+    // Google rewrote the page in place; a reload is the reliable way back to the source text.
+    if (wasRemote.current) window.location.reload();
+  }, [remote]);
+
+  useEffect(() => {
     const handleLanguageChange = (event: Event) => {
-      const language: unknown = (event as CustomEvent<unknown>).detail;
-      if (isLanguage(language)) applyLanguage(language);
+      const next: unknown = (event as CustomEvent<unknown>).detail;
+      if (isGoogleLanguage(next)) applyLanguage(next);
     };
     window.addEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
     return () => window.removeEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
@@ -143,9 +167,12 @@ export default function GoogleTranslate() {
   );
 
   useEffect(() => {
+    if (!remote) return;
     const timeout = window.setTimeout(() => applyLanguage(readLanguage(), true), 0);
     return () => window.clearTimeout(timeout);
-  }, [pathname]);
+  }, [pathname, remote]);
+
+  if (!remote) return null;
 
   return (
     <>

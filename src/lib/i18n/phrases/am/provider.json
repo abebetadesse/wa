@@ -1,0 +1,17 @@
+{
+  "Audit trail enabled: {}": "የኦዲት ዱካ ነቅቷል፦ {0}",
+  "Awaiting client": "ደንበኛውን በመጠባበቅ ላይ",
+  "Awaiting review": "ግምገማ በመጠባበቅ ላይ",
+  "Booked today": "ዛሬ የተያዙ",
+  "Connected capabilities": "የተያያዙ አቅሞች",
+  "Help more people with a safer, clearer queue": "ደህንነቱ በተጠበቀ እና ግልጽ ወረፋ ብዙ ሰዎችን ይርዱ",
+  "Human approval is required before a reviewed report is released: {}": "የተገመገመ ሪፖርት ከመለቀቁ በፊት የሰው ማጽደቅ ያስፈልጋል፦ {0}",
+  "Loading provider workspace...": "የአገልግሎት ሰጪው የሥራ ቦታ በመጫን ላይ...",
+  "Provider operating standard": "የአገልግሎት ሰጪ የአሠራር ደረጃ",
+  "Provider workspace": "የአገልግሎት ሰጪ የሥራ ቦታ",
+  "Unable to load provider workspace.": "የአገልግሎት ሰጪውን የሥራ ቦታ መጫን አልተቻለም።",
+  "Urgent": "አስቸኳይ",
+  "Verified provider": "የተረጋገጠ አገልግሎት ሰጪ",
+  "View platform quality analytics →": "የመድረኩን የጥራት ትንታኔ ተመልከት →",
+  "Welcome{}. Review structured cases, approve AI-assisted work, and keep human judgment in control.": "እንኳን ደህና መጡ{0}። የተዋቀሩ ጉዳዮችን ይገምግሙ፣ በAI የታገዘ ሥራን ያጽድቁ እና የሰው ፍርድ ቁጥጥሩን እንዲይዝ ያድርጉ።"
+}

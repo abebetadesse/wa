@@ -27,7 +27,18 @@ The platform supports:
 
 ## Languages
 
-The language selector offers English, Amharic, Oromo, Tigrinya, and Somali. Amharic is the default. Google Translate is used to translate the full rendered interface, including content added during client-side navigation and live updates; the selector preference is saved in the browser. Translation requires an internet connection and the Google Translate script to be available. Safety-critical or clinical content should be reviewed by a qualified human translator before being relied on.
+The language selector offers English, Amharic, Oromo, Tigrinya, and Somali. Amharic is the default; the selector preference is saved in the browser.
+
+Amharic is translated locally, with no network service. Pages render their English source text and an in-page translator (`src/lib/i18n/domTranslator.ts`) swaps each phrase for its entry in the Amharic catalogue under `src/lib/i18n/phrases/am/`, one file per top-level route plus `common.json`. It also covers text that arrives from the server and content added by client-side navigation and live updates, and it works offline.
+
+- `npm run i18n:check` scans the source and fails if any interface phrase has no Amharic translation. Run it after adding or rewording text.
+- `npm run i18n:sync` regroups the catalogue by route after code moves.
+- `node scripts/i18n.mjs todo <dir>` writes the missing phrases as numbered work files; `node scripts/i18n.mjs apply <dir>` merges the translated ones.
+- Wrap anything that must stay as written (names, codes, user content) in an element with `translate="no"`.
+
+Reference databases (food composition, medicinal plants, knowledge strands, place names) are translated only for the files listed in `CONTENT_FILES` in `scripts/i18n.mjs`; add a file there to bring it into the catalogue. Messages delivered through Telegram, WhatsApp and email are composed on the server and are not covered.
+
+Oromo, Tigrinya and Somali have no local catalogue yet and still use Google Translate, which needs an internet connection. Safety-critical or clinical content should be reviewed by a qualified human translator before being relied on.
 
 ## Core user workflow
 

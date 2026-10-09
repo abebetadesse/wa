@@ -168,6 +168,7 @@ export default function Navbar() {
                 key={option.code}
                 type="button"
                 onClick={() => setLanguage(option.code)}
+                translate="no"
                 aria-pressed={language === option.code}
                 className={cn(
                   "rounded-full px-2 py-1 font-semibold transition-colors",
@@ -282,6 +283,7 @@ export default function Navbar() {
                 key={option.code}
                 type="button"
                 onClick={() => setLanguage(option.code)}
+                translate="no"
                 aria-pressed={language === option.code}
                 className={cn("rounded-full border px-3 py-1 text-xs font-semibold", language === option.code ? "border-brand bg-brand text-primary-foreground" : "border-border text-muted-foreground")}
               >

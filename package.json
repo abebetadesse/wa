@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "i18n:sync": "node scripts/i18n.mjs sync",
+    "i18n:check": "node scripts/i18n.mjs check",
     "db:push": "drizzle-kit push",
     "db:migrate": "node scripts/migrate.mjs",
     "db:generate": "drizzle-kit generate",
