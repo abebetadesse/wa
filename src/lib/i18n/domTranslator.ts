@@ -23,6 +23,14 @@ const MAX_MISSING = 4000;
 const RESCAN_DELAYS = [0, 120, 400, 1000, 2200, 4500];
 /** If React's node tags cannot be found by then, translate without the hydration guard. */
 const GUARD_TIMEOUT_MS = 4000;
+/**
+ * Content that arrives from a slow server is hydrated long after the page opens. It is looked at
+ * again every quarter second for 10 s, every second for the next 50 s, then every 3 s; after about
+ * three minutes whatever is still untagged does not belong to React and is translated as it stands.
+ */
+const PENDING_FAST_TRIES = 40;
+const PENDING_STEADY_TRIES = 90;
+const PENDING_MAX_TRIES = 130;
 
 interface Applied {
   source: string;
@@ -57,6 +65,12 @@ class DomTranslator {
   private startedAt = 0;
   private fiberKey: string | null = null;
   private missing = new Set<string>();
+  /** Elements whose text React has not hydrated yet. */
+  private pending = new Set<Element>();
+  private pendingTimer: number | null = null;
+  private pendingTries = 0;
+  private polling = false;
+  private force = false;
 
   /** Adds phrases (English → translation). Keys containing "{}" are templates with holes. */
   addPhrases(entries: Record<string, string>): void {
@@ -96,6 +110,7 @@ class DomTranslator {
     this.observer?.disconnect();
     this.observer = null;
     this.clearTimers();
+    this.clearPending();
     this.restore(document.documentElement);
   }
 
@@ -121,6 +136,45 @@ class DomTranslator {
     for (const delay of RESCAN_DELAYS) {
       this.timers.push(window.setTimeout(() => this.scan(document.documentElement), delay));
     }
+  }
+
+  private clearPending(): void {
+    if (this.pendingTimer !== null) window.clearTimeout(this.pendingTimer);
+    this.pendingTimer = null;
+    this.pending.clear();
+    this.pendingTries = 0;
+  }
+
+  /** Remembers an element that could not be translated yet and keeps coming back to it. */
+  private waitFor(element: Element): void {
+    this.pending.add(element);
+    // Newly arrived content starts the clock again; the poll itself does not.
+    if (!this.polling) this.pendingTries = 0;
+    if (this.pendingTimer !== null) return;
+    const delay = this.pendingTries < PENDING_FAST_TRIES ? 250 : this.pendingTries < PENDING_STEADY_TRIES ? 1000 : 3000;
+    this.pendingTimer = window.setTimeout(() => this.retryPending(), delay);
+  }
+
+  private retryPending(): void {
+    this.pendingTimer = null;
+    if (!this.active) return;
+    const elements = [...this.pending];
+    this.pending.clear();
+    this.pendingTries++;
+    this.polling = true;
+    this.force = this.pendingTries >= PENDING_MAX_TRIES;
+    try {
+      for (const element of elements) {
+        if (!element.isConnected) continue;
+        this.scanElementRuns(element);
+        this.translateAttributes(element);
+      }
+    } finally {
+      this.polling = false;
+      this.force = false;
+    }
+    this.observer?.takeRecords();
+    if (this.pendingTries >= PENDING_MAX_TRIES) this.clearPending();
   }
 
   private onMutations(records: MutationRecord[]): void {
@@ -162,10 +216,35 @@ class DomTranslator {
   }
 
   /**
+   * Looks for the nearest element React has tagged and reports whether what sits below it is safe
+   * to change: a lone string child (written with textContent, so it has no tag of its own), raw
+   * HTML, or an element React renders empty that something else fills (a chart, a widget).
+   * Anything else below a tagged element is server-rendered content still waiting for hydration.
+   */
+  private ownerSettled(start: Element | null, key: string, loneText: boolean): boolean {
+    let element = start;
+    let direct = true;
+    while (element) {
+      const fiber = (element as unknown as Record<string, FiberLike | undefined>)[key];
+      if (fiber) {
+        const props = fiber.memoizedProps ?? fiber.pendingProps ?? null;
+        if (!props) return false;
+        const children = props.children;
+        if (direct && loneText && (typeof children === "string" || typeof children === "number" || typeof children === "bigint")) return true;
+        return props.dangerouslySetInnerHTML != null || children == null || children === false;
+      }
+      direct = false;
+      element = element.parentElement;
+    }
+    return false;
+  }
+
+  /**
    * React compares server-rendered text against its own render while hydrating, so text must not
    * change before then. Hydrated and client-created nodes carry a React tag; untagged ones wait.
    */
   private isSettled(node: Text, parent: Element): boolean {
+    if (this.force) return true;
     // The document title and the rest of <head> are not compared against a client render.
     if (parent.tagName === "TITLE" || parent.closest("head")) return true;
     const key = this.findFiberKey(node) ?? this.findFiberKey(parent) ?? this.findFiberKey(document.body);
@@ -173,26 +252,17 @@ class DomTranslator {
       // No React tag anywhere yet: either hydration has not begun, or this React build names its tags differently.
       return Date.now() - this.startedAt > GUARD_TIMEOUT_MS;
     }
-    const tagged = node as unknown as Record<string, unknown>;
-    if (tagged[key]) return true;
-    let element: Element | null = parent;
-    let direct = true;
-    while (element) {
-      const fiber = (element as unknown as Record<string, FiberLike | undefined>)[key];
-      if (fiber) {
-        const props = fiber.memoizedProps ?? fiber.pendingProps ?? null;
-        if (!props) return false;
-        // A lone string child is written with textContent and has no tag of its own.
-        if (direct) {
-          const children = props.children;
-          if (typeof children === "string" || typeof children === "number" || typeof children === "bigint") return true;
-        }
-        return props.dangerouslySetInnerHTML != null;
-      }
-      direct = false;
-      element = element.parentElement;
-    }
-    return false;
+    if ((node as unknown as Record<string, unknown>)[key]) return true;
+    return this.ownerSettled(parent, key, true);
+  }
+
+  /** The same guard for an element's attributes. */
+  private isElementSettled(element: Element): boolean {
+    if (this.force || element.closest("head")) return true;
+    const key = this.findFiberKey(element) ?? this.findFiberKey(document.body);
+    if (!key) return Date.now() - this.startedAt > GUARD_TIMEOUT_MS;
+    if ((element as unknown as Record<string, unknown>)[key]) return true;
+    return this.ownerSettled(element.parentElement, key, false);
   }
 
   // ---- lookup --------------------------------------------------------------------------------
@@ -351,7 +421,10 @@ class DomTranslator {
       });
       return;
     }
-    if (!nodes.every((node) => this.isSettled(node, parent))) return;
+    if (!nodes.every((node) => this.isSettled(node, parent))) {
+      this.waitFor(parent);
+      return;
+    }
     const isTitle = parent.tagName === "TITLE";
     const result = isTitle ? this.translateTitle(sources) : this.translateRun(sources);
     nodes.forEach((node, index) => this.writeText(node, sources[index], result ? result[index] : null));
@@ -374,6 +447,11 @@ class DomTranslator {
 
   private translateAttributes(element: Element): void {
     if (element.closest(SKIP_SELECTOR)) return;
+    if (!ATTRIBUTES.some((name) => element.hasAttribute(name))) return;
+    if (!this.isElementSettled(element)) {
+      this.waitFor(element);
+      return;
+    }
     for (const name of ATTRIBUTES) {
       const current = element.getAttribute(name);
       const states = this.attributeState.get(element);

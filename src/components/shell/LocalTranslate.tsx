@@ -48,7 +48,13 @@ export default function LocalTranslate() {
     const translator = getDomTranslator();
     translator.start();
     window.ethioMissingPhrases = () => translator.missingPhrases();
-    return () => translator.stop();
+    // Choosing the language that is already active translates the page again, in case anything was missed.
+    const retranslate = () => translator.refresh();
+    window.addEventListener("ethio:language-change", retranslate);
+    return () => {
+      window.removeEventListener("ethio:language-change", retranslate);
+      translator.stop();
+    };
   }, [active, language]);
 
   useEffect(() => {
