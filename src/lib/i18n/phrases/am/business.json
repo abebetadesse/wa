@@ -280,7 +280,9 @@
   "Loading conversation…": "ውይይቱ በመጫን ላይ…",
   "Loading messages…": "መልዕክቶች በመጫን ላይ…",
   "Loading your dashboard…": "ዳሽቦርድዎ በመጫን ላይ…",
+  "Local time ({})": "የአካባቢ ሰዓት ({0})",
   "Logo image URL": "የዓርማ ምስል URL",
+  "Low stock ({})": "ክምችቱ ዝቅተኛ ነው ({0})",
   "Manager": "ሥራ አስኪያጅ",
   "Mark completed": "እንደተጠናቀቀ ምልክት አድርግ",
   "May be illness": "ሕመም ሊሆን ይችላል",
@@ -402,6 +404,7 @@
   "Public profile": "የሕዝብ መገለጫ",
   "Public reply": "የሕዝብ ምላሽ",
   "Publish reply": "ምላሹን አትም",
+  "Quantity ({})": "ብዛት ({0})",
   "Question above the list (optional)": "ከዝርዝሩ በላይ ያለ ጥያቄ (አማራጭ)",
   "Rating": "ደረጃ",
   "Read the learning guide": "የትምህርት መመሪያውን ያንብቡ",
@@ -431,6 +434,7 @@
   "Remedy added": "መድኃኒቱ ታክሏል",
   "Remedy candidates": "እጩ መድኃኒቶች",
   "Remedy screening & diet": "የመድኃኒት ማጣሪያ እና አመጋገብ",
+  "Remedy screening ({}):": "የመድኃኒት ምርመራ ({0})፦",
   "Remedy screening against this client, live PubMed literature, where they live and eat, and the biochemistry behind the complaint. Scientific side only: the reading above is never used here.": "ከዚህ ደንበኛ ጋር የተደረገ የመድኃኒት ማጣሪያ፣ ቀጥታ የPubMed ጽሑፎች፣ የሚኖሩበት እና የሚመገቡበት ሁኔታ እና ከቅሬታው በስተጀርባ ያለው ባዮኬሚስትሪ። ሳይንሳዊው ወገን ብቻ፦ ከላይ ያለው ንባብ እዚህ በፍጹም አይውልም።",
   "Remedy updated": "መድኃኒቱ ተዘምኗል",
   "Remove bank account": "የባንክ ሂሳቡን አስወግድ",
@@ -681,5 +685,8 @@
   "· {} remedy": "· {0} መድኃኒት",
   "· {} selection(s)": "· {0} ምርጫ",
   "· {} years": "· {0} ዓመት",
-  "ሰላም… a few words for this client": "ሰላም… ለዚህ ደንበኛ ጥቂት ቃላት"
+  "ማይ Water": "ማይ",
+  "ሰላም… a few words for this client": "ሰላም… ለዚህ ደንበኛ ጥቂት ቃላት",
+  "አፈር Earth": "አፈር",
+  "እሳት Fire": "እሳት"
 }

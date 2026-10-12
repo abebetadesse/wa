@@ -3,7 +3,7 @@
   "Anywhere": "በማንኛውም ቦታ",
   "Apply": "ተግብር",
   "Awde Negest": "አውደ ነገሥት",
-  "Best match": "ምርጥ ተዛማጅ",
+  "Best match": "በጣም የሚዛመድ",
   "Clear all": "ሁሉንም አጽዳ",
   "Clear all filters": "ሁሉንም ማጣሪያዎችን አጽዳ",
   "Clear search text": "የፍለጋ ጽሑፉን አጽዳ",
@@ -46,5 +46,11 @@
   "at {}": "በ{0}",
   "bone setting": "ወጌሻ",
   "for “{}”": "ለ«{0}»",
-  "{} {} found": "{0} {1} ተገኝተዋል"
+  "{} {} found": "{0} {1} ተገኝተዋል",
+  "☕ Ceremony": "☕ ሥነ ሥርዓት",
+  "🌿 Herbal medicine": "🌿 የዕፅዋት ሕክምና",
+  "💻 Online / Video": "💻 በኢንተርኔት / በቪዲዮ",
+  "📍 Addis Ababa": "📍 አዲስ አበባ",
+  "📜 Awde Negest": "📜 አውደ ነገሥት",
+  "🦴 Bone setting": "🦴 ወጌሻ"
 }

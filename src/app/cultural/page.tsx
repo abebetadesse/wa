@@ -23,7 +23,7 @@ export default function CulturalPage() {
       <section className="mb-8 grid gap-4 md:grid-cols-4">
         {[
           { title: "Astrology", copy: "Celestial interpretation and temperament mapping from the Awde Negest tradition." },
-          { title: "Gematria", copy: "Ge&apos;ez word value and lineage interpretation for naming and spiritual reflection." },
+          { title: "Gematria", copy: "Ge'ez word value and lineage interpretation for naming and spiritual reflection." },
           { title: "Fasting seasons", copy: "Lunar and ecclesiastical timing connected to food, rest, and practice cycles." },
           { title: "Ceremonies & sacred places", copy: "Explore Ethiopian festivals, churches, holy-water traditions, thermal springs, and historic landscapes." },
         ].map((item) => (

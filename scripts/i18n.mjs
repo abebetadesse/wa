@@ -44,6 +44,18 @@ const DATA_SKIP = [
 const CONTENT_FILES = [
   "src/lib/cultural/ethiopianHeritage.ts",
   "src/lib/cultural/worldTraditions.ts",
+  "src/lib/cultural/awdeNegestZodiac.ts",
+  "src/lib/cultural/geezFidelGematria.ts",
+  "src/lib/cultural/seasonalTraditionsEngine.ts",
+  "src/lib/profiling/astrology/ethiopianTraditions.ts",
+  "src/lib/nutrition/efctDatabase.ts",
+  "src/lib/nutrition/recipeIngredients.ts",
+  "src/lib/nutrition/deepNutrientProfiles.ts",
+  "src/lib/nutrition/sproutProfiles.ts",
+  "src/lib/nutrition/vegetableProfiles.ts",
+  "src/lib/nutrition/fruitProfiles.ts",
+  "src/lib/nutrition/animalProductProfiles.ts",
+  "src/lib/nutrition/rawCerealMaterials.ts",
 ];
 
 const toPosix = (p) => p.split(path.sep).join("/");
@@ -147,6 +159,7 @@ function isSentence(text) {
   if (looksLikeClassList(text)) return false;
   const words = text.split(" ");
   if (/^[A-Z0-9“"'‘(¿¡[•✓⚠→]/.test(text)) return true;
+  if (/^[^\sA-Za-z0-9]{1,3} ?[A-Z][a-z]/.test(text)) return true; // "＋ Compare nutrition", "🍲 Recipes"
   if (/[.?!…:,]( |$)/.test(text)) return true;
   // lower-case fragments such as "no results found"
   return words.length >= 2 && words.every((word) => /^[a-z'’()/,-]+$/i.test(word)) && !words.some((word) => /_/.test(word));
@@ -155,7 +168,7 @@ function isSentence(text) {
 // A single displayed word such as "Overview" or "Pending".
 function isLabelWord(text) {
   if (text.includes(" ")) return false;
-  return /^[A-Z][a-z]{2,}(?:[-’'][A-Za-z]+)*[.:!?…]*$/.test(text);
+  return /^[A-Z][a-zà-ÿ]{2,}(?:[-’'][A-Za-z]+)*[.:!?…]*$/.test(text);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -379,7 +392,9 @@ function createScanner(checker) {
         if (tag === "style" || tag === "script") return;
         if (ui) scanJsxChildren(node.children, file);
       } else if (ts.isStringLiteralLike(node)) {
-        const silent = literalIsSilent(node);
+        // A piece of "..." + "..." is never shown alone; the joined text is collected below.
+        const joinedElsewhere = ts.isBinaryExpression(node.parent) && node.parent.operatorToken.kind === ts.SyntaxKind.PlusToken;
+        const silent = joinedElsewhere ? true : literalIsSilent(node);
         if (silent !== true) {
           const text = normalize(node.text);
           const inJsxAttribute = node.parent && ts.isJsxAttribute(node.parent);
@@ -396,7 +411,13 @@ function createScanner(checker) {
         if (key && literalIsSilent(node) !== true) {
           const text = normalize(key);
           const fixed = text.replace(/\{\}/g, "");
-          if (text.includes("{}") && letterCount(fixed) >= 4 && isSentence(fixed.trim() + " .") && !looksLikeCode(fixed) && !looksLikeClassList(normalize(fixed))) {
+          // "Sprouts ({})" must not read as a call once the hole is taken out, so it is also tried with a number in the hole.
+          const filled = text.replace(/\{\}/g, "1");
+          const readsAsText = (probe) => isSentence(probe.trim() + " .") && !looksLikeCode(probe) && !looksLikeClassList(normalize(probe));
+          if (text.includes("{}") && letterCount(fixed) >= 4 && (readsAsText(fixed) || (/\(\{\}\)/.test(text) && readsAsText(filled)))) {
+            if (ui || dataLiteralIsDisplayed(node)) add(text, file, { ui });
+          } else if (!text.includes("{}") && isSentence(text)) {
+            // A long sentence written as several string pieces joined with +.
             if (ui || dataLiteralIsDisplayed(node)) add(text, file, { ui });
           }
         }

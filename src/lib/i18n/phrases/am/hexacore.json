@@ -356,6 +356,7 @@
   "Reflective psychology": "ነጸብራቃዊ ሥነ-ልቦና",
   "Refresh": "አድስ",
   "Relational field & Empathic Web": "የግንኙነት መስክ እና የርኅራኄ መረብ",
+  "Request failed ({}).": "ጥያቄው አልተሳካም ({0})።",
   "Resonance": "ተስማሚነት",
   "Resonate {} Hz Solfeggio": "{0} Hz ሶልፌጂዮ አሰማ",
   "Retry catalog": "ካታሎጉን እንደገና ሞክር",
@@ -529,5 +530,13 @@
   "{} · Multidimensional Signals": "{0} · ባለ ብዙ ገጽታ ምልክቶች",
   "{} · Practice: {}.": "{0} · ልምምድ፦ {1}።",
   "{} · {} Hz": "{0} · {1} Hz",
-  "{}Hz": "{0}Hz"
+  "{}Hz": "{0}Hz",
+  "⚖️ Octahedron of Equilibrium": "⚖️ የሚዛን ኦክታሄድሮን",
+  "✋ Palm Reading": "✋ የመዳፍ ንባብ",
+  "✨ Star Tetrahedron / Merkaba": "✨ ባለ ኮከብ ቴትራሄድሮን / መርካባ",
+  "🌀 Dodecahedron of Life": "🌀 የሕይወት ዶዴካሄድሮን",
+  "👅 Tongue Reading": "👅 የምላስ ንባብ",
+  "💧 Icosahedron of Flow": "💧 የፍሰት አይኮሳሄድሮን",
+  "🔺 Sacred Tetrahedron": "🔺 ቅዱስ ቴትራሄድሮን",
+  "🧊 Crystalline Cube of Truth": "🧊 የእውነት ክሪስታል ኩብ"
 }

@@ -515,7 +515,7 @@ export default function CareerIntakePage() {
                 },
                 {
                   icon: <Shield className="w-5 h-5 text-emerald-400" />,
-                  title: "Safe &amp; Private",
+                  title: "Safe & Private",
                   desc: "Your data is never sold. Safety screening is built into every session.",
                 },
               ].map((f) => (

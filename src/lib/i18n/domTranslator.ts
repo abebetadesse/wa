@@ -13,6 +13,8 @@ export function normalizeText(text: string): string {
 }
 
 const LATIN_WORD = /[A-Za-z]{2,}/;
+/** Separators of lists and compound names that pages build from separate catalogue entries. */
+const LIST_SEPARATORS = [" · ", " — "];
 const SKIP_SELECTOR =
   'script, style, noscript, textarea, code, pre, kbd, samp, [contenteditable=""], [contenteditable="true"], .notranslate, [translate="no"], [data-no-translate]';
 const ATTRIBUTES = ["placeholder", "title", "aria-label", "alt"] as const;
@@ -305,9 +307,31 @@ class DomTranslator {
         break;
       }
     }
+    if (result === null) result = this.lookupParts(text);
     if (this.cache.size >= MAX_CACHE) this.cache.clear();
     this.cache.set(text, result);
     return result;
+  }
+
+  /** "Besso · Kolo · Porridge" and "Barley — black": a joined list or a compound name is looked up item by item. */
+  private lookupParts(text: string): string | null {
+    for (const separator of LIST_SEPARATORS) {
+      if (!text.includes(separator)) continue;
+      let any = false;
+      const parts = text.split(separator).map((part) => {
+        const item = part.trim();
+        if (!LATIN_WORD.test(item)) return part;
+        const translated = this.lookup(item);
+        if (translated === null) {
+          this.noteMissing(item);
+          return part;
+        }
+        any = true;
+        return translated;
+      });
+      return any ? parts.join(separator) : null;
+    }
+    return null;
   }
 
   private translateString(source: string): string | null {
@@ -436,12 +460,25 @@ class DomTranslator {
     const whole = this.lookup(normalizeText(joined));
     if (whole !== null) return [whole, ...sources.slice(1).map(() => "")];
     let any = false;
-    const parts = joined.split(" | ").map((part) => {
-      const translated = this.lookup(normalizeText(part));
-      if (translated === null) return part;
-      any = true;
-      return translated;
-    });
+    const pieces = joined.split(" | ");
+    const parts: string[] = [];
+    // A page title may itself contain " | ", so the longest run of pieces with an entry wins.
+    for (let start = 0; start < pieces.length; ) {
+      let end = pieces.length;
+      let translated: string | null = null;
+      for (; end > start; end--) {
+        translated = this.lookup(normalizeText(pieces.slice(start, end).join(" | ")));
+        if (translated !== null) break;
+      }
+      if (translated === null) {
+        parts.push(pieces[start]);
+        start++;
+      } else {
+        any = true;
+        parts.push(translated);
+        start = end;
+      }
+    }
     return any ? [parts.join(" | "), ...sources.slice(1).map(() => "")] : null;
   }
 
