@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, ClinicalPicture, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
+import type { AnalysisConfidence, CaseAnalysis, CaseLens, CaseMessage, CasePersonContext, ClinicalPicture, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
 import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
 import { FACTORS } from "@/server/cases/analysisLexicon";
-import { buildEnhancedReportSections, reportStatistics, STRAND_LABEL } from "@/server/cases/reportEnhancer";
+import { REPORT_LANGUAGES, type ReportLanguage } from "@/server/cases/amharic";
+import { buildEnhancedReport, preferredReportLanguage, reportStatistics, STRAND_LABEL } from "@/server/cases/reportEnhancer";
 
 export interface DraftState {
   title: string;
@@ -66,8 +67,11 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
   const quality = analysis.dataQuality.score;
   const person = profileConsented ? analysis.person : undefined;
   // What "Build detailed report" would produce right now, so the reviewer sees its size before using it.
-  const detailed = buildEnhancedReportSections(analysis, profileConsented);
+  const [language, setLanguage] = useState<ReportLanguage>(() => preferredReportLanguage(analysis, profileConsented));
+  const built = buildEnhancedReport(analysis, profileConsented, { language });
+  const detailed = built.sections;
   const detailedSize = reportStatistics({ summary: "", sections: detailed });
+  const lenses = analysis.lenses ?? analysis.clinical?.lenses ?? [];
   const heaviest = Math.max(1, ...analysis.factors.map((factor) => factor.weight));
   const askable = new Set(analysis.dataQuality.followUps);
 
@@ -94,7 +98,19 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
           <span className="mt-1 block text-xs text-slate-400">
             Would add {detailedSize.sections} sections, about {detailedSize.words.toLocaleString()} words ({detailedSize.minutes} min read): {detailed.map((entry) => entry.title).join(" · ")}.
           </span>
+          {language === "am" && (built.untranslated.length > 0 || built.omitted.length > 0) && (
+            <span className="mt-1 block text-xs text-amber-200">
+              {built.untranslated.length > 0 && <>{built.untranslated.length} line(s) have no Amharic yet and stay in English. </>}
+              {built.omitted.length > 0 && <>Left out because they exist only in English: {built.omitted.join(" · ")}.</>}
+            </span>
+          )}
         </p>
+        <label className="grid gap-1 text-xs text-slate-300">
+          Report language
+          <select value={language} onChange={(event) => setLanguage(event.target.value as ReportLanguage)} className="rounded-lg border border-white/15 bg-slate-950 px-2 py-1.5 text-xs text-slate-100">
+            {(Object.keys(REPORT_LANGUAGES) as ReportLanguage[]).map((code) => <option key={code} value={code}>{REPORT_LANGUAGES[code]}</option>)}
+          </select>
+        </label>
         <button
           type="button"
           disabled={!canAct || busy || analysis.safety.warnings.length > 0}
@@ -158,6 +174,16 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
       {analysis.clinical && (
         <ClinicalPanel
           clinical={analysis.clinical}
+          canAsk={canAct && !busy}
+          onAsk={onAsk}
+          mayInsertEvidence={mayInsert("A")}
+          mayInsertReflection={mayInsert("B") && !analysis.safety.domainBSuppressed}
+          onAdd={add}
+        />
+      )}
+      {lenses.length > 0 && (
+        <StrandReadings
+          lenses={lenses}
           canAsk={canAct && !busy}
           onAsk={onAsk}
           mayInsertEvidence={mayInsert("A")}
@@ -388,10 +414,28 @@ function ClinicalPanel({ clinical, canAsk, onAsk, mayInsertEvidence, mayInsertRe
         <ul className="mt-2 grid list-disc gap-0.5 pl-5 text-xs text-slate-300 sm:grid-cols-2">{clinical.checks.map((check) => <li key={check}>{check}</li>)}</ul>
       </div>
 
+      {clinical.profileNotes.length > 0 && <ul className="list-disc pl-5 text-xs text-amber-200">{clinical.profileNotes.map((note) => <li key={note}>{note}</li>)}</ul>}
+    </div>
+  );
+}
+
+interface StrandReadingsProps {
+  lenses: CaseLens[];
+  canAsk: boolean;
+  onAsk: (question: string) => void;
+  mayInsertEvidence: boolean;
+  mayInsertReflection: boolean;
+  onAdd: (title: string, body: string | undefined, items: string[], cultural?: boolean) => void;
+}
+
+/** How each knowledge strand reads the case, with what may be said to the person and what to ask. */
+function StrandReadings({ lenses, canAsk, onAsk, mayInsertEvidence, mayInsertReflection, onAdd }: StrandReadingsProps) {
+  const askButton = (question: string) => <button type="button" disabled={!canAsk} onClick={() => onAsk(question)} className={smallButton}>Ask</button>;
+  return (
       <div>
-        <p className="text-sm font-semibold text-white">Every strand&apos;s reading <span className="text-xs font-normal text-slate-400">({clinical.lenses.length} of 11 strands)</span></p>
+        <p className="text-sm font-semibold text-white">Every strand&apos;s reading <span className="text-xs font-normal text-slate-400">({lenses.length} of 11 strands)</span></p>
         <ul className="mt-2 grid gap-2 md:grid-cols-2">
-          {clinical.lenses.map((lens) => {
+          {lenses.map((lens) => {
             const personLines = lens.points.map((point) => point.person).filter((line): line is string => Boolean(line));
             const reflection = lens.layer === "B";
             return (
@@ -415,9 +459,6 @@ function ClinicalPanel({ clinical, canAsk, onAsk, mayInsertEvidence, mayInsertRe
           })}
         </ul>
       </div>
-
-      {clinical.profileNotes.length > 0 && <ul className="list-disc pl-5 text-xs text-amber-200">{clinical.profileNotes.map((note) => <li key={note}>{note}</li>)}</ul>}
-    </div>
   );
 }
 

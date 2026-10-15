@@ -23,12 +23,14 @@ import type { ReportSection, WorkflowCase } from "./types";
 const MAX_BODY = 7800;
 const MAX_ITEM = 1900;
 const MAX_ITEMS = 40;
-/** A line that is mainly Amharic or Ge'ez: the scroll, the seal's prayer, scripture. */
-function isSacredLine(line: string): boolean {
+/** Text written mainly in Ethiopic script (Amharic or Ge'ez). */
+function isMainlyEthiopic(line: string): boolean {
   const ethiopic = (line.match(/[ሀ-᎟]/gu) ?? []).length;
   const latin = (line.match(/[A-Za-z]/g) ?? []).length;
   return ethiopic > 0 && ethiopic >= latin;
 }
+/** A line that is mainly Amharic or Ge'ez: the scroll, the seal's prayer, scripture. */
+const isSacredLine = isMainlyEthiopic;
 
 export interface EnhanceInput {
   section: ReportSection;
@@ -107,7 +109,9 @@ function rebuilt(record: WorkflowCase, input: EnhanceInput, now: Date): ReportSe
     if (match) return { ...match, locked: section.locked };
   }
   if (section.id.startsWith("analysis-") && record.analysis) {
-    const match = buildEnhancedReportSections(record.analysis, record.consent.dataUsage).find((entry) => entry.id === section.id);
+    // A section written in Amharic is rebuilt in Amharic.
+    const language = isMainlyEthiopic(`${section.title} ${section.body ?? ""}`) ? "am" : "en";
+    const match = buildEnhancedReportSections(record.analysis, record.consent.dataUsage, { language }).find((entry) => entry.id === section.id);
     if (match) return { ...match, locked: section.locked };
   }
   return null;

@@ -13,7 +13,8 @@ import { PATTERNS } from "./analysisLexicon";
 import type { DetectedFactor } from "./analysis";
 import { CLUSTERS, PRIORITY, STRAND_LENSES, SYMPTOM_DETAIL, type ClinicalPriority, type ClusterConsideration, type StrandLens } from "./clinicalLexicon";
 import type { SpellingCorrection } from "./spelling";
-import type { ClinicalPicture, GroundedFinding } from "./types";
+import { LIFE_LENSES } from "./strandLexicon";
+import type { CaseLens, ClinicalPicture, GroundedFinding } from "./types";
 
 const DOMAIN_B = new Set<string>(["cultural", "astrological"]);
 const STRAND_ORDER: KnowledgeStrandType[] = ["biological", "biochemical", "medication", "addiction", "ecological", "epidemiological", "psychological", "socioeconomic", "dietary", "cultural", "astrological"];
@@ -77,6 +78,42 @@ function applies(condition: ClusterConsideration["when"] | StrandLens["only"], f
 const withCaveat = (text: string, caveat?: string) => (caveat ? `${text} (${caveat})` : text);
 const unique = (items: string[]) => [...new Set(items.filter(Boolean))];
 
+interface LensInput {
+  detected: DetectedFactor[];
+  profile: UserProfile;
+  findings: Map<string, GroundedFinding[]>;
+  safetyActive: boolean;
+  /** Conditions the symptom combinations bring into consideration, by strand (reviewer-only). */
+  considerations?: Map<string, string[]>;
+}
+
+/**
+ * Every strand's reading of the case: the bodily readings (clinicalLexicon.ts) when symptoms were
+ * described, the life readings (strandLexicon.ts) for everything else, the catalogue entries kept
+ * for that strand, and what to ask. Domain B strands are left out while a safety signal is active.
+ */
+export function buildStrandLenses({ detected, profile, findings, safetyActive, considerations = new Map() }: LensInput): CaseLens[] {
+  const ids = new Set(detected.map((entry) => entry.factor.id));
+  if (detected.some((entry) => entry.factor.physical && !["medication", "substance", "food"].includes(entry.factor.id))) ids.add("physical");
+  if (detected.length) ids.add("any");
+  const facts = profileFacts(profile, ids);
+  return STRAND_ORDER.filter((strand) => !(safetyActive && DOMAIN_B.has(strand))).map((strand) => {
+    const points = [...STRAND_LENSES[strand], ...LIFE_LENSES[strand]].flatMap((lens) => {
+      if (!lens.when.some((id) => ids.has(id))) return [];
+      const { keep, caveat } = applies(lens.only, facts);
+      return keep ? [{ reviewer: withCaveat(lens.reviewer, caveat), ...(lens.person && !caveat ? { person: lens.person } : {}), ask: lens.ask }] : [];
+    });
+    return {
+      strand,
+      layer: (DOMAIN_B.has(strand) ? "B" : "A") as "A" | "B",
+      points: points.map(({ reviewer, person }) => ({ reviewer, ...(person ? { person } : {}) })),
+      ask: unique(points.map((point) => point.ask ?? "")),
+      considerations: unique(considerations.get(strand) ?? []),
+      findings: (findings.get(strand) ?? []).map((finding) => finding.name),
+    };
+  }).filter((lens) => lens.points.length || lens.considerations.length || lens.findings.length);
+}
+
 export function buildClinicalPicture({ detected, corrections, profile, findings, urgencyLevel, safetyActive }: ClinicalInput): ClinicalPicture | undefined {
   const physical = detected.filter((entry) => entry.factor.physical && entry.factor.id !== "medication" && entry.factor.id !== "substance" && entry.factor.id !== "food");
   if (!physical.length) return undefined;
@@ -119,22 +156,9 @@ export function buildClinicalPicture({ detected, corrections, profile, findings,
   };
 
   const details = symptoms.map((symptom) => SYMPTOM_DETAIL[symptom.id]).filter(Boolean);
-  const lenses = STRAND_ORDER.filter((strand) => !(safetyActive && DOMAIN_B.has(strand))).map((strand) => {
-    const points = STRAND_LENSES[strand].flatMap((lens) => {
-      if (!lens.when.some((id) => ids.has(id))) return [];
-      const { keep, caveat } = applies(lens.only, facts);
-      return keep ? [{ reviewer: withCaveat(lens.reviewer, caveat), ...(lens.person && !caveat ? { person: lens.person } : {}), ask: lens.ask }] : [];
-    });
-    const related = clusters.flatMap((cluster) => cluster.considerations.filter((item) => item.strand === strand).map((item) => item.name));
-    return {
-      strand,
-      layer: (DOMAIN_B.has(strand) ? "B" : "A") as "A" | "B",
-      points: points.map(({ reviewer, person }) => ({ reviewer, ...(person ? { person } : {}) })),
-      ask: unique(points.map((point) => point.ask ?? "")),
-      considerations: unique(related),
-      findings: (findings.get(strand) ?? []).map((finding) => finding.name),
-    };
-  }).filter((lens) => lens.points.length || lens.considerations.length || lens.findings.length);
+  const considerations = new Map<string, string[]>();
+  for (const item of clusters.flatMap((cluster) => cluster.considerations)) considerations.set(item.strand, [...(considerations.get(item.strand) ?? []), item.name]);
+  const lenses = buildStrandLenses({ detected, profile, findings, safetyActive, considerations });
 
   const profileNotes = [
     ...(facts.age === undefined ? ["Age is not on the profile: thresholds for some checks (for example endoscopy over about 45) cannot be applied."] : []),

@@ -21,7 +21,7 @@ import { isBionicConfigured } from "@/lib/ai/bionicGPT";
 import { FACTORS, GENERIC_FOLLOW_UPS, PATTERNS, type Factor } from "./analysisLexicon";
 import { buildPersonContext } from "./personContext";
 import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foodHerb";
-import { buildClinicalPicture, clinicalSearchTerms } from "./clinical";
+import { buildClinicalPicture, buildStrandLenses, clinicalSearchTerms } from "./clinical";
 import { correctSpelling, type SpellingCorrection } from "./spelling";
 import { CONTACTS } from "./support";
 import type {
@@ -531,6 +531,8 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     urgencyLevel: urgency.level,
     safetyActive,
   });
+  const findingsByStrand = new Map(strands.map((entry) => [entry.strand, entry.findings]));
+  const lenses = clinical?.lenses ?? buildStrandLenses({ detected, profile: enriched, findings: findingsByStrand, safetyActive });
   const warnings = [
     ...(record.safety.reason ? [`Safety screen: ${record.safety.reason}`] : []),
     ...foodHerbWarnings(foodAndHerbs),
@@ -555,6 +557,7 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body)), said, clinical),
     person: buildPersonContext({ profile, domain: record.domain, factors: detected.map((entry) => entry.factor.id), now: now(), allowReflection: !safetyActive }),
     ...(foodAndHerbs ? { foodAndHerbs } : {}),
+    lenses,
     ...(clinical ? { clinical } : {}),
   };
 }

@@ -329,8 +329,22 @@ export interface CaseAnalysis {
   person?: CasePersonContext;
   /** Foods and plants the person confirmed from a photo or by name; absent when they shared none. */
   foodAndHerbs?: FoodHerbReview;
+  /** Every strand's reading of the case (clinical.ts); absent on analyses made before 2026-10-16. */
+  lenses?: CaseLens[];
   /** Bodily symptoms read clinically (clinical.ts); absent when none were described. */
   clinical?: ClinicalPicture;
+}
+
+/** One knowledge strand's reading of a case; `person` is the wording a report may use. */
+export interface CaseLens {
+  strand: string;
+  layer: AnalysisLayer;
+  points: Array<{ reviewer: string; person?: string }>;
+  ask: string[];
+  /** Conditions a symptom combination brings into consideration: reviewer-only. */
+  considerations: string[];
+  /** Catalogue entries kept for this strand. */
+  findings: string[];
 }
 
 /** How soon, what to rule out, what to check, and how each strand reads the symptoms. Reviewer-only. */
@@ -354,8 +368,8 @@ export interface ClinicalPicture {
   }>;
   /** What a health worker may check, in plain words. */
   checks: string[];
-  /** Every strand's reading of the picture; `person` is the wording a report may use. */
-  lenses: Array<{ strand: string; layer: AnalysisLayer; points: Array<{ reviewer: string; person?: string }>; ask: string[]; considerations: string[]; findings: string[] }>;
+  /** Every strand's reading of the picture (the same as CaseAnalysis.lenses). */
+  lenses: CaseLens[];
   profileNotes: string[];
 }
 

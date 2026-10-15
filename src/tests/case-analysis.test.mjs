@@ -1,7 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildCaseAnalysis, caseStatements, detectFactors, groundFindings } from "../server/cases/analysis.ts";
-import { buildEnhancedReportSections, reportStatistics } from "../server/cases/reportEnhancer.ts";
+import { buildEnhancedReport, buildEnhancedReportSections, reportStatistics } from "../server/cases/reportEnhancer.ts";
+import { amharicFor } from "../server/cases/amharic.ts";
+import { FACTORS, PATTERNS, GENERIC_FOLLOW_UPS } from "../server/cases/analysisLexicon.ts";
+import { FACTOR_GUIDANCE, CONFIDENCE_MEANING } from "../server/cases/analysisGuidance.ts";
+import { SYMPTOM_DETAIL, CLUSTERS, STRAND_LENSES, PRIORITY } from "../server/cases/clinicalLexicon.ts";
+import { LIFE_LENSES } from "../server/cases/strandLexicon.ts";
+import { STRAND_LABEL } from "../server/cases/reportEnhancer.ts";
+import { CONTACTS, REFERRALS } from "../server/cases/support.ts";
 import { createCase } from "../server/cases/machine.ts";
 import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 import { createCaseService } from "../server/cases/service.ts";
@@ -147,7 +154,7 @@ test("report enhancement: builds editable, profile-aware detail without crossing
   }, legalConfig, {}, { now: () => NOW });
   const reflectiveSections = buildEnhancedReportSections(legalAnalysis, false);
   assert.ok(reflectiveSections.every((entry) => !["Patterns to consider together", "Possible next steps", "How different areas may connect"].includes(entry.title)));
-  assert.ok(reflectiveSections.filter((entry) => entry.cultural).every((entry) => entry.title === "Cultural and spiritual reflections"));
+  assert.ok(reflectiveSections.filter((entry) => entry.cultural).every((entry) => ["Cultural and spiritual reflections", "Faith, tradition and timing"].includes(entry.title)));
 });
 
 // ── Aligning the analysis and the report with the person ─────────────────────
@@ -614,4 +621,68 @@ test("health case: a real emergency still routes to the ambulance first", async 
   assert.equal(analysis.urgency.level, "critical");
   const safety = analysis.solutions.find((solution) => solution.id === "safety");
   assert.ok(safety && /ambulance \(907\)/.test(safety.steps[0]));
+});
+
+// ── Every strand, every case type; reports in Amharic ────────────────────────
+
+test("strand readings: a relationship case is read through the strands, not only health cases", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  const strands = analysis.lenses.map((lens) => lens.strand);
+  assert.ok(strands.length >= 9, `readings from ${strands}`);
+  for (const strand of ["socioeconomic", "addiction", "psychological", "dietary", "cultural", "astrological"]) assert.ok(strands.includes(strand), `${strand} reads the case`);
+  const angles = buildEnhancedReportSections(analysis, false).find((entry) => entry.id === "analysis-angles");
+  assert.ok(angles && angles.items.length >= 8, "the report carries the strands' readings");
+  assert.ok(angles.items.some((item) => /^Daily life and resources: /.test(item)));
+});
+
+test("amharic: every person-facing vocabulary line has an Amharic translation", () => {
+  const lines = new Set();
+  const add = (...values) => values.forEach((value) => value && lines.add(value));
+  for (const factor of FACTORS) add(factor.label, factor.causeTitle, factor.followUp, ...factor.steps, ...factor.advice);
+  for (const pattern of PATTERNS) add(pattern.title, pattern.explanation);
+  add(...GENERIC_FOLLOW_UPS, ...Object.values(CONFIDENCE_MEANING), ...Object.values(STRAND_LABEL), ...Object.values(REFERRALS));
+  for (const guidance of Object.values(FACTOR_GUIDANCE)) add(guidance.insight, guidance.watchFor);
+  for (const detail of Object.values(SYMPTOM_DETAIL)) add(...detail.characterise, ...detail.redFlags, ...detail.checks);
+  for (const cluster of Object.values(CLUSTERS)) add(...cluster.checks);
+  for (const lens of [...Object.values(STRAND_LENSES), ...Object.values(LIFE_LENSES)].flat()) add(lens.person, lens.ask);
+  for (const priority of Object.values(PRIORITY)) add(priority.label, priority.timeframe);
+  for (const contact of Object.values(CONTACTS)) add(contact.name);
+  const missing = [...lines].filter((line) => !amharicFor(line));
+  assert.deepEqual(missing, [], "add these to src/server/cases/amharicPhrases.json");
+});
+
+const ETHIOPIC = /[ሀ-፿]/gu;
+const mostlyAmharic = (text) => (text.match(ETHIOPIC) ?? []).length > (text.match(/[A-Za-z]/g) ?? []).length;
+
+test("amharic: a health report is written in Amharic, quoting the person as written", async () => {
+  const { record, config } = healthCase("Abdominal paim, weight loss");
+  const analysis = await buildCaseAnalysis(record, config, { language: "am" }, { now: () => NOW });
+  const report = buildEnhancedReport(analysis, true, { language: "am" });
+  assert.equal(report.language, "am");
+  assert.deepEqual(report.untranslated, [], "every vocabulary line was translated");
+  const overview = report.sections.find((entry) => entry.id === "analysis-overview");
+  assert.equal(overview.title, "ሁኔታዎ በአጭሩ");
+  assert.match(overview.body, /“Abdominal paim, weight loss”/, "the person's words are quoted as written");
+  assert.match(overview.body, /ዓ\.ም\./, "dated in the Ethiopian calendar");
+  for (const entry of report.sections) {
+    const text = [entry.title, entry.body ?? "", ...(entry.items ?? [])].join(" ").replace(/“[^”]*”/g, "");
+    assert.ok(mostlyAmharic(text), `${entry.id} is written in Amharic`);
+    assert.ok((entry.body ?? "").length <= 8000 && (entry.items ?? []).length <= 40);
+  }
+  assert.ok(report.sections.some((entry) => entry.id === "analysis-health-check" && entry.items.some((item) => item.includes("የሰገራ ምርመራ"))));
+  // The section ids match the English build, so switching language replaces the sections.
+  assert.deepEqual(report.sections.map((entry) => entry.id), buildEnhancedReportSections(analysis, true).map((entry) => entry.id).filter((id) => report.sections.some((entry) => entry.id === id)));
+});
+
+test("amharic: profile context and life readings are translated, English-only material is listed", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, { age: 34, language: "am", demographics: { age: 34, gender: "female" }, location: { region: "Oromia", city: "Adama" } }, { now: () => NOW });
+  const report = buildEnhancedReport(analysis, true, { language: "am" });
+  assert.deepEqual(report.untranslated, []);
+  const profile = report.sections.find((entry) => entry.id === "analysis-profile-context");
+  assert.ok(profile.items.some((item) => item.startsWith("የሕይወት ደረጃ — የመጀመሪያ አዋቂነት")), "life stage in Amharic");
+  assert.ok(!JSON.stringify(report.sections).includes("Adama"));
+  assert.ok(!report.sections.some((entry) => entry.id === "analysis-personal-reading" || entry.id === "analysis-knowledge"), "English-only sections are left out");
+  assert.ok(report.omitted.every((line) => typeof line === "string" && line.length > 0));
 });
