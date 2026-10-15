@@ -56,6 +56,9 @@ const CONTENT_FILES = [
   "src/lib/nutrition/fruitProfiles.ts",
   "src/lib/nutrition/animalProductProfiles.ts",
   "src/lib/nutrition/rawCerealMaterials.ts",
+  "src/lib/cosmic/skyDay.ts",
+  "src/lib/cosmic/healingTiming.ts",
+  "src/lib/cosmic/weather.ts",
 ];
 
 const toPosix = (p) => p.split(path.sep).join("/");

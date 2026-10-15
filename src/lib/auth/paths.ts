@@ -21,6 +21,7 @@ export const PUBLIC_PATHS = [
   "/somatics",
   "/ecology",
   "/fasting",
+  "/healing-calendar",
   "/zoonotic",
   "/foods",
   "/atlas",

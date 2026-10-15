@@ -31,6 +31,7 @@ export const ROUTE_PHRASES: Record<string, () => Promise<PhraseModule>> = {
   "fasting": () => import("./am/fasting.json"),
   "foods": () => import("./am/foods.json"),
   "governance": () => import("./am/governance.json"),
+  "healing-calendar": () => import("./am/healing-calendar.json"),
   "heritage": () => import("./am/heritage.json"),
   "hexacore": () => import("./am/hexacore.json"),
   "horoscope": () => import("./am/horoscope.json"),

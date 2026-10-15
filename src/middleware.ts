@@ -26,6 +26,8 @@ const PUBLIC_API_PATHS = [
   "/api/toolkit/explore",
   // The medicine & remedy safety matrix is a public reference.
   "/api/safety/",
+  // Weather for the healing calendar: forwards only coordinates, rate-limited per client.
+  "/api/weather/",
   // Uptime probe: reports only whether the app can reach its database.
   "/api/health",
   // Telegram delivers signed-in bot commands server-to-server.
@@ -50,6 +52,7 @@ const PUBLIC_PAGE_PATHS = [
   "/somatics",
   "/ecology",
   "/fasting",
+  "/healing-calendar",
   "/zoonotic",
   "/foods",
   "/atlas",
