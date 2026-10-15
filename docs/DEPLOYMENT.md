@@ -241,11 +241,42 @@ and remove it afterwards. No account or password is created by the code on its o
 | Uploads (`UPLOAD_DIR`) | Plesk → Backup & Restore, scheduled, including the `private` folder. |
 | Secrets | `DATA_ENCRYPTION_KEY` and `AUTH_SECRET`, stored offline. |
 
-## 11. Releasing an update
+## 11. Releasing an update with GitHub Actions
 
-- Route A: push to `main`, then Plesk → Git → Deploy (or let Automatic do it).
-- Route B: `npm run deploy:plesk`, upload and extract over the old files, NPM install, run
-  `db:setup`, Restart App.
+The `CI / CD` workflow verifies each pull request and push before deployment. A successful push to
+`main` (or a manual run against `main`) deploys the exact verified commit over SSH. The workflow
+fetches that commit in the existing Plesk Git checkout, installs dependencies, runs `npm run
+db:setup`, builds the app, removes development dependencies, restarts Passenger, and waits for
+`/api/health` to report `{"status":"ok"}`. A failed deploy, database setup, or health check fails the
+workflow rather than reporting success.
+
+Configure these repository **Settings → Secrets and variables → Actions** secrets:
+
+| Secret | Required | Value |
+|---|---|---|
+| `SSH_HOST` | yes | Plesk server hostname or IP address |
+| `SSH_USER` | yes | SSH account that can access the application and run Node.js |
+| `SSH_PRIVATE_KEY` | yes | Private key whose public key is authorized for `SSH_USER` (`SSH_KEY` is also accepted) |
+| `SSH_KNOWN_HOSTS` | yes | Verified SSH host-key line for the server; use `[host]:port` for a non-default port |
+| `DEPLOY_PATH` | yes | Absolute path to the existing Git checkout/Application Root, for example `/var/www/vhosts/example.et/app` |
+| `SSH_PORT` | no | SSH port; defaults to `22` |
+| `NODE_BIN_DIR` | no | Node.js binary directory; defaults to `/opt/plesk/node/22/bin` |
+| `APP_URL` | no | Public HTTPS origin used for the health check; defaults to `https://app.wisdomcourse.com.et` |
+
+The Plesk checkout must have an `origin` remote that can fetch `main`, and the deploy account must
+be able to run Git LFS, `git`, Node.js 22, and npm from the application root. Keep `.env`, uploads,
+and `tmp/` outside Git; the workflow does not replace these files. Verify the host key through the
+hosting provider or server console before saving it as `SSH_KNOWN_HOSTS`.
+
+`db:setup` is safe to run on every release: it applies pending MySQL migrations once, then seeds
+the required system roles, marketplace catalogues, Ethiopian food-composition data, and
+herb–medicine safety reference without deleting user or editor data. Demo-account/demo-marketplace
+seed scripts are intentionally not run in production. The app's startup set-up remains enabled as
+a recovery path if a deployment is interrupted.
+
+For manual deployment, use Plesk → Git → Deploy (the app applies pending migrations and reference
+data at start-up), or run `npm run deploy:plesk`, upload and extract the release, install production
+dependencies, run `db:setup`, and restart the app.
 
 Migrations only add to the database, so going back means deploying the previous release. Take a
 database backup before any release that includes a new file in `drizzle-mysql/`.

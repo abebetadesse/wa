@@ -126,6 +126,10 @@ export function projectUserReport(
 
   return {
     headline,
+    sources: (pro.provenance || [])
+      .filter((source) => source.type === "paper" || source.type === "dataset")
+      .map(({ title, citation, year, uri }) => ({ title, citation, year, uri }))
+      .filter((source, index, all) => all.findIndex((candidate) => candidate.citation === source.citation) === index),
     urgentDirective,
     yourSituation: {
       culturalFraming,

@@ -19,6 +19,50 @@
     visibility: hidden !important;
   }
 
+  body:has(.published-report-print-root) * {
+    visibility: hidden !important;
+  }
+
+  .published-report-print-root,
+  .published-report-print-root * {
+    visibility: visible !important;
+  }
+
+  .published-report-print-root {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    z-index: 99999 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #21170f !important;
+    font-family: "Noto Sans Ethiopic", sans-serif !important;
+  }
+
+  .published-report-print-root * {
+    color: #21170f !important;
+    border-color: #d6c8b5 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    print-color-adjust: exact;
+  }
+
+  .published-report-print-root [class*="bg-"] {
+    background-color: #fff !important;
+    background-image: none !important;
+  }
+
+  .published-report-print-root [class~="print:hidden"] {
+    display: none !important;
+  }
+
+  .published-report-print-root section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   .spiritual-report-page,
   .spiritual-report-page * {
     visibility: visible !important;
@@ -125,6 +169,11 @@
   .telsem-print-root li {
     color: #21170f !important;
   }
+}
+
+.published-report-print-root p,
+.published-report-print-root li {
+  font-size: calc(1rem * var(--report-reading-scale, 1));
 }
 
 #google_translate_element {

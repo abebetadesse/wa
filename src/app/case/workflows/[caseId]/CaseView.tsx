@@ -1,7 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CalendarClock, MessageCircle, Save } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import {
+  ArrowLeft, CalendarClock, Check, Copy, MessageCircle, Mic, Phone,
+  Save, Video, MessageSquare, Users as UsersIcon, AlertTriangle,
+} from "lucide-react";
 import type { OwnerView as BaseOwnerView } from "@/server/cases/views";
 import type { PaymentAttempt } from "@/server/cases/billing";
 import { PayPanel } from "@/features/payments/PayPanel";
@@ -41,6 +44,7 @@ const POLL_MS = 30_000;
 
 type OwnerView = BaseOwnerView & { paymentAttempt?: PaymentAttempt | null };
 const FORMAT_LABELS: Record<string, string> = { video: "Video call", voice: "Voice call", chat: "Chat", in_person: "In person" };
+const FORMAT_ICONS: Record<string, React.ElementType> = { video: Video, voice: Phone, chat: MessageSquare, in_person: UsersIcon };
 
 export function CaseView({ caseId }: { caseId: string }) {
   const [view, setView] = useState<OwnerView | null>(null);
@@ -152,6 +156,7 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
   const [busy, setBusy] = useState<"save" | "submit" | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const dirty = useRef(false);
 
   const questions = useMemo(() => view.questions.filter((question) => isApplicable(question, answers)), [view.questions, answers]);
@@ -161,6 +166,13 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
     [requiredQuestions, answers]
   );
   const completionPercent = requiredQuestions.length > 0 ? Math.round((answeredCount / requiredQuestions.length) * 100) : 100;
+
+  // Update browser tab title with unsaved-changes indicator.
+  useEffect(() => {
+    const originalTitle = document.title;
+    if (dirty.current) document.title = `● ${originalTitle.replace(/^● /, "")}`;
+    return () => { document.title = originalTitle.replace(/^● /, ""); };
+  }, [dirty.current]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Warn before leaving with unsaved answers.
   useEffect(() => {
@@ -197,8 +209,7 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
     }
   }
 
-  async function onSubmit(event: FormEvent) {
-    event.preventDefault();
+  function validateAndPrompt() {
     setStatus(null);
     const missing = questions.filter((q) => q.required && (answers[q.id] === undefined || String(answers[q.id]).trim() === ""));
     if (missing.length) {
@@ -206,6 +217,17 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
       document.getElementById(`question-${missing[0].id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
+    // All required answered — show confirmation dialog before final submit.
+    setShowConfirm(true);
+  }
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    validateAndPrompt();
+  }
+
+  async function doSubmit() {
+    setShowConfirm(false);
     setBusy("submit");
     try {
       const saved = await save();
@@ -224,73 +246,160 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Tell us about your situation</CardTitle>
-          <CardDescription>Answer in your own words. Nothing is shared until you submit, and only your reviewer sees your answers.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          {requiredQuestions.length > 0 && (
-            <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/20 p-3.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-muted-foreground">Required questions</span>
-                <span className="tabular-nums font-semibold text-foreground">
-                  {answeredCount} of {requiredQuestions.length} answered ({completionPercent}%)
-                </span>
+    <>
+      {/* Unsaved-changes sticky banner */}
+      {dirty.current && (
+        <div className="sticky top-2 z-10 flex items-center gap-2 rounded-xl border border-warning/40 bg-warning/10 px-4 py-2 text-sm text-foreground shadow-sm">
+          <AlertTriangle className="size-4 shrink-0 text-warning" aria-hidden="true" />
+          <span>You have unsaved changes. Save your progress before leaving.</span>
+          <Button variant="outline" size="sm" className="ml-auto" onClick={onSave} disabled={busy !== null}>Save now</Button>
+        </div>
+      )}
+
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Tell us about your situation</CardTitle>
+            <CardDescription>Answer in your own words. Nothing is shared until you submit, and only your reviewer sees your answers.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6">
+            {requiredQuestions.length > 0 && (
+              <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/20 p-3.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-medium text-muted-foreground">Required questions</span>
+                  <span className="tabular-nums font-semibold text-foreground">
+                    {answeredCount} of {requiredQuestions.length} answered ({completionPercent}%)
+                  </span>
+                </div>
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full bg-brand transition-all duration-500"
+                    style={{ width: `${completionPercent}%` }}
+                  />
+                </div>
               </div>
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-border">
-                <div
-                  className="h-full rounded-full bg-brand transition-all duration-300"
-                  style={{ width: `${completionPercent}%` }}
+            )}
+            {questions.map((question) => (
+              <div key={question.id} id={`question-${question.id}`}>
+                <QuestionField
+                  question={question}
+                  value={answers[question.id]}
+                  error={errors[question.id]}
+                  onChange={(value) => update(question.id, value)}
+                  onKeyDown={question.type === "textarea" ? (e: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+                    // Cmd+Enter / Ctrl+Enter submits.
+                    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); validateAndPrompt(); }
+                  } : undefined}
                 />
               </div>
+            ))}
+          </CardContent>
+        </Card>
+        {status && <Alert tone={status.tone}>{status.text}</Alert>}
+        <div className="flex flex-wrap justify-end gap-3">
+          <Button variant="outline" onClick={onSave} disabled={busy !== null}>
+            <Save className="size-4" aria-hidden="true" /> {busy === "save" ? "Saving…" : "Save and finish later"}
+          </Button>
+          <Button type="submit" disabled={busy !== null}>
+            {busy === "submit" ? "Submitting…" : "Submit for expert review"}
+          </Button>
+        </div>
+      </form>
+
+      {/* Confirmation dialog */}
+      {showConfirm && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-submit-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+        >
+          <div className="mx-4 flex max-w-sm flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-xl">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
+              <div>
+                <p id="confirm-submit-title" className="font-semibold text-foreground">Submit for expert review?</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Once submitted your answers are locked and sent to a reviewer. You can still add information through the message thread.
+                </p>
+              </div>
             </div>
-          )}
-          {questions.map((question) => (
-            <div key={question.id} id={`question-${question.id}`}>
-              <QuestionField question={question} value={answers[question.id]} error={errors[question.id]} onChange={(value) => update(question.id, value)} />
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowConfirm(false)}>Cancel</Button>
+              <Button onClick={doSubmit} disabled={busy !== null}>
+                {busy === "submit" ? "Submitting…" : "Yes, submit"}
+              </Button>
             </div>
-          ))}
-        </CardContent>
-      </Card>
-      {status && <Alert tone={status.tone}>{status.text}</Alert>}
-      <div className="flex flex-wrap justify-end gap-3">
-        <Button variant="outline" onClick={onSave} disabled={busy !== null}>
-          <Save className="size-4" aria-hidden="true" /> {busy === "save" ? "Saving…" : "Save and finish later"}
-        </Button>
-        <Button type="submit" disabled={busy !== null}>{busy === "submit" ? "Submitting…" : "Submit for expert review"}</Button>
-      </div>
-    </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 // ── Conversation with the reviewer ───────────────────────────────────────────
 
 const VIA_LABELS = { app: "", telegram: " · sent from Telegram", whatsapp: " · sent from WhatsApp" } as const;
+const MAX_MSG = 4000;
+
+interface OptimisticMessage {
+  id: string;
+  from: "owner";
+  authorId: string;
+  kind: "message";
+  body: string;
+  via: "app";
+  at: string;
+  pending?: true;
+}
 
 function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view: OwnerView) => void }) {
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  // Optimistic list: real messages + any pending optimistic ones.
+  const [optimistic, setOptimistic] = useState<OptimisticMessage[]>([]);
+
+  const allMessages = useMemo(() => {
+    const real = view.messages as (typeof view.messages[number] & { pending?: never })[];
+    // Merge: drop optimistic entries that now exist in real.
+    const pendingIds = new Set(real.map((m) => m.id));
+    const pending = optimistic.filter((m) => !pendingIds.has(m.id));
+    return [...real, ...pending].sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
+  }, [view.messages, optimistic]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!text.trim()) {
-      setError("Write a message first.");
-      return;
-    }
+    const trimmed = text.trim();
+    if (!trimmed) { setError("Write a message first."); return; }
+    if (trimmed.length > MAX_MSG) { setError(`Messages cannot exceed ${MAX_MSG} characters.`); return; }
+
+    // Optimistic insert.
+    const tempId = `optimistic-${Date.now()}`;
+    const tempMsg: OptimisticMessage = { id: tempId, from: "owner", authorId: "", kind: "message", body: trimmed, via: "app", at: new Date().toISOString(), pending: true };
+    setOptimistic((prev) => [...prev, tempMsg]);
+    setText("");
     setBusy(true);
     setError(null);
+    setSent(false);
+
     try {
-      onChange(await apiFetch<OwnerView>(`/api/case-workflows/cases/${view.id}/messages`, { method: "POST", json: { body: text.trim() } }));
-      setText("");
+      const updated = await apiFetch<OwnerView>(`/api/case-workflows/cases/${view.id}/messages`, { method: "POST", json: { body: trimmed } });
+      setOptimistic((prev) => prev.filter((m) => m.id !== tempId));
+      onChange(updated);
+      setSent(true);
     } catch (err) {
+      // Roll back optimistic message on failure.
+      setOptimistic((prev) => prev.filter((m) => m.id !== tempId));
+      setText(trimmed);
       setError(errorMessage(err));
     } finally {
       setBusy(false);
     }
   }
+
+  const remaining = MAX_MSG - text.length;
 
   return (
     <Card>
@@ -302,14 +411,24 @@ function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {view.awaitingReply && <Alert tone="warning" title="Your reviewer is waiting for your answer">Your reply helps them give you a better response.</Alert>}
-        {view.messages.length > 0 && (
+        {sent && (
+          <div className="flex items-center gap-2 text-xs text-success">
+            <Check className="size-3.5" aria-hidden="true" /> Reviewer notified
+          </div>
+        )}
+        {allMessages.length > 0 && (
           <ol className="flex flex-col gap-2">
-            {view.messages.map((message) => (
-              <li key={message.id} className={`max-w-[85%] rounded-2xl border px-4 py-2.5 text-sm ${message.from === "owner" ? "self-end border-brand/30 bg-brand/10" : "self-start border-border bg-muted/30"}`}>
+            {allMessages.map((message) => (
+              <li
+                key={message.id}
+                className={`max-w-[85%] rounded-2xl border px-4 py-2.5 text-sm transition-opacity ${message.from === "owner" ? "self-end border-brand/30 bg-brand/10" : "self-start border-border bg-muted/30"} ${"pending" in message && message.pending ? "opacity-60" : ""}`}
+              >
                 <p className="whitespace-pre-wrap text-foreground">{message.body}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {message.from === "owner" ? "You" : "Your reviewer"}
-                  {message.from === "owner" ? VIA_LABELS[message.via] : ""} · {new Date(message.at).toLocaleString()}
+                  {message.from === "owner" ? VIA_LABELS[message.via] : ""}
+                  {" · "}
+                  {"pending" in message && message.pending ? "Sending…" : new Date(message.at).toLocaleString()}
                 </p>
               </li>
             ))}
@@ -317,9 +436,28 @@ function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view
         )}
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <Field label={view.awaitingReply ? "Your answer" : "Write to your reviewer"} error={error}>
-            {(control) => <Textarea {...control} value={text} onChange={(event) => setText(event.target.value)} rows={3} maxLength={4000} />}
+            {(control) => (
+              <Textarea
+                {...control}
+                value={text}
+                onChange={(event) => { setText(event.target.value); setSent(false); }}
+                rows={3}
+                maxLength={MAX_MSG}
+                onKeyDown={(e: KeyboardEvent<HTMLTextAreaElement>) => {
+                  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); onSubmit(e as unknown as FormEvent); }
+                }}
+              />
+            )}
           </Field>
-          <Button type="submit" disabled={busy} className="self-end">{busy ? "Sending…" : "Send"}</Button>
+          {/* Character counter */}
+          <div className="flex items-center justify-between">
+            <span className={`text-xs tabular-nums ${remaining < 200 ? "text-warning" : "text-muted-foreground"}`}>
+              {remaining.toLocaleString()} characters remaining
+            </span>
+            <Button type="submit" disabled={busy} size="sm">
+              {busy ? "Sending…" : <><Mic className="size-3.5" aria-hidden="true" /> Send</>}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
@@ -347,48 +485,139 @@ function PurchasePanel({ view, onChange }: { view: OwnerView; onChange: (view: O
 
 // ── Consultation ─────────────────────────────────────────────────────────────
 
+const TIME_SUGGESTIONS = ["Morning (8–12)", "Afternoon (12–17)", "Evening (17–21)", "Saturday morning", "Sunday afternoon"];
+
 function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view: OwnerView) => void }) {
   const [format, setFormat] = useState(view.pricing.consultationFormats[0]);
-  const [times, setTimes] = useState("");
+  const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [customSlot, setCustomSlot] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  function addSlot(slot: string) {
+    const trimmed = slot.trim();
+    if (!trimmed || timeSlots.includes(trimmed)) return;
+    setTimeSlots((prev) => [...prev, trimmed]);
+    setCustomSlot("");
+    setError(null);
+  }
+
+  function removeSlot(slot: string) {
+    setTimeSlots((prev) => prev.filter((s) => s !== slot));
+  }
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    const preferredTimes = times.split(/\n|;/).map((line) => line.trim()).filter(Boolean);
-    if (!preferredTimes.length) {
-      setError("Suggest at least one time that suits you.");
+    if (!timeSlots.length) {
+      setError("Add at least one time that suits you.");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      onChange(await apiFetch<OwnerView>(`/api/case-workflows/cases/${view.id}/consultation`, { method: "POST", json: { format, preferredTimes, note: note || undefined } }));
+      onChange(await apiFetch<OwnerView>(`/api/case-workflows/cases/${view.id}/consultation`, {
+        method: "POST",
+        json: { format, preferredTimes: timeSlots, note: note || undefined },
+      }));
     } catch (err) {
       setError(errorMessage(err));
       setBusy(false);
     }
   }
 
+  const feeEtb = view.pricing.consultationEtb;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Book a follow-up consultation</CardTitle>
-        <CardDescription>{view.pricing.consultationEtb > 0 ? `${view.pricing.consultationEtb} ETB` : "Free"}. Your practitioner confirms the time with you.</CardDescription>
+        <CardDescription className="flex items-center gap-2">
+          {feeEtb > 0
+            ? <Badge tone="gold">{feeEtb} ETB</Badge>
+            : <Badge tone="success">Free</Badge>}
+          <span>Your practitioner confirms the time with you.</span>
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
-          <ChoiceGroup
-            name="format"
-            legend="Format"
-            options={view.pricing.consultationFormats.map((value) => ({ value, label: FORMAT_LABELS[value] }))}
-            value={format}
-            onChange={(value) => setFormat(value as typeof format)}
-          />
-          <Field label="When suits you?" hint="One option per line, e.g. “Tuesday after 6 pm”." required error={error}>
-            {(control) => <Textarea {...control} value={times} onChange={(event) => setTimes(event.target.value)} rows={3} />}
-          </Field>
+          {/* Format picker with icons */}
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1 text-sm font-semibold text-foreground">Format</legend>
+            <div className="flex flex-wrap gap-2">
+              {view.pricing.consultationFormats.map((value) => {
+                const FormatIcon = FORMAT_ICONS[value] ?? UsersIcon;
+                const selected = format === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setFormat(value as typeof format)}
+                    aria-pressed={selected}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${selected ? "border-brand bg-brand/10 text-brand" : "border-border bg-background text-muted-foreground hover:border-input hover:text-foreground"}`}
+                  >
+                    <FormatIcon className="size-4" aria-hidden="true" />
+                    {FORMAT_LABELS[value]}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          {/* Time-slot chips */}
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-sm font-semibold text-foreground">When suits you?</legend>
+            <p className="text-xs text-muted-foreground">Pick from suggestions or type your own, then press Enter or Add.</p>
+            {/* Quick suggestions */}
+            <div className="flex flex-wrap gap-1.5">
+              {TIME_SUGGESTIONS.filter((s) => !timeSlots.includes(s)).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => addSlot(s)}
+                  className="rounded-full border border-dashed border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                >
+                  + {s}
+                </button>
+              ))}
+            </div>
+            {/* Custom slot input */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={customSlot}
+                onChange={(e) => setCustomSlot(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSlot(customSlot); } }}
+                placeholder='e.g. "Tuesday after 6 pm"'
+                className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <Button type="button" variant="outline" size="sm" onClick={() => addSlot(customSlot)}>Add</Button>
+            </div>
+            {/* Chosen chips */}
+            {timeSlots.length > 0 && (
+              <div className="flex flex-wrap gap-1.5" role="list" aria-label="Selected time slots">
+                {timeSlots.map((slot) => (
+                  <span
+                    key={slot}
+                    role="listitem"
+                    className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand"
+                  >
+                    {slot}
+                    <button
+                      type="button"
+                      onClick={() => removeSlot(slot)}
+                      aria-label={`Remove ${slot}`}
+                      className="ml-0.5 rounded-full hover:text-danger focus:outline-none"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            {error && <p role="alert" className="text-xs font-medium text-danger">{error}</p>}
+          </fieldset>
+
           <Field label="Anything your practitioner should know? (optional)">
             {(control) => <Textarea {...control} value={note} onChange={(event) => setNote(event.target.value)} rows={3} />}
           </Field>

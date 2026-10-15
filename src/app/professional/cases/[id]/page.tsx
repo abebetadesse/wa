@@ -36,6 +36,7 @@ export default function ProfessionalCaseDetailPage() {
   const [illnessModel, setIllnessModel] = useState("");
   const [separationAdvice, setSeparationAdvice] = useState("");
   const [monitoringPlan, setMonitoringPlan] = useState("");
+  const [reviewedRedFlags, setReviewedRedFlags] = useState<Set<string>>(new Set());
 
   // Modals state
   const [showOverrideModal, setShowOverrideModal] = useState(false);
@@ -49,6 +50,7 @@ export default function ProfessionalCaseDetailPage() {
     if (!caseId) return;
     setLoading(true);
     setActionError(null);
+    setReviewedRedFlags(new Set());
 
     try {
       // 1. Load case details
@@ -334,6 +336,61 @@ export default function ProfessionalCaseDetailPage() {
               </button>
             </div>
 
+            <section className="grid gap-3 sm:grid-cols-3" aria-label="Professional report summary">
+              <div className="rounded-xl border border-white/10 bg-slate-900 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-slate-400">Overall confidence</p>
+                <p className="mt-1 font-bold capitalize text-white">{proReport?.confidence || "Not available"}</p>
+                <p className="mt-1 text-[10px] text-slate-500">Report-level confidence; not a separate confidence score for each recommendation.</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-slate-900 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-slate-400">Risk profile</p>
+                <p className="mt-1 font-bold text-white">{proReport?.redFlags?.length || 0} red flag(s)</p>
+                <p className="mt-1 text-[10px] text-slate-500">Safety gate: {proReport?.safetyGate?.status || "Not available"}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-slate-900 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-slate-400">Care plan</p>
+                <p className="mt-1 font-bold text-white">{proReport?.recommendedActions?.forUser?.length || 0} user actions</p>
+                <p className="mt-1 text-[10px] text-slate-500">{proReport?.recommendedActions?.referrals?.length || 0} referral(s)</p>
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4" aria-labelledby="red-flags-heading">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h4 id="red-flags-heading" className="font-bold text-rose-200">Red-flag review checklist</h4>
+                <span className="text-xs text-slate-400" aria-live="polite">{reviewedRedFlags.size} / {proReport?.redFlags?.length || 0} reviewed</span>
+              </div>
+              {proReport?.redFlags?.length ? (
+                <ul className="mt-3 space-y-2">
+                  {proReport.redFlags.map((flag: any, index: number) => {
+                    const key = `${flag.flag}-${index}`;
+                    return (
+                      <li key={key} className="flex items-start gap-2 rounded-lg border border-rose-500/20 bg-black/20 p-3 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={reviewedRedFlags.has(key)}
+                          onChange={() => setReviewedRedFlags((previous) => {
+                            const next = new Set(previous);
+                            if (next.has(key)) next.delete(key);
+                            else next.add(key);
+                            return next;
+                          })}
+                          aria-label={`Mark red flag reviewed: ${flag.flag}`}
+                          className="mt-0.5 size-4 accent-rose-500"
+                        />
+                        <span className="flex-1 text-slate-200"><strong>{flag.flag}</strong> · {flag.rationale}</span>
+                        <span className="shrink-0 font-bold uppercase text-rose-200">{flag.urgency}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : <p className="mt-2 text-xs text-slate-400">No red flags are recorded in this report.</p>}
+            </section>
+
+            <section className="rounded-xl border border-cyan-500/20 bg-slate-900/80 p-4">
+              <h4 className="font-bold text-cyan-200">Clinical summary</h4>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-200">{proReport?.narrative || "No clinical narrative is available."}</p>
+            </section>
+
             {/* Safety Gate Raw Internals */}
             <div className="p-4 rounded-xl bg-slate-900 border border-white/10 space-y-3">
               <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -404,6 +461,35 @@ export default function ProfessionalCaseDetailPage() {
               <h4 className="font-bold text-purple-400 uppercase tracking-wider">CYP Pathways Analyzed</h4>
               <p className="text-slate-300">{proReport?.pharmacology?.cypPathways?.join(", ") || "None flagged"}</p>
             </div>
+
+            <section className="rounded-xl border border-emerald-500/20 bg-slate-900 p-4" aria-labelledby="care-plan-heading">
+              <h4 id="care-plan-heading" className="font-bold text-emerald-200">Care plan</h4>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <h5 className="text-xs font-semibold uppercase text-slate-400">For the user</h5>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-200">{(proReport?.recommendedActions?.forUser || []).map((action: string, index: number) => <li key={`${action}-${index}`}>{action}</li>)}</ul>
+                </div>
+                <div>
+                  <h5 className="text-xs font-semibold uppercase text-slate-400">Clinical follow-up and referrals</h5>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-200">{[...(proReport?.recommendedActions?.forClinician || []), ...(proReport?.recommendedActions?.referrals || [])].map((action: string, index: number) => <li key={`${action}-${index}`}>{action}</li>)}</ul>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-sky-500/20 bg-slate-900 p-4" aria-labelledby="pro-sources-heading">
+              <h4 id="pro-sources-heading" className="font-bold text-sky-200">Report sources and provenance</h4>
+              {proReport?.provenance?.length ? (
+                <ul className="mt-2 space-y-2">
+                  {proReport.provenance.map((source: any, index: number) => (
+                    <li key={`${source.id || source.citation}-${index}`} className="rounded-lg border border-white/10 p-2 text-xs">
+                      <span className="font-semibold text-white">{source.title}</span>
+                      <p className="mt-1 text-slate-300">{source.citation}{source.year ? ` · ${source.year}` : ""}</p>
+                      <span className="text-[10px] uppercase text-slate-500">{source.type}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : <p className="mt-2 text-xs text-slate-400">No structured sources are recorded.</p>}
+            </section>
           </div>
 
           {/* RIGHT: READ-ONLY LIVE PROJECTED USER REPORT PREVIEW */}

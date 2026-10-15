@@ -6,14 +6,16 @@ on:
   pull_request:
   workflow_dispatch:
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    concurrency:
+      group: verify-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     services:
       mysql:
         image: mysql:8.0
@@ -55,110 +57,105 @@ jobs:
     needs: verify
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # All deployment secrets declared ONCE here at the job level.
-    # No secrets.* appear in any with: field or run: script below —
-    # steps reference only the shell env vars defined here.
-    # Add whichever you need in: GitHub → Settings → Secrets → Actions.
+    timeout-minutes: 30
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
     env:
-      _WEBHOOK:      ${{ secrets.PLESK_DEPLOY_WEBHOOK }}
-      _WEBHOOK_ALT:  ${{ secrets.DEPLOY_WEBHOOK }}
-      _SSH_HOST:     ${{ secrets.SSH_HOST }}
-      _SSH_USER:     ${{ secrets.SSH_USER }}
-      _SSH_KEY:      ${{ secrets.SSH_KEY }}
-      _SSH_PRIV_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      _SSH_PORT:     ${{ secrets.SSH_PORT }}
-      _DEPLOY_PATH:  ${{ secrets.DEPLOY_PATH }}
-      _APP_URL:      ${{ secrets.APP_URL }}
+      _SSH_HOST: ${{ secrets.SSH_HOST }}
+      _SSH_USER: ${{ secrets.SSH_USER }}
+      _SSH_KEY: ${{ secrets.SSH_KEY }}
+      _SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      _SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      _SSH_PORT: ${{ secrets.SSH_PORT }}
+      _DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      _NODE_BIN_DIR: ${{ secrets.NODE_BIN_DIR }}
+      _APP_URL: ${{ secrets.APP_URL }}
     steps:
-      - name: Deploy via Webhook (Plesk / Hosting Provider)
-        id: webhook_deploy
+      - name: Deploy, migrate, and seed production
         run: |
-          HOOK="${_WEBHOOK:-$_WEBHOOK_ALT}"
-          if [ -n "$HOOK" ]; then
-            echo "Triggering automated webhook deployment for commit ${GITHUB_SHA::7}..."
-            curl --fail --silent --show-error --max-time 90 --request POST "$HOOK" 2>&1 || true
-            echo "Webhook successfully triggered."
-            echo "deployed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "deployed=false" >> "$GITHUB_OUTPUT"
+          set -Eeuo pipefail
+
+          KEY="${_SSH_KEY:-$_SSH_PRIVATE_KEY}"
+          if [[ -z "$_SSH_HOST" || -z "$_SSH_USER" || -z "$KEY" || -z "$_SSH_KNOWN_HOSTS" || -z "$_DEPLOY_PATH" ]]; then
+            echo "::error::Configure SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (or SSH_KEY), SSH_KNOWN_HOSTS, and DEPLOY_PATH in repository Actions secrets."
+            exit 1
+          fi
+          if [[ ! "$_SSH_HOST" =~ ^[a-zA-Z0-9.-]+$ || ! "$_SSH_USER" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "::error::SSH_HOST and SSH_USER must be a hostname/IP and a simple account name."
+            exit 1
           fi
 
-      - name: Check SSH secret availability
-        id: check_secrets
-        run: |
-          if [ -n "$_SSH_HOST" ]; then
-            echo "has_ssh=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_ssh=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy via SSH (if configured and webhook not set)
-        id: ssh_deploy
-        if: steps.webhook_deploy.outputs.deployed != 'true' && steps.check_secrets.outputs.has_ssh == 'true'
-        run: |
-          set -e
-          KEY="${_SSH_KEY:-$_SSH_PRIV_KEY}"
           PORT="${_SSH_PORT:-22}"
-          REMOTE_USER="${_SSH_USER:-root}"
-          APP_DIR="${_DEPLOY_PATH:-/var/www/vhosts/wisdomcourse.com.et/app}"
+          if [[ ! "$PORT" =~ ^[0-9]+$ ]]; then
+            echo "::error::SSH_PORT must be a port number."
+            exit 1
+          fi
 
+          umask 077
           KEY_FILE="$(mktemp)"
-          printf '%s\n' "$KEY" > "$KEY_FILE"
-          chmod 600 "$KEY_FILE"
-
-          # Write the remote script to a temp file (heredocs are not valid YAML)
+          KNOWN_HOSTS_FILE="$(mktemp)"
           SCRIPT_FILE="$(mktemp)"
-          printf 'set -e\n' >> "$SCRIPT_FILE"
-          printf 'echo "Navigating to %s..."\n' "$APP_DIR" >> "$SCRIPT_FILE"
-          printf 'cd "%s"\n' "$APP_DIR" >> "$SCRIPT_FILE"
-          printf 'echo "Pulling latest code..."\n' >> "$SCRIPT_FILE"
-          printf 'git pull origin main\n' >> "$SCRIPT_FILE"
-          printf 'export PATH=/opt/plesk/node/22/bin:$PATH\n' >> "$SCRIPT_FILE"
-          printf 'npm ci --include=dev\n' >> "$SCRIPT_FILE"
-          printf 'npm run build\n' >> "$SCRIPT_FILE"
-          printf 'npm run db:setup\n' >> "$SCRIPT_FILE"
-          printf 'mkdir -p tmp && touch tmp/restart.txt\n' >> "$SCRIPT_FILE"
-          printf 'echo "Deployment completed successfully."\n' >> "$SCRIPT_FILE"
+          trap 'rm -f "$KEY_FILE" "$KNOWN_HOSTS_FILE" "$SCRIPT_FILE"' EXIT
+          printf '%s\n' "$KEY" > "$KEY_FILE"
+          printf '%s\n' "$_SSH_KNOWN_HOSTS" > "$KNOWN_HOSTS_FILE"
 
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "$PORT" "$_SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          {
+            printf 'APP_DIR=%q\n' "$_DEPLOY_PATH"
+            printf 'DEPLOY_SHA=%q\n' "$GITHUB_SHA"
+            printf 'NODE_BIN_DIR=%q\n' "${_NODE_BIN_DIR:-/opt/plesk/node/22/bin}"
+            cat <<'REMOTE'
+          set -Eeuo pipefail
+          cd "$APP_DIR"
+          test -d .git || { echo "DEPLOY_PATH must be an existing Git checkout." >&2; exit 1; }
+          git fetch --no-tags origin main
+          git checkout --detach "$DEPLOY_SHA"
+          git lfs pull
+          export PATH="$NODE_BIN_DIR:$PATH"
+          node --version
+          npm --version
+          npm ci --include=dev --prefer-offline
+          npm run db:setup
+          npm run build
+          npm prune --omit=dev
+          mkdir -p tmp
+          touch tmp/restart.txt
+          echo "Deployment finished for $DEPLOY_SHA."
+          REMOTE
+          } > "$SCRIPT_FILE"
 
-          ssh -i "$KEY_FILE" -p "$PORT" \
-            -o StrictHostKeyChecking=accept-new \
+          ssh \
+            -i "$KEY_FILE" \
+            -p "$PORT" \
             -o BatchMode=yes \
-            "${REMOTE_USER}@${_SSH_HOST}" bash -s < "$SCRIPT_FILE"
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$KNOWN_HOSTS_FILE" \
+            "${_SSH_USER}@${_SSH_HOST}" \
+            'bash -s' < "$SCRIPT_FILE"
 
-          rm -f "$KEY_FILE" "$SCRIPT_FILE"
-
-      - name: Deployment Guidance (if no CD secrets configured)
-        if: steps.webhook_deploy.outputs.deployed != 'true' && steps.check_secrets.outputs.has_ssh != 'true'
+      - name: Verify live health
+        env:
+          HEALTH_BASE_URL: ${{ secrets.APP_URL }}
         run: |
-          echo "### Continuous Deployment Notice" >> $GITHUB_STEP_SUMMARY
-          echo "No deployment credentials found in GitHub Secrets." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "To enable live automatic deployment whenever you push to main:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Plesk Webhook (Recommended):" >> $GITHUB_STEP_SUMMARY
-          echo "   - In Plesk, go to Domains > app.wisdomcourse.com.et > Git > Repository Settings" >> $GITHUB_STEP_SUMMARY
-          echo "   - Copy the Webhook URL shown there" >> $GITHUB_STEP_SUMMARY
-          echo "   - In GitHub, go to Settings > Secrets and variables > Actions > New repository secret" >> $GITHUB_STEP_SUMMARY
-          echo "   - Name: PLESK_DEPLOY_WEBHOOK, Value: paste the Webhook URL" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "2. Direct SSH Deployment:" >> $GITHUB_STEP_SUMMARY
-          echo "   - Add secrets SSH_HOST, SSH_USER, and SSH_KEY in GitHub repository secrets." >> $GITHUB_STEP_SUMMARY
+          set -Eeuo pipefail
+          BASE_URL="${HEALTH_BASE_URL:-https://app.wisdomcourse.com.et}"
+          HEALTH_URL="${BASE_URL%/}/api/health"
+          RESPONSE_FILE="$(mktemp)"
+          trap 'rm -f "$RESPONSE_FILE"' EXIT
 
-      - name: Verify Live Health Status
-        if: steps.webhook_deploy.outputs.deployed == 'true' || steps.check_secrets.outputs.has_ssh == 'true'
-        run: |
-          echo "Verifying live endpoint health..."
-          HEALTH_URL="${_APP_URL:-https://app.wisdomcourse.com.et}/api/health"
-          for i in {1..6}; do
-            STATUS=$(curl -k --silent --max-time 10 "$HEALTH_URL" | grep -o '"status":"[^"]*"' || true)
-            echo "Attempt $i: $STATUS"
-            if echo "$STATUS" | grep -q '"status":"ok"'; then
-              echo "Live platform is healthy."
-              exit 0
+          for attempt in $(seq 1 24); do
+            if curl --silent --max-time 10 "$HEALTH_URL" --output "$RESPONSE_FILE"; then
+              STATUS="$(jq -r '.status // "unknown"' "$RESPONSE_FILE" 2>/dev/null || echo unknown)"
+              echo "Health check $attempt/24: $STATUS"
+              if [[ "$STATUS" == "ok" ]]; then
+                echo "Live deployment is healthy."
+                exit 0
+              fi
+            else
+              echo "Health check $attempt/24: no response yet."
             fi
             sleep 5
           done
-          echo "Live deployment trigger completed (health endpoint warming up)."
+
+          echo "::error::Live deployment did not become healthy at $HEALTH_URL."
+          exit 1

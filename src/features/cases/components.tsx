@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import {
   Activity,
   BookOpen,
@@ -10,10 +10,13 @@ import {
   ChevronUp,
   Circle,
   ClipboardList,
+  Clipboard,
+  ClipboardCheck,
   Clock,
   FileText,
   Lock,
   Phone,
+  Printer,
   Sparkles,
   Users,
   Zap,
@@ -38,11 +41,14 @@ export function QuestionField({
   value,
   onChange,
   error,
+  onKeyDown,
 }: {
   question: WorkflowQuestion;
   value: unknown;
   onChange: (value: unknown) => void;
   error?: string | null;
+  /** Optional keydown handler forwarded to the rendered input/textarea. */
+  onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }) {
   const label = (
     <>
@@ -82,7 +88,15 @@ export function QuestionField({
           );
         }
         if (question.type === "textarea") {
-          return <Textarea {...control} value={typeof value === "string" ? value : ""} placeholder={question.placeholder} onChange={(event) => onChange(event.target.value)} />;
+          return (
+            <Textarea
+              {...control}
+              value={typeof value === "string" ? value : ""}
+              placeholder={question.placeholder}
+              onChange={(event) => onChange(event.target.value)}
+              onKeyDown={onKeyDown as (e: KeyboardEvent<HTMLTextAreaElement>) => void}
+            />
+          );
         }
         if (question.type === "scale" || question.type === "slider" || question.type === "number") {
           return <Input {...control} type="number" inputMode="numeric" value={value === undefined ? "" : String(value)} onChange={(event) => onChange(event.target.value === "" ? undefined : Number(event.target.value))} />;
@@ -200,17 +214,51 @@ export function CarePathway({ stage }: { stage: OwnerView["stage"] }) {
   if (stage === "crisis_routed") return null;
   const current = pathwayStepIndex(stage);
   const isComplete = stage === "consultation_requested";
+  const totalSteps = PATHWAY_STEPS.length;
+  const pct = Math.round(((isComplete ? totalSteps : current) / totalSteps) * 100);
+
+  // Animate the progress bar on mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { const id = setTimeout(() => setMounted(true), 50); return () => clearTimeout(id); }, []);
+
+  const statusLabel = isComplete
+    ? "All steps complete"
+    : `Step ${current + 1} of ${totalSteps}: ${PATHWAY_STEPS[current]?.label ?? ""}`;
 
   return (
-    <nav aria-label="Care pathway">
+    <nav aria-label={`Care pathway — ${statusLabel}`}>
+      {/* Progress bar (always visible) */}
+      <div
+        className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-border"
+        role="progressbar"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${pct}% complete`}
+      >
+        <div
+          className="h-full rounded-full bg-brand transition-all duration-700 ease-out"
+          style={{ width: mounted ? `${pct}%` : "0%" }}
+        />
+      </div>
+
       {/* Mobile: compact bar */}
       <ol className="flex items-center gap-1 sm:hidden">
         {PATHWAY_STEPS.map((step, index) => {
           const done = index < current || isComplete;
           const active = index === current && !isComplete;
           return (
-            <li key={step.id} className="flex flex-1 flex-col gap-1.5">
-              <span className={cn("h-1 rounded-full transition-colors", done || (active && index > 0) ? "bg-brand" : active ? "bg-brand/60" : "bg-border")} />
+            <li
+              key={step.id}
+              className="flex flex-1 flex-col gap-1.5"
+              aria-label={`${step.label}${done ? " (done)" : active ? " (current)" : ""}`}
+            >
+              <span
+                className={cn(
+                  "h-1 rounded-full transition-all duration-700",
+                  done || (active && index > 0) ? "bg-brand" : active ? "bg-brand/60" : "bg-border"
+                )}
+              />
               <span className={cn("text-[10px] font-medium", active ? "text-foreground" : "text-muted-foreground")}>
                 {step.label}
               </span>
@@ -229,14 +277,22 @@ export function CarePathway({ stage }: { stage: OwnerView["stage"] }) {
             <li
               key={step.id}
               aria-current={active ? "step" : undefined}
+              aria-label={`${step.label}${done ? " — done" : active ? " — current step" : " — upcoming"}`}
               className={cn(
-                "rounded-2xl border p-4 transition-colors",
+                "rounded-2xl border p-4 transition-all duration-300",
                 done ? "border-brand/30 bg-brand/5" : active ? "border-brand/50 bg-brand/10" : "border-border bg-background"
               )}
             >
               <div className="flex items-center gap-2">
-                <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full", done ? "bg-brand text-background" : active ? "border-2 border-brand bg-transparent" : "border border-border bg-muted")}>
-                  {done ? <Check className="size-4" aria-hidden="true" /> : <Icon className={cn("size-3.5", active ? "text-brand" : "text-muted-foreground")} aria-hidden="true" />}
+                <span
+                  className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-300",
+                    done ? "bg-brand text-background" : active ? "border-2 border-brand bg-transparent" : "border border-border bg-muted"
+                  )}
+                >
+                  {done
+                    ? <Check className="size-4" aria-hidden="true" />
+                    : <Icon className={cn("size-3.5", active ? "text-brand" : "text-muted-foreground")} aria-hidden="true" />}
                 </span>
                 <span className={cn("text-sm font-semibold", active ? "text-foreground" : done ? "text-brand" : "text-muted-foreground")}>
                   {step.label}
@@ -589,6 +645,15 @@ export function ReportView({ report, review }: { report: NonNullable<OwnerView["
           {review?.expert?.name && (
             <Badge tone="neutral">Reviewed by {review.expert.name}{review.expert.credential ? `, ${review.expert.credential}` : ""}</Badge>
           )}
+          {/* Print / export button */}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="ml-auto flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-input hover:text-foreground"
+            aria-label="Print or save this report as PDF"
+          >
+            <Printer className="size-3.5" aria-hidden="true" /> Print / Save PDF
+          </button>
         </div>
         <h2 className="font-display text-2xl font-extrabold text-foreground">{report.title}</h2>
         <p className="text-muted-foreground">{report.summary}</p>
@@ -784,25 +849,52 @@ function SectionCard({
   onToggle: () => void;
 }) {
   const hasContent = ("body" in section && section.body) || ("items" in section && section.items && section.items.length > 0);
+  const [copied, setCopied] = useState(false);
+
+  function copySection() {
+    const lines: string[] = [`## ${section.title}`];
+    if ("body" in section && section.body) lines.push(section.body);
+    if ("items" in section && section.items) lines.push(...section.items.map((i) => `• ${i}`));
+    navigator.clipboard.writeText(lines.join("\n")).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => null);
+  }
 
   return (
     <Card className={cn(section.cultural && "border-gold/30")}>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-muted/30 transition-colors"
-        aria-expanded={!collapsed}
-      >
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-foreground text-sm">{section.title}</span>
-          {section.cultural && <Badge tone="gold">Cultural reflection</Badge>}
-        </div>
+      <div className="flex items-center">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex flex-1 items-center justify-between px-6 py-4 text-left hover:bg-muted/30 transition-colors"
+          aria-expanded={!collapsed}
+        >
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-foreground text-sm">{section.title}</span>
+            {section.cultural && <Badge tone="gold">Cultural reflection</Badge>}
+          </div>
+          {hasContent && (
+            collapsed
+              ? <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              : <ChevronUp className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          )}
+        </button>
+        {/* Copy-to-clipboard button */}
         {hasContent && (
-          collapsed
-            ? <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-            : <ChevronUp className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <button
+            type="button"
+            onClick={copySection}
+            title="Copy section"
+            aria-label={`Copy ${section.title} section`}
+            className="mr-3 flex items-center justify-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+          >
+            {copied
+              ? <ClipboardCheck className="size-4 text-success" aria-hidden="true" />
+              : <Clipboard className="size-4" aria-hidden="true" />}
+          </button>
         )}
-      </button>
+      </div>
       {!collapsed && hasContent && (
         <CardContent className="flex flex-col gap-3 border-t border-border pt-4 text-sm text-foreground">
           {"body" in section && section.body && <p className="whitespace-pre-line leading-relaxed">{section.body}</p>}

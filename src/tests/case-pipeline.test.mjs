@@ -124,7 +124,12 @@ test("Unit: projectUserReport never leaks a professional-only field (property te
       referrals: ["Debark Primary Hospital"],
     },
     confidence: "high",
-    provenance: [{ type: "paper", citation: "Ethiopian Pharmacopeia Review 2021" }],
+    provenance: [
+      { id: "clinical-paper", title: "Clinical Safety Review", type: "paper", citation: "Ethiopian Pharmacopeia Review 2021", year: 2021 },
+      { id: "dataset", title: "Regional Nutrition Dataset", type: "dataset", citation: "Ethiopian Food Systems Dataset" },
+      { id: "oral-source", title: "Oral Tradition", type: "oral_tradition", citation: "Restricted cultural source" },
+      { id: "manuscript", title: "Manuscript", type: "manuscript", citation: "Consent-restricted source" },
+    ],
     generatedAt: new Date().toISOString(),
     pipelineVersion: "1.0.0",
   };
@@ -137,6 +142,11 @@ test("Unit: projectUserReport never leaks a professional-only field (property te
   assert.ok(userReport.yourSituation.culturalFraming);
   assert.ok(userReport.whatMayBeHappening.plainLanguage);
   assert.ok(userReport.traditionalRemedies.length > 0);
+  assert.deepEqual(
+    userReport.sources?.map((source) => source.citation),
+    ["Ethiopian Pharmacopeia Review 2021", "Ethiopian Food Systems Dataset"],
+    "User report citations must exclude cultural and consent-restricted source types"
+  );
 
   // Assert verbatim mandatory disclaimer (§1)
   const hasVerbatimDisclaimer = userReport.disclaimers.some((d) =>
@@ -318,6 +328,35 @@ test("Security: User session calling /api/cases/:id/report/pro receives 403 Forb
     "no-store",
     "Must carry no-store cache header"
   );
+});
+
+test("Publication: server rejects an incomplete report quality checklist", async () => {
+  const { POST: publishReportHandler } = await import(
+    "../app/api/cases/[caseId]/publish/route.ts"
+  );
+  const request = new Request("http://localhost:5500/api/cases/nonexistent/publish", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-actor-id": "admin-board",
+      "x-actor-role": "ADMIN",
+    },
+    body: JSON.stringify({
+      qualityChecklist: {
+        safetyReviewed: true,
+        consentReviewed: false,
+        languageReviewed: true,
+        evidenceReviewed: true,
+      },
+    }),
+  });
+  const response = await publishReportHandler(request, {
+    params: Promise.resolve({ caseId: "nonexistent" }),
+  });
+  const json = await response.json();
+
+  assert.strictEqual(response.status, 400);
+  assert.strictEqual(json.code, "QUALITY_CHECKLIST_INCOMPLETE");
 });
 
 // ─── 5. SAFETY GATE: High-Severity Flag Blocks Publication Without Override ──

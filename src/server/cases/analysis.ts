@@ -416,7 +416,7 @@ function contextEngines(detected: DetectedFactor[], profile: UserProfile, record
 
 function groundedIntersections(intersections: IntersectionFinding[], keptStrands: Set<string>): CaseAnalysis["intersections"] {
   return intersections
-    .filter((item) => item.strands.every((strand) => keptStrands.has(strand)))
+    .filter((item) => item.strands.every((strand) => keptStrands.has(strand) && !DOMAIN_B.has(strand)))
     .slice(0, 4)
     .map((item) => ({ title: item.type.replace(/_/g, " "), description: item.description, recommendation: item.recommendation, strands: item.strands }));
 }
@@ -539,6 +539,66 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     ...(urgency.level === "critical" || urgency.level === "high" ? [`Urgency ${urgency.level}: ${urgency.recommendation}`] : []),
     ...detected.filter((entry) => entry.factor.safety).map((entry) => `${entry.factor.label}: “${entry.quotes[0]}”`),
   ];
+  const intersectionsForReport = groundedIntersections(
+    intersections,
+    new Set(strands.filter((entry) => entry.layer === "A" && entry.findings.some(saidDirectly)).map((entry) => entry.strand)),
+  );
+  const dataQuality = assessData(
+    words,
+    detected,
+    enriched,
+    new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body)),
+    said,
+    clinical,
+  );
+  const entityCounts = new Map<string, number>();
+  for (const entity of entities) entityCounts.set(entity.category, (entityCounts.get(entity.category) ?? 0) + 1);
+  const contextualEngines = contextEngines(detected, enriched, record, now());
+  const engines: CaseAnalysis["engines"] = [
+    {
+      id: "urgency_screening",
+      title: "Urgency and safety screening",
+      summary: `Screened the submitted case as ${urgency.level} priority (score ${urgency.score}/100).`,
+      items: urgency.matchedSignals,
+    },
+    {
+      id: "intent_classification",
+      title: "Case intent and language classification",
+      summary: `Classified the request as ${intent.intent} in ${intent.detectedLanguage}.`,
+      items: [],
+    },
+    {
+      id: "entity_extraction",
+      title: "Case detail extraction",
+      summary: `Extracted ${entities.length} named detail${entities.length === 1 ? "" : "s"} to support profile-aware matching.`,
+      items: [...entityCounts].map(([category, count]) => `${category}: ${count} mentioned`),
+    },
+    {
+      id: "knowledge_retrieval",
+      title: "Knowledge-strand retrieval",
+      summary: `Queried ${strands.length} knowledge strands and considered ${strands.reduce((sum, strand) => sum + strand.considered, 0)} library entries.`,
+      items: strands.map((strand) => `${strand.strand}: ${strand.considered} entries considered, ${strand.kept} grounded to case or profile details.`),
+    },
+    {
+      id: "cross_strand_integration",
+      title: "Cross-strand integration",
+      summary: `${intersectionsForReport.length} grounded connections across knowledge strands were retained for this report.`,
+      items: intersectionsForReport.map((item) => `${item.title} (${item.strands.join(", ")})`),
+    },
+    {
+      id: "recommendation_synthesis",
+      title: "Recommendation synthesis",
+      summary: `The analysis assembled ${solution.solutions.length} system-level suggestion${solution.solutions.length === 1 ? "" : "s"} and ${causes.length} case-grounded pattern${causes.length === 1 ? "" : "s"} for reviewer consideration.`,
+      items: [],
+    },
+    ...(clinical ? [{
+      id: "clinical_triage",
+      title: "Clinical symptom triage",
+      summary: `Reviewed the described symptom pattern; suggested priority is ${clinical.priority.level}.`,
+      items: clinical.checks.slice(0, 4),
+    }] : []),
+    ...contextualEngines,
+  ];
 
   return {
     version: 1,
@@ -551,10 +611,10 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     solutions: proposeSolutions(causes, detected, keptA, urgency.level === "critical", clinical),
     strands: strands.map((entry) => (entry.layer === "B" && safetyActive ? { ...entry, kept: 0, findings: [] } : entry)),
     reflections,
-    intersections: groundedIntersections(intersections, new Set(strands.filter((entry) => entry.findings.some(saidDirectly)).map((entry) => entry.strand))),
-    engines: contextEngines(detected, enriched, record, now()),
+    intersections: intersectionsForReport,
+    engines,
     safety: { warnings, interactions, domainBSuppressed: safetyActive },
-    dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body)), said, clinical),
+    dataQuality,
     person: buildPersonContext({ profile, domain: record.domain, factors: detected.map((entry) => entry.factor.id), now: now(), allowReflection: !safetyActive }),
     ...(foodAndHerbs ? { foodAndHerbs } : {}),
     lenses,

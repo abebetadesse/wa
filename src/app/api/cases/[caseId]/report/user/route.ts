@@ -57,6 +57,16 @@ export async function GET(
       );
     }
 
+    const history = (await pipelineRepository.getReportsByCaseId(caseId))
+      .filter((report) => report.kind === "USER" && (session.role !== "USER" || Boolean(report.publishedAt)))
+      .map((report) => ({
+        version: report.version,
+        createdAt: report.createdAt,
+        publishedAt: report.publishedAt ?? null,
+        confidence: report.confidence,
+        payload: report.payload,
+      }));
+
     return NextResponse.json(
       {
         success: true,
@@ -65,7 +75,9 @@ export async function GET(
           caseId,
           version: userReport.version,
           confidence: userReport.confidence,
+          createdAt: userReport.createdAt,
           publishedAt: userReport.publishedAt,
+          history,
         },
       },
       {

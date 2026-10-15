@@ -4,15 +4,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { StatusTimeline } from "@/components/pipeline/StatusTimeline";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
-import { getPipelineI18n, PipelineI18nCatalog } from "@/lib/i18n/pipeline";
+import { getPipelineI18n } from "@/lib/i18n/pipeline";
 import { CaseStatus } from "@/lib/pipeline/types";
+import { PublishedReportEnhancements, type PublishedReportHistoryEntry } from "@/components/pipeline/PublishedReportEnhancements";
+import type { UserReport } from "@/lib/reports/types";
 import {
-  ShieldAlert,
   Send,
   MapPin,
   Leaf,
   HeartHandshake,
-  CheckCircle,
   AlertTriangle,
   ArrowRight,
   BookOpen,
@@ -58,7 +58,14 @@ export default function UserPipelinePage() {
   const [caseConsent, setCaseConsent] = useState(true);
 
   // User Report state
-  const [userReport, setUserReport] = useState<any>(null);
+  const [userReport, setUserReport] = useState<UserReport | null>(null);
+  const [userReportMetadata, setUserReportMetadata] = useState<{
+    version: number;
+    confidence: "low" | "moderate" | "high";
+    createdAt?: string;
+    publishedAt?: string | null;
+    history?: PublishedReportHistoryEntry[];
+  } | null>(null);
 
   // Submit profile to get location intelligence & preliminary analysis
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -183,11 +190,14 @@ export default function UserPipelinePage() {
       const json = await res.json();
       if (res.ok && json.success) {
         setUserReport(json.data);
+        setUserReportMetadata(json.metadata);
       } else {
         setUserReport(null);
+        setUserReportMetadata(null);
       }
     } catch {
       setUserReport(null);
+      setUserReportMetadata(null);
     }
   };
 
@@ -602,139 +612,15 @@ export default function UserPipelinePage() {
 
         {/* STAGE 4: Published User Report Display (Only when published by admin!) */}
         {currentCase && userReport && (
-          <div className="glass-panel p-6 md:p-8 rounded-2xl border border-emerald-500/30 shadow-2xl space-y-6">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase mb-2">
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  {locale === "am" ? "የጸደቀ ይፋዊ ሪፖርት" : "Official Published User Report"}
-                </div>
-                <h2 className="text-2xl font-black text-white">
-                  {userReport.headline}
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  {i18n.reports.userReportSubtitle}
-                </p>
-              </div>
-            </div>
-
-            {/* Urgent directive if present */}
-            {userReport.urgentDirective && (
-              <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-500/50 text-rose-200 text-sm font-semibold flex items-center gap-3 animate-pulse">
-                <ShieldAlert className="w-6 h-6 text-rose-400 shrink-0" />
-                <span>{userReport.urgentDirective}</span>
-              </div>
-            )}
-
-            {/* Cultural & Spiritual Situation */}
-            <div className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-3">
-              <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider">
-                {locale === "am" ? "የእርስዎ ሁለንተናዊ ሁኔታ" : "Your Holistic Health Context"}
-              </h3>
-              <p className="text-sm text-slate-200 leading-relaxed">
-                {userReport.yourSituation.culturalFraming}
-              </p>
-              {userReport.yourSituation.spiritualFraming && (
-                <p className="text-sm text-purple-200/90 leading-relaxed border-t border-white/10 pt-2">
-                  {userReport.yourSituation.spiritualFraming}
-                </p>
-              )}
-            </div>
-
-            {/* What May Be Happening */}
-            <div className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-3">
-              <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider">
-                {i18n.reports.whatMayBeHappening}
-              </h3>
-              <p className="text-sm text-slate-200 leading-relaxed">
-                {userReport.whatMayBeHappening.plainLanguage}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                {userReport.whatMayBeHappening.bodySystems.map((s: any, idx: number) => (
-                  <div key={idx} className="p-3 rounded-lg bg-slate-900 border border-white/10 text-xs">
-                    <strong className="text-cyan-300 block mb-1">{s.name}</strong>
-                    <span className="text-slate-300">{s.explanation}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Traditional Remedies Safety */}
-            <div className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-3">
-              <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">
-                {i18n.reports.traditionalRemedies}
-              </h3>
-              <div className="space-y-2">
-                {userReport.traditionalRemedies.map((r: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-lg bg-slate-900 border border-white/10 flex items-start justify-between gap-3 text-xs"
-                  >
-                    <div>
-                      <span className="font-bold text-white text-sm">
-                        {r.name} ({r.amharic})
-                      </span>
-                      <p className="text-slate-300 mt-1">{r.reason}</p>
-                    </div>
-                    <span
-                      className={`px-2.5 py-1 rounded-full font-bold uppercase shrink-0 ${
-                        r.status === "avoid"
-                          ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
-                          : r.status === "caution"
-                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                          : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                      }`}
-                    >
-                      {r.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Local Nutrition */}
-            <div className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-2">
-              <h3 className="text-sm font-bold text-teal-400 uppercase tracking-wider">
-                {i18n.reports.localFoods}
-              </h3>
-              <ul className="list-disc list-inside text-xs text-slate-300 space-y-1">
-                {userReport.foodAndNutrition.localFoodsToEmphasize.map((f: string, idx: number) => (
-                  <li key={idx}>{f}</li>
-                ))}
-              </ul>
-              <p className="text-xs text-slate-400 mt-2">
-                {userReport.foodAndNutrition.seasonalNotes}
-              </p>
-            </div>
-
-            {/* Next Steps & When to Seek Help */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
-                <h4 className="font-bold text-emerald-300">{i18n.reports.nextSteps}</h4>
-                <ul className="list-disc list-inside text-slate-300 space-y-1">
-                  {userReport.nextSteps.map((s: string, idx: number) => (
-                    <li key={idx}>{s}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-2">
-                <h4 className="font-bold text-rose-300">{i18n.reports.whenToSeekHelpNow}</h4>
-                <ul className="list-disc list-inside text-slate-300 space-y-1">
-                  {userReport.whenToSeekHelpNow.map((s: string, idx: number) => (
-                    <li key={idx}>{s}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Disclaimers verbatim (§1) */}
-            <div className="p-4 rounded-xl bg-slate-900 border border-white/10 text-[11px] text-slate-400 space-y-1">
-              {userReport.disclaimers.map((d: string, idx: number) => (
-                <p key={idx}>• {d}</p>
-              ))}
-            </div>
-          </div>
+          <PublishedReportEnhancements
+            report={userReport}
+            version={userReportMetadata?.version ?? 1}
+            confidence={userReportMetadata?.confidence ?? "moderate"}
+            createdAt={userReportMetadata?.createdAt}
+            publishedAt={userReportMetadata?.publishedAt}
+            history={userReportMetadata?.history}
+            locale={locale}
+          />
         )}
 
         {/* Pending Review Notice when case is not published yet */}

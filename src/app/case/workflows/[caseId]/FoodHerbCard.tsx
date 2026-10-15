@@ -48,6 +48,11 @@ const KIND_OPTIONS = [
   { value: "herb", label: "A herb or plant", hint: "A remedy, spice, root or leaf you use" },
 ];
 
+const QUICK_SUGGESTIONS: Record<Kind, string[]> = {
+  meal: ["Brown Teff Injera", "Shiro Wot", "Misir Wot", "Braised Gomen", "Kocho", "Telba Drink"],
+  herb: ["Damakesse (ዳማከሴ)", "Tena Adam (ጤና አዳም)", "Kosso (ኮሶ)", "Feto (ፈጦ)", "Korerima", "Moringa"],
+};
+
 export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (view: OwnerView) => void }) {
   const { notes, open, photo: photoAvailable } = view.foodHerb;
   const [kind, setKind] = useState<Kind>("meal");
@@ -166,7 +171,15 @@ export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (v
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Utensils className="size-5 text-brand" aria-hidden="true" /> Foods and plants</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Utensils className="size-5 text-brand" aria-hidden="true" />
+          Foods and plants
+          {notes.length > 0 && (
+            <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[10px] font-bold text-background">
+              {notes.length}
+            </span>
+          )}
+        </CardTitle>
         <CardDescription>
           Show your reviewer what you eat or which herbs and remedies you use. Take a photo or type the names, then confirm what is right. Only the names you confirm are added to your case.
         </CardDescription>
@@ -209,28 +222,61 @@ export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (v
                   <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-4 accent-[var(--brand-accent)]" />
                   <span>I agree to my photo being used once in this way.</span>
                 </label>
-                <input
-                  ref={fileInput}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  capture="environment"
-                  disabled={!consent || busy}
-                  onChange={(event) => onPhoto(event.target.files?.[0])}
-                  className="text-sm file:mr-3 file:rounded-lg file:border file:border-input file:bg-transparent file:px-3 file:py-1.5 file:text-sm disabled:opacity-50"
-                />
-                {preview && (
-                  <div className="flex items-end gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- a local, in-memory preview */}
-                    <img src={preview} alt="Your photo, shown only on this device" className="max-h-40 rounded-lg border border-border" />
-                    <Button variant="ghost" size="sm" onClick={clearPhoto}>Remove photo</Button>
-                  </div>
-                )}
+                {/* Styled camera button */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <label
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
+                      !consent || busy
+                        ? "cursor-not-allowed border-border text-muted-foreground opacity-50"
+                        : "border-brand/40 bg-brand/10 text-brand hover:bg-brand/20"
+                    }`}
+                  >
+                    <Camera className="size-4" aria-hidden="true" />
+                    {photo ? "Change photo" : "Take or choose a photo"}
+                    <input
+                      ref={fileInput}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      capture="environment"
+                      disabled={!consent || busy}
+                      onChange={(event) => onPhoto(event.target.files?.[0])}
+                      className="sr-only"
+                    />
+                  </label>
+                  {preview && (
+                    <div className="flex items-end gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- a local, in-memory preview */}
+                      <img src={preview} alt="Your photo, shown only on this device" className="max-h-40 rounded-lg border border-border" />
+                      <Button variant="ghost" size="sm" onClick={clearPhoto}>Remove photo</Button>
+                    </div>
+                  )}
+                  {photo && !preview && (
+                    <span className="flex items-center gap-1.5 text-xs text-success">
+                      <Camera className="size-3.5" aria-hidden="true" /> Photo ready
+                    </span>
+                  )}
+                </div>
               </div>
             )}
             {!photo && (
-              <Field label={photoAvailable ? "Or type the names" : "Type the names"} hint="Separate names with commas, for example: injera, shiro wot">
-                {(control) => <Input {...control} value={names} onChange={(event) => setNames(event.target.value)} maxLength={400} />}
-              </Field>
+              <div className="flex flex-col gap-2">
+                <Field label={photoAvailable ? "Or type the names" : "Type the names"} hint="Separate names with commas, for example: injera, shiro wot">
+                  {(control) => <Input {...control} value={names} onChange={(event) => setNames(event.target.value)} maxLength={400} />}
+                </Field>
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-xs text-muted-foreground mr-1">Suggestions:</span>
+                  {QUICK_SUGGESTIONS[kind].map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setNames((curr) => (curr ? `${curr}, ${item}` : item))}
+                      className="rounded-full border border-dashed border-border px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                    >
+                      + {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
             {error && <Alert tone="danger" title="Not added">{error}</Alert>}
             <Button type="submit" disabled={busy} className="self-end">{busy ? "Looking…" : "Find matches"}</Button>
@@ -246,9 +292,26 @@ export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (v
             )}
             {result.candidates.length > 0 ? (
               <fieldset className="flex flex-col gap-2">
-                <legend className="mb-1 text-sm font-semibold text-foreground">Tick what is right</legend>
+                <div className="flex items-center justify-between mb-1">
+                  <legend className="text-sm font-semibold text-foreground">
+                    Tick what is right ({chosen.size} of {result.candidates.length} selected)
+                  </legend>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (chosen.size === result.candidates.length) {
+                        setChosen(new Set());
+                      } else {
+                        setChosen(new Set(result.candidates.map((c) => c.id)));
+                      }
+                    }}
+                    className="text-xs font-medium text-brand hover:underline"
+                  >
+                    {chosen.size === result.candidates.length ? "Deselect all" : "Select all"}
+                  </button>
+                </div>
                 {result.candidates.map((candidate) => (
-                  <label key={candidate.id} className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 text-sm">
+                  <label key={candidate.id} className="flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 text-sm transition-colors hover:bg-muted/20">
                     <input type="checkbox" checked={chosen.has(candidate.id)} onChange={() => toggle(candidate.id)} className="mt-0.5 size-4 accent-[var(--brand-accent)]" />
                     <span className="flex flex-col">
                       <span className="font-medium text-foreground">{candidate.name}</span>

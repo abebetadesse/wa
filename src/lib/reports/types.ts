@@ -56,6 +56,12 @@ export interface ProfessionalReport {
 
 export interface UserReport {
   headline: string;                      // plain, warm, non-clinical
+  sources?: Array<{
+    title: string;
+    citation: string;
+    year?: number;
+    uri?: string;
+  }>;
   urgentDirective?: string;              // only if red flag / gate block
   yourSituation: {
     culturalFraming: string;

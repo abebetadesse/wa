@@ -266,6 +266,23 @@ test("detailed report: elaborated, aligned to the person, and within what a draf
   assert.match(withheld.find((entry) => entry.title === "Personal context and what to verify").body, /were not used/);
 });
 
+test("detailed report: accounts for every knowledge strand, grounded library result, and engine", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const coverage = buildEnhancedReportSections(analysis, true).find((entry) => entry.id === "analysis-coverage");
+
+  assert.ok(coverage, "the report includes a knowledge and engine coverage section");
+  for (const [strand, label] of Object.entries(STRAND_LABEL)) {
+    assert.ok(coverage.items.some((item) => item.startsWith(`${label}:`)), `${strand} is accounted for`);
+  }
+  for (const engine of analysis.engines) {
+    assert.ok(coverage.items.some((item) => item.startsWith(`${engine.title}:`)), `${engine.id} is described`);
+  }
+  assert.ok(coverage.items.some((item) => /Library\/source:/.test(item)), "grounded library findings cite their source when available");
+  assert.ok(coverage.items.some((item) => /No catalogue finding was retained/.test(item)), "empty strands are explained without implying absence");
+  assert.ok(coverage.items.some((item) => /profile/i.test(item)), "profile-derived matches are identified without exposing raw values");
+});
+
 test("detailed report: reflection-only case types receive reflection and context, not evidence sections", async () => {
   const legalConfig = DOMAIN_CONFIGS.legal;
   const legalRecord = createCase({

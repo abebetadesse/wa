@@ -45,8 +45,23 @@ const section = (id: string, title: string, body: string, items?: string[], cult
 
 const HORIZON_ORDER: AnalysisSolution["horizon"][] = ["now", "this_week", "ongoing"];
 const PROFESSIONAL_STRANDS = new Set(["medication", "biochemical", "biological", "epidemiological", "addiction", "dietary"]);
+const DOMAIN_B_STRANDS = new Set(["cultural", "astrological"]);
 const FACTOR_BY_ID = new Map(FACTORS.map((factor) => [factor.id, factor]));
 const RED_FLAG_QUESTION = "Have you noticed any of these: ";
+const ENGINE_LABEL_AM: Record<string, string> = {
+  urgency_screening: "የአስቸኳይና ደህንነት ምርመራ",
+  intent_classification: "የጉዳይ ዓላማና ቋንቋ ምደባ",
+  entity_extraction: "የጉዳይ ዝርዝር ማውጣት",
+  knowledge_retrieval: "የዕውቀት ዘርፍ ማጣቀሻ",
+  cross_strand_integration: "የዘርፎች ጥምረት",
+  recommendation_synthesis: "የምክረ ሃሳብ ማዋሃድ",
+  clinical_triage: "የጤና ምልክቶች ቅድመ ምርመራ",
+  fasting_calendar: "የጾም ቀን መቁጠሪያ",
+  agro_ecology: "የአግሮ-ኢኮሎጂ ዞን",
+  fluoride: "የሪፍት ቫሊ የውሃ ፍሎራይድ",
+  awde_negest: "የዓውደ ነገሥት የስም ንባብ",
+  language_model: "የቋንቋ ሞዴል ማጠቃለያ",
+};
 
 /** Each knowledge strand, named for the person reading the report. */
 export const STRAND_LABEL: Record<string, string> = {
@@ -95,9 +110,9 @@ const SOURCE_AM: Record<string, string> = {
   "Platform crisis protocol": "የመድረኩ የቀውስ ጊዜ ሥርዓት",
 };
 
-/** A grounding reason, without any place name taken from the profile. */
+/** A grounding reason, without exposing raw profile values. */
 function reason(matchedOn: string[]): string {
-  return [...new Set(matchedOn.map((entry) => (entry.startsWith("Profile: ") ? "the area you live in" : entry)))].join("; ");
+  return [...new Set(matchedOn.map((entry) => (entry.startsWith("Profile: ") ? "your profile" : entry)))].join("; ");
 }
 
 function formatDate(iso: string, language: ReportLanguage): string {
@@ -419,6 +434,66 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
         }),
       ));
     }
+  }
+
+  // ── 7a. Trace each knowledge strand and analysis engine ────────────────────
+  const strandData = new Map(analysis.strands.map((strand) => [strand.strand, strand]));
+  const strandLens = new Map(lenses.map((lens) => [lens.strand, lens]));
+  const coverageStrands = Object.keys(STRAND_LABEL).filter((strand) => full || DOMAIN_B_STRANDS.has(strand));
+  const coverageItems = coverageStrands.map((strand) => {
+    const data = strandData.get(strand);
+    const lens = strandLens.get(strand);
+    const label = strandName(strand);
+    const considered = data?.considered ?? 0;
+    const kept = data?.kept ?? 0;
+    const profileMatches = (data?.findings ?? []).filter((finding) =>
+      finding.matchedOn.some((match) => match.startsWith("Profile: "))
+    ).length;
+    const lensPoints = (lens?.points ?? []).flatMap((point) => point.person ? [t(point.person)] : []).slice(0, 2);
+
+    if (am) {
+      if (data?.findings.length) omit(`${data.findings.length} ${STRAND_LABEL[strand] ?? strand} library findings and sources (English catalogue text)`);
+      return `${label}፦ ${considered} የማጣቀሻ ግቤቶች ተመርምረዋል፤ ${kept} ከጉዳዩ መረጃ ጋር ተዛምደዋል፤ ${profileMatches} ከመገለጫ ሁኔታ ጋርም ተዛምደዋል።${lensPoints.length ? ` ${lensPoints.join(" ")}` : ""}${data?.layer === "B" && analysis.safety.domainBSuppressed ? " የደህንነት ጉዳይ በመገምገም ላይ ስለሆነ ይህ ክፍል ተወግዷል።" : ""}`;
+    }
+
+    if (data?.layer === "B" && analysis.safety.domainBSuppressed) {
+      return `${label}: cultural reflection was withheld while a safety concern is active.`;
+    }
+
+    const sources = [...new Set((data?.findings ?? []).map((finding) => finding.source).filter((source): source is string => Boolean(source)))];
+    const findingDetails = kept > 0
+      ? [`${kept} grounded reference ${kept === 1 ? "entry" : "entries"} were retained after comparing the case and available profile details.`,
+        `${profileMatches} retained ${profileMatches === 1 ? "entry also reflects" : "entries also reflect"} the available profile context.`,
+        ...(sources.length ? [`Library/source: ${sources.join("; ")}`] : [])]
+      : [];
+    const caseAngle = lensPoints.length ? `Case-specific reading: ${lensPoints.join(" ")}` : "";
+    const noMatch = kept === 0
+      ? "No catalogue finding was retained as sufficiently connected to the submitted case and available profile; this does not establish that a factor is absent."
+      : "";
+    return [
+      `${label}: ${considered} reference-library entries considered; ${kept} grounded to the submitted case.`,
+      findingDetails.length ? findingDetails.join(" | ") : noMatch,
+      caseAngle,
+    ].filter(Boolean).join(" ");
+  });
+
+  const engineItems = analysis.engines.map((engine) => {
+    if (am) return `${ENGINE_LABEL_AM[engine.id] ?? "ተጨማሪ ትንተና"}፦ ለዚህ ጉዳይ ተጠቅሟል።`;
+    const details = [engine.summary, ...engine.items].filter(Boolean);
+    return `${engine.title}: ${details.join(" ")}`;
+  });
+
+  if (coverageItems.length || engineItems.length) {
+    if (am && engineItems.length) omit(`${analysis.engines.length} analysis engine descriptions (English technical output)`);
+    sections.push(section(
+      "coverage",
+      say("Knowledge strands, reference libraries and engines reviewed", "የተመረመሩ የዕውቀት ዘርፎች፣ ማጣቀሻ ቤተ-መጻሕፍትና ኤንጂኖች"),
+      say(
+        "Each strand below was checked against the submitted case and, when consented, relevant profile context. “Grounded” counts entries supported by the information available; it is a relevance measure, not a diagnosis. Source names are included where the library supplied them. The engines listed are the analysis and context engines that ran for this case.",
+        "ከዚህ በታች ያሉት ዘርፎች በቀረበው ጉዳይና ፈቃድ በተሰጠበት ጊዜ በሚመለከተው የመገለጫ ሁኔታ ተመርምረዋል። “ከመረጃ ጋር ተዛምዷል” የሚለው በተገኘው መረጃ የተደገፉ ግቤቶችን ይቆጥራል፤ የበሽታ ምርመራ አይደለም። የማጣቀሻ ምንጮች ስሞች በእንግሊዝኛ ስለሆኑ ለገምጋሚው ተዘርዝረዋል። ከታች ያሉት ኤንጂኖች ለዚህ ጉዳይ የሰሩ የትንተናና የአውድ ኤንጂኖች ናቸው።",
+      ),
+      [...coverageItems, ...engineItems],
+    ));
   }
 
   // ── 7b. Foods and plants the person shared ─────────────────────────────────

@@ -33,6 +33,12 @@ export default function AdminCaseDetailPage() {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnNote, setReturnNote] = useState("");
   const [emergencyAcknowledged, setEmergencyAcknowledged] = useState(false);
+  const [publicationChecks, setPublicationChecks] = useState({
+    safetyReviewed: false,
+    consentReviewed: false,
+    languageReviewed: false,
+    evidenceReviewed: false,
+  });
   const [notificationMethod, setNotificationMethod] = useState<"in-app" | "email" | "sms" | "phone">("in-app");
   const [resourcesShared, setResourcesShared] = useState("Local emergency services");
   const [userNotifiedAt, setUserNotifiedAt] = useState(() => {
@@ -98,6 +104,7 @@ export default function AdminCaseDetailPage() {
           "x-actor-id": "admin-board",
           "x-actor-role": "ADMIN",
         },
+        body: JSON.stringify({ qualityChecklist: publicationChecks }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Publication failed");
@@ -153,6 +160,7 @@ export default function AdminCaseDetailPage() {
   }
 
   const isPublished = caseRecord?.status === CaseStatus.PUBLISHED;
+  const publicationChecksComplete = Object.values(publicationChecks).every(Boolean);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
@@ -179,7 +187,8 @@ export default function AdminCaseDetailPage() {
             {!isPublished ? (
               <button
                 onClick={handlePublish}
-                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-950/40 transition-all flex items-center gap-2"
+                disabled={!publicationChecksComplete}
+                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-950/40 transition-all flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 Approve & Publish to Patient
@@ -212,6 +221,31 @@ export default function AdminCaseDetailPage() {
               <p>{actionSuccess}</p>
             </div>
           </div>
+        )}
+
+        {!isPublished && (
+          <section className="glass-panel rounded-2xl border border-amber-400/30 p-5" aria-labelledby="publication-quality-heading">
+            <h3 id="publication-quality-heading" className="text-sm font-bold text-amber-200">Report quality checklist</h3>
+            <p className="mt-1 text-xs text-slate-400">Confirm each item before publishing. These acknowledgements are recorded in the case audit trail.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {([
+                ["safetyReviewed", "I reviewed the safety gate, urgent guidance, and avoid/caution items."],
+                ["consentReviewed", "I verified the case consent and any opt-in cultural or spiritual content."],
+                ["languageReviewed", "I checked that the report is clear, respectful, and in a language the user can understand."],
+                ["evidenceReviewed", "I reviewed the supporting sources and noted any evidence limitations."],
+              ] as const).map(([key, label]) => (
+                <label key={key} className="flex items-start gap-2 rounded-lg border border-white/10 bg-slate-900/60 p-3 text-sm text-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={publicationChecks[key]}
+                    onChange={(event) => setPublicationChecks((checks) => ({ ...checks, [key]: event.target.checked }))}
+                    className="mt-0.5 size-4 accent-amber-400"
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Timeline */}

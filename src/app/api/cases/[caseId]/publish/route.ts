@@ -32,10 +32,32 @@ export async function POST(
       );
     }
 
+    const body = await req.json().catch(() => null);
+    const qualityChecklist = body?.qualityChecklist;
+    const requiredChecks = ["safetyReviewed", "consentReviewed", "languageReviewed", "evidenceReviewed"] as const;
+    if (!qualityChecklist || requiredChecks.some((check) => qualityChecklist[check] !== true)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Complete all report quality checks before publishing.",
+          code: "QUALITY_CHECKLIST_INCOMPLETE",
+        },
+        { status: 400 }
+      );
+    }
+
     const caseRecord = await pipelineRepository.getCaseById(caseId);
     if (!caseRecord) {
       return NextResponse.json(
         { success: false, error: "Case not found." },
+        { status: 404 }
+      );
+    }
+
+    const latestUserReport = await pipelineRepository.getLatestUserReport(caseId);
+    if (!latestUserReport) {
+      return NextResponse.json(
+        { success: false, error: "Cannot publish: User Report not found." },
         { status: 404 }
       );
     }
@@ -71,22 +93,19 @@ export async function POST(
     const prevStatus = caseRecord.status;
 
     // Update User Report publication timestamp & ensure override notice is present (§12)
-    const latestUserReport = await pipelineRepository.getLatestUserReport(caseId);
-    if (latestUserReport) {
-      latestUserReport.publishedAt = nowIso;
-      latestUserReport.approvedBy = session.userId;
-      latestUserReport.approvedAt = nowIso;
+    latestUserReport.publishedAt = nowIso;
+    latestUserReport.approvedBy = session.userId;
+    latestUserReport.approvedAt = nowIso;
 
-      const payload = latestUserReport.payload as UserReport;
-      if (hasOverride) {
-        const overrideNotice =
-          "Safety Override Notice: This evaluation was conducted with a clinical professional safety override following detected botanical-pharmaceutical interaction risk.";
-        if (!payload.disclaimers.includes(overrideNotice)) {
-          payload.disclaimers.unshift(overrideNotice);
-        }
+    const payload = latestUserReport.payload as UserReport;
+    if (hasOverride) {
+      const overrideNotice =
+        "Safety Override Notice: This evaluation was conducted with a clinical professional safety override following detected botanical-pharmaceutical interaction risk.";
+      if (!payload.disclaimers.includes(overrideNotice)) {
+        payload.disclaimers.unshift(overrideNotice);
       }
-      await pipelineRepository.saveReport(latestUserReport);
     }
+    await pipelineRepository.saveReport(latestUserReport);
 
     // Update Case status to PUBLISHED
     caseRecord.status = CaseStatus.PUBLISHED;
@@ -100,8 +119,8 @@ export async function POST(
       actorRole: "ADMIN",
       type: "published",
       before: { status: prevStatus },
-      after: { status: CaseStatus.PUBLISHED, publishedAt: nowIso },
-      note: `Administrator published User Report. Case is now accessible to the patient.`,
+      after: { status: CaseStatus.PUBLISHED, publishedAt: nowIso, qualityChecklist },
+      note: "Administrator completed the report quality checklist and published the User Report.",
     });
 
     return NextResponse.json(

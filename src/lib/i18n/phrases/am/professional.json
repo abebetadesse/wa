@@ -31,6 +31,7 @@
   "No cases match the selected filter": "ከተመረጠው ማጣሪያ ጋር የሚዛመድ ጉዳይ የለም",
   "No rule matched ≠ safe. Disclaimers verified. Mechanism strings strictly hidden.": "ደንብ አለመዛመዱ ≠ ደህና ነው። ማሳሰቢያዎቹ ተረጋግጠዋል። የአሠራር ጽሑፎች በጥብቅ ተደብቀዋል።",
   "None flagged": "ምልክት የተደረገበት የለም",
+  "Overall confidence": "አጠቃላይ እርግጠኝነት",
   "Override Active": "ማለፊያው ንቁ ነው",
   "Override Authoritative Herb-Drug Safety Gate": "ወሳኙን የዕፅ-መድኃኒት የደህንነት በር እለፍ",
   "Override Safety Gate": "የደህንነት በሩን እለፍ",
