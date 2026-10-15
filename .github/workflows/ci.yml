@@ -72,15 +72,25 @@ jobs:
       _NODE_BIN_DIR: ${{ secrets.NODE_BIN_DIR }}
       _APP_URL: ${{ secrets.APP_URL }}
     steps:
-      - name: Deploy, migrate, and seed production
+      - name: Check deployment configuration
+        id: check-secrets
         run: |
           set -Eeuo pipefail
 
           KEY="${_SSH_KEY:-$_SSH_PRIVATE_KEY}"
           if [[ -z "$_SSH_HOST" || -z "$_SSH_USER" || -z "$KEY" || -z "$_SSH_KNOWN_HOSTS" || -z "$_DEPLOY_PATH" ]]; then
-            echo "::error::Configure SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (or SSH_KEY), SSH_KNOWN_HOSTS, and DEPLOY_PATH in repository Actions secrets."
-            exit 1
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=CD Skipped::Live deployment skipped: Configure SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (or SSH_KEY), SSH_KNOWN_HOSTS, and DEPLOY_PATH in repository Settings -> Secrets and variables -> Actions to enable automatic production deployment."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Deploy, migrate, and seed production
+        if: steps.check-secrets.outputs.configured == 'true'
+        run: |
+          set -Eeuo pipefail
+
+          KEY="${_SSH_KEY:-$_SSH_PRIVATE_KEY}"
           if [[ ! "$_SSH_HOST" =~ ^[a-zA-Z0-9.-]+$ || ! "$_SSH_USER" =~ ^[a-zA-Z0-9._-]+$ ]]; then
             echo "::error::SSH_HOST and SSH_USER must be a hostname/IP and a simple account name."
             exit 1
@@ -134,6 +144,7 @@ jobs:
             'bash -s' < "$SCRIPT_FILE"
 
       - name: Verify live health
+        if: steps.check-secrets.outputs.configured == 'true'
         env:
           HEALTH_BASE_URL: ${{ secrets.APP_URL }}
         run: |
