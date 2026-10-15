@@ -211,7 +211,6 @@ function pathwayStepIndex(stage: OwnerView["stage"]) {
 }
 
 export function CarePathway({ stage }: { stage: OwnerView["stage"] }) {
-  if (stage === "crisis_routed") return null;
   const current = pathwayStepIndex(stage);
   const isComplete = stage === "consultation_requested";
   const totalSteps = PATHWAY_STEPS.length;
@@ -220,6 +219,8 @@ export function CarePathway({ stage }: { stage: OwnerView["stage"] }) {
   // Animate the progress bar on mount.
   const [mounted, setMounted] = useState(false);
   useEffect(() => { const id = setTimeout(() => setMounted(true), 50); return () => clearTimeout(id); }, []);
+
+  if (stage === "crisis_routed") return null;
 
   const statusLabel = isComplete
     ? "All steps complete"

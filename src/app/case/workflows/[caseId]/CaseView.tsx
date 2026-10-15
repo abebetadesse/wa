@@ -360,14 +360,15 @@ function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view
   const [sent, setSent] = useState(false);
   // Optimistic list: real messages + any pending optimistic ones.
   const [optimistic, setOptimistic] = useState<OptimisticMessage[]>([]);
+  const { messages } = view;
 
   const allMessages = useMemo(() => {
-    const real = view.messages as (typeof view.messages[number] & { pending?: never })[];
+    const real = messages as (typeof messages[number] & { pending?: never })[];
     // Merge: drop optimistic entries that now exist in real.
     const pendingIds = new Set(real.map((m) => m.id));
     const pending = optimistic.filter((m) => !pendingIds.has(m.id));
     return [...real, ...pending].sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
-  }, [view.messages, optimistic]);
+  }, [messages, optimistic]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
