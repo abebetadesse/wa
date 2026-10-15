@@ -3,6 +3,8 @@
  * sections are sent as titles only until the report is paid for.
  */
 import type { DomainConfig, ReportSection, WorkflowCase } from "./types";
+import { acceptsFoodHerb } from "./foodHerb";
+import { visionModel } from "./photoRecognition";
 
 export interface ExpertSummary {
   id: string;
@@ -75,6 +77,12 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
     /** The conversation with the reviewer. The reviewer's analysis is never part of this view. */
     messages: record.messages.map(({ id, from, kind, body, via, at }) => ({ id, from, kind, body, via, at })),
     canMessage: REVIEW_STAGES.has(record.stage) || approved,
+    /** Foods and plants the owner confirmed (names only), and whether they can add more now. */
+    foodHerb: {
+      notes: (record.foodHerbNotes ?? []).map(({ id, kind, items, source, note, at }) => ({ id, kind, items, source, note: note ?? null, at })),
+      open: acceptsFoodHerb(record) && record.consent.dataUsage,
+      photo: Boolean(visionModel()),
+    },
     awaitingReply: record.messages.length > 0 && record.messages[record.messages.length - 1].from === "reviewer" && record.messages[record.messages.length - 1].kind === "question",
   };
 }
@@ -102,6 +110,7 @@ export function toExpertView(record: WorkflowCase, config: DomainConfig) {
     bookingId: record.bookingId,
     assignedRole: record.assignedRole,
     messages: record.messages,
+    foodHerbNotes: record.foodHerbNotes ?? [],
     /** Reviewer-only: grounded findings, cause hypotheses and proposed steps from every strand. */
     analysis: record.analysis,
     /** Question text for each answer, so reviewers read questions rather than ids. */

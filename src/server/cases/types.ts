@@ -159,7 +159,7 @@ export interface ReviewChecklistItem {
 }
 
 export interface ReviewAuditEvent {
-  type: "created" | "claimed" | "approved" | "assigned" | "draft_saved" | "message" | "reanalysed";
+  type: "created" | "claimed" | "approved" | "assigned" | "draft_saved" | "message" | "reanalysed" | "food_herb_added" | "food_herb_removed";
   actorId: string;
   at: string;
   details?: Record<string, unknown>;
@@ -180,6 +180,55 @@ export interface CaseMessage {
   body: string;
   via: MessageChannel;
   at: string;
+}
+
+export type FoodHerbKind = "meal" | "herb";
+
+/**
+ * Foods or plants the case owner confirmed from a photo or typed in. Only catalogue ids and names
+ * are kept: the photo is read in memory for one request and never stored.
+ */
+export interface FoodHerbNote {
+  id: string;
+  kind: FoodHerbKind;
+  items: Array<{ id: string; name: string }>;
+  source: "photo" | "typed";
+  /** The owner's own words about it ("I eat this every morning"). */
+  note?: string;
+  at: string;
+}
+
+/** Reviewer-only reading of the confirmed foods and plants against the catalogues and the consented profile. */
+export interface FoodHerbReview {
+  meals: Array<{
+    id: string;
+    name: string;
+    nameAmharic: string;
+    category: string;
+    fasting: string;
+    glycemic: string;
+    nutrients: string[];
+    antinutrients?: string;
+    notes: string[];
+    source: string;
+  }>;
+  herbs: Array<{
+    id: string;
+    name: string;
+    amharicName: string;
+    scientificName: string;
+    safety: string;
+    safetyLabel: string;
+    traditionalUse: string;
+    contraindications: string[];
+    /** `onProfile`: a medicine on the consented profile belongs to this class (the medicine is not named). */
+    interactions: Array<{ drugClass: string; severity: string; effect: string; onProfile: boolean }>;
+    source: string;
+  }>;
+  /** What the owner wrote alongside their photos or names. */
+  notes: string[];
+  /** Profile-aware cautions, phrased without raw profile values. */
+  cautions: string[];
 }
 
 export type AnalysisLayer = "A" | "B";
@@ -278,6 +327,8 @@ export interface CaseAnalysis {
   };
   /** Profile-derived context for aligning the report with the person; absent on older analyses. */
   person?: CasePersonContext;
+  /** Foods and plants the person confirmed from a photo or by name; absent when they shared none. */
+  foodAndHerbs?: FoodHerbReview;
 }
 
 /** The persisted case. Stored as one row in `workflow_cases`. */
@@ -304,6 +355,8 @@ export interface WorkflowCase {
   messages: CaseMessage[];
   /** Reviewer-only analysis dossier, built on submission and refreshed when the owner adds information. */
   analysis: CaseAnalysis | null;
+  /** Foods and plants the owner confirmed (names only; photos are never kept). Absent on older records. */
+  foodHerbNotes?: FoodHerbNote[];
   payment: PaymentRecord | null;
   consultation: ConsultationRecord | null;
   createdAt: string;

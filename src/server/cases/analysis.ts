@@ -20,6 +20,7 @@ import { evaluateRiftValleyFluoride, resolveAgroEcologicalZone } from "@/lib/eng
 import { isBionicConfigured } from "@/lib/ai/bionicGPT";
 import { FACTORS, GENERIC_FOLLOW_UPS, PATTERNS, type Factor } from "./analysisLexicon";
 import { buildPersonContext } from "./personContext";
+import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foodHerb";
 import { CONTACTS } from "./support";
 import type {
   AnalysisCause,
@@ -66,7 +67,7 @@ export interface Statement {
 }
 
 /** Answers as readable statements: option values become their labels, internal fields are skipped. */
-export function caseStatements(record: Pick<WorkflowCase, "answers" | "safetyAnswers" | "messages">, config: DomainConfig): Statement[] {
+export function caseStatements(record: Pick<WorkflowCase, "answers" | "safetyAnswers" | "messages" | "foodHerbNotes">, config: DomainConfig): Statement[] {
   const screen = new Set(config.safetyQuestions.map((question) => question.id));
   const questions = [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)];
   const answers = { ...record.safetyAnswers, ...record.answers };
@@ -85,6 +86,7 @@ export function caseStatements(record: Pick<WorkflowCase, "answers" | "safetyAns
   for (const message of record.messages ?? []) {
     if (message.from === "owner") statements.push({ topic: "Follow-up reply", text: message.body, free: true });
   }
+  statements.push(...foodHerbStatements(record.foodHerbNotes ?? []));
   return statements;
 }
 
@@ -442,8 +444,10 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
   const interactions = entities.some((entity) => entity.category === "medication" || entity.category === "substance")
     ? solution.safety.herbDrugInteractions.slice(0, 5).map((item) => `${item.herb} + ${item.drug} (${item.severity}): ${item.recommendation}`)
     : [];
+  const foodAndHerbs = buildFoodHerbReview(record.foodHerbNotes ?? [], profile);
   const warnings = [
     ...(record.safety.reason ? [`Safety screen: ${record.safety.reason}`] : []),
+    ...foodHerbWarnings(foodAndHerbs),
     ...(urgency.level === "critical" || urgency.level === "high" ? [`Urgency ${urgency.level}: ${urgency.recommendation}`] : []),
     ...detected.filter((entry) => entry.factor.safety).map((entry) => `${entry.factor.label}: “${entry.quotes[0]}”`),
   ];
@@ -464,5 +468,6 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     safety: { warnings, interactions, domainBSuppressed: safetyActive },
     dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body))),
     person: buildPersonContext({ profile, domain: record.domain, factors: detected.map((entry) => entry.factor.id), now: now(), allowReflection: !safetyActive }),
+    ...(foodAndHerbs ? { foodAndHerbs } : {}),
   };
 }

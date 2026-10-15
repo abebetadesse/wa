@@ -1,4 +1,5 @@
 {
+  "(confirmed by them; photos are never kept)": "(በእሳቸው የተረጋገጡ፤ ፎቶዎች በፍጹም አይቀመጡም)",
   "(cultural reflection)": "(ባህላዊ ነጸብራቅ)",
   "(from the consented profile; bands and cautions, not raw values)": "(ፈቃድ ከተሰጠበት መገለጫ፤ ክልሎች እና ጥንቃቄዎች እንጂ ጥሬ እሴቶች አይደሉም)",
   "(heaviest first)": "(ከባዱ በቅድሚያ)",
@@ -29,6 +30,7 @@
   "Ask the person to show all medicines and remedies to a pharmacist or prescriber before adding anything new.": "ግለሰቡ አዲስ ነገር ከመጨመሩ በፊት ሁሉንም መድኃኒቶች እና ባህላዊ መድኃኒቶች ለፋርማሲስት ወይም ለሐኪም እንዲያሳይ ይጠይቁ።",
   "Assigned role: {}": "የተመደበ ሚና፦ {0}",
   "At your stage of life ({})": "በሕይወትዎ ደረጃ ({0})",
+  "Avoid with: {}": "አብሮ የማይወሰድበት፦ {0}",
   "Because a safety concern was flagged, chat apps only say that there is a new message: the text stays in the app.": "የደህንነት ስጋት ስለተጠቆመ፣ የውይይት መተግበሪያዎች አዲስ መልዕክት እንዳለ ብቻ ይናገራሉ፦ ጽሑፉ በመተግበሪያው ውስጥ ይቆያል።",
   "Bodily symptoms": "የአካል ምልክቶች",
   "Build detailed report": "ዝርዝር ሪፖርት ገንባ",
@@ -65,6 +67,7 @@
   "Faith and spiritual concerns": "እምነት እና መንፈሳዊ ጉዳዮች",
   "Family and marriage": "ቤተሰብ እና ትዳር",
   "Fire emergency": "የእሳት አደጋ የአስቸኳይ ጊዜ መስመር",
+  "Foods and plants the person shared": "ሰውየው ያጋራቸው ምግቦችና ተክሎች",
   "For example: explain each line of the prayer, or say more about what this means for their work.": "ለምሳሌ፦ የጸሎቱን እያንዳንዱን መስመር አብራራ፣ ወይም ይህ ለሥራቸው ምን ማለት እንደሆነ የበለጠ ተናገር።",
   "Formal questions belong with a licensed attorney or legal aid clinic; the report offers reflection only.": "መደበኛ ጥያቄዎች ፈቃድ ላለው ጠበቃ ወይም የሕግ ድጋፍ ክሊኒክ ይተዋሉ፤ ሪፖርቱ ነጸብራቅን ብቻ ያቀርባል።",
   "Full report only": "በሙሉ ሪፖርት ብቻ",
@@ -75,6 +78,7 @@
   "Identify one person to contact this week and one gathering (iddir, mahber, faith community) to attend once.": "በዚህ ሳምንት የሚያገኙትን አንድ ሰው እና አንድ ጊዜ የሚገኙበትን አንድ ስብስብ (ዕድር፣ ማኅበር፣ የእምነት ማኅበረሰብ) ይለዩ።",
   "If low mood has lasted more than two weeks or includes thoughts of self-harm, refer to a health centre counsellor.": "የስሜት መውረዱ ከሁለት ሳምንት በላይ ከቆየ ወይም ራስን የመጉዳት ሐሳብን ካካተተ፣ ወደ ጤና ጣቢያ አማካሪ ይምሩ።",
   "If you are in immediate danger, call {} (police) or {} (ambulance).": "አፋጣኝ አደጋ ላይ ከሆኑ {0} (ፖሊስ) ወይም {1} (አምቡላንስ) ይደውሉ።",
+  "Interacts with {} ({}): {}": "ከ{0} ጋር ይጋጫል ({1})፦ {2}",
   "Isolation and low mood are deepening each other": "ብቸኝነት እና የስሜት መውረድ እርስ በርስ እየተባባሱ ነው",
   "Keep one fixed wake-up time for two weeks, including fasting days and weekends.": "የጾም ቀናትን እና የሳምንት መጨረሻን ጨምሮ ለሁለት ሳምንታት አንድ ቋሚ የመነሻ ሰዓት ይያዙ።",
   "Keep the coffee ceremony as a social anchor but move the last cup to before midday for two weeks.": "የቡና ሥነ-ሥርዓቱን እንደ ማኅበራዊ መልህቅ ይጠብቁ፤ የመጨረሻውን ስኒ ግን ለሁለት ሳምንታት ከቀትር በፊት ያድርጉ።",
@@ -216,9 +220,11 @@
   "{} words{}": "{0} ቃላት{1}",
   "{} · Domain {} · {} of {} kept": "{0} · Domain {1} · ከ{3} ውስጥ {2} ተይዘዋል",
   "{} · {} priority · Assigned role: {}": "{0} · {1} ቅድሚያ · የተመደበ ሚና፦ {2}",
+  "{}. Show it to a pharmacist or health worker before using it.": "{0}። ከመጠቀምዎ በፊት ለፋርማሲስት ወይም ለጤና ባለሙያ ያሳዩት።",
   "· report draft: {} sections": "· የሪፖርት ረቂቅ፦ {0} ክፍሎች",
   "· {} in the full (paid) report only": "· {0} በሙሉ (የሚከፈልበት) ሪፖርት ብቻ",
   "· {} point{}": "· {0} ነጥብ",
+  "— the profile lists a medicine of this kind": "— መገለጫው የዚህ ዓይነት መድኃኒት ይዘረዝራል",
   "“{}” was added to the end of the report. Edit it there before approving.": "«{0}» በሪፖርቱ መጨረሻ ላይ ተጨምሯል። ከማጽደቅዎ በፊት እዚያ ያርሙት።",
   "← Back to requests": "← ወደ ጥያቄዎች ተመለስ"
 }

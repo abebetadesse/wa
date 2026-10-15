@@ -3,6 +3,7 @@
  * Every function returns a new object and throws ApiError for illegal moves.
  */
 import { ApiError } from "@/lib/api/route";
+import { acceptsFoodHerb, MAX_FOOD_HERB_NOTES } from "./foodHerb";
 import type {
   CaseAnalysis,
   CaseMessage,
@@ -10,6 +11,7 @@ import type {
   ConsentRecord,
   DomainConfig,
   DraftReport,
+  FoodHerbNote,
   PaymentRecord,
   SafetyOutcome,
   WorkflowCase,
@@ -77,6 +79,7 @@ export function createCase(input: {
     auditTrail: [{ type: "created", actorId: input.userId, at: timestamp, details: { domain: input.config.domain, stage } }],
     messages: [],
     analysis: null,
+    foodHerbNotes: [],
     payment: null,
     consultation: null,
     createdAt: timestamp,
@@ -193,6 +196,33 @@ export function addMessage(record: WorkflowCase, message: CaseMessage): Workflow
 export function openQuestion(record: WorkflowCase): CaseMessage | null {
   const last = record.messages[record.messages.length - 1];
   return last && last.from === "reviewer" && last.kind === "question" ? last : null;
+}
+
+/** The owner adds foods or plants they confirmed. Only names are audited by count, never content. */
+export function addFoodHerbNote(record: WorkflowCase, note: FoodHerbNote): WorkflowCase {
+  if (!acceptsFoodHerb(record)) throw ApiError.conflict("Foods and plants cannot be added to this request now.");
+  if (!note.items.length) throw ApiError.badRequest("Choose at least one food or plant.");
+  const notes = record.foodHerbNotes ?? [];
+  if (notes.length >= MAX_FOOD_HERB_NOTES) throw ApiError.conflict("This request already holds as many foods and plants as it can.");
+  return {
+    ...record,
+    foodHerbNotes: [...notes, note],
+    auditTrail: [...record.auditTrail, { type: "food_herb_added", actorId: record.userId, at: note.at, details: { kind: note.kind, source: note.source, items: note.items.length } }],
+    updatedAt: note.at,
+  };
+}
+
+export function removeFoodHerbNote(record: WorkflowCase, noteId: string): WorkflowCase {
+  if (!acceptsFoodHerb(record)) throw ApiError.conflict("Foods and plants cannot be changed on this request now.");
+  const notes = record.foodHerbNotes ?? [];
+  if (!notes.some((note) => note.id === noteId)) throw ApiError.notFound("Entry");
+  const timestamp = now();
+  return {
+    ...record,
+    foodHerbNotes: notes.filter((note) => note.id !== noteId),
+    auditTrail: [...record.auditTrail, { type: "food_herb_removed", actorId: record.userId, at: timestamp }],
+    updatedAt: timestamp,
+  };
 }
 
 /** Stores a (re)built analysis. `actorId` is set when a reviewer asked for it, and is audited. */

@@ -35,6 +35,7 @@ import {
   WhatHappensNext,
 } from "@/features/cases/components";
 import { STAGE_LABELS } from "../WorkflowHub";
+import { FoodHerbCard } from "./FoodHerbCard";
 
 const POLL_MS = 30_000;
 
@@ -104,6 +105,7 @@ export function CaseView({ caseId }: { caseId: string }) {
           questions={view.submittedQuestions ?? view.questions}
         />
       )}
+      {view.foodHerb && <FoodHerbCard view={view} onChange={setView} />}
       {view.review && <ReviewStatus review={view.review} />}
       {view.canMessage && <ConversationCard view={view} onChange={setView} />}
       {view.auditTrail && view.auditTrail.length > 0 && (

@@ -201,6 +201,30 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
     ));
   }
 
+  // ── 7b. Foods and plants the person shared ─────────────────────────────────
+  const shared = analysis.foodAndHerbs;
+  if (full && shared && (shared.meals.length || shared.herbs.length)) {
+    const pregnancy = care.some((entry) => entry.id === "pregnancy");
+    const allergies = care.some((entry) => entry.id === "allergies");
+    const meals = shared.meals.map((meal) =>
+      `${meal.name}: ${meal.fasting}; ${meal.glycemic.toLowerCase()}.${meal.nutrients.length ? ` Notable per 100 g: ${meal.nutrients.slice(0, 3).map((line) => line.split(" — ")[0].replace(/ per 100 g$/, "")).join(", ")}.` : ""}${allergies ? " Check it against the allergies on your profile." : ""} Source: ${meal.source}.`);
+    const herbs = shared.herbs.map((herb) => {
+      const classes = [...new Set(herb.interactions.map((interaction) => interaction.drugClass.replace(/\s*\(.*\)$/, "").toLowerCase()))];
+      return [
+        `${herb.name} (${herb.amharicName}): ${sentence(herb.safetyLabel)}`,
+        cautious ? "" : `Traditionally: ${sentence(clip(herb.traditionalUse, 260))}`,
+        classes.length ? `Known to interact with ${list(classes)}${herb.interactions.some((interaction) => interaction.onProfile) ? ", and your profile lists a medicine of that kind" : ""}.` : "",
+        pregnancy ? "Because of what your wellbeing profile records, do not use it without your health provider's agreement." : "Show it to a pharmacist or health worker before using it, especially alongside other medicines.",
+      ].filter(Boolean).join(" ");
+    });
+    sections.push(section(
+      "food-herbs",
+      "The foods and plants you shared",
+      `You shared ${[shared.meals.length ? `${shared.meals.length} food${shared.meals.length === 1 ? "" : "s"}` : "", shared.herbs.length ? `${shared.herbs.length} plant${shared.herbs.length === 1 ? "" : "s"}` : ""].filter(Boolean).join(" and ")} with your reviewer. Each was matched to the platform's food composition table or traditional-medicine reference and confirmed by you; your photos were not kept. This is general reference information, not a prescription: no preparation or dose is suggested here.`,
+      [...meals, ...herbs],
+    ));
+  }
+
   // ── 8. The person: what the profile adds ───────────────────────────────────
   if (profileConsented) {
     const profileFindings = analysis.strands.flatMap((strand) => strand.findings)

@@ -8,6 +8,7 @@ import type { AuthenticatedUser } from "@/lib/auth";
 import { DOMAIN_CONFIGS, getDomainConfig } from "./domains";
 import { canReview, expertSummaries, loadExpert, reviewableDomains, type ExpertCandidate } from "./experts";
 import {
+  addFoodHerbNote,
   addMessage,
   approveCase,
   assignCaseRole,
@@ -17,6 +18,7 @@ import {
   openQuestion,
   recordAnswers,
   releaseClaim,
+  removeFoodHerbNote,
   releaseFree,
   releaseWithBooking,
   requestConsultation,
@@ -28,7 +30,9 @@ import {
 import type { CaseBilling, CasePayMethod } from "./billing";
 import { caseBilling } from "@/server/payments/caseBilling";
 import { dbCaseStore, type CaseStore } from "./store";
-import type { CaseAnalysis, CaseMessage, ConsultationRecord, ConsentRecord, DomainConfig, DraftReport, MessageChannel, WorkflowCase, WorkflowDomain } from "./types";
+import type { CaseAnalysis, CaseMessage, ConsultationRecord, ConsentRecord, DomainConfig, DraftReport, FoodHerbKind, FoodHerbNote, MessageChannel, WorkflowCase, WorkflowDomain } from "./types";
+import { acceptsFoodHerb, matchNames, resolveItems, splitTypedNames } from "./foodHerb";
+import { recognisePhoto, visionDeps, visionModel, type Recognition, type RecognitionDeps } from "./photoRecognition";
 import { buildCaseAnalysis } from "./analysis";
 import { enhanceReportSection, type EnhanceDeps, type EnhanceInput } from "./sectionEnhancer";
 import { loadAnalysisProfile } from "./analysisProfile";
@@ -87,8 +91,12 @@ interface Deps {
   notifyOwner?: (record: WorkflowCase, type: Exclude<OwnerNoticeType, "approved">, message?: CaseMessage) => Promise<void>;
   /** The owner replied: tell the reviewer (or the assigned role while nobody has claimed the case). */
   notifyReply?: (record: WorkflowCase) => Promise<void>;
+  /** The owner added foods or plants while the case is under review. */
+  notifyFoodHerb?: (record: WorkflowCase) => Promise<void>;
   /** Overrides for the section enhancer (tests supply or withhold the language model). */
   enhancer?: Partial<EnhanceDeps>;
+  /** Photo recognition; tests supply a stand-in for the vision model. Null when none is configured. */
+  vision?: () => RecognitionDeps | null;
 }
 
 export function createCaseService(deps: Deps) {
@@ -185,12 +193,15 @@ export function createCaseService(deps: Deps) {
     }
   }
 
+  /** New information from the owner refreshes the reviewer's analysis while the case is under review. */
+  const underReview = (record: WorkflowCase) => record.stage === "awaiting_expert" || record.stage === "in_review";
+
   async function ownerReply(record: WorkflowCase, body: string, via: MessageChannel) {
     const text = body.trim();
     if (!text) throw ApiError.badRequest("Write a message first.");
     const withMessage = addMessage(record, { id: crypto.randomUUID(), from: "owner", authorId: record.userId, kind: "message", body: text.slice(0, 4000), via, at: new Date().toISOString() });
     // New information changes the picture only while the case is still being reviewed.
-    const next = withMessage.stage === "awaiting_expert" || withMessage.stage === "in_review" ? await analysed(withMessage) : withMessage;
+    const next = underReview(withMessage) ? await analysed(withMessage) : withMessage;
     await store.save(next);
     await deps.notifyReply?.(next);
     return next;
@@ -288,6 +299,61 @@ export function createCaseService(deps: Deps) {
     /** The owner writes to their reviewer from the case page. */
     async reply(user: AuthenticatedUser, caseId: string, body: string) {
       return ownerView(await ownerReply(await owned(user, caseId), body, "app"));
+    },
+
+    /**
+     * Candidate catalogue entries for a food or plant photo, or for names the person typed. Nothing
+     * is saved: the photo is read in memory and dropped, and the person confirms the entries next.
+     */
+    async identifyFoodHerb(user: AuthenticatedUser, caseId: string, input: { kind: FoodHerbKind; photo?: Blob; names?: string }) {
+      const record = await owned(user, caseId);
+      if (!acceptsFoodHerb(record)) throw ApiError.conflict("Foods and plants cannot be added to this request now.");
+      if (!record.consent.dataUsage) throw ApiError.forbidden("This request was opened without consent to analysis.");
+      let recognition: Recognition | null = null;
+      let names = input.names ? splitTypedNames(input.names) : [];
+      if (input.photo) {
+        const vision = deps.vision?.() ?? null;
+        if (!vision) throw new ApiError(503, "Photo recognition is not available. Type the names instead.");
+        try {
+          recognition = await recognisePhoto(input.photo, input.kind, vision);
+        } catch {
+          throw new ApiError(502, "The photo could not be read right now. Try again, or type the names instead.");
+        }
+        if (recognition.status === "recognised") names = recognition.names;
+      }
+      if (!names.length && !input.photo) throw ApiError.badRequest("Add a photo or type at least one name.");
+      return {
+        kind: input.kind,
+        status: recognition?.status ?? "typed",
+        recognised: names,
+        candidates: matchNames(input.kind, names),
+      };
+    },
+
+    /** The owner confirms catalogue entries; the reviewer's analysis is refreshed while under review. */
+    async addFoodHerb(user: AuthenticatedUser, caseId: string, input: { kind: FoodHerbKind; itemIds: string[]; source: FoodHerbNote["source"]; note?: string }) {
+      const record = await owned(user, caseId);
+      if (!record.consent.dataUsage) throw ApiError.forbidden("This request was opened without consent to analysis.");
+      const note: FoodHerbNote = {
+        id: crypto.randomUUID(),
+        kind: input.kind,
+        items: resolveItems(input.kind, input.itemIds),
+        source: input.source,
+        ...(input.note?.trim() ? { note: input.note.trim().slice(0, 300) } : {}),
+        at: new Date().toISOString(),
+      };
+      const added = addFoodHerbNote(record, note);
+      const next = underReview(added) ? await analysed(added) : added;
+      await store.save(next);
+      if (underReview(next)) await deps.notifyFoodHerb?.(next);
+      return ownerView(next);
+    },
+
+    async removeFoodHerb(user: AuthenticatedUser, caseId: string, noteId: string) {
+      const removed = removeFoodHerbNote(await owned(user, caseId), noteId);
+      const next = underReview(removed) ? await analysed(removed) : removed;
+      await store.save(next);
+      return ownerView(next);
     },
 
     /**
@@ -496,4 +562,6 @@ export const caseService = createCaseService({
   analyse: async (record, config) => buildCaseAnalysis(record, config, record.consent.dataUsage ? await loadAnalysisProfile(record.userId) : {}),
   notifyOwner,
   notifyReply: (record) => notifyReviewers(record, "reply"),
+  notifyFoodHerb: (record) => notifyReviewers(record, "food_herb"),
+  vision: () => (visionModel() ? visionDeps : null),
 });

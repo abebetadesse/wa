@@ -55,10 +55,13 @@ export function ownerNotice(record: WorkflowCase, label: string, type: OwnerNoti
   };
 }
 
-export type ReviewerNoticeType = "submitted" | "reply";
+export type ReviewerNoticeType = "submitted" | "reply" | "food_herb";
 
 export function reviewerNotice(record: WorkflowCase, label: string, type: ReviewerNoticeType): Notice {
   const href = record.businessId ? `/business/${record.businessId}/cases/${record.id}` : `/case-review/${record.id}`;
+  if (type === "food_herb") {
+    return { type: "case.reply", title: `Foods or plants added to a ${label} request`, body: "The person confirmed foods or plants. They have been added to the analysis.", href };
+  }
   if (type === "reply") {
     return { type: "case.reply", title: `Reply on a ${label} request`, body: "The person answered. Their reply has been added to the analysis.", href };
   }

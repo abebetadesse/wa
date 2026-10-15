@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, GroundedFinding, ReportSection } from "@/server/cases/types";
+import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
 import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
 import { FACTORS } from "@/server/cases/analysisLexicon";
 import { buildEnhancedReportSections, reportStatistics } from "@/server/cases/reportEnhancer";
@@ -149,6 +149,7 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
       )}
 
       {person && <PersonPanel person={person} mayInsertContext={mayInsert("A")} mayInsertReflection={mayInsert("B")} onAdd={add} />}
+      {analysis.foodAndHerbs && <FoodHerbPanel review={analysis.foodAndHerbs} mayInsert={mayInsert("A")} onAdd={add} />}
       {!person && (
         <p className="rounded-lg border border-white/10 p-3 text-xs text-slate-400">
           {profileConsented
@@ -351,6 +352,73 @@ function PersonPanel({ person, mayInsertContext, mayInsertReflection, onAdd }: P
             </details>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+const HERB_SAFETY: Record<string, string> = {
+  safe_culinary: "border-emerald-500/30 text-emerald-200",
+  caution_moderate: "border-amber-500/40 text-amber-200",
+  high_risk_potent: "border-rose-500/40 text-rose-200",
+  toxic_internal_external_only: "border-rose-500/50 text-rose-200",
+  strictly_poisonous: "border-rose-500/60 text-rose-100",
+};
+
+/** Foods and plants the person confirmed from a photo or by name, read against the catalogues. */
+function FoodHerbPanel({ review, mayInsert, onAdd }: { review: FoodHerbReview; mayInsert: boolean; onAdd: (title: string, body: string | undefined, items: string[]) => void }) {
+  return (
+    <div>
+      <h3 className="font-semibold text-white">Foods and plants the person shared <span className="text-xs font-normal text-slate-400">(confirmed by them; photos are never kept)</span></h3>
+      <div className="mt-3 grid gap-3">
+        {review.cautions.length > 0 && (
+          <ul className="grid gap-1 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-sm text-amber-100">
+            {review.cautions.map((line) => <li key={line}>{line}</li>)}
+          </ul>
+        )}
+        {review.notes.length > 0 && <p className="text-xs italic text-slate-300">{review.notes.map((line) => `“${line}”`).join(" · ")}</p>}
+        {review.meals.map((meal) => (
+          <div key={meal.id} className="rounded-lg border border-white/10 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <p className="min-w-0 flex-1 text-sm font-semibold text-white">{meal.name} <span className="font-normal text-slate-400">· {meal.nameAmharic} · {meal.category}</span></p>
+              <button type="button" disabled={!mayInsert} onClick={() => onAdd(meal.name, `${meal.fasting}; ${meal.glycemic}.`, meal.nutrients)} className={smallButton}>Add to report</button>
+            </div>
+            <p className="mt-1 text-xs text-slate-300">{meal.fasting} · {meal.glycemic}</p>
+            <ul className="mt-2 list-disc pl-5 text-xs text-slate-300">{meal.nutrients.map((line) => <li key={line}>{line}</li>)}</ul>
+            {meal.antinutrients && <p className="mt-1 text-xs text-slate-400">{meal.antinutrients}</p>}
+            {meal.notes.map((line) => <p key={line} className="mt-1 text-xs text-slate-400">{line}</p>)}
+            <p className="mt-1 text-[11px] text-slate-500">Source: {meal.source}</p>
+          </div>
+        ))}
+        {review.herbs.map((herb) => (
+          <div key={herb.id} className={`rounded-lg border p-3 ${HERB_SAFETY[herb.safety] ?? "border-white/10"}`}>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <p className="min-w-0 flex-1 text-sm font-semibold text-white">{herb.name} <span className="font-normal text-slate-400">· {herb.amharicName} · <i>{herb.scientificName}</i></span></p>
+              <button
+                type="button"
+                disabled={!mayInsert}
+                onClick={() => onAdd(`${herb.name} (${herb.amharicName})`, `${herb.safetyLabel}. Show it to a pharmacist or health worker before using it.`, herb.interactions.map((interaction) => `Interacts with ${interaction.drugClass} (${interaction.severity}): ${interaction.effect}`))}
+                className={smallButton}
+              >
+                Add to report
+              </button>
+            </div>
+            <p className="mt-1 text-xs font-semibold">{herb.safetyLabel}</p>
+            <p className="mt-1 text-xs text-slate-300">{herb.traditionalUse}</p>
+            {herb.contraindications.length > 0 && <p className="mt-1 text-xs text-slate-400">Avoid with: {herb.contraindications.join(" · ")}</p>}
+            {herb.interactions.length > 0 && (
+              <ul className="mt-2 list-disc pl-5 text-xs text-slate-300">
+                {herb.interactions.map((interaction) => (
+                  <li key={interaction.drugClass}>
+                    <span className={interaction.onProfile ? "font-semibold text-rose-200" : undefined}>{interaction.drugClass}</span> ({interaction.severity}): {interaction.effect}
+                    {interaction.onProfile && <span className="text-rose-200"> — the profile lists a medicine of this kind</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-1 text-[11px] text-slate-500">Source: {herb.source}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

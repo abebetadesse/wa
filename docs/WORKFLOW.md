@@ -15,6 +15,18 @@ Domain B can shape reflection and framing when the user opts in. It must not ove
 
 The expert-reviewed workflow at `/case/workflows` includes **Biological, Wellbeing and Health**. A user may provide one detailed written account, one audio/video attachment, or both. Uploaded media is private to the uploader and the authorized case reviewer; audio/video is not transcribed or interpreted by the automated analysis. The text-based reviewer dossier uses the existing biological, biochemical, medication-safety and dietary knowledge engines. A possible acute emergency is routed to emergency guidance instead of routine analysis. An administrator or assigned reviewer must check and approve the report before it is visible to the user; generated content is educational and is not a diagnosis or treatment plan.
 
+#### Foods and plants (photo or typed)
+
+On a wellbeing case, from intake until a reviewer approves it, the owner can show what they eat and which herbs or remedies they use (`FoodHerbCard` on the case page).
+
+1. **Consent per photo.** The owner ticks the photo terms each time. The browser redraws the photo at 1024 px or less as a fresh JPEG, which drops its location and camera metadata.
+2. **Identify, in memory.** `POST /api/case-workflows/cases/{id}/food-herb/identify` sends the photo once to the vision model (`BIONIC_GPT_VISION_MODEL`, see `src/server/cases/photoRecognition.ts`) and wipes the buffer. Nothing is written to disk, the database, the audit trail or a log. If the model reports a person in the photo, nothing is returned. Without a vision model, the owner types names instead.
+3. **Match.** Names are matched against the food composition table (`EFCT_MASTER_FOODS`) or the traditional-medicine database (`INTENSIVE_TRADITIONAL_MEDICINES`) in `src/server/cases/foodHerb.ts`.
+4. **Confirm.** The owner ticks the correct entries and may add a short note. `POST …/food-herb` stores only catalogue ids and names, resolved on the server. `DELETE …/food-herb/{noteId}` removes an entry.
+5. **Analysis.** The entries become statements (raising the eating and medicines themes) and the reviewer-only `analysis.foodAndHerbs` section is built: composition, fasting suitability and glycaemic index for foods; safety class, contraindications and medicine interactions for plants. Profile cautions cover pregnancy, a medicine of an interacting class, allergies, and blood-sugar conditions, and never repeat a raw profile value. A strictly poisonous plant is a safety warning that blocks report generation until the reviewer has spoken to the person. The detailed report gains a section, "The foods and plants you shared", which never suggests a preparation or a dose.
+
+The feature is limited to foods and plants. Photos of people are refused, and nothing is inferred about a person from an image.
+
 Users are directed to `/profile` after registration. Preliminary profile calculations use entered profile details only; missing birth information is not replaced with sample/default values. Astrology, numerology and naming reflection are cultural tools, while dietary material is educational and not a personalized medical diet.
 
 ## 2. Entry Gate
