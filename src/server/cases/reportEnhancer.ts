@@ -38,6 +38,20 @@ const HORIZON_ORDER: AnalysisSolution["horizon"][] = ["now", "this_week", "ongoi
 const LANGUAGES: Record<string, string> = { am: "Amharic", om: "Afaan Oromoo", ti: "Tigrinya", so: "Somali", en: "English" };
 const PROFESSIONAL_STRANDS = new Set(["medication", "biochemical", "biological", "epidemiological", "addiction", "dietary"]);
 const FACTOR_BY_ID = new Map(FACTORS.map((factor) => [factor.id, factor]));
+/** Each knowledge strand, named for the person reading the report. */
+export const STRAND_LABEL: Record<string, string> = {
+  biological: "How the body works",
+  biochemical: "Nutrients and body chemistry",
+  medication: "Medicines and remedies",
+  addiction: "Khat, alcohol and tobacco",
+  ecological: "Water, place and environment",
+  epidemiological: "Common illnesses in Ethiopia",
+  psychological: "Mind and mood",
+  socioeconomic: "Daily life and resources",
+  dietary: "Food and fasting",
+  cultural: "Culture and faith",
+  astrological: "Traditional timing",
+};
 
 const quoted = (quotes: string[]) => quotes.map((quote) => `“${quote}”`).join("; ");
 const sentence = (text: string) => (/[.!?።…]$/.test(text.trim()) ? text.trim() : `${text.trim()}.`);
@@ -80,6 +94,7 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
           ? `We read ${themes.length === 1 ? "one main theme" : `${themes.length} themes`} in what you wrote: ${themes.map((factor) => factor.label.toLowerCase()).join("; ")}. ${themes.length > 1 ? `${themes[0].label} carries the most weight.` : ""} The points below quote the words each one rests on, so you can see exactly what was understood and correct anything that was not.`
           : "",
         basis.length ? `This report was prepared on ${formatDate(analysis.generatedAt)} from ${list(basis)}. On a scale of 100 for how much there was to work with, this request scores ${analysis.dataQuality.score}${analysis.dataQuality.score < 50 ? ", so several points below are necessarily cautious" : ""}.` : "",
+        analysis.clinical?.readAs.length ? `We read ${list(analysis.clinical.readAs.map((entry) => `“${entry.from}” as “${entry.to}”`))}; please say if that is not what you meant.` : "",
         "This summary reflects the information available at the time of review. Please tell your reviewer if anything is inaccurate or has changed.",
       ].filter(Boolean).join("\n\n"),
       quotes,
@@ -119,6 +134,36 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
         ].filter(Boolean).join(" ");
       }),
     ));
+  }
+
+  // ── 3b. The health check: how soon, what may be looked at, what to bring ───
+  const clinical = analysis.clinical;
+  if (full && clinical) {
+    const symptomLabels = clinical.symptoms.map((symptom) => symptom.label.toLowerCase());
+    sections.push(section(
+      "health-check",
+      "Seeing a health worker: how soon, and what may be checked",
+      [
+        clinical.priority.level === "emergency"
+          ? `What you describe should be seen ${clinical.priority.timeframe}. Please do not wait for the rest of this report.`
+          : `For ${list(symptomLabels)}, we suggest an in-person visit to a health centre or clinic ${clinical.priority.timeframe}.${clinical.priority.level === "routine" ? "" : " This is not cause for alarm: it is the usual advice for this combination, because the common causes are found with simple tests and are easier to treat early."}`,
+        "This service cannot examine you or say what is causing your symptoms. The list below is what a health worker may choose from; most are quick and routine, and being offered one does not mean that anything particular is expected.",
+        `To make the visit count, bring every medicine, painkiller and traditional remedy you use (or their names), and be ready to answer: ${clinical.describe.slice(0, 3).join(" ")}`,
+      ].join("\n\n"),
+      clinical.checks.map((check) => `${check}.`),
+    ));
+
+    const angles = clinical.lenses
+      .filter((lens) => lens.layer === "A")
+      .flatMap((lens) => lens.points.filter((point) => point.person).slice(0, 2).map((point) => `${STRAND_LABEL[lens.strand] ?? lens.strand}: ${point.person}`));
+    if (angles.length) {
+      sections.push(section(
+        "angles",
+        "Looking at it from every angle",
+        `Your request was read through ${clinical.lenses.length} areas of knowledge. Each adds something practical you can do or mention while the cause is being looked for. None of them is a diagnosis.`,
+        angles,
+      ));
+    }
   }
 
   // ── 4. Connections between areas ───────────────────────────────────────────
@@ -162,10 +207,14 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
   // ── 6. When not to wait ────────────────────────────────────────────────────
   if (full && themes.length) {
     const has = (...ids: string[]) => themes.some((factor) => ids.includes(factor.id));
-    const signs = themes.map((factor) => FACTOR_GUIDANCE[factor.id]?.watchFor).filter((line): line is string => Boolean(line));
+    const signs = [
+      ...themes.map((factor) => FACTOR_GUIDANCE[factor.id]?.watchFor).filter((line): line is string => Boolean(line)),
+      ...(analysis.clinical?.redFlags.length ? [`Do not wait for your planned visit if you notice any of these: ${analysis.clinical.redFlags.map((flag) => flag.charAt(0).toLowerCase() + flag.slice(1)).join("; ")}.`] : []),
+    ];
     const services = [
       `Urgent help: ${CONTACTS.crisisLine.name} ${CONTACTS.crisisLine.number}; ${CONTACTS.police.name} ${CONTACTS.police.number}; ${CONTACTS.ambulance.name} ${CONTACTS.ambulance.number}.`,
       ...(has("low_mood", "anxiety", "sleep", "grief", "substance", "isolation") ? [`For support with mood, sleep or substance use: ${REFERRALS.healthCenter}.`] : []),
+      ...(analysis.clinical ? ["For the health check: your nearest health centre, or a hospital outpatient department; many first tests are free or covered by community-based health insurance (CBHI)."] : []),
       ...(has("money", "work") ? [`For hardship: ${REFERRALS.socialServices}.`] : []),
       ...(has("legal") ? [`For legal questions: ${REFERRALS.legalAid}.`] : []),
       ...(has("family", "conflict", "spiritual", "grief") ? [`Someone to stand with you: ${REFERRALS.elders.charAt(0).toLowerCase()}${REFERRALS.elders.slice(1)}.`] : []),
@@ -274,6 +323,19 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
     ));
   }
 
+  const traditions = (clinical?.lenses ?? [])
+    .filter((lens) => lens.layer === "B")
+    .flatMap((lens) => lens.points.filter((point) => point.person).map((point) => `${STRAND_LABEL[lens.strand] ?? lens.strand}: ${point.person}`));
+  if (traditions.length && !analysis.safety.domainBSuppressed) {
+    sections.push(section(
+      "traditions",
+      "Faith, tradition and timing alongside care",
+      "Optional reflections, kept apart from the health advice above. They are offered so that prayer, fasting and traditional practice can sit alongside the health check rather than in place of it.",
+      traditions,
+      true,
+    ));
+  }
+
   const reading = person?.reading;
   if (reading && !analysis.safety.domainBSuppressed) {
     sections.push(section(
@@ -301,7 +363,7 @@ export function buildEnhancedReportSections(analysis: CaseAnalysis, profileConse
       "clarifying-questions",
       "Questions that could make this more specific",
       "The report may be refined if the person chooses to share more. These are optional questions, not requirements. A reply in the conversation, in the app or from Telegram or WhatsApp, is added to the analysis automatically.",
-      analysis.dataQuality.followUps.slice(0, 5),
+      [...new Set([...analysis.dataQuality.followUps.slice(0, 5), ...(analysis.clinical?.describe.slice(0, 3) ?? [])])],
     ));
   }
 

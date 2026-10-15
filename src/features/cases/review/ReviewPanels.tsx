@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
+import type { AnalysisConfidence, CaseAnalysis, CaseMessage, CasePersonContext, ClinicalPicture, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
 import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
 import { FACTORS } from "@/server/cases/analysisLexicon";
-import { buildEnhancedReportSections, reportStatistics } from "@/server/cases/reportEnhancer";
+import { buildEnhancedReportSections, reportStatistics, STRAND_LABEL } from "@/server/cases/reportEnhancer";
 
 export interface DraftState {
   title: string;
@@ -31,6 +31,13 @@ const FOLLOW_UP = new Map(FACTORS.map((factor) => [factor.id, factor.followUp]))
 const URGENCY: Record<string, string> = {
   critical: "border-rose-500/50 bg-rose-950/40 text-rose-100",
   high: "border-amber-500/50 bg-amber-950/40 text-amber-100",
+  medium: "border-sky-500/40 bg-sky-950/30 text-sky-100",
+};
+const PRIORITY_TONE: Record<ClinicalPicture["priority"]["level"], string> = {
+  emergency: "border-rose-500/50 bg-rose-950/40 text-rose-100",
+  soon: "border-amber-500/50 bg-amber-950/40 text-amber-100",
+  prompt: "border-sky-500/40 bg-sky-950/30 text-sky-100",
+  routine: "border-white/10 bg-white/[0.02] text-slate-200",
 };
 
 let sequence = 0;
@@ -146,6 +153,17 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
             ))}
           </ul>
         </div>
+      )}
+
+      {analysis.clinical && (
+        <ClinicalPanel
+          clinical={analysis.clinical}
+          canAsk={canAct && !busy}
+          onAsk={onAsk}
+          mayInsertEvidence={mayInsert("A")}
+          mayInsertReflection={mayInsert("B") && !analysis.safety.domainBSuppressed}
+          onAdd={add}
+        />
       )}
 
       {person && <PersonPanel person={person} mayInsertContext={mayInsert("A")} mayInsertReflection={mayInsert("B")} onAdd={add} />}
@@ -287,6 +305,119 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
         </details>
       )}
     </section>
+  );
+}
+
+interface ClinicalPanelProps {
+  clinical: ClinicalPicture;
+  canAsk: boolean;
+  onAsk: (question: string) => void;
+  mayInsertEvidence: boolean;
+  mayInsertReflection: boolean;
+  onAdd: (title: string, body: string | undefined, items: string[], cultural?: boolean) => void;
+}
+
+/** Bodily symptoms read clinically: how soon, what to rule out and check, and every strand's reading. */
+function ClinicalPanel({ clinical, canAsk, onAsk, mayInsertEvidence, mayInsertReflection, onAdd }: ClinicalPanelProps) {
+  const askButton = (question: string) => <button type="button" disabled={!canAsk} onClick={() => onAsk(question)} className={smallButton}>Ask</button>;
+  return (
+    <div className="grid gap-4">
+      <h3 className="font-semibold text-white">Clinical picture <span className="text-xs font-normal text-slate-400">(for referral; conditions named here are never shown to the person)</span></h3>
+
+      <div className={`rounded-lg border p-3 ${PRIORITY_TONE[clinical.priority.level]}`}>
+        <p className="text-sm font-semibold">Be seen: {clinical.priority.label} · {clinical.priority.timeframe}</p>
+        {clinical.priority.reasons.length > 0 && <ul className="mt-1 list-disc pl-5 text-xs">{clinical.priority.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>}
+      </div>
+
+      {clinical.readAs.length > 0 && (
+        <p className="text-xs text-slate-300">
+          Read as meant: {clinical.readAs.map((entry) => `“${entry.from}” → “${entry.to}”`).join(" · ")}. Their wording is quoted unchanged.
+        </p>
+      )}
+
+      <ul className="flex flex-wrap gap-2">
+        {clinical.symptoms.map((symptom) => (
+          <li key={symptom.id} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-200">
+            <span className="font-semibold text-white">{symptom.label}</span> · {symptom.system} · {symptom.priority}
+            <span className="mt-0.5 block italic text-slate-400">{symptom.quotes.map((quote) => `“${quote}”`).join(" · ")}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="rounded-lg border border-rose-500/30 bg-rose-950/15 p-3">
+          <p className="text-sm font-semibold text-rose-100">Warning signs to rule out</p>
+          <ul className="mt-2 list-disc pl-5 text-xs text-rose-100/90">{clinical.redFlags.map((flag) => <li key={flag}>{flag}</li>)}</ul>
+        </div>
+        <div className="rounded-lg border border-white/10 p-3">
+          <p className="text-sm font-semibold text-white">To describe the symptoms</p>
+          <ul className="mt-2 grid gap-1.5 text-xs text-slate-300">
+            {clinical.describe.map((question) => (
+              <li key={question} className="flex items-start justify-between gap-2"><span className="min-w-0 flex-1">{question}</span>{askButton(question)}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {clinical.clusters.map((cluster) => (
+        <div key={cluster.id} className="rounded-lg border border-white/10 p-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <p className="min-w-0 flex-1 text-sm font-semibold text-white">{cluster.title}</p>
+            <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${PRIORITY_TONE[cluster.priority]}`}>{cluster.priority}</span>
+          </div>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">A clinician would usually consider</p>
+          <ol className="mt-1 grid gap-1.5 text-xs text-slate-300">
+            {cluster.considerations.map((item, index) => (
+              <li key={item.name}>
+                <span className="font-semibold text-slate-100">{index + 1}. {item.name}</span> <span className="text-slate-500">({STRAND_LABEL[item.strand] ?? item.strand})</span> — {item.why}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Questions that narrow it</p>
+          <ul className="mt-1 grid gap-1.5 text-xs text-slate-300">
+            {cluster.ask.map((question) => <li key={question} className="flex items-start justify-between gap-2"><span className="min-w-0 flex-1">{question}</span>{askButton(question)}</li>)}
+          </ul>
+        </div>
+      ))}
+
+      <div className="rounded-lg border border-white/10 p-3">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <p className="min-w-0 flex-1 text-sm font-semibold text-white">What a health worker may check</p>
+          <button type="button" disabled={!mayInsertEvidence} onClick={() => onAdd("What a health worker may check", "A health worker may choose some of these; they are routine and do not mean that anything particular is expected.", clinical.checks)} className={smallButton}>Add to report</button>
+        </div>
+        <ul className="mt-2 grid list-disc gap-0.5 pl-5 text-xs text-slate-300 sm:grid-cols-2">{clinical.checks.map((check) => <li key={check}>{check}</li>)}</ul>
+      </div>
+
+      <div>
+        <p className="text-sm font-semibold text-white">Every strand&apos;s reading <span className="text-xs font-normal text-slate-400">({clinical.lenses.length} of 11 strands)</span></p>
+        <ul className="mt-2 grid gap-2 md:grid-cols-2">
+          {clinical.lenses.map((lens) => {
+            const personLines = lens.points.map((point) => point.person).filter((line): line is string => Boolean(line));
+            const reflection = lens.layer === "B";
+            return (
+              <li key={lens.strand} className={`rounded-lg border p-3 ${reflection ? "border-violet-500/30 bg-violet-950/15" : "border-white/10"}`}>
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="min-w-0 flex-1 text-sm font-semibold text-white">
+                    {STRAND_LABEL[lens.strand] ?? lens.strand} <span className="text-[11px] font-normal text-slate-400">· {lens.strand} · Domain {lens.layer}</span>
+                  </p>
+                  {personLines.length > 0 && (
+                    <button type="button" disabled={reflection ? !mayInsertReflection : !mayInsertEvidence} onClick={() => onAdd(STRAND_LABEL[lens.strand] ?? lens.strand, undefined, personLines, reflection)} className={smallButton}>
+                      {reflection ? "Add as reflection" : "Add to report"}
+                    </button>
+                  )}
+                </div>
+                <ul className="mt-2 list-disc pl-5 text-xs text-slate-300">{lens.points.map((point) => <li key={point.reviewer} className="mt-0.5">{point.reviewer}</li>)}</ul>
+                {lens.considerations.length > 0 && <p className="mt-2 text-xs text-slate-400"><span className="font-semibold text-slate-300">Considered:</span> {lens.considerations.join(" · ")}</p>}
+                {lens.findings.length > 0 && <p className="mt-1 text-xs text-slate-400"><span className="font-semibold text-slate-300">Catalogue entries kept:</span> {lens.findings.join(" · ")}</p>}
+                {lens.ask.map((question) => <div key={question} className="mt-2 flex items-start justify-between gap-2 text-xs text-slate-300"><span className="min-w-0 flex-1">{question}</span>{askButton(question)}</div>)}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {clinical.profileNotes.length > 0 && <ul className="list-disc pl-5 text-xs text-amber-200">{clinical.profileNotes.map((note) => <li key={note}>{note}</li>)}</ul>}
+    </div>
   );
 }
 

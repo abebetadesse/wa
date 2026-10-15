@@ -15,6 +15,12 @@ export interface ExpertSummary {
 const REVIEW_STAGES = new Set(["awaiting_expert", "in_review"]);
 const PAID_STAGES = new Set(["full_report_released", "consultation_requested"]);
 
+/** Every question the case was asked, once each (a screen question may also open the intake). */
+function askedQuestions(record: WorkflowCase, config: DomainConfig) {
+  const all = [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)];
+  return all.filter((question, index) => all.findIndex((other) => other.id === question.id) === index).map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] }));
+}
+
 function visibleSection(section: ReportSection, paid: boolean) {
   if (!section.locked || paid) return section;
   return { id: section.id, title: section.title, locked: true, cultural: section.cultural };
@@ -48,7 +54,7 @@ export function toOwnerView(record: WorkflowCase, config: DomainConfig, expert: 
     answers: record.answers,
     context: record.context,
     questions: record.stage === "intake" || record.stage === "referred" ? config.questions(record.answers) : [],
-    submittedQuestions: [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)].map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] })),
+    submittedQuestions: askedQuestions(record, config),
     review: REVIEW_STAGES.has(record.stage) || approved
       ? {
           status: record.stage === "awaiting_expert" ? "queued" : record.stage === "in_review" ? "in_review" : "approved",
@@ -114,6 +120,6 @@ export function toExpertView(record: WorkflowCase, config: DomainConfig) {
     /** Reviewer-only: grounded findings, cause hypotheses and proposed steps from every strand. */
     analysis: record.analysis,
     /** Question text for each answer, so reviewers read questions rather than ids. */
-    questions: [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)].map((q) => ({ id: q.id, text: q.text, options: q.options ?? [] })),
+    questions: askedQuestions(record, config),
   };
 }

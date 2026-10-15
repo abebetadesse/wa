@@ -21,6 +21,8 @@ import { isBionicConfigured } from "@/lib/ai/bionicGPT";
 import { FACTORS, GENERIC_FOLLOW_UPS, PATTERNS, type Factor } from "./analysisLexicon";
 import { buildPersonContext } from "./personContext";
 import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foodHerb";
+import { buildClinicalPicture, clinicalSearchTerms } from "./clinical";
+import { correctSpelling, type SpellingCorrection } from "./spelling";
 import { CONTACTS } from "./support";
 import type {
   AnalysisCause,
@@ -28,6 +30,7 @@ import type {
   AnalysisLayer,
   AnalysisSolution,
   CaseAnalysis,
+  ClinicalPicture,
   DomainConfig,
   GroundedFinding,
   WorkflowCase,
@@ -118,25 +121,38 @@ export interface DetectedFactor {
   weight: number;
 }
 
+/** Symptom-word slips in the person's free text, read as they were meant (spelling.ts). */
+export function spellingCorrections(statements: Statement[]): SpellingCorrection[] {
+  const corrections = statements.filter((statement) => statement.free).flatMap((statement) => correctSpelling(statement.text).corrections);
+  return corrections.filter((entry, index) => corrections.findIndex((other) => other.from === entry.from) === index);
+}
+
 /** Factors present in the person's own statements, with the sentences that show them. */
 export function detectFactors(statements: Statement[]): DetectedFactor[] {
+  // Free text is matched with symptom-word slips corrected, and quoted as the person wrote it.
+  const readings = statements.map((statement) => {
+    const parts = statement.free ? sentences(statement.text) : [statement.text];
+    return { statement, parts, read: statement.free ? parts.map((part) => correctSpelling(part).text) : parts };
+  });
   const detected: DetectedFactor[] = [];
   for (const { factor, patterns } of FACTOR_PATTERNS) {
     const quotes: string[] = [];
     let hits = 0;
-    for (const statement of statements) {
+    for (const { statement, parts, read } of readings) {
       // Picked options count when they state something; "No" answers and the safety screen do not.
       if (statement.screen || (!statement.free && NEGATIVE_OPTION.test(statement.text))) continue;
-      for (const sentence of statement.free ? sentences(statement.text) : [statement.text]) {
-        if (!mentions(factor, patterns, sentence)) continue;
+      parts.forEach((sentence, index) => {
+        if (!mentions(factor, patterns, read[index])) return;
         hits++;
         const quote = statement.free ? clip(sentence, 180) : `${clip(statement.topic, 80)} — ${clip(sentence, 100)}`;
         if (quotes.length < 3 && !quotes.includes(quote)) quotes.push(quote);
-      }
+      });
     }
     if (hits) detected.push({ factor, hits, quotes, weight: factor.weight + Math.min(hits, 3) * 0.5 });
   }
-  return detected.sort((a, b) => b.weight - a.weight);
+  // A named symptom ("abdominal pain") says more than the general "bodily symptoms" theme.
+  const specific = detected.some((entry) => entry.factor.system);
+  return detected.filter((entry) => !(specific && entry.factor.id === "physical")).sort((a, b) => b.weight - a.weight);
 }
 
 // ── Grounding knowledge findings ─────────────────────────────────────────────
@@ -275,21 +291,45 @@ export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[]):
   return causes.sort((a, b) => b.score - a.score).slice(0, 6).map(({ score: _score, ...cause }) => cause);
 }
 
-export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFactor[], kept: GroundedFinding[], urgent: boolean): AnalysisSolution[] {
+export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFactor[], kept: GroundedFinding[], urgent: boolean, clinical?: ClinicalPicture): AnalysisSolution[] {
   const byId = new Map(detected.map((entry) => [entry.factor.id, entry.factor]));
   const solutions: AnalysisSolution[] = [];
-  if (urgent || detected.some((entry) => entry.factor.safety)) {
+  const personalSafety = detected.some((entry) => entry.factor.safety);
+  if (urgent || personalSafety) {
     solutions.push({
       id: "safety",
       title: "Safety first",
-      steps: [
-        `Share the support line ${CONTACTS.crisisLine.number} (${CONTACTS.crisisLine.name}) and police ${CONTACTS.police.number}; ambulance ${CONTACTS.ambulance.number} for a medical emergency.`,
-        "Check that the person is safe now and has one trusted contact before sending any other guidance.",
-      ],
+      // A medical emergency starts with the ambulance; fear of harm starts with the support line.
+      steps: personalSafety
+        ? [
+          `Share the support line ${CONTACTS.crisisLine.number} (${CONTACTS.crisisLine.name}) and police ${CONTACTS.police.number}; ambulance ${CONTACTS.ambulance.number} for a medical emergency.`,
+          "Check that the person is safe now and has one trusted contact before sending any other guidance.",
+        ]
+        : [
+          `Tell the person to call the ambulance (${CONTACTS.ambulance.number}) or go to the nearest emergency department now, and not to wait for this report.`,
+          "Confirm by message that they have been seen before sending any other guidance.",
+        ],
       horizon: "now",
       addresses: causes.filter((cause) => cause.factors.some((id) => byId.get(id)?.safety)).map((cause) => cause.id),
       needsProfessional: true,
-      source: "Platform crisis protocol",
+      source: personalSafety ? "Platform crisis protocol" : "Medical urgency protocol",
+    });
+  }
+  if (clinical && clinical.priority.level !== "emergency") {
+    const symptomIds = new Set(clinical.symptoms.map((symptom) => symptom.id));
+    solutions.push({
+      id: "health-assessment",
+      title: `Health assessment ${clinical.priority.timeframe}`,
+      steps: [
+        `Arrange an in-person assessment at a health centre or clinic ${clinical.priority.timeframe}.`,
+        "Ask the person to bring every medicine, painkiller and traditional remedy they use, and a note of when the symptoms began and what changes them.",
+        ...(symptomIds.has("weight_loss") ? ["Ask for the weight to be measured and recorded, so the trend can be followed."] : []),
+        `Checks a health worker may consider: ${clinical.checks.slice(0, 6).join("; ")}.`,
+      ],
+      horizon: clinical.priority.level === "soon" ? "now" : "this_week",
+      addresses: causes.filter((cause) => cause.factors.some((id) => symptomIds.has(id))).map((cause) => cause.id),
+      needsProfessional: true,
+      source: "Clinical referral protocol",
     });
   }
   for (const cause of causes) {
@@ -331,7 +371,7 @@ export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFact
 function contextEngines(detected: DetectedFactor[], profile: UserProfile, record: WorkflowCase, now: Date): CaseAnalysis["engines"] {
   const has = (...ids: string[]) => detected.some((entry) => ids.includes(entry.factor.id));
   const engines: CaseAnalysis["engines"] = [];
-  if (has("food", "fatigue")) {
+  if (has("food", "fatigue", "weight_loss", "appetite_loss", "abdominal")) {
     const fasting = evaluateFastingStatus(now);
     engines.push({
       id: "fasting_calendar",
@@ -383,7 +423,9 @@ function groundedIntersections(intersections: IntersectionFinding[], keptStrands
 
 // ── Data quality ─────────────────────────────────────────────────────────────
 
-function assessData(words: number, detected: DetectedFactor[], profile: UserProfile, asked: Set<string>): CaseAnalysis["dataQuality"] {
+const TIMING = /\d|since|ago|day|week|month|year|yesterday|recent|ቀን|ሳምንት|ወር|ዓመት|አመት|ጀምሮ/iu;
+
+function assessData(words: number, detected: DetectedFactor[], profile: UserProfile, asked: Set<string>, said: string, clinical?: ClinicalPicture): CaseAnalysis["dataQuality"] {
   const used = [`Request answers (${words} words)`];
   const gaps: string[] = [];
   const age = profile.age ?? profile.demographics?.age;
@@ -397,15 +439,39 @@ function assessData(words: number, detected: DetectedFactor[], profile: UserProf
   for (const [label, present] of fields) (present ? used : gaps).push(present ? `Profile: ${label}` : `The profile has no ${label}`);
   if (words < 40) gaps.push(`The description is short (${words} words)`);
   if (!detected.length) gaps.push("No recognisable factor in the answers; the person's main concern is unclear");
+  if (clinical && !TIMING.test(said)) gaps.push("When the symptoms began and how they have changed is not stated");
 
   const followUps = detected.slice(0, 3).map((entry) => entry.factor.followUp);
+  // With symptoms, the warning-sign question comes straight after the main one.
+  if (clinical?.redFlags.length) followUps.splice(1, 0, `Have you noticed any of these: ${clinical.redFlags.slice(0, 4).map((flag) => flag.charAt(0).toLowerCase() + flag.slice(1)).join("; ")}?`);
   if (words < 40 || !detected.length) followUps.push(...GENERIC_FOLLOW_UPS);
   if (physical && !profile.medications?.length) followUps.push("Are you taking any medicines or traditional remedies at the moment?");
 
   const present = fields.filter(([, value]) => value).length;
   const score = Math.round(40 * Math.min(1, words / 80) + 30 * (present / fields.length) + 30 * Math.min(1, detected.length / 3));
   // Questions the reviewer has already sent are not suggested again.
-  return { score, used, gaps, followUps: [...new Set(followUps)].filter((question) => !asked.has(question)).slice(0, 5) };
+  return { score, used, gaps, followUps: [...new Set(followUps)].filter((question) => !asked.has(question)).slice(0, 6) };
+}
+
+// ── Urgency ──────────────────────────────────────────────────────────────────
+
+const CLINICAL_URGENCY = { prompt: { level: "medium", score: 50 }, soon: { level: "high", score: 75 } } as const;
+const URGENCY_RANK: Record<string, number> = { low: 0, medium: 1, high: 2, critical: 3 };
+
+/**
+ * The detector reads alarm words; the clinical picture reads combinations ("pain with weight loss").
+ * The shown urgency is the higher of the two. Safety warnings still follow the detector alone.
+ */
+function withClinicalPriority(urgency: ReturnType<UrgencyDetector["detect"]>, clinical?: ClinicalPicture): CaseAnalysis["urgency"] {
+  const shown = { level: urgency.level as string, score: urgency.score, signals: urgency.matchedSignals, recommendation: urgency.recommendation };
+  const raised = clinical && clinical.priority.level !== "routine" && clinical.priority.level !== "emergency" ? CLINICAL_URGENCY[clinical.priority.level] : undefined;
+  if (!raised || URGENCY_RANK[raised.level] <= (URGENCY_RANK[shown.level] ?? 0)) return shown;
+  return {
+    level: raised.level,
+    score: Math.max(shown.score, raised.score),
+    signals: [...clinical!.priority.reasons.map((reason) => `clinical: ${reason}`), ...shown.signals.filter((signal) => signal !== "routine presentation")],
+    recommendation: `Arrange an in-person health assessment ${clinical!.priority.timeframe}, and sooner if any warning sign appears.`,
+  };
 }
 
 // ── Entry point ──────────────────────────────────────────────────────────────
@@ -413,15 +479,23 @@ function assessData(words: number, detected: DetectedFactor[], profile: UserProf
 export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConfig, profile: UserProfile = {}, deps: Partial<AnalysisDeps> = {}): Promise<CaseAnalysis> {
   const { retrieve, now } = { ...defaultDeps, ...deps };
   const statements = caseStatements(record, config);
-  const narrative = statements.map((statement) => (statement.free ? statement.text : `${statement.topic}: ${statement.text}`)).join("\n");
-  const said = statements.filter((statement) => statement.free).map((statement) => statement.text).join(" ");
+  // The safety screen is answered by the domain's own rules (record.safety). Its wording ("chest
+  // pain, heavy bleeding, fainting…") must not be read as something the person reported.
+  const told = statements.filter((statement) => !statement.screen);
+  const read = (statement: Statement) => (statement.free ? correctSpelling(statement.text).text : statement.text);
+  const narrative = told.map((statement) => (statement.free ? read(statement) : `${statement.topic}: ${statement.text}`)).join("\n");
+  const said = told.filter((statement) => statement.free).map((statement) => statement.text).join(" ");
   const words = said.split(/\s+/u).filter(Boolean).length;
-  const query = clip(narrative, 3000) || config.label;
-
-  const entities = entityExtractor.extract(query);
-  const urgency = urgencyDetector.detect(query, entities);
-  const intent = intentClassifier.classify(query);
   const detected = detectFactors(statements);
+  const corrections = spellingCorrections(told);
+  // The search also names the symptoms' body systems, so every strand is asked about them.
+  const query = clip([narrative, clinicalSearchTerms(detected).join(", ")].filter(Boolean).join("\n"), 3000) || config.label;
+
+  const entities = entityExtractor.extract(narrative);
+  // Urgency is read from the person's own words and the options they chose, never from question text.
+  const ownWords = told.map(read).join("\n");
+  const urgency = urgencyDetector.detect(ownWords, entityExtractor.extract(ownWords));
+  const intent = intentClassifier.classify(narrative || config.label);
 
   const mentioned = (category: ExtractedEntity["category"]) => entities.filter((entity) => entity.category === category).map((entity) => entity.value);
   const enriched: UserProfile = {
@@ -439,12 +513,24 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     return { strand, layer: (DOMAIN_B.has(strand) ? "B" : "A") as AnalysisLayer, considered: findings.length, kept: kept.length, findings: kept };
   });
   const keptA = strands.filter((entry) => entry.layer === "A").flatMap((entry) => entry.findings);
+  // A finding kept only because a symptom brings it into consideration (TB for weight loss) is for
+  // the reviewer's differential; it must not be joined into "connections" shown to the person.
+  const symptomLabels = new Set(detected.filter((entry) => entry.factor.system).map((entry) => `${entry.factor.label}:`));
+  const saidDirectly = (finding: GroundedFinding) => finding.matchedOn.some((reason) => ![...symptomLabels].some((label) => reason.startsWith(label)));
   const reflections = safetyActive ? [] : strands.filter((entry) => entry.layer === "B").flatMap((entry) => entry.findings);
   const causes = rankCauses(detected, keptA);
   const interactions = entities.some((entity) => entity.category === "medication" || entity.category === "substance")
     ? solution.safety.herbDrugInteractions.slice(0, 5).map((item) => `${item.herb} + ${item.drug} (${item.severity}): ${item.recommendation}`)
     : [];
   const foodAndHerbs = buildFoodHerbReview(record.foodHerbNotes ?? [], profile);
+  const clinical = buildClinicalPicture({
+    detected,
+    corrections,
+    profile: enriched,
+    findings: new Map(strands.map((entry) => [entry.strand, entry.findings])),
+    urgencyLevel: urgency.level,
+    safetyActive,
+  });
   const warnings = [
     ...(record.safety.reason ? [`Safety screen: ${record.safety.reason}`] : []),
     ...foodHerbWarnings(foodAndHerbs),
@@ -457,17 +543,18 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     generatedAt: now().toISOString(),
     publishScope: REFLECTION_ONLY.has(record.domain) ? "reflection_only" : "full",
     narrative: { words, excerpt: clip(said || narrative, 600) },
-    urgency: { level: urgency.level, score: urgency.score, signals: urgency.matchedSignals, recommendation: urgency.recommendation },
+    urgency: withClinicalPriority(urgency, clinical),
     factors: detected.map((entry) => ({ id: entry.factor.id, label: entry.factor.label, weight: Math.round(entry.weight * 10) / 10, quotes: entry.quotes })),
     causes,
-    solutions: proposeSolutions(causes, detected, keptA, urgency.level === "critical"),
+    solutions: proposeSolutions(causes, detected, keptA, urgency.level === "critical", clinical),
     strands: strands.map((entry) => (entry.layer === "B" && safetyActive ? { ...entry, kept: 0, findings: [] } : entry)),
     reflections,
-    intersections: groundedIntersections(intersections, new Set(strands.filter((entry) => entry.kept > 0).map((entry) => entry.strand))),
+    intersections: groundedIntersections(intersections, new Set(strands.filter((entry) => entry.findings.some(saidDirectly)).map((entry) => entry.strand))),
     engines: contextEngines(detected, enriched, record, now()),
     safety: { warnings, interactions, domainBSuppressed: safetyActive },
-    dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body))),
+    dataQuality: assessData(words, detected, enriched, new Set((record.messages ?? []).filter((message) => message.from === "reviewer").map((message) => message.body)), said, clinical),
     person: buildPersonContext({ profile, domain: record.domain, factors: detected.map((entry) => entry.factor.id), now: now(), allowReflection: !safetyActive }),
     ...(foodAndHerbs ? { foodAndHerbs } : {}),
+    ...(clinical ? { clinical } : {}),
   };
 }

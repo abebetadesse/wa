@@ -7,6 +7,7 @@ import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 import { createCaseService } from "../server/cases/service.ts";
 import { createMemoryCaseStore } from "../server/cases/store.ts";
 import { isSensitive, ownerNotice } from "../server/cases/notices.ts";
+import { correctSpelling } from "../server/cases/spelling.ts";
 
 const SAFE = { feelsSafe: "yes", domesticViolence: "no", childSafety: "no_children", immediateRisk: "no" };
 const NOW = new Date("2026-10-06T08:00:00Z");
@@ -534,4 +535,83 @@ test("notices: sensitive cases never carry content outside the app", () => {
   const open = ownerNotice({ ...routine, review: { expertId: "a", claimedAt: "", notes: "Start with the budget." } }, "Relationships & Family", "approved");
   assert.match(open.body, /From your reviewer: Start with the budget\./);
   assert.equal(open.href, "/case/workflows/case-1");
+});
+
+// ── Bodily symptoms (clinical.ts) ────────────────────────────────────────────
+
+function healthCase(story, urgentSymptoms = "no") {
+  const config = DOMAIN_CONFIGS.biological;
+  const record = createCase({ id: "case-health", userId: "user-1", config, safetyAnswers: { urgentSymptoms }, answers: { urgentSymptoms, caseNarrative: story } });
+  return { record, config };
+}
+
+test("spelling: symptom slips are read as meant, real words are left alone", () => {
+  assert.deepEqual(correctSpelling("Abdominal paim, weight loss").corrections, [{ from: "paim", to: "pain" }]);
+  assert.equal(correctSpelling("Abdominal paim").text, "Abdominal pain");
+  assert.equal(correctSpelling("I tried to weigh myself and paid for fewer tablets").corrections.length, 0);
+  assert.equal(correctSpelling("ሆዴን ያመኛል").corrections.length, 0);
+});
+
+test("health case: the emergency question's own wording is not read as an emergency", async () => {
+  const { record, config } = healthCase("Abdominal paim, weight loss");
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  assert.notEqual(analysis.urgency.level, "critical", "answering 'No' to the emergency question must not raise urgency");
+  assert.ok(!analysis.urgency.signals.some((signal) => /chest pain|stroke|bleeding|fainting/.test(signal)));
+  assert.equal(analysis.safety.warnings.length, 0);
+  assert.equal(analysis.safety.domainBSuppressed, false);
+  assert.ok(!analysis.solutions.some((solution) => solution.id === "safety"));
+});
+
+test("health case: a short complaint gets a full clinical picture across the strands", async () => {
+  const { record, config } = healthCase("Abdominal paim, weight loss");
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  const ids = analysis.factors.map((factor) => factor.id);
+  assert.ok(ids.includes("abdominal") && ids.includes("weight_loss"), `factors: ${ids}`);
+  assert.ok(!ids.includes("food"), "weight loss is a symptom, not an eating pattern");
+  assert.ok(!ids.includes("physical"), "named symptoms replace the general theme");
+  assert.equal(analysis.factors.find((factor) => factor.id === "abdominal").quotes[0], "Abdominal paim, weight loss", "quoted as written");
+
+  const clinical = analysis.clinical;
+  assert.ok(clinical, "a clinical picture is built");
+  assert.deepEqual(clinical.readAs, [{ from: "paim", to: "pain" }]);
+  assert.equal(clinical.priority.level, "prompt");
+  assert.equal(analysis.urgency.level, "medium", "the shown urgency follows the clinical priority");
+  assert.ok(clinical.clusters.some((cluster) => cluster.id === "abdominal_weight_loss" && cluster.considerations.length >= 8));
+  assert.ok(clinical.redFlags.some((flag) => /black, tarry or bloody stools/i.test(flag)));
+  assert.ok(clinical.checks.some((check) => /stool/i.test(check)) && clinical.checks.some((check) => /blood sugar/i.test(check)));
+  assert.ok(clinical.lenses.length >= 10, `lenses for ${clinical.lenses.map((lens) => lens.strand)}`);
+  assert.ok(clinical.lenses.some((lens) => lens.strand === "cultural") && clinical.lenses.some((lens) => lens.strand === "astrological"));
+
+  const kept = analysis.strands.filter((strand) => strand.kept > 0).map((strand) => strand.strand);
+  assert.ok(kept.length >= 6, `strands with supported findings: ${kept}`);
+  assert.ok(analysis.strands.find((strand) => strand.strand === "socioeconomic").considered > 0, "the socioeconomic strand answers");
+  assert.ok(analysis.causes[0].id === "abdominal_weight_loss");
+  assert.ok(analysis.solutions.some((solution) => solution.id === "health-assessment" && solution.horizon === "this_week"));
+  assert.ok(analysis.dataQuality.gaps.some((gap) => /began/.test(gap)));
+});
+
+test("health case: the report explains the visit without naming conditions to the person", async () => {
+  const { record, config } = healthCase("Abdominal paim, weight loss");
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  const sections = buildEnhancedReportSections(analysis, false);
+  const ids = sections.map((entry) => entry.id);
+  for (const id of ["analysis-overview", "analysis-health-check", "analysis-angles", "analysis-act-sooner", "analysis-traditions"]) assert.ok(ids.includes(id), `${id} in ${ids}`);
+  const text = sections.map((entry) => [entry.body, ...(entry.items ?? [])].join(" ")).join(" ");
+  assert.match(text, /within one to two weeks/);
+  assert.match(text, /“paim” as “pain”/);
+  assert.ok(!/cancer|kala-azar|leishmaniasis|tuberculosis \(/i.test(text), "considerations stay with the reviewer");
+  assert.ok(!/depressive|disorder/i.test(text), "catalogue links a symptom only brings into view are not shown as connections");
+  assert.ok(!/arrange an in-person assessment at a health centre;/i.test(text), "the visit is proposed once");
+  assert.ok(sections.find((entry) => entry.id === "analysis-traditions").cultural, "Domain B stays marked as reflection");
+  for (const entry of sections) {
+    assert.ok((entry.body ?? "").length <= 8000 && (entry.items ?? []).length <= 40);
+  }
+});
+
+test("health case: a real emergency still routes to the ambulance first", async () => {
+  const { record, config } = healthCase("Sudden chest pain and I cannot breathe", "no");
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  assert.equal(analysis.urgency.level, "critical");
+  const safety = analysis.solutions.find((solution) => solution.id === "safety");
+  assert.ok(safety && /ambulance \(907\)/.test(safety.steps[0]));
 });

@@ -1373,7 +1373,10 @@ export class SocioEconomicKnowledgeStrand implements KnowledgeStrand {
             name: data.title.toUpperCase(),
             description: data.description || "Food security context",
             evidence: `Food insecure population: ${data.food_insecure_population || "N/A"}. Lean season: ${data.seasonal_patterns?.lean_season || "N/A"}. Chronic food insecurity: ${data.chronic_food_insecurity?.prevalence || "N/A"}.`,
-            ethiopian_context: data.nutrition_programmes ? `Nutrition programmes: ${data.nutrition_programmes.join("; ") || "N/A"}` : "Ethiopian food security context",
+            // Programmes are stored as a list or as { name: description }.
+            ethiopian_context: data.nutrition_programmes
+              ? `Nutrition programmes: ${(Array.isArray(data.nutrition_programmes) ? data.nutrition_programmes : Object.values(data.nutrition_programmes)).join("; ") || "N/A"}`
+              : "Ethiopian food security context",
             relevanceScore: Math.min(score / 50, 0.88),
             confidence: 0.85,
             matches,

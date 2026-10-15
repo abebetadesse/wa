@@ -127,6 +127,12 @@ export default function CaseReviewItemPage() {
 
   function addSection(section: ReportSection) {
     if (!draft) return;
+    // A second click on the same "Add to report" would only repeat the section.
+    const same = (entry: ReportSection) => entry.title === section.title && (entry.body ?? "") === (section.body ?? "") && (entry.items ?? []).join("\n") === (section.items ?? []).join("\n");
+    if (draft.sections.some(same)) {
+      setStatus(`“${section.title}” is already in the report.`);
+      return;
+    }
     setDraft({ ...draft, sections: [...draft.sections, section] });
     setDirty(true);
     setStatus(`“${section.title}” was added to the end of the report. Edit it there before approving.`);

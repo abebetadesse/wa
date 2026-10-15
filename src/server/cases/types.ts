@@ -329,6 +329,34 @@ export interface CaseAnalysis {
   person?: CasePersonContext;
   /** Foods and plants the person confirmed from a photo or by name; absent when they shared none. */
   foodAndHerbs?: FoodHerbReview;
+  /** Bodily symptoms read clinically (clinical.ts); absent when none were described. */
+  clinical?: ClinicalPicture;
+}
+
+/** How soon, what to rule out, what to check, and how each strand reads the symptoms. Reviewer-only. */
+export interface ClinicalPicture {
+  /** Misspellings read as the person meant them ("paim" → "pain"). */
+  readAs: Array<{ from: string; to: string }>;
+  symptoms: Array<{ id: string; label: string; system: string; quotes: string[]; priority: "routine" | "prompt" | "soon" | "emergency" }>;
+  priority: { level: "routine" | "prompt" | "soon" | "emergency"; label: string; timeframe: string; reasons: string[] };
+  /** Warning signs to ask about; any one raises the priority. */
+  redFlags: string[];
+  /** Questions that describe the symptoms (site, onset, pattern, what changes them). */
+  describe: string[];
+  clusters: Array<{
+    id: string;
+    title: string;
+    priority: "routine" | "prompt" | "soon" | "emergency";
+    /** Conditions a clinician would usually consider or rule out: never shown to the person. */
+    considerations: Array<{ name: string; why: string; strand: string }>;
+    checks: string[];
+    ask: string[];
+  }>;
+  /** What a health worker may check, in plain words. */
+  checks: string[];
+  /** Every strand's reading of the picture; `person` is the wording a report may use. */
+  lenses: Array<{ strand: string; layer: AnalysisLayer; points: Array<{ reviewer: string; person?: string }>; ask: string[]; considerations: string[]; findings: string[] }>;
+  profileNotes: string[];
 }
 
 /** The persisted case. Stored as one row in `workflow_cases`. */
