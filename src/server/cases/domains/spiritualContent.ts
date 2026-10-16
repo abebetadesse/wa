@@ -8,10 +8,14 @@
  *
  * The wording here is the platform's own. Preparation procedures from the manuscripts (what to
  * cut, mix, swallow or wear) are not reproduced; a debtera reviews everything before release.
+ *
+ * Every section is Part B of the report: its title carries the "Cultural reflection — " marker and
+ * the first one opens with the fixed Part B line (reportLayout.ts).
  */
 import type { FullDivinationResult } from "@/lib/cultural/spiritualDivinationEngine";
 import type { TelsemSeal } from "@/lib/cultural/telsemData";
 import { toEthiopianDate, toGeezNumeral } from "@/lib/profiling/astrology/ethiopianTraditions";
+import { layoutSections } from "../reportLayout";
 import type { ReportSection } from "../types";
 
 export interface SpiritualSectionOptions {
@@ -346,7 +350,7 @@ export function buildSpiritualSections(gematria: FullDivinationResult, category:
     },
   ];
 
-  return sections;
+  return layoutSections(sections, { language: "en", withhold: false });
 }
 
 /** The petition of the scroll for each kind of question, in Amharic for the bearer and in English. */

@@ -4,6 +4,7 @@
  */
 import { ApiError } from "@/lib/api/route";
 import { acceptsFoodHerb, MAX_FOOD_HERB_NOTES } from "./foodHerb";
+import { layoutProblems } from "./reportLayout";
 import type {
   CaseAnalysis,
   CaseMessage,
@@ -248,10 +249,14 @@ export function approveCase(
   if (record.review?.expertId !== expertId) throw ApiError.forbidden("This case is assigned to another expert.");
   const incomplete = config.reviewChecklist.filter((item) => input.checklist[item.id] !== true).map((item) => item.id);
   if (incomplete.length) throw ApiError.badRequest("Complete the review checklist before approving.", { incomplete });
+  const draft = input.draft ?? record.draft;
+  // Part B (cultural reflection) must follow Part A and carry its marker (AI_ASSISTANT_PROMPT.md 5.2).
+  const layout = layoutProblems(draft?.sections ?? []);
+  if (layout.length) throw ApiError.badRequest(`Please fix the report layout before approving. ${layout.join(" ")}`, { layout });
   const approvedAt = now();
   return {
     ...record,
-    draft: input.draft ?? record.draft,
+    draft,
     stage: "visible_to_user",
     review: { ...record.review, approvedAt, notes: input.notes, checklist: input.checklist },
     auditTrail: [...record.auditTrail, { type: "approved", actorId: expertId, at: approvedAt, details: { checklist: input.checklist, notes: input.notes ?? null } }],

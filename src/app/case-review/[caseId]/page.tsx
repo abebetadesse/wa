@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "@/features/session/SessionProvider";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState, type SectionEnhancement } from "@/features/cases/review/ReviewPanels";
+import { orderSections } from "@/server/cases/reportLayout";
 import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/types";
 
 interface ReviewItem {
@@ -133,15 +134,18 @@ export default function CaseReviewItemPage() {
       setStatus(`“${section.title}” is already in the report.`);
       return;
     }
-    setDraft({ ...draft, sections: [...draft.sections, section] });
+    // Part A, then safety, then cultural reflection: approval refuses any other order.
+    setDraft({ ...draft, sections: orderSections([...draft.sections, section]) });
     setDirty(true);
-    setStatus(`“${section.title}” was added to the end of the report. Edit it there before approving.`);
+    setStatus(section.cultural
+      ? `“${section.title}” was added to the end of the report. Edit it there before approving.`
+      : `“${section.title}” was added before the safety and cultural reflection sections. Edit it there before approving.`);
   }
 
   function addSections(sections: ReportSection[]) {
     if (!draft || !sections.length) return;
     const generatedIds = new Set(sections.map((section) => section.id));
-    setDraft({ ...draft, sections: [...draft.sections.filter((section) => !generatedIds.has(section.id)), ...sections] });
+    setDraft({ ...draft, sections: orderSections([...draft.sections.filter((section) => !generatedIds.has(section.id)), ...sections]) });
     setDirty(true);
     setStatus("Detailed report sections added or refreshed from the latest analysis. Review and edit them before approving.");
   }

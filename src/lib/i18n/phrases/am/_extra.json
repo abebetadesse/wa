@@ -127,6 +127,8 @@
   "Could you be pregnant?": "እርጉዝ ሊሆኑ ይችላሉ?",
   "Could you describe what happened, when it started and what you have already tried?": "የሆነውን፣ መቼ እንደጀመረና እስካሁን ምን እንደሞከሩ ሊገልጹልን ይችላሉ?",
   "Creatine: {} mg": "ክሬአቲን፦ {0} ሚ.ግ",
+  "Cultural reflection": "ባህላዊ ማሰላሰል",
+  "Cultural reflection is not included in this report.": "ባህላዊ እና መንፈሳዊ ማሰላሰል በዚህ ሪፖርት ውስጥ አልተካተተም።",
   "Culture and faith": "ባህልና እምነት",
   "Curcuminoids: {} mg": "ኩርኩሚኖይዶች፦ {0} ሚ.ግ",
   "Current medicines may interact with the situation or with traditional remedies": "አሁን የሚወሰዱ መድኃኒቶች ከሁኔታው ወይም ከባህላዊ መድኃኒቶች ጋር ሊጋጩ ይችላሉ",
@@ -390,6 +392,7 @@
   "Plan one small activity you value each day, and one contact with someone you trust each week.": "በየቀኑ የሚያከብሩትን አንድ ትንሽ እንቅስቃሴ፣ በየሳምንቱም ከሚያምኑት ሰው ጋር አንድ ግንኙነት ያቅዱ።",
   "Plan one small, valued activity each day and one contact with a trusted person each week.": "በየቀኑ አንድ ትንሽ እና ዋጋ ያለው ተግባር፣ በየሳምንቱም ከታመነ ሰው ጋር አንድ ግንኙነት ያቅዱ።",
   "Plan small, frequent, energy-dense meals the person likes (for example shiro, eggs, kinche, kolo, milk where not fasting) while the cause is looked for.": "ምክንያቱ እስኪፈለግ ድረስ ግለሰቡ የሚወዳቸውን ትንንሽ፣ ተደጋጋሚ እና ኃይል ሰጪ ምግቦች ያቅዱ (ለምሳሌ ሽሮ፣ እንቁላል፣ ቅንጬ፣ ቆሎ፣ ጾም ባልሆነ ጊዜ ወተት)።",
+  "Please fix the report layout before approving. {}": "ከማጽደቅዎ በፊት እባክዎ የሪፖርቱን አቀማመጥ ያስተካክሉ። {0}",
   "Point to community safety nets the person may qualify for (iddir, equb, kebele or woreda support).": "ግለሰቡ ሊያገኛቸው የሚችሉ የማኅበረሰብ የደህንነት መረቦችን (ዕድር፣ ዕቁብ፣ የቀበሌ ወይም የወረዳ ድጋፍ) ያመልክቱ።",
   "Police emergency": "የፖሊስ የአስቸኳይ ጊዜ መስመር",
   "Poor appetite lasting more than two weeks, or with weight loss or yellow eyes, should be checked at a health facility.": "ከሁለት ሳምንት በላይ የቆየ የምግብ ፍላጎት ማጣት፣ ወይም ከክብደት መቀነስ ወይም ከቢጫ አይን ጋር ያለው፣ በጤና ተቋም መመርመር አለበት።",
@@ -494,6 +497,7 @@
   "Thirst and passing urine more often, together with weight loss or tiredness, is the classic reason to check blood sugar.": "ጥማትና ብዙ ጊዜ መሽናት ከክብደት መቀነስ ወይም ከድካም ጋር የደም ስኳርን ለመመርመር የተለመደው ምክንያት ነው።",
   "Thirst and urination": "ጥማት እና ሽንት",
   "Thirst or a change in urination should be checked, including blood sugar": "ጥማት ወይም የሽንት ለውጥ የደም ስኳርን ጨምሮ መመርመር አለበት",
+  "This part is cultural and spiritual reflection drawn from Ethiopian tradition. It is not scientific evidence, a diagnosis or a prediction, and it does not change anything in the scientific part above. You are free to take from it what is meaningful to you.": "ይህ ክፍል ከኢትዮጵያ ባህል የተወሰደ ባህላዊ እና መንፈሳዊ ማሰላሰል ነው። ሳይንሳዊ ማስረጃ፣ ምርመራ ወይም ትንቢት አይደለም፤ ከላይ ባለው ሳይንሳዊ ክፍል ውስጥ ያለውን ምንም ነገር አይለውጥም። ትርጉም ያለውን ለራስዎ መውሰድ ይችላሉ።",
   "Thymol: {} mg": "ታይሞል፦ {0} ሚ.ግ",
   "Thymoquinone: {} mg": "ታይሞኪኖን፦ {0} ሚ.ግ",
   "Thyroid test as the clinician judges": "ሐኪሙ እንደሚወስነው የታይሮይድ ምርመራ",
@@ -779,5 +783,6 @@
   "winter": "የክረምት",
   "within one to two days": "በአንድ ወይም በሁለት ቀን ውስጥ",
   "within one to two weeks": "በአንድ ወይም በሁለት ሳምንት ውስጥ",
-  "yellow": "ቢጫ"
+  "yellow": "ቢጫ",
+  "“{}” was added before the safety and cultural reflection sections. Edit it there before approving.": "«{0}» ከደህንነትና ከባህላዊ ማሰላሰል ክፍሎች በፊት ተጨምሯል። ከማጽደቅዎ በፊት እዚያ ያርሙት።"
 }

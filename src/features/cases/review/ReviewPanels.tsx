@@ -6,6 +6,7 @@ import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
 import { FACTORS } from "@/server/cases/analysisLexicon";
 import { REPORT_LANGUAGES, type ReportLanguage } from "@/server/cases/amharic";
 import { buildEnhancedReport, preferredReportLanguage, reportStatistics, STRAND_LABEL } from "@/server/cases/reportEnhancer";
+import { markCulturalTitle, orderSections } from "@/server/cases/reportLayout";
 
 export interface DraftState {
   title: string;
@@ -76,7 +77,7 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
   const askable = new Set(analysis.dataQuality.followUps);
 
   const add = (title: string, body: string | undefined, items: string[], cultural = false) =>
-    onAddSection({ id: sectionId(cultural ? "reflection" : "analysis"), title, body, items: items.length ? items : undefined, locked: false, ...(cultural ? { cultural: true } : {}) });
+    onAddSection({ id: sectionId(cultural ? "reflection" : "analysis"), title: cultural ? markCulturalTitle(title, "en") : title, body, items: items.length ? items : undefined, locked: false, ...(cultural ? { cultural: true } : {}) });
 
   return (
     <section className={`${panel} flex flex-col gap-5`} aria-label="Analysis for the reviewer">
@@ -857,7 +858,8 @@ export function DraftEditor({ draft, onChange, dirty, busy, onSave, onEnhance, c
         type="button"
         onClick={() => {
           const id = sectionId("section");
-          onChange({ ...draft, sections: [...draft.sections, { id, title: "New section", locked: false }] });
+          // A new section belongs to Part A, so it goes in before the safety and cultural reflection sections.
+          onChange({ ...draft, sections: orderSections([...draft.sections, { id, title: "New section", locked: false }]) });
           setOpenId(id);
         }}
         className={`${smallButton} self-start`}

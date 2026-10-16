@@ -237,7 +237,6 @@
   "Suggest a health-centre check (including a blood count) if tiredness has lasted more than a few weeks.": "ድካሙ ከጥቂት ሳምንታት በላይ ከቆየ የጤና ጣቢያ ምርመራ (የደም ቆጠራን ጨምሮ) ይጠቁሙ።",
   "Suggest a short symptom diary: when the pain comes, what was eaten, fasting days, and anything that eases or worsens it.": "አጭር የምልክት ማስታወሻ ይጠቁሙ፦ ህመሙ መቼ እንደሚመጣ፣ ምን እንደተበላ፣ የጾም ቀናት፣ እና የሚያቀልለው ወይም የሚያባብሰው ነገር።",
   "Suggested steps:": "የተጠቆሙ እርምጃዎች፦",
-  "Summary": "ማጠቃለያ",
   "Supported by: {}": "የተደገፈው በ፦ {0}",
   "Symptoms that cluster in the stomach and bowel are commonly linked to meal and fasting rhythm, infections and parasites, painkillers, alcohol or khat, and stress; a health check sorts out which.": "በጨጓራና በአንጀት የሚሰበሰቡ ምልክቶች ብዙ ጊዜ ከምግብና ከጾም ሥርዓት፣ ከኢንፌክሽንና ከጥገኛ ተሕዋስያን፣ ከህመም ማስታገሻዎች፣ ከአልኮል ወይም ከጫት፣ እና ከጭንቀት ጋር ይያያዛሉ፤ የጤና ምርመራ የትኛው እንደሆነ ይለያል።",
   "Take small, frequent sips of safe water or oral rehydration solution, and see a health worker if vomiting continues beyond a day or two.": "ንጹህ ውሃ ወይም የአፍ ፈሳሽ መተኪያ (ORS) ትንሽ ትንሽ ደጋግመው ይጠጡ፤ ማስመለሱ ከአንድ ወይም ሁለት ቀን በላይ ከቀጠለ የጤና ባለሙያ ይዩ።",
@@ -318,6 +317,7 @@
   "· {} · Domain {}": "· {0} · ዘርፍ {1}",
   "— the profile lists a medicine of this kind": "— መገለጫው የዚህ ዓይነት መድኃኒት ይዘረዝራል",
   "“{}” is already in the report.": "“{0}” አስቀድሞ በሪፖርቱ ውስጥ አለ።",
+  "“{}” was added before the safety and cultural reflection sections. Edit it there before approving.": "«{0}» ከደህንነትና ከባህላዊ ማሰላሰል ክፍሎች በፊት ተጨምሯል። ከማጽደቅዎ በፊት እዚያ ያርሙት።",
   "“{}” was added to the end of the report. Edit it there before approving.": "«{0}» በሪፖርቱ መጨረሻ ላይ ተጨምሯል። ከማጽደቅዎ በፊት እዚያ ያርሙት።",
   "← Back to requests": "← ወደ ጥያቄዎች ተመለስ"
 }

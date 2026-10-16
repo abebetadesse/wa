@@ -21,6 +21,7 @@ import { toEthiopianDate } from "@/lib/cosmic/skyDay";
 import { CONFIDENCE_MEANING, FACTOR_GUIDANCE } from "./analysisGuidance";
 import { FACTORS } from "./analysisLexicon";
 import { createTranslator, type ReportLanguage } from "./amharic";
+import { layoutSections } from "./reportLayout";
 import { CONTACTS, REFERRALS } from "./support";
 import type { AnalysisConfidence, AnalysisSolution, CaseAnalysis, CaseLens, GroundedFinding, ReportSection } from "./types";
 
@@ -133,6 +134,8 @@ export interface EnhancedReport {
 
 export interface EnhanceOptions {
   language?: ReportLanguage;
+  /** False when the person did not agree to cultural and spiritual reflection: Part B is then left out. */
+  culturalConsent?: boolean;
 }
 
 /** Creates editable report sections from the latest reviewer-only analysis. */
@@ -145,7 +148,7 @@ export function preferredReportLanguage(analysis: CaseAnalysis, profileConsented
   return profileConsented && analysis.person?.language === "am" ? "am" : "en";
 }
 
-export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: boolean, { language = "en" }: EnhanceOptions = {}): EnhancedReport {
+export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: boolean, { language = "en", culturalConsent = true }: EnhanceOptions = {}): EnhancedReport {
   const am = language === "am";
   const { t, untranslated } = createTranslator(language);
   const omitted: string[] = [];
@@ -605,7 +608,7 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
     else {
       sections.push(section(
         "reflections",
-        "Cultural and spiritual reflections",
+        "Themes from Ethiopian tradition",
         "These optional reflections are kept separate from evidence-based explanations. Keep only those that fit your own beliefs and preferences.",
         analysis.reflections.slice(0, 5).map((finding) => `${finding.name}: ${sentence(finding.summary)}${finding.steps.length ? ` Possible reflection prompts: ${finding.steps.map(sentence).join(" ")}` : ""}${finding.matchedOn.length ? ` Offered because of — ${reason(finding.matchedOn)}.` : ""}`),
         true,
@@ -675,7 +678,9 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
     ));
   }
 
-  return { language, sections, untranslated: [...untranslated], omitted };
+  // Part A, then "When not to wait", then Part B with its marker and opening line (reportLayout.ts).
+  const withhold = analysis.safety.domainBSuppressed || !culturalConsent;
+  return { language, sections: layoutSections(sections, { language, withhold }), untranslated: [...untranslated], omitted };
 }
 
 /** A plan's steps as advice to the person (analysis.ts keeps the reviewer's wording). */

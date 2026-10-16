@@ -3,13 +3,14 @@ import assert from "node:assert/strict";
 import { buildCaseAnalysis, caseStatements, detectFactors, groundFindings } from "../server/cases/analysis.ts";
 import { buildEnhancedReport, buildEnhancedReportSections, reportStatistics } from "../server/cases/reportEnhancer.ts";
 import { amharicFor } from "../server/cases/amharic.ts";
+import { CULTURAL_LABEL, PART_B_OPENING, PART_B_WITHHELD, layoutProblems, layoutSections, orderSections } from "../server/cases/reportLayout.ts";
 import { FACTORS, PATTERNS, GENERIC_FOLLOW_UPS } from "../server/cases/analysisLexicon.ts";
 import { FACTOR_GUIDANCE, CONFIDENCE_MEANING } from "../server/cases/analysisGuidance.ts";
 import { SYMPTOM_DETAIL, CLUSTERS, STRAND_LENSES, PRIORITY } from "../server/cases/clinicalLexicon.ts";
 import { LIFE_LENSES } from "../server/cases/strandLexicon.ts";
 import { STRAND_LABEL } from "../server/cases/reportEnhancer.ts";
 import { CONTACTS, REFERRALS } from "../server/cases/support.ts";
-import { createCase } from "../server/cases/machine.ts";
+import { approveCase, createCase } from "../server/cases/machine.ts";
 import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 import { createCaseService } from "../server/cases/service.ts";
 import { createMemoryCaseStore } from "../server/cases/store.ts";
@@ -154,10 +155,12 @@ test("report enhancement: builds editable, profile-aware detail without crossing
   }, legalConfig, {}, { now: () => NOW });
   const reflectiveSections = buildEnhancedReportSections(legalAnalysis, false);
   assert.ok(reflectiveSections.every((entry) => !["Patterns to consider together", "Possible next steps", "How different areas may connect"].includes(entry.title)));
-  assert.ok(reflectiveSections.filter((entry) => entry.cultural).every((entry) => ["Cultural and spiritual reflections", "Faith, tradition and timing"].includes(entry.title)));
+  assert.ok(reflectiveSections.filter((entry) => entry.cultural).every((entry) => ["Cultural reflection — Themes from Ethiopian tradition", "Cultural reflection — Faith, tradition and timing"].includes(entry.title)));
 });
 
 // ── Aligning the analysis and the report with the person ─────────────────────
+
+const READING_TITLE = "Cultural reflection — Timing and temperament from your personal profile";
 
 const RICH_PROFILE = {
   age: 34,
@@ -224,7 +227,7 @@ test("detailed report: elaborated, aligned to the person, and within what a draf
     "Possible next steps",
     "When to seek help sooner",
     "Personal context and what to verify",
-    "Timing and temperament from your personal profile",
+    READING_TITLE,
     "Questions that could make this more specific",
   ]) assert.ok(byTitle[title], `${title} is built`);
 
@@ -245,8 +248,8 @@ test("detailed report: elaborated, aligned to the person, and within what a draf
   // Medicines on the profile: the caution is stated and catalogue advice needing a professional is left out.
   assert.match(byTitle["Possible next steps"].body, /lists medicines you take/);
   assert.ok(!byTitle["Possible next steps"].items.some((item) => /reference guidance under/.test(item) && /Confirm with a qualified professional/.test(item)));
-  assert.ok(!byTitle["Timing and temperament from your personal profile"].items.some((item) => /Foods that tradition favours/.test(item)), "no food advice beside a medicines caution");
-  assert.equal(byTitle["Timing and temperament from your personal profile"].cultural, true);
+  assert.ok(!byTitle[READING_TITLE].items.some((item) => /Foods that tradition favours/.test(item)), "no food advice beside a medicines caution");
+  assert.equal(byTitle[READING_TITLE].cultural, true);
 
   // Reference entries are only those the person named or strongly supported.
   for (const item of byTitle["Reference knowledge behind this report"]?.items ?? []) assert.match(item, /Included because of —/);
@@ -262,7 +265,7 @@ test("detailed report: elaborated, aligned to the person, and within what a draf
 
   // Without consent the person context is ignored even if an analysis carries one.
   const withheld = buildEnhancedReportSections(analysis, false);
-  assert.ok(!withheld.some((entry) => entry.title === "Timing and temperament from your personal profile"));
+  assert.ok(!withheld.some((entry) => entry.title === READING_TITLE));
   assert.match(withheld.find((entry) => entry.title === "Personal context and what to verify").body, /were not used/);
 });
 
@@ -303,7 +306,7 @@ test("detailed report: reflection-only case types receive reflection and context
   for (const evidence of ["What stands out, theme by theme", "Patterns to consider together", "Possible next steps", "When to seek help sooner", "Reference knowledge behind this report", "How different areas may connect"]) {
     assert.ok(!titles.includes(evidence), `${evidence} is not generated for a reflection-only case`);
   }
-  assert.ok(titles.includes("Timing and temperament from your personal profile"));
+  assert.ok(titles.includes(READING_TITLE));
 });
 
 // ── Review desk: dossier, editing, conversation ──────────────────────────────
@@ -390,7 +393,8 @@ test("review desk: the report is edited, saved and released with the reviewer's 
   const { svc, ownerNotices } = desk();
   const view = await submitted(svc);
   const claimed = await svc.claim(admin, view.id);
-  const edited = { ...claimed.draft, summary: "Edited by the reviewer.", sections: [...claimed.draft.sections, { id: "reviewer-1", title: "What I suggest", items: ["Join one iddir gathering this month."], locked: false }] };
+  // The editor places a new section in Part A, before the cultural reflection.
+  const edited = { ...claimed.draft, summary: "Edited by the reviewer.", sections: orderSections([...claimed.draft.sections, { id: "reviewer-1", title: "What I suggest", items: ["Join one iddir gathering this month."], locked: false }]) };
   await assert.rejects(() => svc.saveDraft(otherAdmin, view.id, edited), /another expert/);
   const saved = await svc.saveDraft(admin, view.id, edited);
   assert.equal(saved.draft.summary, "Edited by the reviewer.");
@@ -659,6 +663,7 @@ test("amharic: every person-facing vocabulary line has an Amharic translation", 
   for (const factor of FACTORS) add(factor.label, factor.causeTitle, factor.followUp, ...factor.steps, ...factor.advice);
   for (const pattern of PATTERNS) add(pattern.title, pattern.explanation);
   add(...GENERIC_FOLLOW_UPS, ...Object.values(CONFIDENCE_MEANING), ...Object.values(STRAND_LABEL), ...Object.values(REFERRALS));
+  add(CULTURAL_LABEL, PART_B_OPENING, PART_B_WITHHELD);
   for (const guidance of Object.values(FACTOR_GUIDANCE)) add(guidance.insight, guidance.watchFor);
   for (const detail of Object.values(SYMPTOM_DETAIL)) add(...detail.characterise, ...detail.redFlags, ...detail.checks);
   for (const cluster of Object.values(CLUSTERS)) add(...cluster.checks);
@@ -702,4 +707,148 @@ test("amharic: profile context and life readings are translated, English-only ma
   assert.ok(!JSON.stringify(report.sections).includes("Adama"));
   assert.ok(!report.sections.some((entry) => entry.id === "analysis-personal-reading" || entry.id === "analysis-knowledge"), "English-only sections are left out");
   assert.ok(report.omitted.every((line) => typeof line === "string" && line.length > 0));
+});
+
+// ── Part A / Part B layout (AI_ASSISTANT_PROMPT.md 5.2) ──────────────────────
+
+const MARKER = "Cultural reflection — ";
+const MARKER_AM = "ባህላዊ ማሰላሰል — ";
+
+/** Part A, then the safety section, then Part B; every Part B title marked; Part B opened once. */
+function assertLayout(sections, { marker = MARKER, opening = PART_B_OPENING, label = "report" } = {}) {
+  const firstCultural = sections.findIndex((entry) => entry.cultural);
+  if (firstCultural >= 0) {
+    assert.ok(sections.slice(firstCultural).every((entry) => entry.cultural), `${label}: no Domain A section after Part B (${sections.map((entry) => entry.id)})`);
+    assert.ok(sections[firstCultural].body.startsWith(opening), `${label}: Part B opens with the fixed line`);
+    assert.ok(sections.slice(firstCultural + 1).every((entry) => !(entry.body ?? "").includes(opening)), `${label}: the opening line is given once`);
+  }
+  const safety = sections.findIndex((entry) => entry.id === "analysis-act-sooner");
+  if (safety >= 0) {
+    assert.ok(sections.slice(0, safety).every((entry) => !entry.cultural), `${label}: no Part B above "When not to wait"`);
+    assert.ok(sections.slice(safety + 1).every((entry) => entry.cultural || entry.id === "analysis-cultural-withheld"), `${label}: only Part B follows "When not to wait"`);
+  }
+  for (const entry of sections.filter((section) => section.cultural)) {
+    assert.ok(entry.title.startsWith(marker), `${label}: “${entry.title}” carries the marker`);
+    assert.ok(!entry.title.slice(marker.length).startsWith(marker.trim()), `${label}: “${entry.title}” is marked once`);
+    assert.ok(entry.title.length <= 200 && (entry.body ?? "").length <= 8000, `${label}: ${entry.id} fits the draft limits`);
+  }
+  assert.deepEqual(layoutProblems(sections), [], `${label}: approval accepts the layout`);
+}
+
+test("layout: a full report runs Part A, then “When not to wait”, then marked Part B", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const sections = buildEnhancedReportSections(analysis, true);
+  assert.ok(sections.filter((entry) => entry.cultural).length >= 2, "the report has Part B sections");
+  assert.ok(sections.some((entry) => entry.id === "analysis-act-sooner"));
+  assertLayout(sections);
+  const at = (id) => sections.findIndex((entry) => entry.id === id);
+  assert.ok(at("analysis-clarifying-questions") < at("analysis-act-sooner"), "the questions stay in Part A");
+  assert.ok(!sections.some((entry) => entry.body === PART_B_WITHHELD));
+
+  // Rebuilding, or laying out again, neither doubles the marker nor repeats the opening line.
+  assert.deepEqual(layoutSections(sections, { language: "en", withhold: false }), sections);
+  assert.deepEqual(buildEnhancedReportSections(analysis, true), sections);
+});
+
+test("layout: an Amharic report uses the Amharic marker and opening line", async () => {
+  const { record, config } = healthCase("Abdominal paim, weight loss");
+  const analysis = await buildCaseAnalysis(record, config, { language: "am" }, { now: () => NOW });
+  const report = buildEnhancedReport(analysis, true, { language: "am" });
+  const opening = amharicFor(PART_B_OPENING);
+  assert.ok(opening && MARKER_AM.startsWith(amharicFor(CULTURAL_LABEL)));
+  const traditions = report.sections.find((entry) => entry.id === "analysis-traditions");
+  assert.ok(traditions?.cultural && traditions.title.startsWith(MARKER_AM));
+  assertLayout(report.sections, { marker: MARKER_AM, opening, label: "Amharic report" });
+});
+
+test("layout: Part B is left out, with one notice, under a safety signal, a crisis route or no consent", async () => {
+  const { record, config } = relationshipCase(STORY);
+  const analysis = await buildCaseAnalysis(record, config, RICH_PROFILE, { now: () => NOW });
+  const suppressed = { ...analysis, safety: { ...analysis.safety, domainBSuppressed: true } };
+  for (const [label, sections] of [
+    ["safety signal", buildEnhancedReportSections(suppressed, true)],
+    ["no consent", buildEnhancedReportSections(analysis, true, { culturalConsent: false })],
+  ]) {
+    assert.ok(!sections.some((entry) => entry.cultural), `${label}: no cultural section`);
+    const notices = sections.filter((entry) => entry.body === PART_B_WITHHELD);
+    assert.equal(notices.length, 1, `${label}: one notice`);
+    assert.equal(sections.at(-1), notices[0], `${label}: the notice stands where Part B would`);
+    assert.ok(!JSON.stringify(sections).includes(PART_B_OPENING), `${label}: nothing hints at the reflection`);
+  }
+  const amharic = buildEnhancedReport(suppressed, true, { language: "am" }).sections.at(-1);
+  assert.equal(amharic.body, "ባህላዊ እና መንፈሳዊ ማሰላሰል በዚህ ሪፖርት ውስጥ አልተካተተም።");
+
+  // A crisis-routed case's draft carries no Part B either.
+  const crisis = await DOMAIN_CONFIGS.relationship.buildDraft({ answers: {}, context: {}, safety: { action: "crisis_route", priority: "urgent", reason: "test" } });
+  assert.ok(!crisis.sections.some((entry) => entry.cultural));
+  assert.equal(crisis.sections.filter((entry) => entry.body === PART_B_WITHHELD).length, 1);
+});
+
+test("layout: every case type's draft builder lays out Part A, then marked Part B", async () => {
+  const { calculateFullDivination } = await import("../lib/cultural/spiritualDivinationEngine.ts");
+  const proceed = { action: "proceed", priority: "routine", reason: "" };
+  const inputs = {
+    biological: { answers: { caseNarrative: "I have headaches in the afternoon." }, context: {} },
+    relationship: { answers: {}, context: {} },
+    social: { answers: {}, context: {} },
+    spiritual: { answers: { question_category: "family" }, context: { gematria: calculateFullDivination("ሰላማዊት", "ፀሐይ") } },
+    career: { answers: {}, context: {} },
+    legal: { answers: { deadline: "within_30" }, context: {} },
+  };
+  const drafts = {};
+  for (const [domain, input] of Object.entries(inputs)) {
+    drafts[domain] = await DOMAIN_CONFIGS[domain].buildDraft({ ...input, safety: proceed });
+    assertLayout(drafts[domain].sections, { label: domain });
+    if (domain !== "biological") assert.ok(drafts[domain].sections.some((entry) => entry.cultural), `${domain} has a Part B`);
+  }
+  // Reflection-only types: a safety or referral note comes before Part B, and nothing else does.
+  assert.equal(drafts.legal.sections[0].id, "time_awareness");
+  assert.ok(drafts.career.sections.every((entry) => entry.cultural), "a career report is Part B only");
+  // The spiritual reading opens Part B with the fixed line.
+  assert.equal(drafts.spiritual.sections[0].title, "Cultural reflection — Name reading");
+  assert.match(drafts.spiritual.sections[0].body, /^This part is cultural and spiritual reflection drawn from Ethiopian tradition\.[\s\S]*The reading begins with the letters of your name/);
+});
+
+test("layout: the reviewer's editor keeps new sections in Part A and the opening line on the first reflection", () => {
+  const sections = layoutSections([
+    { id: "a", title: "What stands out", locked: false },
+    { id: "b", title: "Community", body: "Iddir and mahber.", locked: false, cultural: true },
+  ], { language: "en", withhold: false });
+  const added = orderSections([
+    ...sections,
+    { id: "c", title: "What I suggest", locked: false },
+    { id: "d", title: `${MARKER}Prayer`, body: "Morning prayer.", locked: false, cultural: true },
+    { id: "safety", title: "When not to wait", locked: false },
+  ]);
+  assert.deepEqual(added.map((entry) => entry.id), ["a", "c", "safety", "b", "d"]);
+  assertLayout(added, { label: "edited draft" });
+});
+
+test("approval: a draft with Part B out of place or unmarked is refused, in words the reviewer can act on", async () => {
+  const config = DOMAIN_CONFIGS.social;
+  const base = createCase({ id: "case-layout", userId: "user-1", config, safetyAnswers: SOCIAL_SAFE, answers: {} });
+  const inReview = { ...base, stage: "in_review", review: { expertId: "admin-1", claimedAt: NOW.toISOString() } };
+  const draftWith = (sections) => ({ title: "Report", summary: "Summary", sections, disclaimer: "Disclaimer", generatedAt: NOW.toISOString(), aiAssisted: false });
+  const approve = (sections) => approveCase(inReview, "admin-1", { checklist: CHECKLIST, draft: draftWith(sections) }, config);
+  const steps = { id: "steps", title: "Next steps", locked: false };
+  const reflection = { id: "community", title: `${MARKER}Community traditions of support`, body: PART_B_OPENING, locked: false, cultural: true };
+  const unmarked = { ...reflection, title: "Community traditions of support" };
+
+  assert.throws(() => approve([reflection, steps]), (error) => error.status === 400
+    && /“Cultural reflection — Community traditions of support” is cultural reflection but comes before “Next steps”/.test(error.message)
+    && /Move every cultural reflection section to the end/.test(error.message));
+  assert.throws(() => approve([steps, unmarked]), (error) => error.status === 400 && /its title must start with “Cultural reflection — ”/.test(error.message));
+  assert.throws(() => approve([steps, unmarked, { ...steps, id: "more" }]), (error) => error.details.layout.length === 2, "every problem is listed");
+  assert.equal(approve([steps, reflection]).stage, "visible_to_user");
+  assert.equal(approve([steps, { ...reflection, title: `${MARKER_AM}የማኅበረሰብ ድጋፍ` }]).stage, "visible_to_user", "the Amharic marker is accepted");
+
+  // Through the review desk, as the approve route calls it.
+  const { svc } = desk();
+  const view = await submitted(svc);
+  const claimed = await svc.claim(admin, view.id);
+  const misplaced = { ...claimed.draft, sections: [...claimed.draft.sections, { id: "reviewer-late", title: "What I suggest", locked: false }] };
+  await assert.rejects(() => svc.approve(admin, view.id, { checklist: CHECKLIST, draft: misplaced }), (error) => error.status === 400 && /fix the report layout/.test(error.message));
+  const approved = await svc.approve(admin, view.id, { checklist: CHECKLIST, draft: { ...misplaced, sections: orderSections(misplaced.sections) } });
+  assert.ok(["visible_to_user", "full_report_released"].includes(approved.stage));
 });

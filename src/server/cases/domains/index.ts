@@ -12,6 +12,7 @@ import { getRelationshipQuestions } from "@/lib/case-workflow/relationshipQuesti
 import { getSocialQuestions } from "@/lib/case-workflow/socialQuestionEngine";
 import { generateDynamicQuestions } from "@/lib/case-workflow/spiritualQuestionEngine";
 import type { DomainConfig, SafetyOutcome, WorkflowDomain } from "../types";
+import { layoutSections } from "../reportLayout";
 import { concern, crisisOutcome, proceed, REFERRALS, screenFreeText, CONTACTS } from "../support";
 import { CAREER_SAFETY, LEGAL_SAFETY, RELATIONSHIP_SAFETY, SOCIAL_SAFETY, SPIRITUAL_SAFETY } from "./safetyQuestions";
 import { aiSection, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
@@ -64,6 +65,7 @@ const career: DomainConfig = {
           title: "Work, vocation, and community values",
           body: "Different Ethiopian communities and faith traditions understand meaningful work through values such as service, responsibility, identity, and contribution. These are optional reflection themes, not instructions.",
           locked: false,
+          cultural: true,
         },
         culturalFindings.length > 0 && {
           id: "ethiopian_cultural_context",
@@ -442,7 +444,29 @@ const spiritual: DomainConfig = {
   },
 };
 
-export const DOMAIN_CONFIGS: Record<WorkflowDomain, DomainConfig> = { career, legal, relationship, social, spiritual, biological };
+/**
+ * Every draft is laid out Part A → safety → Part B, with the "Cultural reflection — " marker and the
+ * Part B opening line (reportLayout.ts). Part B is left out of a crisis-routed case.
+ */
+function laidOut(config: DomainConfig): DomainConfig {
+  return {
+    ...config,
+    async buildDraft(input) {
+      const draft = await config.buildDraft(input);
+      const withhold = input.safety.action === "crisis_route";
+      return { ...draft, sections: layoutSections(draft.sections, { language: "en", withhold, noticeId: "cultural_withheld" }) };
+    },
+  };
+}
+
+export const DOMAIN_CONFIGS: Record<WorkflowDomain, DomainConfig> = {
+  career: laidOut(career),
+  legal: laidOut(legal),
+  relationship: laidOut(relationship),
+  social: laidOut(social),
+  spiritual: laidOut(spiritual),
+  biological: laidOut(biological),
+};
 
 export function getDomainConfig(domain: string): DomainConfig {
   const config = DOMAIN_CONFIGS[domain as WorkflowDomain];
