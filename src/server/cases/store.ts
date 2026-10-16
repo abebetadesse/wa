@@ -35,6 +35,7 @@ function fromRow(row: Row): WorkflowCase {
       dataUsage: true,
       emergencySupport: true,
       thirdPartySharing: false,
+      aiMediaAnalysis: false,
       retention: "1_year",
       consentedAt: iso(row.createdAt),
       consentTextVersion: "1.0",

@@ -255,14 +255,49 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
         const explanation = am && raised
           ? `በጥያቄው ውስጥ ${raised[2] ? `${raised[2]} ጊዜ` : "አንድ ጊዜ"} ተነስቷል። ከእርስዎ ጋር ሊረጋገጥ የሚገባ አስተዋጽኦ ያለው ምክንያት አድርገው ይዩት።`
           : t(cause.explanation);
+        const guidance = cause.decisionGuidance
+          ? (am
+            ? (cause.decisionGuidance.immediateActionAmharic ? `የውሳኔ እርምጃ፦ ${cause.decisionGuidance.immediateActionAmharic}` : "")
+            : `Decision step: ${cause.decisionGuidance.immediateAction}`)
+          : "";
+        const resNote = cause.resources?.length
+          ? (am
+            ? (cause.resources[0].titleAmharic ? `ማጣቀሻ፦ ${cause.resources[0].titleAmharic}` : "")
+            : `Reference: ${cause.resources[0].title}`)
+          : "";
         return [
           am ? `${t(cause.title)} (${CONFIDENCE_AM[cause.confidence]} እርግጠኝነት)፦ ${amSentence(explanation)}` : `${cause.title} (${cause.confidence} confidence): ${sentence(explanation)}`,
           cause.because.length ? `${say("What you shared that suggests it:", "ይህን የሚጠቁመው ያጋሩት፦")} ${quoted(cause.because, am ? "፤ " : "; ")}` : "",
           confirm.length ? `${say("What would confirm or rule it out:", "ሊያረጋግጠው ወይም ሊያስወግደው የሚችለው፦")} ${confirm.map(t).join(" ")}` : "",
+          guidance,
+          resNote,
           cause.strands.length ? `${say("Areas of knowledge that support it:", "የሚደግፉት የዕውቀት ዘርፎች፦")} ${am ? cause.strands.map(strandName).join("፤ ") : enList(cause.strands.map(strandName))}${am ? "።" : "."}` : "",
         ].filter(Boolean).join(" ");
       }),
     ));
+
+    // ── 3a. Decision roadmap and curated resources ───────────────────────────
+    if (analysis.decisionFramework || analysis.causes.some((c) => c.decisionGuidance)) {
+      const df = analysis.decisionFramework;
+      const primaryDec = am && df?.primaryDecisionAmharic ? df.primaryDecisionAmharic : (df?.primaryDecision ?? "Review identified root causes and follow guided threshold criteria.");
+      const steps = (am && df?.actionableNextStepsAmharic?.length ? df.actionableNextStepsAmharic : (df?.actionableNextSteps ?? [])).map((step, idx) => `(${idx + 1}) ${step}`);
+      const cautions = (am && df?.tradeOffsAndCautionsAmharic?.length ? df.tradeOffsAndCautionsAmharic : (df?.tradeOffsAndCautions ?? [])).map((c) => `${say("Caution:", "ማስጠንቀቂያ፦")} ${c}`);
+      const resourceItems = (df?.relevantResources ?? []).slice(0, 3).map((res) => {
+        const title = am && res.titleAmharic ? res.titleAmharic : res.title;
+        const desc = am && res.descriptionAmharic ? res.descriptionAmharic : res.description;
+        return `${title}: ${desc}${res.urlOrContact ? ` (${res.urlOrContact})` : ""}`;
+      });
+
+      sections.push(section(
+        "decision-roadmap",
+        say("Decision roadmap and curated resources", "የውሳኔ ፍኖተ-ካርታ እና የተመረጡ መርጃዎች"),
+        say(
+          `Primary decision: ${primaryDec}\n\nThis framework synthesizes clinical, nutritional, and situational priorities into an actionable decision path.`,
+          `ዋና ውሳኔ፦ ${primaryDec}\n\nይህ ማዕቀፍ ክሊኒካዊ፣ አመጋገባዊ እና ተግባራዊ ቅድሚያዎችን ወደ ግልጽ የውሳኔ ጎዳና ያዋህዳል።`,
+        ),
+        [...steps, ...cautions, ...resourceItems],
+      ));
+    }
   }
 
   // ── 3b. The health check: how soon, what may be looked at, what to bring ───

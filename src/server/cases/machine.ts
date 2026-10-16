@@ -69,6 +69,7 @@ export function createCase(input: {
       dataUsage: input.consent?.dataUsage ?? true,
       emergencySupport: input.consent?.emergencySupport ?? true,
       thirdPartySharing: input.consent?.thirdPartySharing ?? false,
+      aiMediaAnalysis: input.consent?.aiMediaAnalysis ?? false,
       retention: input.consent?.retention ?? "90_days",
       consentedAt: input.consent?.consentedAt ?? timestamp,
       consentTextVersion: input.consent?.consentTextVersion ?? "v1",

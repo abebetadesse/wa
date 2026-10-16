@@ -24,12 +24,19 @@ import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foo
 import { buildClinicalPicture, buildStrandLenses, clinicalSearchTerms } from "./clinical";
 import { correctSpelling, type SpellingCorrection } from "./spelling";
 import { CONTACTS } from "./support";
+import {
+  buildDecisionFramework,
+  buildDecisionGuidance,
+  buildDecisionResources,
+  categorizeCause,
+} from "./decisionEngine";
 import type {
   AnalysisCause,
   AnalysisConfidence,
   AnalysisLayer,
   AnalysisSolution,
   CaseAnalysis,
+  CauseStatus,
   ClinicalPicture,
   DomainConfig,
   GroundedFinding,
@@ -246,7 +253,8 @@ function confidenceFor(signals: number, corroborated: boolean, joined: boolean):
   return "tentative";
 }
 
-export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[]): AnalysisCause[] {
+export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[], profile: UserProfile = {}): AnalysisCause[] {
+  if (!detected.length) return [];
   const byId = new Map(detected.map((entry) => [entry.factor.id, entry]));
   const strandsFor = (ids: string[]) => {
     const labels = ids.map((id) => byId.get(id)!.factor.label);
@@ -274,6 +282,53 @@ export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[]):
       score: (members.reduce((sum, member) => sum + member.weight, 0) / members.length) * (members.some((member) => member.factor.safety) ? 2 : 1.2),
     });
   }
+
+  // Profile-augmented causal hypotheses (when supported by detected user factors)
+  const habits = profile.lifestyleHabits ?? {};
+  const hasTeaOrCoffeeHabit = Boolean(habits.teaWithMeals || habits.coffeeWithMeals || habits.bunnaWithMeals);
+  if (byId.has("fatigue") && hasTeaOrCoffeeHabit && !covered.has("caffeine")) {
+    const fatigueMember = byId.get("fatigue")!;
+    causes.push({
+      id: "tannin_chelation_iron",
+      title: "Tea or coffee with meals may be inhibiting iron and mineral absorption",
+      explanation: "Tannins and polyphenols in tea or coffee taken alongside plant-based meals bind non-heme iron and zinc, leading to unreplenished fatigue.",
+      confidence: "moderate",
+      because: [...fatigueMember.quotes.slice(0, 2), "Profile: habitual bunna/tea immediately with meals"],
+      factors: ["caffeine", "fatigue"],
+      strands: strandsFor(["caffeine", "fatigue"]),
+      score: 1.6,
+    });
+  }
+
+  const altitude = profile.location?.altitude;
+  if (typeof altitude === "number" && altitude >= 2200 && (byId.has("fatigue") || byId.has("headache_dizziness") || byId.has("physical"))) {
+    const target = byId.get("fatigue") ?? byId.get("headache_dizziness") ?? byId.get("physical")!;
+    causes.push({
+      id: "altitude_adaptation_strain",
+      title: "High altitude living increases baseline oxygen-carrying and hydration demands",
+      explanation: "Elevations above 2,200m demand 15-25% higher hemoglobin baseline and accelerated respiratory water loss, potentially manifesting as low energy.",
+      confidence: "moderate",
+      because: [...target.quotes.slice(0, 2), `Profile: residing at ${altitude}m elevation`],
+      factors: [target.factor.id],
+      strands: strandsFor([target.factor.id]),
+      score: 1.5,
+    });
+  }
+
+  if ((profile.lifestyle?.fasting || habits.fastingSchedule || profile.wellbeing?.fasting) && (byId.has("food") || byId.has("fatigue") || byId.has("weight_loss"))) {
+    const target = byId.get("food") ?? byId.get("fatigue") ?? byId.get("weight_loss")!;
+    causes.push({
+      id: "fasting_metabolic_adaptation",
+      title: "Fasting schedule without sufficient legume diversity strains energy reserves",
+      explanation: "Plant-based fasting days without planned combinations of protein and micronutrient-dense seeds commonly manifest as fatigue.",
+      confidence: "moderate",
+      because: [...target.quotes.slice(0, 2), "Profile: observed fasting schedule"],
+      factors: [target.factor.id],
+      strands: strandsFor([target.factor.id]),
+      score: 1.5,
+    });
+  }
+
   for (const entry of detected) {
     if (covered.has(entry.factor.id)) continue;
     const strands = strandsFor([entry.factor.id]);
@@ -288,7 +343,23 @@ export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[]):
       score: entry.weight * (entry.factor.safety ? 2 : 1),
     });
   }
-  return causes.sort((a, b) => b.score - a.score).slice(0, 6).map(({ score: _score, ...cause }) => cause);
+
+  return causes
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6)
+    .map(({ score: _score, ...cause }) => {
+      const category = categorizeCause(cause.id, cause.factors);
+      const decisionGuidance = buildDecisionGuidance(cause.id, cause.factors, profile);
+      const resources = buildDecisionResources(cause.id, cause.factors, profile);
+      return {
+        ...cause,
+        category,
+        status: "hypothesized" as CauseStatus,
+        decisionGuidance,
+        resources,
+        includeInReport: true,
+      };
+    });
 }
 
 export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFactor[], kept: GroundedFinding[], urgent: boolean, clinical?: ClinicalPicture): AnalysisSolution[] {
@@ -518,7 +589,7 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
   const symptomLabels = new Set(detected.filter((entry) => entry.factor.system).map((entry) => `${entry.factor.label}:`));
   const saidDirectly = (finding: GroundedFinding) => finding.matchedOn.some((reason) => ![...symptomLabels].some((label) => reason.startsWith(label)));
   const reflections = safetyActive ? [] : strands.filter((entry) => entry.layer === "B").flatMap((entry) => entry.findings);
-  const causes = rankCauses(detected, keptA);
+  const causes = rankCauses(detected, keptA, enriched);
   const interactions = entities.some((entity) => entity.category === "medication" || entity.category === "substance")
     ? solution.safety.herbDrugInteractions.slice(0, 5).map((item) => `${item.herb} + ${item.drug} (${item.severity}): ${item.recommendation}`)
     : [];
@@ -600,6 +671,8 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     ...contextualEngines,
   ];
 
+  const decisionFramework = buildDecisionFramework(causes, detected, withClinicalPriority(urgency, clinical), enriched, clinical);
+
   return {
     version: 1,
     generatedAt: now().toISOString(),
@@ -619,5 +692,6 @@ export async function buildCaseAnalysis(record: WorkflowCase, config: DomainConf
     ...(foodAndHerbs ? { foodAndHerbs } : {}),
     lenses,
     ...(clinical ? { clinical } : {}),
+    decisionFramework,
   };
 }

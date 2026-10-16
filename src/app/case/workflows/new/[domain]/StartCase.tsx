@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import NextImage from "next/image";
 import {
   ArrowLeft,
   Check,
@@ -12,6 +13,7 @@ import {
   FileAudio,
   FileVideo,
   HeartPulse,
+  Image as ImageIcon,
   Lock,
   Mic,
   Plus,
@@ -57,6 +59,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
     dataUsage: true,
     emergencySupport: true,
     thirdPartySharing: false,
+    aiMediaAnalysis: false,
     retention: "90_days" as "30_days" | "90_days" | "1_year" | "until_closed",
     consentTextVersion: "v1",
   });
@@ -64,9 +67,16 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [mediaPreview, setMediaPreview] = useState<{ kind: "audio" | "video"; url: string; name?: string } | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<{ kind: "image" | "audio" | "video"; url: string; name?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const voice = useGeezVoiceInput();
+
+  useEffect(() => {
+    const previewUrl = mediaPreview?.url;
+    return () => {
+      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    };
+  }, [mediaPreview]);
 
   // Spiritual pathway: which name field the Ge'ez letter picker types into.
   const [typingInto, setTypingInto] = useState<"nameGeez" | "motherNameGeez" | null>(null);
@@ -134,7 +144,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
       }
     }
     if (domain === "biological" && answers.urgentSymptoms !== "yes" && !String(answers.caseNarrative ?? "").trim() && !answers.mediaId) {
-      next.caseNarrative = "Write a detailed note or attach an audio/video recording.";
+      next.caseNarrative = "Write a detailed note or attach an image, audio note, or video.";
     }
     setErrors(next);
     if (Object.keys(next).length > 0) {
@@ -157,9 +167,9 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
 
   async function onMediaSelected(file: File | undefined) {
     if (!file) return;
-    const kind = file.type.startsWith("audio/") ? "audio" : file.type.startsWith("video/") ? "video" : null;
+    const kind = file.type.startsWith("image/") ? "image" : file.type.startsWith("audio/") ? "audio" : file.type.startsWith("video/") ? "video" : null;
     if (!kind) {
-      setSubmitError("Choose an audio or video file.");
+      setSubmitError("Choose an image, audio, or video file.");
       return;
     }
     setUploading(true);
@@ -168,7 +178,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
       const form = new FormData();
       form.set("kind", kind);
       form.set("file", file);
-      const result = await apiFetch<{ id: string; kind: "audio" | "video" }>("/api/case-workflows/uploads", { method: "POST", body: form });
+      const result = await apiFetch<{ id: string; kind: "image" | "audio" | "video" }>("/api/case-workflows/uploads", { method: "POST", body: form });
       setAnswers((current) => ({ ...current, mediaId: result.id, mediaKind: result.kind }));
       setMediaPreview({ kind, url: URL.createObjectURL(file), name: file.name });
     } catch (error) {
@@ -375,9 +385,9 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
           {domain === "biological" && (
             <Card>
               <CardHeader>
-                <CardTitle>Voice dictation &amp; recording</CardTitle>
+                <CardTitle>Voice dictation &amp; attachments</CardTitle>
                 <CardDescription>
-                  You can dictate in Amharic or attach an optional audio/video recording for your assigned expert reviewer.
+                  You can dictate in Amharic or attach an optional image, audio note, or video for your assigned expert reviewer.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-5">
@@ -441,14 +451,14 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                       <div className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                         <UploadCloud className="size-6" aria-hidden="true" />
                       </div>
-                      <p className="text-sm font-semibold text-foreground">Attach an audio or video recording</p>
+                      <p className="text-sm font-semibold text-foreground">Attach an image, audio note, or video</p>
                       <p className="text-xs text-muted-foreground max-w-md">
-                        Upload an audio note or short video clip for your reviewer. Automated analysis uses your written note; media is reviewed directly by your practitioner.
+                        Media is private and reviewed by your practitioner. When enabled by the provider, an AI vision model may prepare provisional observations for the practitioner to verify.
                       </p>
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept="audio/*,video/*"
+                        accept="image/jpeg,image/png,image/webp,audio/*,video/*"
                         disabled={uploading}
                         onChange={(event) => void onMediaSelected(event.target.files?.[0])}
                         className="sr-only"
@@ -462,15 +472,15 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                         onClick={() => fileInputRef.current?.click()}
                         className="mt-2"
                       >
-                        {uploading ? "Uploading recording…" : "Choose recording file"}
+                        {uploading ? "Uploading…" : "Choose a file"}
                       </Button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-3 text-left">
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                          {mediaPreview?.kind === "audio" ? <FileAudio className="size-4 text-brand" /> : <FileVideo className="size-4 text-brand" />}
-                          Attached recording {mediaPreview?.name ? `(${mediaPreview.name})` : ""}
+                          {mediaPreview?.kind === "audio" ? <FileAudio className="size-4 text-brand" /> : mediaPreview?.kind === "image" ? <ImageIcon className="size-4 text-brand" /> : <FileVideo className="size-4 text-brand" />}
+                          Attached {mediaPreview?.kind ?? "media"} {mediaPreview?.name ? `(${mediaPreview.name})` : ""}
                         </span>
                         <Button type="button" variant="ghost" size="sm" onClick={removeMedia} className="text-danger hover:text-danger">
                           <Trash2 className="size-4" aria-hidden="true" /> Remove
@@ -478,6 +488,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                       </div>
                       {mediaPreview?.kind === "audio" && <audio controls src={mediaPreview.url} className="w-full" />}
                       {mediaPreview?.kind === "video" && <video controls src={mediaPreview.url} className="max-h-64 w-full rounded-xl" />}
+                      {mediaPreview?.kind === "image" && <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-64 max-w-full rounded-xl object-contain" />}
                     </div>
                   )}
                 </div>
@@ -586,6 +597,23 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 </div>
               </div>
 
+              {Boolean(answers.mediaId) && (answers.mediaKind === "image" || answers.mediaKind === "video") && (
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-500/30 bg-violet-950/10 p-4">
+                  <input
+                    type="checkbox"
+                    checked={consent.aiMediaAnalysis ?? false}
+                    onChange={(event) => setConsent((current) => ({ ...current, aiMediaAnalysis: event.target.checked }))}
+                    className="mt-1 size-4 accent-violet-500"
+                  />
+                  <span className="flex-1">
+                    <span className="block text-sm font-semibold text-foreground">Optional AI analysis of this image/video</span>
+                    <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                      If you opt in, your reviewer may ask the configured AI vision provider to prepare provisional observations from this attachment. The reviewer must verify them. The media is not analyzed by AI if you leave this unchecked; your reviewer can still inspect it directly.
+                    </span>
+                  </span>
+                </label>
+              )}
+
               {/* Retention Policy */}
               <div className="rounded-2xl border border-border p-4 bg-muted/20">
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-1">
@@ -658,7 +686,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge tone="brand">{answeredCount} of {requiredQuestions.length} required answered</Badge>
-                  {Boolean(answers.mediaId) && <Badge tone="success">Recording attached</Badge>}
+                  {Boolean(answers.mediaId) && <Badge tone="success">Media attached</Badge>}
                 </div>
               </div>
 
@@ -695,11 +723,13 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
               {/* Media preview in summary */}
               {mediaPreview && (
                 <div className="flex flex-col gap-2 rounded-2xl border border-border p-4 bg-muted/20">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attached Recording</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attached Media</span>
                   {mediaPreview.kind === "audio" ? (
                     <audio controls src={mediaPreview.url} className="w-full mt-1" />
-                  ) : (
+                  ) : mediaPreview.kind === "video" ? (
                     <video controls src={mediaPreview.url} className="max-h-56 w-full rounded-xl mt-1" />
+                  ) : (
+                    <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-56 max-w-full rounded-xl object-contain" />
                   )}
                 </div>
               )}

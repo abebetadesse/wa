@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test:case-media": "npx --no-install tsx --test --test-force-exit src/tests/case-media-analysis.test.mjs",
+    "posttest": "npm run test:case-media",
     "i18n:sync": "node scripts/i18n.mjs sync",
     "i18n:check": "node scripts/i18n.mjs check",
     "db:push": "drizzle-kit push",

@@ -35,6 +35,8 @@ export interface ConsentRecord {
   dataUsage: boolean;
   emergencySupport: boolean;
   thirdPartySharing: boolean;
+  /** Explicit opt-in for a reviewer to send an image or video to the configured vision model. */
+  aiMediaAnalysis?: boolean;
   retention: "30_days" | "90_days" | "1_year" | "until_closed";
   consentedAt: string | null;
   consentTextVersion: string;
@@ -249,15 +251,64 @@ export interface GroundedFinding {
   source?: string;
 }
 
+export type CauseCategory =
+  | "lifestyle_environmental"
+  | "nutritional_metabolic"
+  | "clinical_physiological"
+  | "psychosocial_relational"
+  | "cultural_spiritual";
+
+export type CauseStatus = "hypothesized" | "verified" | "contributing" | "ruled_out";
+
+export interface DecisionResource {
+  id?: string;
+  title: string;
+  titleAmharic?: string;
+  type: "clinical_guideline" | "nutrition_strategy" | "indigenous_remedy" | "safety_alert" | "referral_directory";
+  urlOrContact?: string;
+  description: string;
+  descriptionAmharic?: string;
+  evidenceGrade?: EvidenceGrade | string;
+}
+
+export interface DecisionGuidance {
+  immediateAction: string;
+  immediateActionAmharic?: string;
+  diagnosticCheck?: string;
+  diagnosticCheckAmharic?: string;
+  thresholdCriteria?: string;
+  thresholdCriteriaAmharic?: string;
+  priority: "urgent" | "high" | "moderate" | "routine";
+}
+
+export interface DecisionFramework {
+  primaryDecision: string;
+  primaryDecisionAmharic?: string;
+  urgencyLevel: string;
+  actionableNextSteps: string[];
+  actionableNextStepsAmharic?: string[];
+  tradeOffsAndCautions: string[];
+  tradeOffsAndCautionsAmharic?: string[];
+  relevantResources: DecisionResource[];
+}
+
 export interface AnalysisCause {
   id: string;
   title: string;
+  titleAmharic?: string;
   explanation: string;
+  explanationAmharic?: string;
   confidence: AnalysisConfidence;
   /** The person's own words (or profile facts) that support this hypothesis. */
   because: string[];
   factors: string[];
   strands: string[];
+  category?: CauseCategory;
+  status?: CauseStatus;
+  decisionGuidance?: DecisionGuidance;
+  resources?: DecisionResource[];
+  reviewerNotes?: string;
+  includeInReport?: boolean;
 }
 
 export interface AnalysisSolution {
@@ -333,6 +384,8 @@ export interface CaseAnalysis {
   lenses?: CaseLens[];
   /** Bodily symptoms read clinically (clinical.ts); absent when none were described. */
   clinical?: ClinicalPicture;
+  /** Synthesized decision framework linking root causes, decision criteria, and curated resources. */
+  decisionFramework?: DecisionFramework;
 }
 
 /** One knowledge strand's reading of a case; `person` is the wording a report may use. */

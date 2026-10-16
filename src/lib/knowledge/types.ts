@@ -174,6 +174,9 @@ export interface UserProfile {
     problems?: string[];
   };
   riskFactors?: string[];
+  lifestyleHabits?: Record<string, unknown>;
+  pregnancyOrLactation?: string;
+  activityLevel?: string;
   mentalwellbeing?: {
     symptoms?: string[];
     conditions?: string[];

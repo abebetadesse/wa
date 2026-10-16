@@ -23,7 +23,7 @@ async function removeAbandonedMedia() {
   }
 }
 
-export async function uploadWorkflowMedia(user: AuthenticatedUser, kind: "audio" | "video", file: File) {
+export async function uploadWorkflowMedia(user: AuthenticatedUser, kind: "image" | "audio" | "video", file: File) {
   if (Date.now() - lastCleanupAt >= CLEANUP_INTERVAL_MS) {
     lastCleanupAt = Date.now();
     void removeAbandonedMedia().catch((error) => console.error("[case-workflow] abandoned media cleanup failed:", error));

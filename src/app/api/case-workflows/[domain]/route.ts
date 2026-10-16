@@ -14,6 +14,7 @@ export const POST = defineRoute({
       dataUsage: z.boolean().default(true),
       emergencySupport: z.boolean().default(true),
       thirdPartySharing: z.boolean().default(false),
+      aiMediaAnalysis: z.boolean().default(false),
       retention: z.enum(["30_days", "90_days", "1_year", "until_closed"]).default("90_days"),
       consentTextVersion: z.string().default("v1"),
     }).optional(),

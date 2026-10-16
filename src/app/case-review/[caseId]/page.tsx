@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import NextImage from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "@/features/session/SessionProvider";
@@ -28,6 +29,17 @@ interface ReviewItem {
   analysis: CaseAnalysis | null;
 }
 
+interface CaseMediaAssessment {
+  observations: string[];
+  limitations: string[];
+  needsProfessionalReview: true;
+}
+
+interface CaseMediaAssessmentState {
+  mediaId: string;
+  assessment: CaseMediaAssessment;
+}
+
 const POLL_MS = 30_000;
 
 function answerText(question: ReviewItem["questions"][number], value: unknown) {
@@ -51,6 +63,8 @@ export default function CaseReviewItemPage() {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mediaAssessment, setMediaAssessment] = useState<CaseMediaAssessmentState | null>(null);
+  const [analysingMedia, setAnalysingMedia] = useState(false);
   const base = `/api/expert/cases/${params.caseId}`;
 
   /** `keepEdits`: a background refresh must not overwrite a report the reviewer is editing. */
@@ -116,6 +130,40 @@ export default function CaseReviewItemPage() {
   async function send(kind: CaseMessage["kind"], body = message) {
     const sent = await run(() => apiFetch<ReviewItem>(`${base}/messages`, { method: "POST", json: { body, kind } }), kind === "question" ? "Question sent. You will be notified when the person replies." : "Message sent.", true);
     if (sent && body === message) setMessage("");
+  }
+
+  async function analyseMedia(mediaId: string) {
+    setAnalysingMedia(true);
+    setError("");
+    setStatus("");
+    try {
+      const assessment = await apiFetch<CaseMediaAssessment>(`${base}/media-analysis`, { method: "POST", json: { mediaId } });
+      setMediaAssessment({ mediaId, assessment });
+      setStatus("Provisional media observations are ready for your review. Nothing has been added to the report.");
+    } catch (cause) {
+      setError(errorMessage(cause));
+    } finally {
+      setAnalysingMedia(false);
+    }
+  }
+
+  function addMediaAssessment() {
+    if (!draft || !item || !mediaAssessment || mediaAssessment.mediaId !== item.answers.mediaId) return;
+    const assessment = mediaAssessment.assessment;
+    const section: ReportSection = {
+      id: "ai-media-observations",
+      title: "AI-assisted media observations — professional verification required",
+      body: "These are provisional observations from the attached media, not a diagnosis or treatment recommendation. The reviewer must verify them against the original media and case context.",
+      items: [
+        ...assessment.observations,
+        ...assessment.limitations.map((entry) => `Limitation: ${entry}`),
+      ],
+      locked: false,
+      evidence: { sources: ["AI vision model; original case attachment requires professional review"], note: "AI-generated and unverified. Do not treat as a diagnosis or clinical conclusion." },
+    };
+    setDraft({ ...draft, sections: [...draft.sections.filter((entry) => entry.id !== section.id), section] });
+    setDirty(true);
+    setStatus("Provisional media observations were added to the editable draft. Verify or remove them before saving or approving.");
   }
 
   const reanalyse = () => run(() => apiFetch<ReviewItem>(`${base}/analysis`, { method: "POST" }), "Analysis updated.", true);
@@ -198,10 +246,34 @@ export default function CaseReviewItemPage() {
               ))}
               {item.domain === "biological" && typeof item.answers.mediaId === "string" && (
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-slate-200">Client audio/video attachment</p>
+                  <p className="text-sm font-semibold text-slate-200">Client attachment</p>
                   {item.answers.mediaKind === "video"
                     ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 max-h-72 w-full rounded-xl" />
-                    : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 w-full" />}
+                    : item.answers.mediaKind === "image"
+                      ? <NextImage src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} alt="Private case evidence provided by the client" width={720} height={480} unoptimized className="mt-2 max-h-72 rounded-xl object-contain" />
+                      : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 w-full" />}
+                  {item.answers.mediaKind !== "audio" && (
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <button type="button" disabled={!mayAct || busy || analysingMedia} onClick={() => void analyseMedia(item.answers.mediaId as string)} className="rounded-lg border border-violet-400/30 px-3 py-2 text-xs font-semibold text-violet-100 hover:bg-violet-950/30 disabled:opacity-50">
+                        {analysingMedia ? "Analyzing attachment…" : "Prepare AI observations"}
+                      </button>
+                      <span className="text-xs text-slate-400">Uses the provider-enabled vision model. Observations are provisional; a qualified reviewer must verify them.</span>
+                    </div>
+                  )}
+                  {mediaAssessment?.mediaId === item.answers.mediaId && (
+                    <div className="mt-4 rounded-lg border border-violet-400/30 bg-violet-950/20 p-4">
+                      <h3 className="text-sm font-semibold text-violet-100">Provisional AI observations</h3>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-200">{mediaAssessment.assessment.observations.map((entry, index) => <li key={`observation-${index}`}>{entry}</li>)}</ul>
+                      {mediaAssessment.assessment.limitations.length > 0 && (
+                        <>
+                          <h4 className="mt-3 text-xs font-semibold uppercase tracking-wide text-amber-200">Limitations</h4>
+                          <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-amber-100">{mediaAssessment.assessment.limitations.map((entry, index) => <li key={`limitation-${index}`}>{entry}</li>)}</ul>
+                        </>
+                      )}
+                      <p className="mt-3 text-xs text-slate-300">Not a diagnosis or treatment recommendation. Verify against the original attachment and the case requirements.</p>
+                      {mayAct && draft && <button type="button" onClick={addMediaAssessment} className="mt-3 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600">Add observations to editable report</button>}
+                    </div>
+                  )}
                 </div>
               )}
             </dl>

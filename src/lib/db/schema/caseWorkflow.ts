@@ -86,7 +86,7 @@ export const workflowCases = mysqlTable("workflow_cases", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-/** Private audio/video evidence for a biological pathway case; unattached uploads expire by cleanup. */
+/** Private image/audio/video evidence for a biological pathway case; unattached uploads expire by cleanup. */
 export const workflowCaseMedia = mysqlTable("workflow_case_media", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),

@@ -33,6 +33,8 @@ import { dbCaseStore, type CaseStore } from "./store";
 import type { CaseAnalysis, CaseMessage, ConsultationRecord, ConsentRecord, DomainConfig, DraftReport, FoodHerbKind, FoodHerbNote, MessageChannel, WorkflowCase, WorkflowDomain } from "./types";
 import { acceptsFoodHerb, matchNames, resolveItems, splitTypedNames } from "./foodHerb";
 import { recognisePhoto, visionDeps, visionModel, type Recognition, type RecognitionDeps } from "./photoRecognition";
+import { analyzeCaseMedia } from "./mediaAnalysis";
+import { readWorkflowMedia } from "./media";
 import { buildCaseAnalysis } from "./analysis";
 import { enhanceReportSection, type EnhanceDeps, type EnhanceInput } from "./sectionEnhancer";
 import { loadAnalysisProfile } from "./analysisProfile";
@@ -232,7 +234,7 @@ export function createCaseService(deps: Deps) {
     }) {
       const config = getDomainConfig(domain);
       if (domain === "biological" && input.safetyAnswers.urgentSymptoms !== "yes" && !String(input.answers.caseNarrative ?? "").trim() && !String(input.answers.mediaId ?? "").trim()) {
-        throw ApiError.badRequest("Write a detailed note or attach an audio/video recording.");
+        throw ApiError.badRequest("Write a detailed note or attach an audio/video recording or image.");
       }
       if (domain === "biological" && input.safetyAnswers.urgentSymptoms !== "yes" && input.consent?.dataUsage === false) {
         throw ApiError.badRequest("Consent to case analysis and report preparation is required for this pathway.");
@@ -489,6 +491,49 @@ export function createCaseService(deps: Deps) {
       await store.save(next);
       await deps.notifyOwner?.(next, "message", message);
       return toExpertView(next, getDomainConfig(next.domain));
+    },
+
+    /** Reads an image or samples a short video for reviewer-only, provisional observations. */
+    async analyseMedia(user: AuthenticatedUser, caseId: string, mediaId: string) {
+      const record = await reviewable(user, caseId);
+      if (record.domain !== "biological") throw ApiError.badRequest("Media symptom analysis is only available for health cases.");
+      if (record.stage !== "in_review" || record.review?.expertId !== user.id) {
+        throw ApiError.forbidden("Only the reviewer who claimed this case may analyze its media.");
+      }
+      if (!record.consent.dataUsage) throw ApiError.forbidden("The case owner has not consented to AI analysis.");
+      if (!record.consent.aiMediaAnalysis) throw ApiError.forbidden("The case owner has not opted in to AI analysis of this attachment.");
+      if (record.safety.action === "crisis_route") {
+        throw ApiError.conflict("Follow the emergency guidance first. Do not wait for media analysis.");
+      }
+      const [linked] = await db.select({ id: workflowCaseMedia.id })
+        .from(workflowCaseMedia)
+        .where(and(
+          eq(workflowCaseMedia.id, mediaId),
+          eq(workflowCaseMedia.caseId, record.id),
+          eq(workflowCaseMedia.userId, record.userId),
+        ))
+        .limit(1);
+      if (!linked) throw ApiError.notFound("Attachment");
+
+      const { media, filePath } = await readWorkflowMedia(mediaId);
+      if (media.kind !== "image" && media.kind !== "video") {
+        throw ApiError.badRequest("AI symptom analysis supports images and videos only.");
+      }
+      const config = getDomainConfig(record.domain);
+      const questions = [...config.safetyQuestions, ...(config.startQuestions ?? []), ...config.questions(record.answers)];
+      const providerRequirements = [
+        config.description,
+        ...config.reviewChecklist.map((item) => item.label),
+        ...questions.filter((question) => question.required).map((question) => `Required case field: ${question.text}`),
+      ];
+      return analyzeCaseMedia(
+        { filePath, kind: media.kind, mimeType: media.mimeType },
+        {
+          domain: record.domain,
+          providerRequirements,
+          caseNarrative: typeof record.answers.caseNarrative === "string" ? record.answers.caseNarrative : "",
+        },
+      );
     },
 
     /**

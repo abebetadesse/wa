@@ -39,6 +39,11 @@ export async function loadAnalysisProfile(userId: string): Promise<UserProfile> 
   // Birth details feed the cultural reading only when the person agreed to that kind of reflection.
   const spiritual = Boolean(personal?.consent?.spiritual ?? personal?.consentSpiritual);
   const birthDate = isoDate(personal?.birthDate ?? account.dateOfBirth);
+  const isPregnant = wellbeing ? Boolean(wellbeing.pregnancyOrLactation && wellbeing.pregnancyOrLactation !== "none" && wellbeing.pregnancyOrLactation !== "not_pregnant") : undefined;
+  const isLactating = wellbeing ? wellbeing.pregnancyOrLactation === "lactating" : undefined;
+  const lifestyleHabits = (wellbeing?.lifestyleHabits && typeof wellbeing.lifestyleHabits === "object") ? (wellbeing.lifestyleHabits as Record<string, unknown>) : {};
+  const altitude = typeof wellbeing?.altitudeMeters === "number" ? wellbeing.altitudeMeters : undefined;
+
   return {
     userId,
     age: age ?? undefined,
@@ -46,9 +51,25 @@ export async function loadAnalysisProfile(userId: string): Promise<UserProfile> 
     demographics: { age: age ?? undefined, gender, region, city: account.city ?? undefined },
     medications,
     conditions,
-    pregnant: wellbeing ? Boolean(wellbeing.pregnancyOrLactation && wellbeing.pregnancyOrLactation !== "none") : undefined,
-    wellbeing: { medications, conditions, allergies: wellbeing ? list(wellbeing.allergies) : [] },
-    location: region ? { region, city: account.city ?? undefined, altitude: wellbeing?.altitudeMeters ?? undefined } : undefined,
+    pregnant: isPregnant,
+    lactating: isLactating,
+    pregnancyOrLactation: wellbeing?.pregnancyOrLactation ?? undefined,
+    activityLevel: wellbeing?.activityLevel ?? undefined,
+    lifestyleHabits,
+    lifestyle: {
+      activity: wellbeing?.activityLevel ?? undefined,
+      diet: typeof lifestyleHabits.diet === "string" ? lifestyleHabits.diet : undefined,
+      fasting: Boolean(lifestyleHabits.fastingSchedule || lifestyleHabits.fasting),
+    },
+    wellbeing: {
+      medications,
+      conditions,
+      allergies: wellbeing ? list(wellbeing.allergies) : [],
+      pregnant: isPregnant,
+      lactating: isLactating,
+      fasting: Boolean(lifestyleHabits.fastingSchedule || lifestyleHabits.fasting),
+    },
+    location: (region || altitude !== undefined) ? { region: region ?? "Unspecified", city: account.city ?? undefined, altitude } : undefined,
     cultural: spiritual && birthDate ? { birthDate, birthTime: personal?.birthTime ?? undefined, birthLocation: personal?.birthLocation ?? account.city ?? undefined } : undefined,
   };
 }

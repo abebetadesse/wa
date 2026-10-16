@@ -1,7 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisConfidence, CaseAnalysis, CaseLens, CaseMessage, CasePersonContext, ClinicalPicture, FoodHerbReview, GroundedFinding, ReportSection } from "@/server/cases/types";
+import type {
+  AnalysisCause,
+  AnalysisConfidence,
+  CaseAnalysis,
+  CaseLens,
+  CaseMessage,
+  CasePersonContext,
+  CauseCategory,
+  CauseStatus,
+  ClinicalPicture,
+  DecisionFramework,
+  DecisionGuidance,
+  DecisionResource,
+  FoodHerbReview,
+  GroundedFinding,
+  ReportSection,
+} from "@/server/cases/types";
 import { FACTOR_GUIDANCE } from "@/server/cases/analysisGuidance";
 import { FACTORS } from "@/server/cases/analysisLexicon";
 import { REPORT_LANGUAGES, type ReportLanguage } from "@/server/cases/amharic";
@@ -42,6 +58,36 @@ const PRIORITY_TONE: Record<ClinicalPicture["priority"]["level"], string> = {
   routine: "border-white/10 bg-white/[0.02] text-slate-200",
 };
 
+const CATEGORY_LABEL: Record<CauseCategory, string> = {
+  lifestyle_environmental: "Lifestyle & Environment",
+  nutritional_metabolic: "Nutritional & Metabolic",
+  clinical_physiological: "Clinical & Physiological",
+  psychosocial_relational: "Psychosocial & Relational",
+  cultural_spiritual: "Cultural & Spiritual",
+};
+
+const CATEGORY_TONE: Record<CauseCategory, string> = {
+  lifestyle_environmental: "border-teal-500/40 bg-teal-950/30 text-teal-200",
+  nutritional_metabolic: "border-amber-500/40 bg-amber-950/30 text-amber-200",
+  clinical_physiological: "border-rose-500/40 bg-rose-950/30 text-rose-200",
+  psychosocial_relational: "border-indigo-500/40 bg-indigo-950/30 text-indigo-200",
+  cultural_spiritual: "border-violet-500/40 bg-violet-950/30 text-violet-200",
+};
+
+const STATUS_LABEL: Record<CauseStatus, string> = {
+  verified: "Verified",
+  contributing: "Contributing",
+  hypothesized: "Hypothesized",
+  ruled_out: "Ruled Out",
+};
+
+const STATUS_TONE: Record<CauseStatus, string> = {
+  verified: "border-emerald-500/50 bg-emerald-950/40 text-emerald-100",
+  contributing: "border-sky-500/50 bg-sky-950/40 text-sky-100",
+  hypothesized: "border-amber-500/50 bg-amber-950/30 text-amber-200",
+  ruled_out: "border-slate-600/50 bg-slate-900/50 text-slate-400 line-through",
+};
+
 let sequence = 0;
 const sectionId = (prefix: string) => `reviewer-${prefix}-${Date.now().toString(36)}-${++sequence}`;
 
@@ -75,6 +121,20 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
   const lenses = analysis.lenses ?? analysis.clinical?.lenses ?? [];
   const heaviest = Math.max(1, ...analysis.factors.map((factor) => factor.weight));
   const askable = new Set(analysis.dataQuality.followUps);
+
+  const [causeStates, setCauseStates] = useState<Record<string, { status: CauseStatus; notes: string; showDetails: boolean }>>(() =>
+    Object.fromEntries(analysis.causes.map((c) => [c.id, { status: c.status ?? "hypothesized", notes: c.reviewerNotes ?? "", showDetails: false }]))
+  );
+  const [causeFilter, setCauseFilter] = useState<"all" | "active" | "ruled_out">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  const filteredCauses = analysis.causes.filter((cause) => {
+    const status = causeStates[cause.id]?.status ?? cause.status ?? "hypothesized";
+    if (causeFilter === "active" && status === "ruled_out") return false;
+    if (causeFilter === "ruled_out" && status !== "ruled_out") return false;
+    if (categoryFilter !== "all" && (cause.category ?? "lifestyle_environmental") !== categoryFilter) return false;
+    return true;
+  });
 
   const add = (title: string, body: string | undefined, items: string[], cultural = false) =>
     onAddSection({ id: sectionId(cultural ? "reflection" : "analysis"), title: cultural ? markCulturalTitle(title, "en") : title, body, items: items.length ? items : undefined, locked: false, ...(cultural ? { cultural: true } : {}) });
@@ -226,33 +286,262 @@ export function AnalysisPanel({ analysis, canAct, busy, onAddSection, onAddSecti
       </div>
 
       <div>
-        <h3 className="font-semibold text-white">Likely causes <span className="text-xs font-normal text-slate-400">(hypotheses to confirm, most weight first)</span></h3>
-        {analysis.causes.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-400">The answers do not point to a cause yet. Ask a follow-up question above.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="font-semibold text-white">Likely root causes & decision guidance <span className="text-xs font-normal text-slate-400">({analysis.causes.length} hypotheses ranked by evidentiary weight)</span></h3>
+            <p className="mt-0.5 text-xs text-slate-400">Review, verify, or rule out causal factors; attach decision guidance and evidence-based resources directly into the client draft.</p>
+          </div>
+          {analysis.decisionFramework && (
+            <button
+              type="button"
+              disabled={!mayInsert("A")}
+              onClick={() => {
+                const df = analysis.decisionFramework!;
+                onAddSection({
+                  id: sectionId("decision-framework"),
+                  title: "Decision Roadmap & Curated Resources",
+                  body: `Primary Decision: ${df.primaryDecision}\n\nUrgency Assessment: ${df.urgencyLevel.toUpperCase()}`,
+                  items: [
+                    ...df.actionableNextSteps.map((step, idx) => `Step ${idx + 1}: ${step}`),
+                    ...df.tradeOffsAndCautions.map((c) => `Caution: ${c}`),
+                    ...df.relevantResources.map((r) => `Resource: ${r.title} — ${r.description}${r.urlOrContact ? ` (${r.urlOrContact})` : ""}`),
+                  ],
+                  locked: false,
+                });
+              }}
+              className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-900/40"
+            >
+              + Insert Decision Framework to Report
+            </button>
+          )}
+        </div>
+
+        {analysis.causes.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-b border-white/10 pb-3 text-xs">
+            <span className="text-slate-400">Filter status:</span>
+            {(["all", "active", "ruled_out"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setCauseFilter(mode)}
+                className={`rounded px-2 py-0.5 capitalize transition ${causeFilter === mode ? "bg-white/20 text-white font-semibold" : "text-slate-400 hover:text-slate-200"}`}
+              >
+                {mode === "all" ? "All causes" : mode === "active" ? "Active only" : "Ruled out"}
+              </button>
+            ))}
+            <span className="ml-3 text-slate-400">Category:</span>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="rounded border border-white/15 bg-slate-950 px-2 py-0.5 text-xs text-slate-200"
+            >
+              <option value="all">All categories</option>
+              <option value="nutritional_metabolic">Nutritional & Metabolic</option>
+              <option value="clinical_physiological">Clinical & Physiological</option>
+              <option value="lifestyle_environmental">Lifestyle & Environment</option>
+              <option value="psychosocial_relational">Psychosocial & Relational</option>
+              <option value="cultural_spiritual">Cultural & Spiritual</option>
+            </select>
+          </div>
+        )}
+
+        {filteredCauses.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-400">
+            {analysis.causes.length === 0
+              ? "The answers do not point to a cause yet. Ask a follow-up question above."
+              : "No causes match the selected filter."}
+          </p>
         ) : (
           <ol className="mt-3 grid gap-3">
-            {analysis.causes.map((cause, index) => (
-              <li key={cause.id} className="rounded-lg border border-white/10 p-3">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <p className="min-w-0 flex-1 text-sm font-semibold text-white">{index + 1}. {cause.title}</p>
-                  <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${CONFIDENCE[cause.confidence]}`}>{cause.confidence}</span>
-                </div>
-                <p className="mt-1 text-sm text-slate-300">{cause.explanation}</p>
-                <ul className="mt-2 grid gap-1 border-l-2 border-white/15 pl-3 text-xs italic text-slate-300">
-                  {cause.because.map((quote) => <li key={quote}>“{quote}”</li>)}
-                </ul>
-                {[...new Set(cause.factors.map((id) => FOLLOW_UP.get(id)).filter((question): question is string => Boolean(question)))].slice(0, 2).map((question) => (
-                  <div key={question} className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
-                    <span className="min-w-0 flex-1"><span className="font-semibold text-slate-200">To confirm:</span> {question}</span>
-                    {askable.has(question) && <button type="button" disabled={!canAct || busy} onClick={() => onAsk(question)} className={smallButton}>Ask</button>}
+            {filteredCauses.map((cause, index) => {
+              const currentStatus = causeStates[cause.id]?.status ?? cause.status ?? "hypothesized";
+              const currentNotes = causeStates[cause.id]?.notes ?? cause.reviewerNotes ?? "";
+              const showDetails = causeStates[cause.id]?.showDetails ?? false;
+              const isRuledOut = currentStatus === "ruled_out";
+              const category = cause.category ?? "lifestyle_environmental";
+
+              return (
+                <li
+                  key={cause.id}
+                  className={`rounded-lg border p-3 transition ${
+                    isRuledOut
+                      ? "border-white/5 bg-white/[0.01] opacity-60"
+                      : "border-white/10 bg-white/[0.02]"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-mono text-slate-500">#{index + 1}</span>
+                      <p className={`text-sm font-semibold ${isRuledOut ? "text-slate-400 line-through" : "text-white"}`}>
+                        {cause.title}
+                      </p>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CATEGORY_TONE[category]}`}>
+                        {CATEGORY_LABEL[category]}
+                      </span>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CONFIDENCE[cause.confidence]}`}>
+                        {cause.confidence}
+                      </span>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${STATUS_TONE[currentStatus]}`}>
+                        {STATUS_LABEL[currentStatus]}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-slate-400">Status:</label>
+                      <select
+                        value={currentStatus}
+                        disabled={!canAct || busy}
+                        onChange={(e) => {
+                          const newStatus = e.target.value as CauseStatus;
+                          setCauseStates((prev) => ({
+                            ...prev,
+                            [cause.id]: {
+                              status: newStatus,
+                              notes: prev[cause.id]?.notes ?? "",
+                              showDetails: prev[cause.id]?.showDetails ?? false,
+                            },
+                          }));
+                        }}
+                        className="rounded border border-white/15 bg-slate-950 px-2 py-1 text-xs text-slate-200"
+                      >
+                        <option value="hypothesized">Hypothesized</option>
+                        <option value="verified">Verified</option>
+                        <option value="contributing">Contributing</option>
+                        <option value="ruled_out">Ruled Out</option>
+                      </select>
+                    </div>
                   </div>
-                ))}
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs text-slate-500">{cause.strands.length ? `Supported by: ${cause.strands.join(", ")}` : "No supporting knowledge finding"}</span>
-                  <button type="button" disabled={!mayInsert("A")} onClick={() => add(cause.title, cause.explanation, [])} className={smallButton}>Add to report</button>
-                </div>
-              </li>
-            ))}
+
+                  <p className="mt-1.5 text-sm text-slate-300">{cause.explanation}</p>
+
+                  <ul className="mt-2 grid gap-1 border-l-2 border-emerald-500/30 pl-3 text-xs italic text-slate-300">
+                    {cause.because.map((quote) => (
+                      <li key={quote}>“{quote}”</li>
+                    ))}
+                  </ul>
+
+                  {cause.decisionGuidance && (
+                    <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] p-2.5 text-xs">
+                      <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
+                        <span className="font-semibold text-slate-200">Decision Guidance</span>
+                        <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-300">
+                          Priority: {cause.decisionGuidance.priority}
+                        </span>
+                      </div>
+                      <div className="mt-2 grid gap-1.5 text-slate-300">
+                        <p><span className="font-semibold text-emerald-400">Immediate Action:</span> {cause.decisionGuidance.immediateAction}</p>
+                        {cause.decisionGuidance.diagnosticCheck && (
+                          <p><span className="font-semibold text-sky-400">Diagnostic Check:</span> {cause.decisionGuidance.diagnosticCheck}</p>
+                        )}
+                        {cause.decisionGuidance.thresholdCriteria && (
+                          <p><span className="font-semibold text-amber-400">Threshold / Escalation:</span> {cause.decisionGuidance.thresholdCriteria}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {cause.resources && cause.resources.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+                      <span className="text-slate-400 font-semibold">Curated Resources:</span>
+                      {cause.resources.map((res) => (
+                        <span
+                          key={res.title}
+                          className="rounded border border-emerald-500/20 bg-emerald-950/20 px-2 py-0.5 text-[11px] text-emerald-200"
+                          title={res.description}
+                        >
+                          {res.title}{res.urlOrContact ? ` (${res.urlOrContact})` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-2">
+                    <span className="text-xs text-slate-500">
+                      {cause.strands.length ? `Strands: ${cause.strands.join(", ")}` : "No supporting knowledge strand"}
+                    </span>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCauseStates((prev) => ({
+                            ...prev,
+                            [cause.id]: {
+                              status: prev[cause.id]?.status ?? "hypothesized",
+                              notes: prev[cause.id]?.notes ?? "",
+                              showDetails: !prev[cause.id]?.showDetails,
+                            },
+                          }));
+                        }}
+                        className={smallButton}
+                      >
+                        {showDetails ? "Hide Notes" : "Reviewer Notes"}
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={!mayInsert("A") || isRuledOut}
+                        onClick={() => add(cause.title, cause.explanation, [])}
+                        className={smallButton}
+                      >
+                        Add to report
+                      </button>
+
+                      {cause.decisionGuidance && (
+                        <button
+                          type="button"
+                          disabled={!mayInsert("A") || isRuledOut}
+                          onClick={() => {
+                            const guidanceItems = [
+                              `Immediate Action: ${cause.decisionGuidance!.immediateAction}`,
+                              ...(cause.decisionGuidance!.diagnosticCheck ? [`Diagnostic Check: ${cause.decisionGuidance!.diagnosticCheck}`] : []),
+                              ...(cause.decisionGuidance!.thresholdCriteria ? [`Threshold Criteria: ${cause.decisionGuidance!.thresholdCriteria}`] : []),
+                              ...(cause.resources?.map((r) => `Resource (${r.type}): ${r.title} — ${r.description}${r.urlOrContact ? ` (${r.urlOrContact})` : ""}`) ?? []),
+                              ...(currentNotes ? [`Reviewer Note: ${currentNotes}`] : []),
+                            ];
+                            onAddSection({
+                              id: sectionId("cause-guidance"),
+                              title: `Root Factor: ${cause.title}`,
+                              body: `${cause.explanation}\n\nEvidence cited: ${cause.because.map((q) => `“${q}”`).join("; ")}`,
+                              items: guidanceItems,
+                              locked: false,
+                            });
+                          }}
+                          className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-2.5 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-900/40 disabled:opacity-40"
+                        >
+                          + Add Full Decision Guidance
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {showDetails && (
+                    <div className="mt-2.5 rounded-lg border border-white/10 bg-slate-950 p-2.5">
+                      <label className="block text-xs font-semibold text-slate-300">
+                        Reviewer Internal Annotation (optional):
+                      </label>
+                      <textarea
+                        value={currentNotes}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCauseStates((prev) => ({
+                            ...prev,
+                            [cause.id]: {
+                              status: prev[cause.id]?.status ?? "hypothesized",
+                              notes: val,
+                              showDetails: true,
+                            },
+                          }));
+                        }}
+                        placeholder="Add professional observations or verification rationale for this cause..."
+                        className="mt-1 w-full rounded border border-white/15 bg-black/40 p-2 text-xs text-slate-100 placeholder:text-slate-500"
+                        rows={2}
+                      />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         )}
       </div>
