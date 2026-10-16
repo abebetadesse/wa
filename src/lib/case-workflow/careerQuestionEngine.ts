@@ -144,6 +144,29 @@ export const FOUNDATION_QUESTIONS: CareerQuestion[] = [
     placeholder: "Describe your goal in your own words — be as specific as possible.",
     aiFollowUpTrigger: true,
   },
+  {
+    id: "career_values_responsibilities",
+    text: "What personal values, ethical principles, or community responsibilities do you want your work to express?",
+    textAmharic: "ሥራዎ ወይም የገቢ ምንጭዎ የትኞቹን የግል እሴቶች፣ የሥነ-ምግባር መርሆዎች ወይም የማህበረሰብ ኃላፊነቶች እንዲያንፀባርቅ ይፈልጋሉ?",
+    type: "textarea",
+    required: false,
+    placeholder: "e.g., service to others, honesty, providing for family, creating local jobs...",
+  },
+  {
+    id: "career_reflection_theme",
+    text: "What kind of reflection would feel most helpful right now?",
+    textAmharic: "አሁን ለእርስዎ የትኛው የማሰላሰል አቅጣጫ የበለጠ ይጠቅማል?",
+    type: "select",
+    required: false,
+    options: [
+      { value: "identity_purpose", label: "Vocation, identity, and inner purpose" },
+      { value: "resilience_perseverance", label: "Resilience, patience, and overcoming setbacks" },
+      { value: "values_responsibility", label: "Ethical livelihood and community responsibility" },
+      { value: "clarity_peace", label: "Calm discernment and peace of mind" },
+      { value: "prefer_not", label: "Prefer not to say" },
+    ],
+    hint: "This service provides cultural and spiritual reflection only. No financial or business instructions are provided.",
+  },
 ];
 
 // ════════════════════════════════════════════════════════════

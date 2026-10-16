@@ -6,6 +6,8 @@ export interface SocialQuestion {
   textAmharic?: string;
   type: "text" | "textarea" | "select" | "radio" | "multi-select" | "scale";
   required: boolean;
+  placeholder?: string;
+  hint?: string;
   options?: Array<{ value: string; label: string; labelAmharic?: string }>;
   aiGenerated?: boolean;
   branchingReason?: string;
@@ -35,6 +37,31 @@ export function getSocialQuestions(stage: SocialStage = "intake"): SocialQuestio
           textAmharic: "አሁን በህይወትዎ ውስጥ ደህንነት የሚሰማዎት ወይም የሚደግፉዎት ማን ነው?",
           type: "textarea",
           required: true,
+          aiGenerated: false,
+        },
+        {
+          id: "disconnection_timing",
+          text: "When do you feel most disconnected, and was there a life event when this began?",
+          textAmharic: "በጣም ብቸኝነት የሚሰማዎት መቼ ነው? ይህ ሲጀመር በህይወትዎ ምን ተከስቶ ነበር?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+        },
+        {
+          id: "welcoming_community_groups",
+          text: "What community, faith, or mutual-aid groups (iddir, equb, mahber, faith gatherings) feel welcoming or accessible to you?",
+          textAmharic: "የትኞቹ የማህበረሰብ፣ የእምነት ወይም የእርስ በእርስ መረዳጃ ቡድኖች (እድር፣ እቁብ፣ ማህበር፣ የጸሎት ቦታ) ለእርስዎ ምቹ ወይም ተደራሽ ናቸው?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+          placeholder: "e.g., local iddir, women's equb, neighborhood youth group...",
+        },
+        {
+          id: "connection_enablers",
+          text: "What would make reaching out or connecting easier—time, transport, confidence, language, or lower cost?",
+          textAmharic: "ግንኙነት መፍጠርን ወይም እርዳታ መጠየቅን ምን ሊያቀለው ይችላል—ጊዜ፣ ትራንስፖርት፣ በራስ መተማመን፣ ቋንቋ ወይም አነስተኛ ወጪ?",
+          type: "text",
+          required: false,
           aiGenerated: false,
         },
       ];

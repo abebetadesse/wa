@@ -6,6 +6,8 @@ export interface RelationshipQuestion {
   textAmharic?: string;
   type: "text" | "textarea" | "select" | "radio" | "multi-select" | "scale";
   required: boolean;
+  placeholder?: string;
+  hint?: string;
   options?: Array<{ value: string; label: string; labelAmharic?: string }>;
   aiGenerated?: boolean;
   branchingReason?: string;
@@ -43,6 +45,14 @@ export function getRelationshipQuestions(stage: RelationshipStage = "intake"): R
           ],
           aiGenerated: false,
         },
+        {
+          id: "recurring_patterns_detail",
+          text: "What usually happens just before or after a disagreement?",
+          textAmharic: "ከአለመግባባት በፊት ወይም በኋላ ብዙውን ጊዜ ምን ይከሰታል?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+        },
       ];
     case "family":
       return [
@@ -60,6 +70,14 @@ export function getRelationshipQuestions(stage: RelationshipStage = "intake"): R
           aiGenerated: false,
         },
         {
+          id: "dependents_caregiving_impact",
+          text: "Are children, caregiving, housing, or shared obligations affected by this situation?",
+          textAmharic: "ልጆች፣ የእንክብካቤ ኃላፊነት፣ ቤት ወይም የጋራ ግዴታዎች በዚህ ሁኔታ ተጎድተዋል?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+        },
+        {
           id: "desired_outcome",
           text: "What outcome matters most right now?",
           textAmharic: "አሁን በጣም አስፈላጊው ውጤት ምንድን ነው?",
@@ -72,6 +90,30 @@ export function getRelationshipQuestions(stage: RelationshipStage = "intake"): R
             { value: "safety_planning", label: "Safety planning" },
           ],
           aiGenerated: false,
+        },
+        {
+          id: "realistic_change_goal",
+          text: "What would a positive but realistic change look like to you?",
+          textAmharic: "ለእርስዎ አዎንታዊ ግን ተግባራዊ ሊሆን የሚችል ለውጥ ምን ሊመስል ይችላል?",
+          type: "text",
+          required: false,
+          aiGenerated: false,
+        },
+        {
+          id: "mediation_safety_check",
+          text: "Is a joint conversation or elder mediation safe and wanted by everyone involved?",
+          textAmharic: "የጋራ ውይይት ወይም የሽምግልና እርቅ ለሁሉም ወገን አስተማማኝ እና ተፈላጊ ነው?",
+          type: "select",
+          required: false,
+          options: [
+            { value: "safe_and_wanted", label: "Yes, safe and wanted by all" },
+            { value: "wanted_unsure_safety", label: "Wanted, but safety is uncertain" },
+            { value: "not_safe_or_coercive", label: "No, coercion or safety concerns are present" },
+            { value: "prefer_individual", label: "Prefer individual guidance first" },
+            { value: "prefer_not", label: "Prefer not to say" },
+          ],
+          aiGenerated: false,
+          hint: "Mediation is never advised when violence, abuse, or intimidation is present.",
         },
       ];
     case "review":

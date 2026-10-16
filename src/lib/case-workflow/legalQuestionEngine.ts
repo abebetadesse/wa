@@ -7,6 +7,7 @@ export interface LegalQuestion {
   type: "text" | "textarea" | "select" | "radio" | "multi-select" | "date";
   required: boolean;
   placeholder?: string;
+  hint?: string;
   options?: Array<{ value: string; label: string; labelAmharic?: string }>;
   aiGenerated?: boolean;
   branchingReason?: string;
@@ -51,6 +52,38 @@ export function getLegalQuestions(stage: LegalStage = "intake"): LegalQuestion[]
             { value: "prefer_not", label: "Prefer not to say" },
           ],
           aiGenerated: false,
+        },
+        {
+          id: "matter_timeline",
+          text: "When did this dispute or matter first begin, and what key events have happened since?",
+          textAmharic: "ይህ ውዝግብ ወይም ጉዳይ መቼ ጀመረ? ከዚያ ወዲህ ምን ዋና ዋና ክስተቶች ተከስተዋል?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+        },
+        {
+          id: "documents_held",
+          text: "What documents, contracts, notices, receipts, or agreements do you have regarding this matter?",
+          textAmharic: "ስለዚህ ጉዳይ በእጅዎ ያሉ ሰነዶች፣ ውሎች፣ ማስጠንቀቂያዎች፣ ደረሰኞች ወይም ስምምነቶች ምንድን ናቸው?",
+          type: "textarea",
+          required: false,
+          aiGenerated: false,
+          placeholder: "Mention type of document and approximate date.",
+        },
+        {
+          id: "customary_reconciliation_openness",
+          text: "Would cultural reflection on customary elder mediation (ሽምግልና / Jaarsummaa / Sulh) be safe, appropriate, and acceptable to you?",
+          textAmharic: "በባህላዊ የሽምግልና እና የዕርቅ መንገድ (ሽምግልና / ጃርሱማ / ሱልህ) ላይ የሚሰጥ ባህላዊ ምክር ለእርስዎ አስተማማኝ እና ተቀባይነት ያለው ነው?",
+          type: "select",
+          required: false,
+          options: [
+            { value: "yes_welcomed", label: "Yes, customary peacemaking is welcomed" },
+            { value: "only_if_neutral", label: "Only if truly neutral respected elders are involved" },
+            { value: "not_appropriate", label: "No, formal legal or statutory process is preferred" },
+            { value: "prefer_not", label: "Prefer not to say" },
+          ],
+          aiGenerated: false,
+          hint: "Cultural and spiritual reflection only. This app does not provide formal or statutory legal representation.",
         },
       ];
     case "review":

@@ -11,6 +11,13 @@ import { getLegalQuestions } from "@/lib/case-workflow/legalQuestionEngine";
 import { getRelationshipQuestions } from "@/lib/case-workflow/relationshipQuestionEngine";
 import { getSocialQuestions } from "@/lib/case-workflow/socialQuestionEngine";
 import { generateDynamicQuestions } from "@/lib/case-workflow/spiritualQuestionEngine";
+import { getBiologicalQuestions } from "@/lib/case-workflow/biologicalQuestionEngine";
+import {
+  ACCURACY_AND_FOLLOWUP_QUESTIONS,
+  CASE_GOAL_QUESTIONS,
+  RESOURCE_AND_REFERRAL_QUESTIONS,
+  SHARED_CONTEXT_QUESTIONS,
+} from "@/lib/case-workflow/sharedQuestionBank";
 import type { DomainConfig, SafetyOutcome, WorkflowDomain } from "../types";
 import { layoutSections } from "../reportLayout";
 import { concern, crisisOutcome, proceed, REFERRALS, screenFreeText, CONTACTS } from "../support";
@@ -50,7 +57,14 @@ const career: DomainConfig = {
     if (answers.financial_pressure === "yes") return concern("External pressure to make financial decisions; coercion risk noted.", "high");
     return anyPreferNot(answers) ? incompleteScreen() : proceed();
   },
-  questions: (answers) => normalizeQuestions(getCareerQuestions((text(answers.career_stage) || "exploring") as Parameters<typeof getCareerQuestions>[0])),
+  questions: (answers) =>
+    normalizeQuestions([
+      ...getCareerQuestions((text(answers.career_stage) || "exploring") as Parameters<typeof getCareerQuestions>[0]),
+      ...CASE_GOAL_QUESTIONS,
+      ...SHARED_CONTEXT_QUESTIONS,
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
+    ]),
   screenAnswers: (answers) => screenFreeText(answers) ?? (answers.recover_emotional_check === "yes" ? concern("Emotional distress reported during recovery questions.", "high") : null),
   async buildDraft({ answers }) {
     const profile = buildCareerProfile(Object.fromEntries(Object.entries(answers).map(([key, value]) => [key, text(value)])));
@@ -134,7 +148,13 @@ const legal: DomainConfig = {
     if (answers.criminalMatter === "unsure") return concern("Unclear whether the matter is criminal.", "high");
     return anyPreferNot(answers) ? incompleteScreen() : proceed();
   },
-  questions: () => normalizeQuestions([...getLegalQuestions("intake"), ...getLegalQuestions("matter")]),
+  questions: () =>
+    normalizeQuestions([
+      ...getLegalQuestions("intake"),
+      ...getLegalQuestions("matter"),
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
+    ]),
   screenAnswers: screenFreeText,
   async buildDraft({ answers }) {
     const culturalFindings = await retrieveReflectiveCaseFindings("legal", "customary dispute reconciliation shemgelna spiritual peacemaking");
@@ -219,7 +239,14 @@ const relationship: DomainConfig = {
     return proceed();
   },
   questions: () =>
-    normalizeQuestions([...getRelationshipQuestions("intake"), ...getRelationshipQuestions("pattern"), ...getRelationshipQuestions("family")]),
+    normalizeQuestions([
+      ...getRelationshipQuestions("intake"),
+      ...getRelationshipQuestions("pattern"),
+      ...getRelationshipQuestions("family"),
+      ...SHARED_CONTEXT_QUESTIONS,
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
+    ]),
   screenAnswers: screenFreeText,
   async buildDraft({ answers }) {
     const ai = await aiSection("relationship", { answers });
@@ -277,7 +304,14 @@ const social: DomainConfig = {
     }
     return anyPreferNot(answers) ? incompleteScreen() : proceed();
   },
-  questions: () => normalizeQuestions([...getSocialQuestions("intake"), ...getSocialQuestions("pattern")]),
+  questions: () =>
+    normalizeQuestions([
+      ...getSocialQuestions("intake"),
+      ...getSocialQuestions("pattern"),
+      ...SHARED_CONTEXT_QUESTIONS,
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
+    ]),
   screenAnswers: screenFreeText,
   async buildDraft({ answers }) {
     const ai = await aiSection("social", { answers });
@@ -356,7 +390,32 @@ const biological: DomainConfig = {
     }
     return proceed();
   },
-  questions: () => [],
+  questions: (answers) => {
+    const modularKeys = new Set([
+      "explore_strands", "detailed_questions", "symptom_onset_pattern", "symptom_severity_impact",
+      "symptom_triggers_relief", "red_flag_symptoms_screen", "prior_clinical_diagnosis",
+      "lab_tests_summary", "nutrient_deficiency_history", "supplements_current",
+      "prescribed_medications", "recent_medication_changes", "traditional_herbs_remedies",
+      "allergies_adverse_reactions", "substance_use_screen", "substance_impact_details",
+      "water_source_type", "environmental_exposures", "altitude_weather_changes",
+      "household_community_symptoms", "recent_travel_exposure", "sleep_pattern_changes",
+      "stress_and_mood_impact", "healthcare_access_barriers", "typical_diet_patterns",
+      "fasting_practices", "fasting_energy_impact", "cultural_healing_practices",
+      "case_goal", "desired_outcome", "timeline_onset", "report_format_preference",
+      "desired_support_path", "accuracy_reflection"
+    ]);
+    const hasModular = Object.keys(answers || {}).some((k) => modularKeys.has(k));
+    if (!hasModular && !answers?.explore_strands) {
+      return [];
+    }
+    return normalizeQuestions([
+      ...getBiologicalQuestions(),
+      ...CASE_GOAL_QUESTIONS,
+      ...SHARED_CONTEXT_QUESTIONS,
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
+    ]);
+  },
   screenAnswers: screenFreeText,
   async buildDraft({ answers }) {
     const narrative = text(answers.caseNarrative) || "The user submitted an audio or video attachment for human review. No media transcription or interpretation is available to the AI analysis.";
@@ -426,6 +485,8 @@ const spiritual: DomainConfig = {
         ...question,
         dependsOn: undefined,
       })),
+      ...RESOURCE_AND_REFERRAL_QUESTIONS,
+      ...ACCURACY_AND_FOLLOWUP_QUESTIONS,
     ]);
   },
   screenAnswers: (answers) => screenFreeText(answers) ?? (answers.safety_screening === "unsafe" ? crisisOutcome("Reported feeling unsafe") : null),

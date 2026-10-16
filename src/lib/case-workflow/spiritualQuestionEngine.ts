@@ -220,6 +220,27 @@ export function generateDynamicQuestions(
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION 3: SHARED REFLECTIVE BOUNDARIES
+  // ═══════════════════════════════════════════════════════════════
+  questions.push({
+    id: "spiritual_beliefs_respected",
+    text: "What faith beliefs, prayer customs, or ancestral traditions would you like respected in this reflection?",
+    textAmharic: "በዚህ መንፈሳዊ ማሰላሰል ውስጥ እንዲከበሩልዎ የሚፈልጓቸው የእምነት፣ የጸሎት ወይም የባህል ልምዶች ምንድን ናቸው?",
+    type: "textarea",
+    required: false,
+    aiGenerated: false,
+  });
+
+  questions.push({
+    id: "spiritual_assumptions_avoid",
+    text: "What would you like the reviewer to avoid assuming or interpreting about you?",
+    textAmharic: "ገምጋሚው ስለ እርስዎ ምን ከመገመት ወይም በስህተት ከመተርጎም እንዲቆጠብ ይፈልጋሉ?",
+    type: "textarea",
+    required: false,
+    aiGenerated: false,
+  });
+
   return questions;
 }
 
