@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/body-reading/layout,_N_T_/body-reading/face/layout,_N_T_/body-reading/face/page,_N_T_/body-reading/face"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/1b3441e5773dc9c173caf98597717c2525a12a23027b4a89c1231adf29e3f8cc/$/body-reading/face",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/body-reading/face/page"
+    },
+    "isFallback": false
+  }
+}

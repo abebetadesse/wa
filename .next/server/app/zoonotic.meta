@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/zoonotic/layout,_N_T_/zoonotic/page,_N_T_/zoonotic"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/c9022da6f139f1e43470cb5549b9525bf6eeb2ddcd64c9614c4a628d8d561703/$/zoonotic",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/zoonotic/page"
+    },
+    "isFallback": false
+  }
+}

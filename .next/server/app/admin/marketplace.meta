@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/marketplace/layout,_N_T_/admin/marketplace/page,_N_T_/admin/marketplace"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0b0b885fa71aa2e8dc395bca549acdcc543dbc452eee13314b22433696dcb16b/$/admin/marketplace",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/marketplace/page"
+    },
+    "isFallback": false
+  }
+}

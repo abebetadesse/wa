@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/pipeline/layout,_N_T_/pipeline/page,_N_T_/pipeline"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/9c1cfbd265827c01b9c37a1aee3f1ca660010cc4f1ecf279da538657aa033ca8/$/pipeline",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/pipeline/page"
+    },
+    "isFallback": false
+  }
+}

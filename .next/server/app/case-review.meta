@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/case-review/layout,_N_T_/case-review/page,_N_T_/case-review"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/a55d0ecb639f567aa471d070e88823ff70ab6c57a9fccc0c2151f3fc3c283fe6/$/case-review",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/case-review/page"
+    },
+    "isFallback": false
+  }
+}

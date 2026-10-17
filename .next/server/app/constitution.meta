@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/constitution/layout,_N_T_/constitution/page,_N_T_/constitution"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/d2dd9a3c3535f007c7b393bc9b46090b2c60d1673069fc686ce478b31494b637/$/constitution",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/constitution/page"
+    },
+    "isFallback": false
+  }
+}

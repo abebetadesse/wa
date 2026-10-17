@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/cultural/layout,_N_T_/cultural/page,_N_T_/cultural"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/b08fcdc5bd79b582027487c5221ccf21a65448aeb379fe697ca339fe989d94fe/$/cultural",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/cultural/page"
+    },
+    "isFallback": false
+  }
+}

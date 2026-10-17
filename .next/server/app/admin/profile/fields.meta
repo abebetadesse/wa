@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/profile/layout,_N_T_/admin/profile/fields/layout,_N_T_/admin/profile/fields/page,_N_T_/admin/profile/fields"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0df7eeb91bbab303b8741ffdfc159ece17b8909f5dbe46ea6aee8c2c1800450c/$/admin/profile/fields",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/profile/fields/page"
+    },
+    "isFallback": false
+  }
+}

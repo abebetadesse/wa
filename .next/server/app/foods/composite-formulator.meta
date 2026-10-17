@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/foods/layout,_N_T_/foods/composite-formulator/layout,_N_T_/foods/composite-formulator/page,_N_T_/foods/composite-formulator"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/5ef2923b4f8614b3dab05b368569a08812720e9514287efbb43cbd28ff0f9eaf/$/foods/composite-formulator",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/foods/composite-formulator/page"
+    },
+    "isFallback": false
+  }
+}

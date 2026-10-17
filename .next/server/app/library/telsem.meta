@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/telsem/layout,_N_T_/library/telsem/page,_N_T_/library/telsem"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/55966bbc9c86e684c81c71b8769bae5937fa11073514811717d1a63a7f81e871/$/library/telsem",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/telsem/page"
+    },
+    "isFallback": false
+  }
+}

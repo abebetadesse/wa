@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/case-routing/layout,_N_T_/admin/case-routing/page,_N_T_/admin/case-routing"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/b323de1a972dee5f45ed58db43e47305c4657805ee7d5508f05fe08d16989314/$/admin/case-routing",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/case-routing/page"
+    },
+    "isFallback": false
+  }
+}

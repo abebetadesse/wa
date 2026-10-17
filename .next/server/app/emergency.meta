@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/emergency/layout,_N_T_/emergency/page,_N_T_/emergency"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/805f65325a99d7386c4418f7a08f81719cde4dadc1c648f16df1769008b481bc/$/emergency",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/emergency/page"
+    },
+    "isFallback": false
+  }
+}

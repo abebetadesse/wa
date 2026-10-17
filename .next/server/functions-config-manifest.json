@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/case-workflows/media/[id]": {},
+    "/api/chat/[sessionId]/message": {},
+    "/api/intake/uploads/[id]": {},
+    "/api/platform/trust": {},
+    "/api/provider/workspace": {},
+    "/api/realtime": {}
+  }
+}

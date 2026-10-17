@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/integrative/layout,_N_T_/integrative/page,_N_T_/integrative"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/dd6a1dbcbf7b90f8b7e39a538e2041f8d430582c1d200f42860db5cf6e113d8b/$/integrative",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/integrative/page"
+    },
+    "isFallback": false
+  }
+}

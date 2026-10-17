@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/awde-negast/layout,_N_T_/library/awde-negast/page,_N_T_/library/awde-negast"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/fdcc5f415bafd84e686adc137ab164f70fd1d8d06febf65d1795a05481bfd17f/$/library/awde-negast",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/awde-negast/page"
+    },
+    "isFallback": false
+  }
+}

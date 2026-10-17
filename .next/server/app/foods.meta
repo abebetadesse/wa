@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/foods/layout,_N_T_/foods/page,_N_T_/foods"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/fdb16a88debb575a9682a375fda5dc1816ec5be8fa10f13c0a7f50108216c2b0/$/foods",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/foods/page"
+    },
+    "isFallback": false
+  }
+}

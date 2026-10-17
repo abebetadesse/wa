@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/case/layout,_N_T_/case/career/layout,_N_T_/case/career/page,_N_T_/case/career"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/14aef92fa58e6ee1086ba87c3cda1f6e33515ec25546d6407b67bfa1e5b7dc20/$/case/career",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/case/career/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/account/layout,_N_T_/account/bookings/layout,_N_T_/account/bookings/page,_N_T_/account/bookings"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/f5424cd673931ff58fa591a56a92ad303d09d81b19a61709379a7bd6f7f83f64/$/account/bookings",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/account/bookings/page"
+    },
+    "isFallback": false
+  }
+}

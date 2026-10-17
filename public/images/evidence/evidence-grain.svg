@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="Grain and fermentation evidence-title">
+  <title id="Grain and fermentation evidence-title">Grain and fermentation evidence</title>
+  <defs>
+    <radialGradient id="Grain and fermentation evidence-bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#0f2a24"/>
+      <stop offset="100%" stop-color="#050f0c"/>
+    </radialGradient>
+  </defs>
+  <circle cx="48" cy="48" r="46" fill="url(#Grain and fermentation evidence-bg)" stroke="rgba(251,191,36,0.3)" stroke-width="2"/>
+  <g fill="none" stroke="#fbbf24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    
+    <path d="M48 22 L48 74"/>
+    <path d="M48 30 L40 36 M48 30 L56 36 M48 40 L40 46 M48 40 L56 46 M48 50 L40 56 M48 50 L56 56"/>
+  
+  </g>
+</svg>

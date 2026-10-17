@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="Socioeconomic evidence-title">
+  <title id="Socioeconomic evidence-title">Socioeconomic evidence</title>
+  <defs>
+    <radialGradient id="Socioeconomic evidence-bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#0f2a24"/>
+      <stop offset="100%" stop-color="#050f0c"/>
+    </radialGradient>
+  </defs>
+  <circle cx="48" cy="48" r="46" fill="url(#Socioeconomic evidence-bg)" stroke="rgba(250,204,21,0.3)" stroke-width="2"/>
+  <g fill="none" stroke="#facc15" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    
+    <circle cx="36" cy="40" r="10"/><circle cx="60" cy="52" r="10"/>
+    <path d="M36 40 L36 46 M60 52 L60 58" opacity="0.6"/>
+  
+  </g>
+</svg>

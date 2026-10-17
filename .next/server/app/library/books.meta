@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/books/layout,_N_T_/library/books/page,_N_T_/library/books"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/d897a36204c1c2505b73c17d091a42f6a314e685c711a3b54ff7ac92abae7876/$/library/books",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/books/page"
+    },
+    "isFallback": false
+  }
+}

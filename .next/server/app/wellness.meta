@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/wellness/layout,_N_T_/wellness/page,_N_T_/wellness"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/67d6e2eaa532d96b85cd647b4005b3f59ed6568be78b8a7cb0a1804b4643f842/$/wellness",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/wellness/page"
+    },
+    "isFallback": false
+  }
+}

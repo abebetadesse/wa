@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/body-reading/layout,_N_T_/body-reading/palm/layout,_N_T_/body-reading/palm/page,_N_T_/body-reading/palm"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/504673860a45c9afc2191d2a7aea5d61221a3831dd7d7f672aa1934291e83123/$/body-reading/palm",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/body-reading/palm/page"
+    },
+    "isFallback": false
+  }
+}

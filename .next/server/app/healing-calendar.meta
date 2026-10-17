@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/healing-calendar/layout,_N_T_/healing-calendar/page,_N_T_/healing-calendar"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0086845bb367f81a742bfd7e0997c368172ce4f6371fe8ccfb40c262d8674706/$/healing-calendar",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/healing-calendar/page"
+    },
+    "isFallback": false
+  }
+}

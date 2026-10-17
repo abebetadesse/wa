@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/case-search/layout,_N_T_/admin/case-search/page,_N_T_/admin/case-search"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/02e5fa9790a748b82dca61f3fbd1a164017d414f0c1f9ac2c61bd36b48a47aca/$/admin/case-search",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/case-search/page"
+    },
+    "isFallback": false
+  }
+}

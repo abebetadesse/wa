@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/diagnostic/layout,_N_T_/diagnostic/page,_N_T_/diagnostic"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/958c849558e0e97dadf21f7a21654b68c1ca8cb660aee99df11f55c4b22010a7/$/diagnostic",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/diagnostic/page"
+    },
+    "isFallback": false
+  }
+}

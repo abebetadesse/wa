@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/case/layout,_N_T_/case/spiritual/layout,_N_T_/case/spiritual/intake/layout,_N_T_/case/spiritual/intake/step-2/layout,_N_T_/case/spiritual/intake/step-2/page,_N_T_/case/spiritual/intake/step-2"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0696bb661cbdc3e6e462db860d8e840691065163e2cf213d53ddceec9f316744/$/case/spiritual/intake/step-2",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/case/spiritual/intake/step-2/page"
+    },
+    "isFallback": false
+  }
+}

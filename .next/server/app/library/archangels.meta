@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/archangels/layout,_N_T_/library/archangels/page,_N_T_/library/archangels"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0158cfca5b4cfe6147bbeb5085c778c4f635e10c610eeed3f638aea1568238c9/$/library/archangels",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/archangels/page"
+    },
+    "isFallback": false
+  }
+}

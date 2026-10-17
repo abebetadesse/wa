@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/medicinal-plants/layout,_N_T_/library/medicinal-plants/page,_N_T_/library/medicinal-plants"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/f259e3d8b6cec429ccc22a0fd4a6734717fc0ee18b7062e16f3d5a05446d60f9/$/library/medicinal-plants",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/medicinal-plants/page"
+    },
+    "isFallback": false
+  }
+}

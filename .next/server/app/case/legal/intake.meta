@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/case/layout,_N_T_/case/legal/layout,_N_T_/case/legal/intake/layout,_N_T_/case/legal/intake/page,_N_T_/case/legal/intake"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/3f950c61123bdef385ef0da752551849650e514215dd025a8ee25bc944c6b2fa/$/case/legal/intake",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/case/legal/intake/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/knowledge/layout,_N_T_/admin/knowledge/page,_N_T_/admin/knowledge"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/4e35bc29cf1bf860b26b40c387b4ca747b95b0d9ef3db4787ec06ad13f058cbb/$/admin/knowledge",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/knowledge/page"
+    },
+    "isFallback": false
+  }
+}

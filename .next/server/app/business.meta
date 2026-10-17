@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/business/layout,_N_T_/business/page,_N_T_/business"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/37dce2faa381540b8fa3800d2578d81f81926cc20c6d58950bcc7945e2260031/$/business",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/business/page"
+    },
+    "isFallback": false
+  }
+}

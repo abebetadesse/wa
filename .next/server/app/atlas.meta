@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/atlas/layout,_N_T_/atlas/page,_N_T_/atlas"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/775e0961d19a3d00025d73463dcc308b2704f930709756ba703a0f11203cfee3/$/atlas",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/atlas/page"
+    },
+    "isFallback": false
+  }
+}

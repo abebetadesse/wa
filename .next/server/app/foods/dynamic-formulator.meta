@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/foods/layout,_N_T_/foods/dynamic-formulator/layout,_N_T_/foods/dynamic-formulator/page,_N_T_/foods/dynamic-formulator"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/f10b01a23feb4ea8d0caf21c6b80e324b2fd95805b9f2d1f5d759fb4088d7748/$/foods/dynamic-formulator",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/foods/dynamic-formulator/page"
+    },
+    "isFallback": false
+  }
+}

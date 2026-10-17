@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/library/layout,_N_T_/library/hatata/layout,_N_T_/library/hatata/page,_N_T_/library/hatata"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/f962090a5fcd918d5a11c2b45297b1033f0327664f283f73e3d3fbca141ded72/$/library/hatata",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/library/hatata/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="Biological evidence-title">
+  <title id="Biological evidence-title">Biological evidence</title>
+  <defs>
+    <radialGradient id="Biological evidence-bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#0f2a24"/>
+      <stop offset="100%" stop-color="#050f0c"/>
+    </radialGradient>
+  </defs>
+  <circle cx="48" cy="48" r="46" fill="url(#Biological evidence-bg)" stroke="rgba(52,211,153,0.35)" stroke-width="2"/>
+  <g fill="none" stroke="#34d399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    
+    <path d="M34 24 C50 34 42 44 58 54 C42 64 50 74 34 84" transform="translate(0,-6)"/>
+    <path d="M34 30 L58 30 M36 42 L56 42 M38 54 L54 54 M36 66 L56 66" opacity="0.6"/>
+  
+  </g>
+</svg>

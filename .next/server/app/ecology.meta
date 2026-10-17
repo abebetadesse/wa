@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/ecology/layout,_N_T_/ecology/page,_N_T_/ecology"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/6dc6b6682122e0e1d17a3aefe966c6cfc53b11a76ddc005892ad957e451310a1/$/ecology",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/ecology/page"
+    },
+    "isFallback": false
+  }
+}

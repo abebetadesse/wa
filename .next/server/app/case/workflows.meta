@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/case/layout,_N_T_/case/workflows/layout,_N_T_/case/workflows/page,_N_T_/case/workflows"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/7f450db3b7058b78ce4e7f232e0e0668b9186d103a02a38b7ff6f092b8d2eddd/$/case/workflows",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/case/workflows/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/somatics/layout,_N_T_/somatics/page,_N_T_/somatics"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/ede24b7dd01bf43fbf908e1ace9bea950534106b86f2ce7cd994c97c52f2dc0f/$/somatics",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/somatics/page"
+    },
+    "isFallback": false
+  }
+}

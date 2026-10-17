@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/profile/layout,_N_T_/profile/edit/layout,_N_T_/profile/edit/page,_N_T_/profile/edit"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/7409ce61e1f37dfab3bb71217b46e7a04875f3f58aea4b711c1f4cb50917f89e/$/profile/edit",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/profile/edit/page"
+    },
+    "isFallback": false
+  }
+}

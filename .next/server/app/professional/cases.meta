@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/professional/layout,_N_T_/professional/cases/layout,_N_T_/professional/cases/page,_N_T_/professional/cases"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/72ded55bf8df11cbcf9bd53fb952310924653d1b961c43ff81f9a544e1c32314/$/professional/cases",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/professional/cases/page"
+    },
+    "isFallback": false
+  }
+}

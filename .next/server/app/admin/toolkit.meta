@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/toolkit/layout,_N_T_/admin/toolkit/page,_N_T_/admin/toolkit"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/74a8c3a49705c700c4579d0aff5e3306a054fa0a2e5525457399da9cc3bcca6a/$/admin/toolkit",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/toolkit/page"
+    },
+    "isFallback": false
+  }
+}
