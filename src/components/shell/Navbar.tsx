@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Contrast,
   FileText,
+  GraduationCap,
   LogIn,
   LogOut,
   Menu,
@@ -35,6 +36,10 @@ const PRIMARY = [
   { href: "/marketplace", label: "Find a healer", icon: Search },
   { href: "/business", label: "For businesses", icon: Store },
 ];
+
+// Forma, the school management app, runs as a separate application under /school on this domain
+// (or on its own subdomain); a full page load is needed to reach it, so it is a plain link.
+const SCHOOL_APP_URL = process.env.NEXT_PUBLIC_SCHOOL_APP_URL ?? "/school";
 
 const LANGUAGES = [
   { code: "en", label: "EN" },
@@ -132,6 +137,15 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {SCHOOL_APP_URL && (
+            <a
+              href={SCHOOL_APP_URL}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <GraduationCap className="size-4" aria-hidden="true" />
+              School
+            </a>
+          )}
           <div className="relative" ref={exploreRef}>
             <button
               type="button"
@@ -264,6 +278,11 @@ export default function Navbar() {
                 <link.icon className="size-5 text-brand" aria-hidden="true" /> {link.label}
               </Link>
             ))}
+            {SCHOOL_APP_URL && (
+              <a href={SCHOOL_APP_URL} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-semibold text-foreground hover:bg-accent">
+                <GraduationCap className="size-5 text-brand" aria-hidden="true" /> School
+              </a>
+            )}
           </div>
           {exploreGroups.map((group) => (
             <div key={group.group}>
