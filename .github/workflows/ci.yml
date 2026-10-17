@@ -1,5 +1,18 @@
 name: CI / CD
 
+# CD: on main, the release is built here on Linux and published to the plesk-release branch.
+# The hosting server cannot compile the app (its glibc is too old for the Next.js compiler), so it
+# only pulls that pre-built branch through Plesk → Git. Optional, in Settings → Secrets and
+# variables → Actions:
+#   secret   PLESK_GIT_WEBHOOK_URL  Webhook URL of the Plesk Git repository that deploys the
+#                                   plesk-release branch. When set, the server pulls each new
+#                                   release right away; otherwise click Deploy in Plesk → Git.
+#                                   (The older PLESK_DEPLOY_WEBHOOK secret is deliberately unused:
+#                                   it may point at a deployment of main, which cannot build.)
+#   variable HEALTH_URL             Checked after deployment
+#                                   (default https://app.wisdomcourse.com.et/api/health).
+# Running this workflow by hand on any other branch builds the release without publishing it.
+
 on:
   push:
     branches: [main]
@@ -31,9 +44,10 @@ jobs:
     env:
       DATABASE_URL: mysql://root:ci-only@127.0.0.1:3306/ethio_wellness
     steps:
+      # The supplied-book PDFs (Git LFS, ~324 MB) are not needed to check or build the app.
       - uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -53,120 +67,103 @@ jobs:
         run: npm run build
 
   deploy:
-    name: Live Deployment (CD)
+    name: Publish release (CD)
     needs: verify
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     concurrency:
       group: production-deploy
       cancel-in-progress: false
-    env:
-      _SSH_HOST: ${{ secrets.SSH_HOST }}
-      _SSH_USER: ${{ secrets.SSH_USER }}
-      _SSH_KEY: ${{ secrets.SSH_KEY }}
-      _SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      _SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-      _SSH_PORT: ${{ secrets.SSH_PORT }}
-      _DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-      _NODE_BIN_DIR: ${{ secrets.NODE_BIN_DIR }}
-      _APP_URL: ${{ secrets.APP_URL }}
-    steps:
-      - name: Check deployment configuration
-        id: check-secrets
-        run: |
-          set -Eeuo pipefail
-
-          KEY="${_SSH_KEY:-$_SSH_PRIVATE_KEY}"
-          if [[ -z "$_SSH_HOST" || -z "$_SSH_USER" || -z "$KEY" || -z "$_SSH_KNOWN_HOSTS" || -z "$_DEPLOY_PATH" ]]; then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=CD Skipped::Live deployment skipped: Configure SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (or SSH_KEY), SSH_KNOWN_HOSTS, and DEPLOY_PATH in repository Settings -> Secrets and variables -> Actions to enable automatic production deployment."
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy, migrate, and seed production
-        if: steps.check-secrets.outputs.configured == 'true'
-        run: |
-          set -Eeuo pipefail
-
-          KEY="${_SSH_KEY:-$_SSH_PRIVATE_KEY}"
-          if [[ ! "$_SSH_HOST" =~ ^[a-zA-Z0-9.-]+$ || ! "$_SSH_USER" =~ ^[a-zA-Z0-9._-]+$ ]]; then
-            echo "::error::SSH_HOST and SSH_USER must be a hostname/IP and a simple account name."
-            exit 1
-          fi
-
-          PORT="${_SSH_PORT:-22}"
-          if [[ ! "$PORT" =~ ^[0-9]+$ ]]; then
-            echo "::error::SSH_PORT must be a port number."
-            exit 1
-          fi
-
-          umask 077
-          KEY_FILE="$(mktemp)"
-          KNOWN_HOSTS_FILE="$(mktemp)"
-          SCRIPT_FILE="$(mktemp)"
-          trap 'rm -f "$KEY_FILE" "$KNOWN_HOSTS_FILE" "$SCRIPT_FILE"' EXIT
-          printf '%s\n' "$KEY" > "$KEY_FILE"
-          printf '%s\n' "$_SSH_KNOWN_HOSTS" > "$KNOWN_HOSTS_FILE"
-
-          {
-            printf 'APP_DIR=%q\n' "$_DEPLOY_PATH"
-            printf 'DEPLOY_SHA=%q\n' "$GITHUB_SHA"
-            printf 'NODE_BIN_DIR=%q\n' "${_NODE_BIN_DIR:-/opt/plesk/node/22/bin}"
-            cat <<'REMOTE'
-          set -Eeuo pipefail
-          cd "$APP_DIR"
-          test -d .git || { echo "DEPLOY_PATH must be an existing Git checkout." >&2; exit 1; }
-          git fetch --no-tags origin main
-          git checkout --detach "$DEPLOY_SHA"
-          git lfs pull
-          export PATH="$NODE_BIN_DIR:$PATH"
-          node --version
-          npm --version
-          npm ci --include=dev --prefer-offline
-          npm run db:setup
-          npm run build
-          npm prune --omit=dev
-          mkdir -p tmp
-          touch tmp/restart.txt
-          echo "Deployment finished for $DEPLOY_SHA."
-          REMOTE
-          } > "$SCRIPT_FILE"
-
-          ssh \
-            -i "$KEY_FILE" \
-            -p "$PORT" \
-            -o BatchMode=yes \
-            -o StrictHostKeyChecking=yes \
-            -o UserKnownHostsFile="$KNOWN_HOSTS_FILE" \
-            "${_SSH_USER}@${_SSH_HOST}" \
-            'bash -s' < "$SCRIPT_FILE"
-
-      - name: Verify live health
-        if: steps.check-secrets.outputs.configured == 'true'
+    services:
+      mysql:
+        image: mysql:8.0
         env:
-          HEALTH_BASE_URL: ${{ secrets.APP_URL }}
+          MYSQL_ROOT_PASSWORD: ci-only
+          MYSQL_DATABASE: ethio_wellness
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -pci-only --silent"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      # Build-time database only; nothing from this job's environment is shipped.
+      DATABASE_URL: mysql://root:ci-only@127.0.0.1:3306/ethio_wellness
+      PUBLISH: ${{ github.ref == 'refs/heads/main' }}
+      WEBHOOK_URL: ${{ secrets.PLESK_GIT_WEBHOOK_URL }}
+      HEALTH_URL: ${{ vars.HEALTH_URL || 'https://app.wisdomcourse.com.et/api/health' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare the build database
+        run: npm run db:setup
+      - name: Production build
+        run: npm run build
+      - name: Assemble the release on the plesk-release branch
         run: |
           set -Eeuo pipefail
-          BASE_URL="${HEALTH_BASE_URL:-https://app.wisdomcourse.com.et}"
-          HEALTH_URL="${BASE_URL%/}/api/health"
-          RESPONSE_FILE="$(mktemp)"
-          trap 'rm -f "$RESPONSE_FILE"' EXIT
-
-          for attempt in $(seq 1 24); do
-            if curl --silent --max-time 10 "$HEALTH_URL" --output "$RESPONSE_FILE"; then
-              STATUS="$(jq -r '.status // "unknown"' "$RESPONSE_FILE" 2>/dev/null || echo unknown)"
-              echo "Health check $attempt/24: $STATUS"
-              if [[ "$STATUS" == "ok" ]]; then
-                echo "Live deployment is healthy."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Continue the branch's history when it exists.
+          git fetch --no-tags origin plesk-release:refs/heads/plesk-release || true
+          node scripts/prepare-plesk.mjs --branch plesk-release --no-zip
+          jq . plesk-release/RELEASE.json
+      - name: Publish the release
+        run: |
+          set -Eeuo pipefail
+          if [[ "$PUBLISH" != "true" ]]; then
+            echo "::notice title=Dry run::Release built from ${GITHUB_REF_NAME} but not published; only main publishes."
+            exit 0
+          fi
+          git push origin refs/heads/plesk-release:refs/heads/plesk-release
+      - name: Trigger the server to pull it
+        id: trigger
+        run: |
+          set -Eeuo pipefail
+          if [[ "$PUBLISH" != "true" ]]; then
+            echo "triggered=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ -z "$WEBHOOK_URL" ]]; then
+            echo "triggered=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Release published::The plesk-release branch is updated. Click Deploy in Plesk → Git, or add the PLESK_GIT_WEBHOOK_URL secret to deploy automatically."
+            exit 0
+          fi
+          if curl --silent --show-error --fail --max-time 60 --request POST "$WEBHOOK_URL" --output /dev/null; then
+            echo "triggered=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error title=Server not reached::The Plesk webhook did not answer from GitHub. The release is published; click Deploy in Plesk → Git."
+            exit 1
+          fi
+      - name: Verify the live site runs this release
+        if: steps.trigger.outputs.triggered == 'true'
+        run: |
+          set -Eeuo pipefail
+          EXPECTED="$(jq -r .commit plesk-release/RELEASE.json)"
+          for attempt in $(seq 1 40); do
+            if curl --silent --max-time 10 "$HEALTH_URL" --output health.json; then
+              STATUS="$(jq -r '.status // "unknown"' health.json 2>/dev/null || echo unknown)"
+              RUNNING="$(jq -r '.release.commit // "none"' health.json 2>/dev/null || echo none)"
+              echo "Attempt $attempt/40: status=$STATUS release=$RUNNING (expecting $EXPECTED)"
+              if [[ "$STATUS" == "ok" && "$RUNNING" == "$EXPECTED" ]]; then
+                echo "Live site is healthy and runs $EXPECTED."
                 exit 0
               fi
             else
-              echo "Health check $attempt/24: no response yet."
+              echo "Attempt $attempt/40: no response yet."
             fi
-            sleep 5
+            sleep 15
           done
-
-          echo "::error::Live deployment did not become healthy at $HEALTH_URL."
+          echo "::error::$HEALTH_URL did not report a healthy $EXPECTED release within 10 minutes."
+          cat health.json 2>/dev/null || true
           exit 1

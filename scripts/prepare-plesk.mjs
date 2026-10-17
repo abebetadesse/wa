@@ -95,6 +95,54 @@ function folderSize(dir) {
 }
 console.log(`Release ${commit} assembled in ${rel(out)} (${(folderSize(out) / 1024 / 1024).toFixed(0)} MB).`);
 
+// 7b. Optionally record the release on a Git branch (--branch plesk-release) for servers that deploy
+//     from Git and cannot build the app themselves. A separate index keeps the current branch and
+//     working tree untouched. The supplied-book PDFs are left out: one is larger than GitHub's
+//     100 MB file limit, and they stay in place on the server (see docs/DEPLOYMENT.md).
+const branchIndex = process.argv.indexOf("--branch");
+if (branchIndex >= 0) {
+  const branch = process.argv[branchIndex + 1];
+  if (!branch || !/^[A-Za-z0-9._/-]+$/.test(branch)) {
+    console.error("--branch needs a branch name such as plesk-release.");
+    process.exit(1);
+  }
+  const booksDir = path.join(out, "public", "books");
+  const isBookPdf = (file) => path.dirname(file) === booksDir && file.toLowerCase().endsWith(".pdf");
+  const tooLarge = [];
+  (function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (!isBookPdf(full) && fs.statSync(full).size > 95 * 1024 * 1024) tooLarge.push(rel(full));
+    }
+  })(out);
+  if (tooLarge.length) {
+    console.error(`Files too large for a GitHub branch: ${tooLarge.join(", ")}`);
+    process.exit(1);
+  }
+
+  const git = (args, options = {}) => execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...options }).trim();
+  const env = { ...process.env, GIT_INDEX_FILE: path.join(root, ".git", "release-index") };
+  fs.rmSync(env.GIT_INDEX_FILE, { force: true });
+  try {
+    // LFS filters are switched off: the release branch holds plain files only.
+    git([
+      "-c", "core.autocrlf=input", "-c", "core.safecrlf=false",
+      "-c", "filter.lfs.clean=cat", "-c", "filter.lfs.smudge=cat", "-c", "filter.lfs.process=", "-c", "filter.lfs.required=false",
+      "--work-tree", out, "add", "-A", "-f", "--", ".", ":(exclude)public/books/*.pdf",
+    ], { env });
+    const tree = git(["write-tree"], { env });
+    let parent = "";
+    try { parent = git(["rev-parse", "-q", "--verify", `refs/heads/${branch}`]); } catch {}
+    const message = `Pre-built release from ${commit}\n\nBuilt with npm run deploy:plesk. Its build script only applies database set-up, so the server never compiles anything. Supplied-book PDFs are not included.\n`;
+    const releaseCommit = git(["commit-tree", tree, ...(parent ? ["-p", parent] : [])], { env, input: message });
+    git(["update-ref", `refs/heads/${branch}`, releaseCommit]);
+    console.log(`Committed the release to branch ${branch} (${releaseCommit.slice(0, 7)}). Push it with: git push origin ${branch}`);
+  } finally {
+    fs.rmSync(env.GIT_INDEX_FILE, { force: true });
+  }
+}
+
 // 8. One file to upload, when a zip tool is at hand.
 if (!process.argv.includes("--no-zip")) {
   const zip = path.join(root, "plesk-release.zip");

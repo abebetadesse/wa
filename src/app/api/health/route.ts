@@ -1,9 +1,21 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import { dbClient } from "@/lib/db";
 import { tablePrefix } from "@/lib/db/mysqlSchema";
 import { setupStatus } from "@/server/setup/autoSetup";
 
 export const dynamic = "force-dynamic";
+
+// Which release is running, from RELEASE.json written by npm run deploy:plesk (absent in development).
+function readRelease() {
+  try {
+    const release = JSON.parse(readFileSync(join(/* turbopackIgnore: true */ process.cwd(), "RELEASE.json"), "utf8"));
+    return { commit: String(release.commit ?? ""), builtAt: String(release.builtAt ?? "") };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Liveness and database check for uptime monitors and the host's health probe.
@@ -55,7 +67,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { status: "ok", database: "connected", schemaReady: true, ...(setupStatus().notice ? { notice: setupStatus().notice } : {}), time: new Date().toISOString() },
+      { status: "ok", release: readRelease(), database: "connected", schemaReady: true, ...(setupStatus().notice ? { notice: setupStatus().notice } : {}), time: new Date().toISOString() },
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (err) {

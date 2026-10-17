@@ -243,30 +243,41 @@ and remove it afterwards. No account or password is created by the code on its o
 
 ## 11. Releasing an update with GitHub Actions
 
-The `CI / CD` workflow verifies each pull request and push before deployment. A successful push to
-`main` (or a manual run against `main`) deploys the exact verified commit over SSH. The workflow
-fetches that commit in the existing Plesk Git checkout, installs dependencies, runs `npm run
-db:setup`, builds the app, removes development dependencies, restarts Passenger, and waits for
-`/api/health` to report `{"status":"ok"}`. A failed deploy, database setup, or health check fails the
-workflow rather than reporting success.
+The server cannot compile the app: its system library (glibc) is older than the Next.js compiler
+needs, so a build on the server fails. Releases are therefore built by GitHub Actions and the server
+only pulls the result.
 
-Configure these repository **Settings → Secrets and variables → Actions** secrets:
+The `CI / CD` workflow checks every pull request and push. After a successful push to `main` it
+builds the release on Linux and commits it to the **`plesk-release`** branch (the same content as
+`npm run deploy:plesk`, without the supplied-book PDFs). Running the workflow by hand on another
+branch builds the release without publishing it, as a dry run.
 
-| Secret | Required | Value |
-|---|---|---|
-| `SSH_HOST` | yes | Plesk server hostname or IP address |
-| `SSH_USER` | yes | SSH account that can access the application and run Node.js |
-| `SSH_PRIVATE_KEY` | yes | Private key whose public key is authorized for `SSH_USER` (`SSH_KEY` is also accepted) |
-| `SSH_KNOWN_HOSTS` | yes | Verified SSH host-key line for the server; use `[host]:port` for a non-default port |
-| `DEPLOY_PATH` | yes | Absolute path to the existing Git checkout/Application Root, for example `/var/www/vhosts/example.et/app` |
-| `SSH_PORT` | no | SSH port; defaults to `22` |
-| `NODE_BIN_DIR` | no | Node.js binary directory; defaults to `/opt/plesk/node/22/bin` |
-| `APP_URL` | no | Public HTTPS origin used for the health check; defaults to `https://app.wisdomcourse.com.et` |
+**One-time set-up in Plesk** (Git, for the application root):
 
-The Plesk checkout must have an `origin` remote that can fetch `main`, and the deploy account must
-be able to run Git LFS, `git`, Node.js 22, and npm from the application root. Keep `.env`, uploads,
-and `tmp/` outside Git; the workflow does not replace these files. Verify the host key through the
-hosting provider or server console before saving it as `SSH_KNOWN_HOSTS`.
+1. Point the repository's deployment at the branch **`plesk-release`**, never `main` (`main` is
+   source code and cannot be built on this server).
+2. Additional deployment actions:
+   ```bash
+   export PATH=/opt/plesk/node/22/bin:$PATH
+   npm ci --omit=dev
+   npm run db:setup
+   mkdir -p tmp && touch tmp/restart.txt
+   ```
+3. **Supplied books.** The release branch does not contain `public/books/*.pdf` (one file exceeds
+   GitHub's 100 MB limit). Keep the PDFs that are already on the server. If they are missing, upload
+   them once to `public/books/` with Plesk → Files (from `npm run deploy:plesk`'s zip or the
+   repository's Git LFS files). Switching the deployment from `main` to `plesk-release` can remove
+   files that `main` tracked, so check `public/books/` after the first deployment from the new
+   branch.
+4. Optional, for fully automatic deployment: copy the repository's **webhook URL** from Plesk → Git
+   and save it in GitHub → Settings → Secrets and variables → Actions as the secret
+   **`PLESK_GIT_WEBHOOK_URL`**. Each release then triggers the server and the workflow waits until
+   `/api/health` reports `{"status":"ok"}` with the new release's commit. Without it, click *Deploy*
+   in Plesk → Git after the workflow finishes. (The older `PLESK_DEPLOY_WEBHOOK` secret is not used:
+   it may trigger a deployment of `main`.)
+
+To publish a release from your computer instead: `npm run deploy:plesk -- --branch plesk-release`,
+then `git push origin plesk-release`.
 
 `db:setup` is safe to run on every release: it applies pending MySQL migrations once, then seeds
 the required system roles, marketplace catalogues, Ethiopian food-composition data, and
@@ -274,9 +285,8 @@ herb–medicine safety reference without deleting user or editor data. Demo-acco
 seed scripts are intentionally not run in production. The app's startup set-up remains enabled as
 a recovery path if a deployment is interrupted.
 
-For manual deployment, use Plesk → Git → Deploy (the app applies pending migrations and reference
-data at start-up), or run `npm run deploy:plesk`, upload and extract the release, install production
-dependencies, run `db:setup`, and restart the app.
+For a manual deployment without Git, run `npm run deploy:plesk`, upload and extract the zip,
+install production dependencies, run `db:setup`, and restart the app.
 
 Migrations only add to the database, so going back means deploying the previous release. Take a
 database backup before any release that includes a new file in `drizzle-mysql/`.
