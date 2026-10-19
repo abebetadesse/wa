@@ -52,6 +52,20 @@ export function normalizeQuestions(questions: RawQuestion[]): WorkflowQuestion[]
 
 export const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
+/** How each part of the model's input is named among the section's sources. */
+const INPUT_SOURCES: Record<string, string> = {
+  answers: "Your answers to the intake questions",
+  caseNarrative: "Your written account of the situation",
+  category: "The question category you chose",
+  gematria: "The name-number (gematria) reading computed from the names you gave",
+};
+
+/** The section's sources: exactly the inputs the model was given, never the model itself. */
+export function aiSectionSources(input: Record<string, unknown>): string[] {
+  const present = (value: unknown) => value !== undefined && value !== null && value !== "" && !(typeof value === "object" && Object.keys(value as object).length === 0);
+  return Object.entries(input).filter(([key, value]) => INPUT_SOURCES[key] && present(value)).map(([key]) => INPUT_SOURCES[key]);
+}
+
 /** A reflective analysis section from the configured language model; omitted when none is configured. */
 export async function aiSection(domain: string, input: Record<string, unknown>): Promise<ReportSection | null> {
   if (!isBionicConfigured()) return null;
@@ -64,9 +78,9 @@ export async function aiSection(domain: string, input: Record<string, unknown>):
       items: analysis.strategicRecommendations.map((item) => `${item.title}: ${item.description}`),
       locked: true,
       evidence: {
-        sources: ["BionicGPT synthesis", "user case inputs"],
+        sources: aiSectionSources(input),
         confidence: 0.72,
-        note: "AI-assisted synthesis is included for expert review and never substitutes for human clinical or legal judgment.",
+        note: "Drafted with a language model from the sources listed only; it cites no outside research. Included for expert review and never a substitute for human clinical or legal judgment.",
       },
       data: { strengths: analysis.strengths, challenges: analysis.challenges, insights: analysis.sectorInsights },
     };

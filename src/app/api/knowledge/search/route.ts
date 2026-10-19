@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { KNOWLEDGE_STRANDS, isKnowledgeStrand, searchKnowledge } from "@/lib/knowledge/catalog";
+import { KNOWLEDGE_STRANDS, isKnowledgeStrand } from "@/lib/knowledge/catalog";
+import { searchKnowledgeStore } from "@/lib/knowledge/search";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,11 +15,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid strand in request" }, { status: 400 });
     }
 
-    const allResults = searchKnowledge(query, requestedStrands);
+    const { engine, results: allResults } = await searchKnowledgeStore(query, requestedStrands);
     const limit = typeof body.limit === "number" && body.limit >= 0 ? Math.floor(body.limit) : 10;
     return NextResponse.json({
       success: true,
       query,
+      engine,
       results: allResults.slice(0, limit),
       total: allResults.length,
     });

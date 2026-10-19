@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { literatureFindings, literatureSyncLog } from "@/lib/db/schema";
-import { eq, and, gt, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import type { KnowledgeStrandType } from "@/lib/knowledge/types";
 import type {
   RawArticle,
@@ -17,6 +17,7 @@ import { extractStructuredData } from "./processors/abstractExtractor";
 import { mapArticleToStrands, deduplicateArticles } from "./processors/strandMapper";
 import { llmBatchAugment } from "./processors/llmSummarizer";
 import { insertReturning } from "@/lib/db/write";
+import { searchLiterature } from "@/lib/knowledge/search";
 
 // ─── Global singleton to prevent multiple cron registrations ─────────────────
 const globalFetcher = globalThis as unknown as {
@@ -395,8 +396,8 @@ export function getLiteratureFetcher(): LiteratureFetcher {
 // ─── Enrichment query for strand query() methods ──────────────────────────────
 
 /**
- * Retrieve literature enrichments for a given strand and keyword list.
- * Called from inside each strand's query() method to add live PubMed citations.
+ * Stored literature for a strand, matched to the keywords with the full-text index on
+ * (title, abstract); without keywords, the strand's most relevant and most cited rows.
  */
 export async function getLiteratureForStrand(
   strand: KnowledgeStrandType,
@@ -404,51 +405,20 @@ export async function getLiteratureForStrand(
   limit = 10
 ): Promise<LiteratureEnrichment[]> {
   try {
-    const rows = await db
-      .select({
-        pmid: literatureFindings.pmid,
-        doi: literatureFindings.doi,
-        title: literatureFindings.title,
-        journal: literatureFindings.journal,
-        pubDate: literatureFindings.pubDate,
-        strand: literatureFindings.strand,
-        strandTopicMatch: literatureFindings.strandTopicMatch,
-        relevanceScore: literatureFindings.relevanceScore,
-        extractedData: literatureFindings.extractedData,
-        keywords: literatureFindings.keywords,
-        citationCount: literatureFindings.citationCount,
-      })
-      .from(literatureFindings)
-      .where(and(eq(literatureFindings.strand, strand), eq(literatureFindings.isActive, 1)))
-      .orderBy(sql`relevance_score DESC, citation_count DESC NULLS LAST`)
-      .limit(limit * 3); // Fetch more then filter
-
-    // Filter by keyword overlap with query terms
-    const scored = rows.map((row) => {
-      const kws = (row.keywords ?? []).map((k: string) => k.toLowerCase());
-      const overlap = topKeywords.filter((k) => kws.some((kw) => kw.includes(k.toLowerCase())));
-      return { row, overlap: overlap.length };
-    });
-
-    const filtered = scored
-      .filter((s) => s.overlap > 0 || topKeywords.length === 0)
-      .sort((a, b) => b.overlap - a.overlap)
-      .slice(0, limit)
-      .map((s) => ({
-        pmid: s.row.pmid ?? undefined,
-        doi: s.row.doi ?? undefined,
-        title: s.row.title,
-        journal: s.row.journal ?? "",
-        pubDate: s.row.pubDate ?? "",
-        strand: s.row.strand as KnowledgeStrandType,
-        strandTopicMatch: s.row.strandTopicMatch ?? undefined,
-        relevanceScore: s.row.relevanceScore ?? 0,
-        extractedData: (s.row.extractedData as import("./types").ExtractedLiteratureData) ?? {},
-        keywords: (s.row.keywords as string[]) ?? [],
-        citationCount: s.row.citationCount ?? undefined,
-      }));
-
-    return filtered;
+    const hits = await searchLiterature(topKeywords.join(" "), { strand, limit });
+    return hits.map((hit) => ({
+      pmid: hit.pmid,
+      doi: hit.doi,
+      title: hit.title,
+      journal: hit.journal ?? "",
+      pubDate: hit.pubDate ?? "",
+      strand: hit.strand,
+      strandTopicMatch: hit.strandTopicMatch,
+      relevanceScore: hit.relevanceScore,
+      extractedData: hit.extractedData,
+      keywords: hit.keywords,
+      citationCount: hit.citationCount,
+    }));
   } catch {
     // Return empty if DB not available or table doesn't exist yet
     return [];

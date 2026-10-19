@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CausalInferenceEngine } from "@/lib/knowledge/ai/causalInference";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
-import { enrichStrandResultsWithPubMed } from "@/lib/knowledge/pubmedEnrichment";
+import { attachStoredLiterature } from "@/lib/knowledge/search";
 import { KnowledgeStrandType, StrandFinding, UserProfile } from "@/lib/knowledge/types";
 
 const causalEngine = new CausalInferenceEngine();
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         .map(async ([name, strand]) => [name, await strand.query(query, userProfile)] as const)
     )) as Record<KnowledgeStrandType, StrandFinding[]>;
 
-    const enrichedStrandResults = await enrichStrandResultsWithPubMed(strandResults);
+    const enrichedStrandResults = await attachStoredLiterature(strandResults);
     const allFindings = Object.values(enrichedStrandResults).flat();
     const pathways = causalEngine.buildCausalPathways(query, allFindings, userProfile);
 

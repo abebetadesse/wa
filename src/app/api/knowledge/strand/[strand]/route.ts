@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isKnowledgeStrand, knowledgeCatalog, searchKnowledge } from "@/lib/knowledge/catalog";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
-import { enrichFindingsWithPubMed } from "@/lib/knowledge/pubmedEnrichment";
+import { attachStoredLiteratureToFindings } from "@/lib/knowledge/search";
 import { KnowledgeStrandType, UserProfile } from "@/lib/knowledge/types";
 
 interface RouteParams {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     };
 
     const findings = await strandInstance.query(query, mockProfile);
-    const enrichedFindings = await enrichFindingsWithPubMed(findings);
+    const enrichedFindings = await attachStoredLiteratureToFindings(findings);
 
     return NextResponse.json({
       success: true,

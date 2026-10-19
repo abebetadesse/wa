@@ -95,6 +95,8 @@ export interface ReportSection {
     sources?: string[];
     confidence?: number;
     note?: string;
+    /** Grounded sources the section cites; inline markers [1], [2] … refer to this list in order. */
+    citations?: Citation[];
   };
   data?: Record<string, unknown>;
 }
@@ -237,6 +239,20 @@ export type AnalysisLayer = "A" | "B";
 export type AnalysisConfidence = "strong" | "moderate" | "tentative";
 
 /** A knowledge-strand finding kept because something the person said or their profile supports it. */
+/**
+ * A source a report may cite: a knowledge-base entry or a stored literature record. Built by the
+ * platform (citations.ts), never taken from a language model, which may only refer to one by id.
+ */
+export interface Citation {
+  /** Stable within a case, e.g. "psychological:generalized-anxiety-disorder". */
+  id: string;
+  title: string;
+  /** Where the entry comes from, e.g. "WHO mhGAP guide" or "psychological knowledge strand". */
+  source: string;
+  url?: string;
+  pmid?: string;
+}
+
 export interface GroundedFinding {
   strand: string;
   layer: AnalysisLayer;
@@ -249,6 +265,8 @@ export interface GroundedFinding {
   severity?: string;
   steps: string[];
   source?: string;
+  /** The finding as a citable source; absent on analyses made before citations were recorded. */
+  citation?: Citation;
 }
 
 export type CauseCategory =

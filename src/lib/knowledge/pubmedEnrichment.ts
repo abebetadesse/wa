@@ -1,3 +1,8 @@
+/**
+ * Live PubMed lookups, three per finding. For the literature sync path only: request handlers read
+ * the stored literature_findings instead (attachStoredLiterature in ./search.ts), so a page view
+ * never waits on, or is rate-limited by, an outside service.
+ */
 import { PubMedSource } from "@/lib/literature/sources/pubmedSource";
 import type { RawArticle } from "@/lib/literature/types";
 import type { StrandFinding } from "@/lib/knowledge/types";

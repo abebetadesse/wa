@@ -13,13 +13,17 @@ export type KnowledgeStrandType =
 
 export type DomainType = "wellbeing" | "cultural" | "cross-strand";
 
+/** A literature record attached to a finding (stored literature_findings rows, or a live PubMed result). */
 export interface PubmedEvidence {
   pmid?: string;
+  doi?: string;
   title: string;
   journal?: string;
   pubDate?: string;
   abstract?: string;
-  source: "pubmed";
+  /** "pubmed", "europepmc", "openalex", … */
+  source: string;
+  url?: string;
 }
 
 export interface EvidenceItem {

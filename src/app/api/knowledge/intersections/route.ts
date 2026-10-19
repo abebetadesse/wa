@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
-import { enrichStrandResultsWithPubMed } from "@/lib/knowledge/pubmedEnrichment";
+import { attachStoredLiterature } from "@/lib/knowledge/search";
 import { KnowledgeStrandType, StrandFinding, UserProfile } from "@/lib/knowledge/types";
 
 export async function GET(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       strandResults[name] = await strand.query(query, userProfile);
     }
 
-    const enrichedStrandResults = await enrichStrandResultsWithPubMed(strandResults);
+    const enrichedStrandResults = await attachStoredLiterature(strandResults);
     const intersections = globalOrchestrator.integrationEngine.findIntersections(enrichedStrandResults, userProfile);
 
     return NextResponse.json({

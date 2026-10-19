@@ -64,6 +64,24 @@ test("prefix: later kinds of migration are covered, and unknown ones are refused
   assert.equal(rename("DELETE FROM `rate_limits`;"), "DELETE FROM `wa_rate_limits`;");
   assert.match(rename("ALTER TABLE `a` ADD CONSTRAINT `a_b_fk` FOREIGN KEY (`b`) REFERENCES `b`(`id`) ON DELETE cascade ON UPDATE no action;"), /^ALTER TABLE `wa_a` ADD CONSTRAINT `wa_a_b_fk` FOREIGN KEY \(`b`\) REFERENCES `wa_b`\(`id`\) ON DELETE cascade ON UPDATE no action;$/);
 
+  // Full-text indexes and generated columns (0007_fulltext.sql): only the table is renamed.
+  assert.equal(
+    rename("ALTER TABLE `literature_findings` ADD FULLTEXT INDEX `literature_findings_text_ft` (`title`, `abstract`) WITH PARSER ngram;"),
+    "ALTER TABLE `wa_literature_findings` ADD FULLTEXT INDEX `literature_findings_text_ft` (`title`, `abstract`) WITH PARSER ngram;",
+  );
+  assert.equal(
+    rename("ALTER TABLE `knowledge_items` ADD `search_text` mediumtext GENERATED ALWAYS AS (CAST(`data` AS CHAR)) STORED;"),
+    "ALTER TABLE `wa_knowledge_items` ADD `search_text` mediumtext GENERATED ALWAYS AS (CAST(`data` AS CHAR)) STORED;",
+  );
+  assert.equal(
+    rename("CREATE FULLTEXT INDEX `t_ft` ON `knowledge_items` (`search_text`) WITH PARSER ngram;"),
+    "CREATE FULLTEXT INDEX `t_ft` ON `wa_knowledge_items` (`search_text`) WITH PARSER ngram;",
+  );
+  assert.equal(
+    rename("CREATE INDEX `literature_findings_strand_relevance_idx` ON `literature_findings` (`strand`(64), `relevance_score`);"),
+    "CREATE INDEX `literature_findings_strand_relevance_idx` ON `wa_literature_findings` (`strand`(64), `relevance_score`);",
+  );
+
   // Anything else could reach another application's tables, so it stops the migration instead.
   assert.throws(() => rename("CREATE VIEW `v` AS SELECT 1;"), /cannot be prefixed safely/);
   assert.throws(() => rename("SET FOREIGN_KEY_CHECKS = 0;"), /cannot be prefixed safely/);
