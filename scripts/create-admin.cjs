@@ -158,6 +158,7 @@ __export(schema_exports, {
   roles: () => roles,
   safetyInteractions: () => safetyInteractions,
   safetySubstances: () => safetySubstances,
+  scheduledTasks: () => scheduledTasks,
   scientificAnalyses: () => scientificAnalyses,
   serviceIntakeSettings: () => serviceIntakeSettings,
   serviceKinds: () => serviceKinds,
@@ -1933,6 +1934,23 @@ var rateLimits = mysqlTable(
     resetAt: timestamp("reset_at", { withTimezone: true }).notNull()
   },
   (table) => [(0, import_mysql_core.index)("rate_limits_reset_idx").on(table.resetAt)]
+);
+var scheduledTasks = mysqlTable(
+  "scheduled_tasks",
+  {
+    name: (0, import_mysql_core.varchar)("name", { length: 80 }).primaryKey(),
+    everySeconds: integer("every_seconds").notNull(),
+    nextRunAt: timestamp("next_run_at").defaultNow().notNull(),
+    leaseOwner: (0, import_mysql_core.varchar)("lease_owner", { length: 120 }),
+    leaseUntil: timestamp("lease_until"),
+    lastStartedAt: timestamp("last_started_at"),
+    lastSuccessAt: timestamp("last_success_at"),
+    lastErrorAt: timestamp("last_error_at"),
+    lastError: (0, import_mysql_core.varchar)("last_error", { length: 1e3 }),
+    consecutiveFailures: integer("consecutive_failures").default(0).notNull(),
+    runCount: integer("run_count").default(0).notNull()
+  },
+  (table) => [(0, import_mysql_core.index)("scheduled_tasks_due_idx").on(table.nextRunAt)]
 );
 
 // src/lib/db/schema/toolkit.ts

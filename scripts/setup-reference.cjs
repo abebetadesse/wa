@@ -1853,7 +1853,7 @@ var init_caseEvaluationPipeline = __esm({
 });
 
 // src/lib/db/schema/platform.ts
-var platformSettings, platformPayments, rateLimits;
+var platformSettings, platformPayments, rateLimits, scheduledTasks;
 var init_platform = __esm({
   "src/lib/db/schema/platform.ts"() {
     "use strict";
@@ -1910,6 +1910,23 @@ var init_platform = __esm({
         resetAt: timestamp("reset_at", { withTimezone: true }).notNull()
       },
       (table) => [(0, import_mysql_core.index)("rate_limits_reset_idx").on(table.resetAt)]
+    );
+    scheduledTasks = mysqlTable(
+      "scheduled_tasks",
+      {
+        name: (0, import_mysql_core.varchar)("name", { length: 80 }).primaryKey(),
+        everySeconds: integer("every_seconds").notNull(),
+        nextRunAt: timestamp("next_run_at").defaultNow().notNull(),
+        leaseOwner: (0, import_mysql_core.varchar)("lease_owner", { length: 120 }),
+        leaseUntil: timestamp("lease_until"),
+        lastStartedAt: timestamp("last_started_at"),
+        lastSuccessAt: timestamp("last_success_at"),
+        lastErrorAt: timestamp("last_error_at"),
+        lastError: (0, import_mysql_core.varchar)("last_error", { length: 1e3 }),
+        consecutiveFailures: integer("consecutive_failures").default(0).notNull(),
+        runCount: integer("run_count").default(0).notNull()
+      },
+      (table) => [(0, import_mysql_core.index)("scheduled_tasks_due_idx").on(table.nextRunAt)]
     );
   }
 });
@@ -2269,6 +2286,7 @@ __export(schema_exports, {
   roles: () => roles,
   safetyInteractions: () => safetyInteractions,
   safetySubstances: () => safetySubstances,
+  scheduledTasks: () => scheduledTasks,
   scientificAnalyses: () => scientificAnalyses,
   serviceIntakeSettings: () => serviceIntakeSettings,
   serviceKinds: () => serviceKinds,
@@ -8677,12 +8695,21 @@ var import_zod = require("zod");
 // src/lib/audit.ts
 init_db();
 init_schema();
+
+// src/lib/shutdown.ts
+var g = globalThis;
+function onShutdown(name, hook) {
+  g.__ethioShutdownHooks ??= /* @__PURE__ */ new Map();
+  g.__ethioShutdownHooks.set(name, hook);
+}
+
+// src/lib/audit.ts
 var BATCH_SIZE = 50;
 var FLUSH_INTERVAL_MS = 2e3;
-var g = globalThis;
-if (!g._auditBuffer)
-  g._auditBuffer = [];
-var buffer = g._auditBuffer;
+var g2 = globalThis;
+if (!g2._auditBuffer)
+  g2._auditBuffer = [];
+var buffer = g2._auditBuffer;
 async function flushBuffer() {
   if (buffer.length === 0)
     return;
@@ -8738,14 +8765,15 @@ async function flushBuffer() {
   }
   await Promise.allSettled(writes);
 }
-if (!g._auditFlushTimer && typeof setInterval !== "undefined") {
-  g._auditFlushTimer = setInterval(() => {
+if (!g2._auditFlushTimer && typeof setInterval !== "undefined") {
+  g2._auditFlushTimer = setInterval(() => {
     flushBuffer().catch((err) => console.error("[audit] interval flush error:", err));
   }, FLUSH_INTERVAL_MS);
-  if (typeof g._auditFlushTimer.unref === "function") {
-    g._auditFlushTimer.unref();
+  if (typeof g2._auditFlushTimer.unref === "function") {
+    g2._auditFlushTimer.unref();
   }
 }
+onShutdown("audit-buffer", () => flushBuffer());
 
 // src/lib/api/route.ts
 init_rbac();
@@ -9329,14 +9357,14 @@ var interactionInput = import_zod2.z.object({
 });
 
 // src/lib/db/referenceData.ts
-async function setupReferenceData(log = console.log) {
+async function setupReferenceData(log2 = console.log) {
   const roles2 = await seedRoles();
-  log(`Roles ready (${roles2.size}).`);
+  log2(`Roles ready (${roles2.size}).`);
   const catalogues = await seedMarketplaceCatalogues();
-  log(`Marketplace catalogues ready (${catalogues.categories} categories, ${catalogues.serviceKinds} service kinds).`);
+  log2(`Marketplace catalogues ready (${catalogues.categories} categories, ${catalogues.serviceKinds} service kinds).`);
   await runSeed();
   await ensureSafetySynced(true);
-  log("Safety reference ready.");
+  log2("Safety reference ready.");
   try {
     const { db: db2 } = await Promise.resolve().then(() => (init_db(), db_exports));
     const { users: users2, roles: roles3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
@@ -9346,7 +9374,7 @@ async function setupReferenceData(log = console.log) {
       const [superRole] = await db2.select({ id: roles3.id }).from(roles3).where(eq6(roles3.name, "super_admin")).limit(1);
       if (superRole) {
         await db2.update(users2).set({ role: "super_admin", roleId: superRole.id }).where(eq6(users2.id, existing.id));
-        log("Promoted abebetadesse1@gmail.com to super_admin.");
+        log2("Promoted abebetadesse1@gmail.com to super_admin.");
       }
     }
   } catch {
