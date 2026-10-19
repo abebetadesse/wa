@@ -2191,6 +2191,49 @@ var init_intake = __esm({
   }
 });
 
+// src/lib/db/schema/followUps.ts
+var followUps;
+var init_followUps = __esm({
+  "src/lib/db/schema/followUps.ts"() {
+    "use strict";
+    init_mysqlSchema();
+    init_users();
+    init_caseWorkflow();
+    init_marketplace();
+    followUps = mysqlTable(
+      "follow_ups",
+      {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+        caseId: uuid("case_id").references(() => workflowCases.id, { onDelete: "cascade" }),
+        bookingId: uuid("booking_id").references(() => bookings.id, { onDelete: "cascade" }),
+        domain: (0, import_mysql_core.varchar)("domain", { length: 40 }),
+        label: (0, import_mysql_core.varchar)("label", { length: 160 }).notNull(),
+        dayOffset: integer("day_offset").notNull(),
+        dueAt: timestamp("due_at").notNull(),
+        sentAt: timestamp("sent_at"),
+        answeredAt: timestamp("answered_at"),
+        answeredVia: (0, import_mysql_core.varchar)("answered_via", { length: 20 }),
+        helped: (0, import_mysql_core.varchar)("helped", { length: 10 }),
+        sideEffects: (0, import_mysql_core.varchar)("side_effects", { length: 1e3 }),
+        comment: (0, import_mysql_core.varchar)("comment", { length: 1e3 }),
+        needsAttention: (0, import_mysql_core.boolean)("needs_attention").default(false).notNull(),
+        reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+        businessId: uuid("business_id").references(() => businesses.id, { onDelete: "set null" }),
+        createdAt: timestamp("created_at").defaultNow().notNull()
+      },
+      (table) => [
+        (0, import_mysql_core.uniqueIndex)("follow_ups_case_day_uq").on(table.caseId, table.dayOffset),
+        (0, import_mysql_core.uniqueIndex)("follow_ups_booking_day_uq").on(table.bookingId, table.dayOffset),
+        (0, import_mysql_core.index)("follow_ups_due_idx").on(table.sentAt, table.dueAt),
+        (0, import_mysql_core.index)("follow_ups_user_idx").on(table.userId, table.sentAt),
+        (0, import_mysql_core.index)("follow_ups_reviewer_idx").on(table.reviewerId),
+        (0, import_mysql_core.index)("follow_ups_business_idx").on(table.businessId)
+      ]
+    );
+  }
+});
+
 // src/lib/db/schema/index.ts
 var schema_exports = {};
 __export(schema_exports, {
@@ -2230,6 +2273,7 @@ __export(schema_exports, {
   emergencyAlerts: () => emergencyAlerts,
   emergencyProfiles: () => emergencyProfiles,
   fewusTexts: () => fewusTexts,
+  followUps: () => followUps,
   foodNutrients: () => foodNutrients,
   foods: () => foods,
   gapCauses: () => gapCauses,
@@ -2324,6 +2368,7 @@ var init_schema = __esm({
     init_toolkit();
     init_safety();
     init_intake();
+    init_followUps();
   }
 });
 

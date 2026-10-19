@@ -716,6 +716,14 @@
       "namedRegex": "^/api/export/(?<nxtPreportId>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/follow-ups/[id]",
+      "regex": "^/api/follow\\-ups/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/follow\\-ups/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/hexacore/commercial/dossier/[purchaseId]",
       "regex": "^/api/hexacore/commercial/dossier/([^/]+?)(?:/)?$",
       "routeKeys": {
