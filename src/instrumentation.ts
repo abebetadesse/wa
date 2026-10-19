@@ -14,7 +14,11 @@ export async function register() {
     const { checkProductionEnvironment } = await import("@/lib/config/environment");
     checkProductionEnvironment();
     // Not awaited: creating a hundred tables on a remote server can outlast the host's start-up limit.
-    void import("@/server/setup/autoSetup").then(({ prepareDatabase }) => prepareDatabase());
+    // Background tasks start once the database is prepared (prepareDatabase never throws).
+    void import("@/server/setup/autoSetup")
+      .then(({ prepareDatabase }) => prepareDatabase())
+      .then(() => import("@/server/jobs"))
+      .then(({ startBackgroundTasks }) => startBackgroundTasks());
   }
 }
 

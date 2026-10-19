@@ -38,10 +38,19 @@ app
     server.requestTimeout = 0;
     server.listen(port, () => console.log(`[server] ready on port ${port} (${path.basename(__dirname)})`));
 
+    // Hooks registered by the application (src/lib/shutdown.ts): buffered audit events, background
+    // tasks. They run once, after new connections stop and before the process exits.
+    let stopping = false;
     const stop = (signal) => {
+      if (stopping) return;
+      stopping = true;
       console.log(`[server] ${signal} received, closing`);
-      server.close(() => process.exit(0));
       setTimeout(() => process.exit(0), 10_000).unref();
+      server.close(async () => {
+        const hooks = globalThis.__ethioShutdownHooks;
+        if (hooks) await Promise.allSettled([...hooks.values()].map((hook) => Promise.resolve().then(hook)));
+        process.exit(0);
+      });
     };
     process.on("SIGTERM", () => stop("SIGTERM"));
     process.on("SIGINT", () => stop("SIGINT"));

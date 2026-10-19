@@ -30,6 +30,8 @@ const PUBLIC_API_PATHS = [
   "/api/weather/",
   // Uptime probe: reports only whether the app can reach its database.
   "/api/health",
+  // Browser crash reports from the error page; rate-limited, accepts only the error text and path.
+  "/api/client-errors",
   // Telegram delivers signed-in bot commands server-to-server.
   "/api/telegram/webhook",
   // Meta delivers WhatsApp messages server-to-server; each delivery is signed with the app secret.

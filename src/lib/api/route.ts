@@ -21,6 +21,7 @@ import { roleHasPermission } from "@/lib/db/schema/rbac";
 import { clientIp } from "./rateLimit";
 import { consumeSharedRateLimit } from "./sharedRateLimit";
 import type { PlatformRole } from "./authGuard";
+import { log } from "@/lib/log";
 
 export type RouteAccess =
   | "public"
@@ -134,7 +135,7 @@ export function errorResponse(error: unknown): NextResponse {
       { status: 400 },
     );
   }
-  console.error("[api] unhandled error:", error);
+  log.error("unhandled API error", { source: "api", error });
   return NextResponse.json({ success: false, error: "Internal server error." }, { status: 500 });
 }
 

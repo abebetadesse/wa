@@ -61,3 +61,22 @@ export const rateLimits = mysqlTable(
   },
   (table) => [index("rate_limits_reset_idx").on(table.resetAt)],
 );
+
+/** Recurring background tasks and their cross-process lease (src/server/jobs/runner.ts). */
+export const scheduledTasks = mysqlTable(
+  "scheduled_tasks",
+  {
+    name: varchar("name", { length: 80 }).primaryKey(),
+    everySeconds: integer("every_seconds").notNull(),
+    nextRunAt: timestamp("next_run_at").defaultNow().notNull(),
+    leaseOwner: varchar("lease_owner", { length: 120 }),
+    leaseUntil: timestamp("lease_until"),
+    lastStartedAt: timestamp("last_started_at"),
+    lastSuccessAt: timestamp("last_success_at"),
+    lastErrorAt: timestamp("last_error_at"),
+    lastError: varchar("last_error", { length: 1000 }),
+    consecutiveFailures: integer("consecutive_failures").default(0).notNull(),
+    runCount: integer("run_count").default(0).notNull(),
+  },
+  (table) => [index("scheduled_tasks_due_idx").on(table.nextRunAt)],
+);

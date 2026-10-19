@@ -15,6 +15,7 @@
  */
 import { db } from "@/lib/db";
 import { auditLog, userActivities, loginHistory } from "@/lib/db/schema";
+import { onShutdown } from "@/lib/shutdown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,9 @@ if (!g._auditFlushTimer && typeof setInterval !== "undefined") {
     (g._auditFlushTimer as NodeJS.Timeout).unref();
   }
 }
+
+// Write whatever is still buffered when the host stops the process (app.js runs these hooks).
+onShutdown("audit-buffer", () => flushBuffer());
 
 // ─── Public API (fire-and-forget) ─────────────────────────────────────────────
 

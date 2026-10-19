@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbClient } from "@/lib/db";
 import { tablePrefix } from "@/lib/db/mysqlSchema";
 import { setupStatus } from "@/server/setup/autoSetup";
+import { dbTaskStore, summariseTasks } from "@/server/jobs/runner";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,14 @@ function readRelease() {
     return { commit: String(release.commit ?? ""), builtAt: String(release.builtAt ?? "") };
   } catch {
     return null;
+  }
+}
+
+async function backgroundTaskHealth() {
+  try {
+    return summariseTasks(await dbTaskStore.list());
+  } catch {
+    return { tasks: [], stale: [], unavailable: true };
   }
 }
 
@@ -67,7 +76,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { status: "ok", release: readRelease(), database: "connected", schemaReady: true, ...(setupStatus().notice ? { notice: setupStatus().notice } : {}), time: new Date().toISOString() },
+      { status: "ok", release: readRelease(), database: "connected", schemaReady: true, jobs: await backgroundTaskHealth(), ...(setupStatus().notice ? { notice: setupStatus().notice } : {}), time: new Date().toISOString() },
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (err) {
