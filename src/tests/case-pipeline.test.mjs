@@ -14,6 +14,9 @@ import { CaseStatus } from "../lib/pipeline/types.ts";
 import { pipelineRepository } from "../lib/pipeline/repository.ts";
 import { evaluateProfile } from "../lib/evaluation/profileEvaluator.ts";
 import { evaluateCase } from "../lib/evaluation/caseEvaluator.ts";
+import { createAccessToken } from "../lib/auth.ts";
+
+const bearer = (userId, role) => ({ Authorization: `Bearer ${createAccessToken(userId, role)}` });
 
 // ─── 1. UNIT: projectUserReport Never Leaks Professional Fields ──────────────
 test("Unit: projectUserReport never leaks a professional-only field (property test)", () => {
@@ -307,8 +310,7 @@ test("Security: User session calling /api/cases/:id/report/pro receives 403 Forb
   const userReq = new Request("http://localhost:5500/api/cases/dummy-case-1/report/pro", {
     method: "GET",
     headers: {
-      "x-actor-id": "user-patient-123",
-      "x-actor-role": "USER",
+      ...bearer("user-patient-123", "user"),
     },
   });
 
@@ -338,8 +340,7 @@ test("Publication: server rejects an incomplete report quality checklist", async
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-actor-id": "admin-board",
-      "x-actor-role": "ADMIN",
+      ...bearer("admin-board", "admin"),
     },
     body: JSON.stringify({
       qualityChecklist: {

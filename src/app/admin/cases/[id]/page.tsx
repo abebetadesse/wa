@@ -54,7 +54,6 @@ export default function AdminCaseDetailPage() {
     try {
       // 1. Load case details
       const caseRes = await fetch(`/api/cases/${caseId}`, {
-        headers: { "x-actor-id": "admin-board", "x-actor-role": "ADMIN" },
       });
       const caseJson = await caseRes.json();
       if (!caseJson.success) throw new Error(caseJson.error || "Failed to load case");
@@ -62,7 +61,6 @@ export default function AdminCaseDetailPage() {
 
       // 2. Load audit events
       const eventsRes = await fetch(`/api/cases/${caseId}/events`, {
-        headers: { "x-actor-id": "admin-board", "x-actor-role": "ADMIN" },
       });
       const eventsJson = await eventsRes.json();
       if (eventsJson.success) {
@@ -71,14 +69,12 @@ export default function AdminCaseDetailPage() {
 
       // 3. Load professional report
       const proRes = await fetch(`/api/cases/${caseId}/report/pro`, {
-        headers: { "x-actor-id": "admin-board", "x-actor-role": "ADMIN" },
       });
       const proJson = await proRes.json();
       if (proJson.success) setProReport(proJson.data);
 
       // 4. Load user report
       const userRes = await fetch(`/api/cases/${caseId}/report/user`, {
-        headers: { "x-actor-id": "admin-board", "x-actor-role": "ADMIN" },
       });
       const userJson = await userRes.json();
       if (userJson.success) setUserReport(userJson.data);
@@ -101,8 +97,6 @@ export default function AdminCaseDetailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-actor-id": "admin-board",
-          "x-actor-role": "ADMIN",
         },
         body: JSON.stringify({ qualityChecklist: publicationChecks }),
       });
@@ -124,8 +118,6 @@ export default function AdminCaseDetailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-actor-id": "admin-board",
-          "x-actor-role": "ADMIN",
         },
         body: JSON.stringify({
           note: returnNote,

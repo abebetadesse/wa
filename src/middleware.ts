@@ -57,10 +57,7 @@ const PUBLIC_PAGE_PATHS = [
   "/foods",
   "/atlas",
   "/case",
-  "/pipeline",
   "/case-pipeline",
-  "/professional/cases",
-  "/admin/cases",
 ];
 
 function isPublicPage(pathname: string) {

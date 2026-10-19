@@ -112,8 +112,6 @@ export default function UserPipelinePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-actor-id": "demo-user-1",
-          "x-actor-role": "USER",
         },
         body: JSON.stringify(payload),
       });
@@ -153,8 +151,6 @@ export default function UserPipelinePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-actor-id": "demo-user-1",
-          "x-actor-role": "USER",
         },
         body: JSON.stringify(payload),
       });
@@ -181,12 +177,7 @@ export default function UserPipelinePage() {
 
   const fetchUserReport = async (caseId: string) => {
     try {
-      const res = await fetch(`/api/cases/${caseId}/report/user`, {
-        headers: {
-          "x-actor-id": "demo-user-1",
-          "x-actor-role": "USER",
-        },
-      });
+      const res = await fetch(`/api/cases/${caseId}/report/user`);
       const json = await res.json();
       if (res.ok && json.success) {
         setUserReport(json.data);

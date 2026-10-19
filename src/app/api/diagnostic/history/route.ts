@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
+import { desc, eq } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { diagnosticSessions } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { defineRoute } from "@/lib/api/route";
 
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const limit = Math.min(Number(searchParams.get("limit")) || 10, 50);
-
-    if (!db) {
-      return NextResponse.json({ success: true, data: [] });
-    }
-
-    let query = db
+/**
+ * The signed-in user's own recent diagnostic sessions. Guests have no stored history and get an
+ * empty list. The list is always scoped to the caller: there is no way to ask for another user's.
+ */
+export const GET = defineRoute({
+  access: "public",
+  query: z.object({ limit: z.coerce.number().int().min(1).max(50).catch(10) }),
+  handler: async ({ user, query }) => {
+    if (!user) return [];
+    return db
       .select({
         id: diagnosticSessions.id,
         query: diagnosticSessions.query,
@@ -26,22 +26,8 @@ export async function GET(request: NextRequest) {
         createdAt: diagnosticSessions.createdAt,
       })
       .from(diagnosticSessions)
+      .where(eq(diagnosticSessions.userId, user.id))
       .orderBy(desc(diagnosticSessions.createdAt))
-      .limit(limit);
-
-    if (userId) {
-      // @ts-expect-error drizzle where clause
-      query = query.where(eq(diagnosticSessions.userId, userId));
-    }
-
-    const sessions = await query;
-
-    return NextResponse.json({
-      success: true,
-      data: sessions,
-    });
-  } catch (error) {
-    console.error("Diagnostic history error:", error);
-    return NextResponse.json({ success: true, data: [] });
-  }
-}
+      .limit(query.limit);
+  },
+});

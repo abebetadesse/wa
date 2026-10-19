@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { caseCauses, caseSessions, caseSolutions } from "@/lib/db/schema";
 import type { CaseSession, Cause, Solution } from "./engine";
@@ -76,11 +76,11 @@ export async function loadCaseSession(sessionId: string, userId: string) {
 }
 
 /**
- * Load a session by ID only — used for guest sessions where no persistent user
- * account exists. The session's own userId field identifies the transient guest.
+ * Load a guest session (started without signing in) by ID. A session that belongs to an account is
+ * never returned here, so an anonymous caller cannot read or change a signed-in user's case.
  */
 export async function loadGuestCaseSession(sessionId: string) {
-  const [stored] = await db.select().from(caseSessions).where(eq(caseSessions.id, sessionId)).limit(1);
+  const [stored] = await db.select().from(caseSessions).where(and(eq(caseSessions.id, sessionId), isNull(caseSessions.userId))).limit(1);
   if (!stored) return undefined;
   return _hydrateSession(stored);
 }

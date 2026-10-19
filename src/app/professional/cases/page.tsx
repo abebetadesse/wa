@@ -22,12 +22,7 @@ export default function ProfessionalQueuePage() {
   const fetchCases = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cases", {
-        headers: {
-          "x-actor-id": "pro-dr-girma",
-          "x-actor-role": "PROFESSIONAL",
-        },
-      });
+      const res = await fetch("/api/cases");
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setCases(json.data);

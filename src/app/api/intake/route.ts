@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, intakeSubmissions, wellbeingProfiles, culturalProfiles } from "@/lib/db/schema";
+import { intakeSubmissions, wellbeingProfiles, culturalProfiles } from "@/lib/db/schema";
+import { getAuthenticatedUser } from "@/lib/auth";
 import { runEvaluationAndPersist } from "@/lib/evaluation/pipelineRunner";
 import { stage1Normalize } from "@/lib/evaluation/stage1Normalize";
 import { encryptRestrictedField } from "@/lib/security/encryption";
 import { createJob, updateJobProgress } from "@/lib/jobs/queue";
-import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { z } from "zod";
 import { clientIp } from "@/lib/api/rateLimit";
@@ -47,6 +47,14 @@ const intakeRequestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // The intake is always stored against the signed-in account. It used to accept any email and
+    // attach the medical profile to whichever account had it, which let anyone write to another
+    // person's record.
+    const user = await getAuthenticatedUser({ refreshAccessCookie: true });
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Please sign in to save an intake assessment." }, { status: 401 });
+    }
+
     const rateLimit = await consumeSharedRateLimit(`intake:${clientIp(req.headers)}`, 5, 60 * 60 * 1000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -67,23 +75,12 @@ export async function POST(req: NextRequest) {
       );
     }
     const body = parsedBody.data;
-    const email = body.email || `client_${Date.now()}@ethio-wellness.local`;
-    const name = body.name || "Client User";
+    const name = user.name || body.name || "Client User";
+    const userId = user.id;
 
     const jobId = crypto.randomUUID();
 
-    // 1. Ensure user exists
-    let userId: string;
-    const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
-
-    if (existingUsers.length > 0) {
-      userId = existingUsers[0].id;
-    } else {
-      const [newUser] = await insertReturning(db, users, { email, name }, { fields: { id: users.id } });
-      userId = newUser.id;
-    }
-
-    // 2. Encrypt Restricted Data Class fields (Section 7, 8.2 compliance)
+    // 1. Encrypt Restricted Data Class fields (Section 7, 8.2 compliance)
     const normalized = stage1Normalize(body);
     const encryptedMedicalHistory = encryptRestrictedField(normalized.medicalHistory);
     const encryptedMedications = encryptRestrictedField(normalized.medications);
@@ -103,7 +100,7 @@ export async function POST(req: NextRequest) {
       lifestyleHabits: normalized.lifestyleHabits,
     });
 
-    // 3. Save Cultural Profile if opted in (Domain B - Firewalled)
+    // 2. Save Cultural Profile if opted in (Domain B - Firewalled)
     if (body.includeCultural && body.cultural) {
       await db.insert(culturalProfiles).values({
         userId,
@@ -117,7 +114,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 4. Create intake submission
+    // 3. Create intake submission
     const [submission] = await insertReturning(db, intakeSubmissions, {
         userId,
         payload: { ...body, normalized },
@@ -127,7 +124,7 @@ export async function POST(req: NextRequest) {
     const submissionId = submission.id;
     const jobAccess = createJob(jobId, submissionId);
 
-    // 5. Update progress stages
+    // 4. Update progress stages
     updateJobProgress(jobId, 25, "Normalized client profile and resolved Ethiopian regional elevation...");
     updateJobProgress(jobId, 50, "Calibrating WHO altitude physiological targets (+15-25% Iron)...");
     updateJobProgress(jobId, 70, "Computing EFCT 2025 intake factoring fermentation bioavailability...");

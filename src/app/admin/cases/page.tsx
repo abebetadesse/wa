@@ -22,12 +22,7 @@ export default function AdminQueuePage() {
   const fetchCases = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cases", {
-        headers: {
-          "x-actor-id": "admin-board",
-          "x-actor-role": "ADMIN",
-        },
-      });
+      const res = await fetch("/api/cases");
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setCases(json.data);

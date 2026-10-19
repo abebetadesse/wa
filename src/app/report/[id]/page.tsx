@@ -11,6 +11,7 @@ import {
   wellbeingProfiles,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth";
 import NutrientRadarChart from "@/components/wellbeing/NutrientRadarChart";
 import ScientificEncounterModal from "@/components/wellbeing/ScientificEncounterModal";
 import ExportPanel from "@/components/wellbeing/ExportPanel";
@@ -40,6 +41,13 @@ export default async function ReportPage({ params }: ReportPageProps) {
   }
 
   const report = reports[0];
+
+  // Only the person the report belongs to and administrators may see it (same rule as export).
+  // Anyone else gets the same "not found" as a missing report, so report ids cannot be probed.
+  const viewer = await getAuthenticatedUser();
+  if (!viewer || (report.userId !== viewer.id && viewer.role !== "admin" && viewer.role !== "super_admin")) {
+    notFound();
+  }
 
   // 2. Fetch User & wellbeing Profile
   const [user] = await db.select().from(users).where(eq(users.id, report.userId)).limit(1);

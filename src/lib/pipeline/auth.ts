@@ -1,5 +1,5 @@
 import { Role } from "./types";
-import { verifyAccessToken } from "@/lib/auth";
+import { ACCESS_COOKIE, verifyAccessToken } from "@/lib/auth";
 
 export interface PipelineSession {
   userId: string;
@@ -17,72 +17,40 @@ export function parseHeaderRole(roleStr?: string | null): Role | null {
   return null;
 }
 
-export async function getPipelineSession(req: Request): Promise<PipelineSession | null> {
-  const headers = req.headers;
-
-  // 1. Direct header simulation for deterministic testing / curl / sub-agent requests
-  const actorIdHeader = headers.get("x-actor-id") || headers.get("x-user-id");
-  const actorRoleHeader = headers.get("x-actor-role") || headers.get("x-user-role");
-
-  if (actorIdHeader && actorRoleHeader) {
-    const role = parseHeaderRole(actorRoleHeader);
-    if (role) {
-      return {
-        userId: actorIdHeader,
-        role,
-        name: headers.get("x-user-name") || `${role} ${actorIdHeader}`,
-      };
+function readCookie(cookieHeader: string, name: string): string | null {
+  for (const part of cookieHeader.split(";")) {
+    const [key, ...rest] = part.trim().split("=");
+    if (key !== name) continue;
+    try {
+      return decodeURIComponent(rest.join("="));
+    } catch {
+      return null;
     }
   }
-
-  // 2. Bearer token
-  const authHeader = headers.get("authorization");
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.slice(7).trim();
-    const claims = verifyAccessToken(token);
-    if (claims && claims.sub) {
-      const role = parseHeaderRole(claims.role) || "USER";
-      return {
-        userId: claims.sub,
-        role,
-      };
-    }
-  }
-
-  // 3. Cookie extraction
-  const cookieHeader = headers.get("cookie");
-  if (cookieHeader) {
-    const cookies = Object.fromEntries(
-      cookieHeader.split(";").map((c) => {
-        const [k, ...v] = c.trim().split("=");
-        return [k, decodeURIComponent(v.join("="))];
-      })
-    );
-    const token = cookies["ethio_access"];
-    if (token) {
-      const claims = verifyAccessToken(token);
-      if (claims && claims.sub) {
-        const role = parseHeaderRole(claims.role) || "USER";
-        return {
-          userId: claims.sub,
-          role,
-        };
-      }
-    }
-
-    // Also support convenience development cookie
-    if (cookies["pipeline_user_id"] && cookies["pipeline_user_role"]) {
-      const role = parseHeaderRole(cookies["pipeline_user_role"]);
-      if (role) {
-        return {
-          userId: cookies["pipeline_user_id"],
-          role,
-        };
-      }
-    }
-  }
-
   return null;
+}
+
+function sessionFromToken(token: string | null | undefined): PipelineSession | null {
+  if (!token) return null;
+  const claims = verifyAccessToken(token);
+  if (!claims?.sub) return null;
+  return { userId: claims.sub, role: parseHeaderRole(claims.role) || "USER" };
+}
+
+/**
+ * The caller's identity comes only from a signed access token: the Authorization bearer header or
+ * the sign-in cookie. Identity or role headers and cookies set by the client are never trusted,
+ * because anyone can set them.
+ */
+export async function getPipelineSession(req: Request): Promise<PipelineSession | null> {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const session = sessionFromToken(authHeader.slice(7).trim());
+    if (session) return session;
+  }
+
+  const cookieHeader = req.headers.get("cookie");
+  return cookieHeader ? sessionFromToken(readCookie(cookieHeader, ACCESS_COOKIE)) : null;
 }
 
 export class AuthError extends Error {
