@@ -27,6 +27,7 @@ import {
   startPayment,
   submitCase,
 } from "./machine";
+import { followUpService, scheduleSafely } from "@/server/followUps";
 import type { CaseBilling, CasePayMethod } from "./billing";
 import { caseBilling } from "@/server/payments/caseBilling";
 import { dbCaseStore, type CaseStore } from "./store";
@@ -95,6 +96,8 @@ interface Deps {
   notifyReply?: (record: WorkflowCase) => Promise<void>;
   /** The owner added foods or plants while the case is under review. */
   notifyFoodHerb?: (record: WorkflowCase) => Promise<void>;
+  /** The person can now read the full report: schedule outcome check-ins (src/server/followUps). */
+  onDelivered?: (record: WorkflowCase) => Promise<void>;
   /** Overrides for the section enhancer (tests supply or withhold the language model). */
   enhancer?: Partial<EnhanceDeps>;
   /** Photo recognition; tests supply a stand-in for the vision model. Null when none is configured. */
@@ -124,6 +127,7 @@ export function createCaseService(deps: Deps) {
   async function released(record: WorkflowCase) {
     await store.save(record);
     await deps.billing.onReleased?.({ userId: record.userId, caseId: record.id, label: getDomainConfig(record.domain).label });
+    await deps.onDelivered?.(record);
   }
 
   function assertPayable(record: WorkflowCase) {
@@ -584,6 +588,7 @@ export function createCaseService(deps: Deps) {
       const next = approved.bookingId ? releaseWithBooking(approved) : free ? releaseFree(approved) : approved;
       await store.save(next);
       if (free) await deps.billing.onReleased?.({ userId: next.userId, caseId: next.id, label: config.label });
+      if (next.stage === "full_report_released") await deps.onDelivered?.(next);
       await announce(next, "approved");
       if (!next.businessId) {
         await deps.notifyApproved?.(next);
@@ -609,4 +614,6 @@ export const caseService = createCaseService({
   notifyReply: (record) => notifyReviewers(record, "reply"),
   notifyFoodHerb: (record) => notifyReviewers(record, "food_herb"),
   vision: () => (visionModel() ? visionDeps : null),
+  onDelivered: (record) =>
+    scheduleSafely(() => followUpService.scheduleForCase(record, getDomainConfig(record.domain).label), { caseId: record.id }).then(() => undefined),
 });

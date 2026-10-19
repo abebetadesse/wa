@@ -118,8 +118,8 @@ test("health summary marks tasks stale without exposing error text", () => {
 });
 
 test("literature sync is scheduled only when switched on", () => {
-  assert.deepEqual(backgroundTasks({}).map((task) => task.name), []);
-  assert.deepEqual(backgroundTasks({ LITERATURE_SYNC: "on" }).map((task) => task.name), ["literature.sync"]);
+  assert.deepEqual(backgroundTasks({}).map((task) => task.name), ["follow_ups.send"]);
+  assert.deepEqual(backgroundTasks({ LITERATURE_SYNC: "on" }).map((task) => task.name), ["follow_ups.send", "literature.sync"]);
 });
 
 test("log lines are single JSON objects with error details and clipped strings", () => {

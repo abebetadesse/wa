@@ -1,7 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3, Globe, Shield, Users, Activity, CheckCircle2, AlertTriangle, PieChart } from "lucide-react";
+import { BarChart3, Globe, HeartPulse, Shield, Users, Activity, CheckCircle2, AlertTriangle, PieChart } from "lucide-react";
+
+interface OutcomeGroup {
+  name: string;
+  answered: number;
+  helpedRate: number | null;
+}
+
+function OutcomeList({ title, rows }: { title: string; rows: OutcomeGroup[] }) {
+  return (
+    <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+      <span className="text-slate-400 block mb-2">{title}</span>
+      {rows.length === 0 ? (
+        <p className="text-[11px] text-slate-500">No answers yet</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {rows.slice(0, 8).map((row) => (
+            <li key={row.name} className="flex justify-between gap-2">
+              <span className="text-slate-200 truncate">{row.name}</span>
+              <span className="font-mono text-emerald-400 shrink-0">{row.helpedRate ?? "—"}% · {row.answered}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<any>(null);
@@ -107,6 +133,43 @@ export default function AnalyticsPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Outcomes reported in the 3/14/30-day check-ins */}
+      <div className="glass-panel p-6 rounded-2xl border border-white/10">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
+          <HeartPulse size={16} className="text-emerald-400" />
+          <span>Outcomes after reports and sessions</span>
+        </h2>
+        <p className="text-[11px] text-slate-400 mb-4">
+          Answers to the check-ins sent 3, 14 and 30 days later. Helped rate counts "partly" as half.
+        </p>
+        {data?.outcomes ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs mb-4">
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-slate-400 block mb-1">Check-ins sent</span>
+                <span className="text-lg font-bold text-white font-mono">{data.outcomes.sent}</span>
+              </div>
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-slate-400 block mb-1">Answered</span>
+                <span className="text-lg font-bold text-white font-mono">{data.outcomes.answered}</span>
+              </div>
+              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-slate-400 block mb-1">Need attention</span>
+                <span className="text-lg font-bold text-amber-400 font-mono">{data.outcomes.needsAttention}</span>
+                <p className="text-[11px] text-slate-500 mt-1">Side effects reported or did not help</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+              <OutcomeList title="By care pathway" rows={data.outcomes.byDomain} />
+              <OutcomeList title="By reviewer" rows={data.outcomes.byReviewer} />
+              <OutcomeList title="By business" rows={data.outcomes.byBusiness} />
+            </div>
+          </>
+        ) : (
+          <p className="text-xs text-slate-500">Outcome data is not available yet.</p>
+        )}
       </div>
 
       {/* Security wellbeing & Lockout Diagnostics */}

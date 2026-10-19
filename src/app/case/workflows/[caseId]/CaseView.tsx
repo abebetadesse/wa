@@ -8,6 +8,7 @@ import {
 import type { OwnerView as BaseOwnerView } from "@/server/cases/views";
 import type { PaymentAttempt } from "@/server/cases/billing";
 import { PayPanel } from "@/features/payments/PayPanel";
+import { FollowUpPrompt } from "@/features/followUps/FollowUpPrompt";
 import { ApiClientError, apiFetch, errorMessage } from "@/lib/api/client";
 import {
   Alert,
@@ -89,6 +90,7 @@ export function CaseView({ caseId }: { caseId: string }) {
       </ButtonLink>
       <PageHeader eyebrow={view.label} title="Your case" actions={<Badge tone={stage.tone}>{stage.label}</Badge>} className="mb-0" />
       <CarePathway stage={view.stage} />
+      <FollowUpPrompt caseId={caseId} />
       <SupportPanel safety={view.safety} />
       <WhatHappensNext stage={view.stage} />
       {view.domain === "biological" && typeof view.answers.mediaId === "string" && (

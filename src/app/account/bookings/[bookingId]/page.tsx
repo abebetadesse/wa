@@ -12,6 +12,7 @@ import { BookingStatusBadge, PaymentStatusBadge, formatWhen } from "@/features/m
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
 import { BookingPayments } from "@/features/payments/BookingPayments";
+import { FollowUpPrompt } from "@/features/followUps/FollowUpPrompt";
 
 interface BookingDetail {
   id: string;
@@ -117,6 +118,8 @@ export default function BookingDetailPage() {
           {booking.businessName} will confirm shortly. You&apos;ll be notified here the moment they do.
         </Alert>
       )}
+
+      {booking.status === "completed" && <FollowUpPrompt bookingId={booking.id} className="mb-6" />}
 
       <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
         <div className="bg-gradient-to-br from-brand/15 via-transparent to-gold/15 p-6">

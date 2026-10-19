@@ -1,5 +1,6 @@
 /** The bots' production wiring: chat accounts in the database, replies into the case workflow. */
 import { caseService } from "@/server/cases/service";
+import { followUpService } from "@/server/followUps";
 import { appOrigin, currentChatLink, findChatUser, linkChat, setChatNotify, touchWhatsApp } from "./accounts";
 import { handleInbound, type InboundDeps } from "./inbound";
 import type { LinkChannel } from "./linkCodes";
@@ -14,6 +15,7 @@ const deps = (): InboundDeps => ({
     if (channel === "whatsapp") await touchWhatsApp(userId);
   },
   cases: caseService,
+  followUps: followUpService,
 });
 
 export function receiveChatMessage(channel: LinkChannel, sender: string, text: string, meta: { username?: string } = {}) {

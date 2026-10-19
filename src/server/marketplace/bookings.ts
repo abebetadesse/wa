@@ -8,6 +8,7 @@ import { attachToBooking } from "@/server/intake/attachments";
 import { runAutoResponses } from "@/server/intake/responses";
 import { ApiError } from "@/lib/api/route";
 import type { AuthenticatedUser } from "@/lib/auth";
+import { followUpService, scheduleSafely } from "@/server/followUps";
 import { requireCapability, roleCan, type MemberRole } from "./access";
 import { DELIVERY_MODES } from "./businesses";
 import { availableSlots } from "./catalogue";
@@ -256,7 +257,8 @@ const STATUS_COPY: Record<BookingStatus, string> = {
 };
 
 async function applyTransition(bookingId: string, actor: "client" | "business", actorUser: AuthenticatedUser, input: z.infer<typeof transitionRequest>, scope: SQL) {
-  return db.transaction(async (tx) => {
+  let completed: { bookingId: string; userId: string; businessId: string; label: string; caseId: string | null } | null = null;
+  const result = await db.transaction(async (tx) => {
     const [row] = await tx
       .select({ booking: bookings, serviceName: services.name, business: businesses, clientUserId: businessClients.userId })
       .from(bookings)
@@ -290,8 +292,15 @@ async function applyTransition(bookingId: string, actor: "client" | "business", 
         await notify(staffId, { type: `booking.${input.status}`, title: `Booking ${updated.reference} was ${STATUS_COPY[input.status]} by the client`, body: summary, href: `/business/${row.business.id}/bookings?focus=${bookingId}` }, tx);
       }
     }
+    if (input.status === "completed" && row.clientUserId) {
+      completed = { bookingId, userId: row.clientUserId, businessId: row.business.id, label: row.serviceName, caseId: row.booking.caseId };
+    }
     return updated;
   });
+  // After commit: outcome check-ins 3, 14 and 30 days after the session (src/server/followUps).
+  const done = completed as typeof completed;
+  if (done) await scheduleSafely(() => followUpService.scheduleForBooking(done), { bookingId });
+  return result;
 }
 
 export async function updateBookingStatusAsBusiness(user: AuthenticatedUser, businessId: string, bookingId: string, input: z.infer<typeof transitionRequest>) {

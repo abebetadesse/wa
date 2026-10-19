@@ -5,6 +5,7 @@
  *   status         lists the person's recent requests
  *   stop           turns update forwarding off for this chat app
  *   help, privacy  explain the bot
+ *   1 / 2 / 3      (or yes / partly / no, አዎ / በከፊል / አይ) answers the latest outcome check-in
  *   anything else  is treated as a reply to the reviewer and added to the open request
  *
  * The same commands work on both apps (Telegram also accepts them with a leading slash).
@@ -69,6 +70,10 @@ export interface InboundDeps {
     replyFromChannel(userId: string, body: string, via: LinkChannel): Promise<{ caseId: string; label: string } | null>;
     statusFor(userId: string): Promise<Array<{ id: string; label: string; stage: string; waitingForReply: boolean }>>;
   };
+  /** Outcome check-ins (src/server/followUps): a one-word answer to the latest one, or null. */
+  followUps?: {
+    answerFromChat(userId: string, text: string, via: LinkChannel): Promise<{ helped: "yes" | "partly" | "no"; label: string; href: string } | null>;
+  };
 }
 
 const NAME = { telegram: "Telegram", whatsapp: "WhatsApp" } as const;
@@ -124,6 +129,20 @@ export async function handleInbound(channel: LinkChannel, sender: string, text: 
   }
 
   if (command.type !== "text") return null;
+  try {
+    const answered = await deps.followUps?.answerFromChat(user.id, command.text, channel);
+    if (answered) {
+      return {
+        text:
+          answered.helped === "yes"
+            ? "Thank you, we are glad it helped. If anything changes or you notice side effects, open the link and tell us."
+            : "Thank you for telling us. If you feel worse or noticed side effects, open the link and tell us; your reviewer can then follow up with you.",
+        link: page(answered.href, "Add details"),
+      };
+    }
+  } catch (error) {
+    console.error(`[${channel}] could not record a check-in answer:`, error instanceof Error ? error.message : error);
+  }
   try {
     const target = await deps.cases.replyFromChannel(user.id, command.text, channel);
     if (!target) return { text: "You have no request under review at the moment, so this message was not sent to anyone. Open the app to start a request or read your reports.", link: page("/case/workflows", "Open your requests") };

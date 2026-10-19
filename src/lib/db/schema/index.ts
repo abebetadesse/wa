@@ -18,3 +18,4 @@ export * from "./platform";
 export * from "./toolkit";
 export * from "./safety";
 export * from "./intake";
+export * from "./followUps";

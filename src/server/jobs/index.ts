@@ -15,7 +15,18 @@ const TICK_MS = 60_000;
 const DAY = 24 * 60 * 60;
 
 export function backgroundTasks(env: NodeJS.ProcessEnv = process.env): ScheduledTask[] {
-  const tasks: ScheduledTask[] = [];
+  const tasks: ScheduledTask[] = [
+    {
+      // Outcome check-ins 3, 14 and 30 days after a report or a completed booking.
+      name: "follow_ups.send",
+      everySeconds: 15 * 60,
+      leaseSeconds: 10 * 60,
+      run: async () => {
+        const { followUpService } = await import("@/server/followUps");
+        await followUpService.sendDue();
+      },
+    },
+  ];
   if (env.LITERATURE_SYNC?.trim().toLowerCase() === "on") {
     tasks.push({
       name: "literature.sync",

@@ -1,6 +1,7 @@
 import { and, count, desc, eq, like, ne, or, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { auditLog, authSessions, caseSessions, knowledgeItems, loginHistory, roles, users, wellbeingGapReports } from "@/lib/db/schema";
+import { outcomeSummary } from "@/server/followUps";
 
 const LANGUAGE_LABELS: Record<string, string> = {
   am: "አማርኛ (Amharic)",
@@ -24,7 +25,7 @@ export async function getAnalytics() {
   const [
     totalUsers, activeUsers, suspendedUsers, verifiedUsers,
     totalCases, knowledge, activeSessions, auditEvents, successLogins, failedLogins,
-    byRole, byLanguage, byRegion, byCaseType, roleNames,
+    byRole, byLanguage, byRegion, byCaseType, roleNames, outcomes,
   ] = await Promise.all([
     total(db.select({ total: count() }).from(users)),
     total(db.select({ total: count() }).from(users).where(and(eq(users.isActive, true), eq(users.isSuspended, false)))),
@@ -41,6 +42,8 @@ export async function getAnalytics() {
     db.select({ key: users.region, total: count() }).from(users).groupBy(users.region),
     db.select({ key: caseSessions.caseId, total: count() }).from(caseSessions).groupBy(caseSessions.caseId).catch(() => []),
     db.select({ name: roles.name }).from(roles),
+    // Answers to the 3/14/30-day check-ins (src/server/followUps); null until the table exists.
+    outcomeSummary().catch(() => null),
   ]);
 
   const counted = (rows: { key: string | null; total: number }[]) =>
@@ -60,6 +63,7 @@ export async function getAnalytics() {
     roleDistribution: roleNames.map(({ name }) => ({ role: name, count: roleCounts.get(name) ?? 0 })),
     languageDistribution: Object.entries(LANGUAGE_LABELS).map(([code, label]) => ({ code, label, count: languageCounts.get(code) ?? 0 })),
     regionalDistribution: [...counted(byRegion)].map(([region, value]) => ({ region, count: value })).sort((a, b) => b.count - a.count),
+    outcomes,
     caseTypeBreakdown: [...counted(byCaseType)].map(([caseType, value]) => ({ caseType, count: value })).sort((a, b) => b.count - a.count),
     userGrowthTrend: [],
   };
