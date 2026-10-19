@@ -37,9 +37,8 @@ const PRIMARY = [
   { href: "/business", label: "For businesses", icon: Store },
 ];
 
-// Forma, the school management app, runs as a separate application under /school on this domain
-// (or on its own subdomain); a full page load is needed to reach it, so it is a plain link.
-const SCHOOL_APP_URL = process.env.NEXT_PUBLIC_SCHOOL_APP_URL ?? "/school";
+// Forma, the school management app, is a separate website; the tab is a plain link to it.
+const SCHOOL_APP_URL = process.env.NEXT_PUBLIC_SCHOOL_APP_URL ?? "https://school.wisdomcourse.com.et";
 
 const LANGUAGES = [
   { code: "en", label: "EN" },
