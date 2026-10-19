@@ -11,11 +11,13 @@ import {
   PipelineTransitionError,
 } from "../lib/pipeline/transitions.ts";
 import { CaseStatus } from "../lib/pipeline/types.ts";
-import { pipelineRepository } from "../lib/pipeline/repository.ts";
+import { createPipelineRepository } from "../lib/pipeline/repository.ts";
+import { createMemoryPipelineStore } from "../lib/pipeline/store.ts";
 import { evaluateProfile } from "../lib/evaluation/profileEvaluator.ts";
 import { evaluateCase } from "../lib/evaluation/caseEvaluator.ts";
 import { createAccessToken } from "../lib/auth.ts";
 
+const pipelineRepository = createPipelineRepository(createMemoryPipelineStore());
 const bearer = (userId, role) => ({ Authorization: `Bearer ${createAccessToken(userId, role)}` });
 
 // ─── 1. UNIT: projectUserReport Never Leaks Professional Fields ──────────────

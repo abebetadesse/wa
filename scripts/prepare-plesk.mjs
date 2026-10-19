@@ -47,7 +47,11 @@ for (const file of ["migrate.mjs", "migrate-core.mjs", "table-prefix.mjs"]) fs.c
 // 5. Set-up scripts, compiled from TypeScript with their application imports bundled in.
 const esbuild = await import("esbuild");
 await esbuild.build({
-  entryPoints: { "setup-reference": path.join(root, "src/lib/db/setupReference.ts"), "create-admin": path.join(root, "src/lib/db/createAdmin.ts") },
+  entryPoints: {
+    "setup-reference": path.join(root, "src/lib/db/setupReference.ts"),
+    "create-admin": path.join(root, "src/lib/db/createAdmin.ts"),
+    "import-pipeline-cache": path.join(root, "scripts/import-pipeline-cache.mjs"),
+  },
   outdir: path.join(out, "scripts"),
   outExtension: { ".js": ".cjs" },
   bundle: true,
