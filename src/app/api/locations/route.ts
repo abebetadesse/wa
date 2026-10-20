@@ -1,16 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  ETHIOPIAN_LOCATIONS,
   ETHIOPIAN_REGION_REFERENCE,
   getEthiopianLocationDataset,
   getEthiopianLocationById,
+  resolveEthiopianLocation,
 } from "@/lib/location/ethiopiaLocations";
+import { searchEthiopianPlaces } from "@/lib/location/ethiopianPlacesSearch";
 import {
   ETHIOPIAN_ADMINISTRATIVE_PLACES,
   searchEthiopianAdministrativePlaces,
 } from "@/lib/location/ethiopianAdministrativePlaces";
 
+/**
+ * Place suggestions for the location field (fields=places): a few matches with an altitude
+ * estimate, without the full dataset this route otherwise returns. Public reference data, cached.
+ */
+function placeSuggestions(query: string, limitParam: string | null) {
+  const limit = Math.min(Math.max(Number(limitParam) || 8, 1), 25);
+  const data = searchEthiopianPlaces(query, limit).map((place) => {
+    const known = ETHIOPIAN_LOCATIONS.find((entry) => entry.name.toLocaleLowerCase() === place.town.toLocaleLowerCase());
+    return {
+      id: place.id,
+      town: place.town,
+      zone: place.zone,
+      region: place.region,
+      altitudeMeters: known?.altitudeMeters ?? resolveEthiopianLocation(place.region).altitudeMeters ?? null,
+    };
+  });
+  return NextResponse.json({ success: true, data }, { headers: { "Cache-Control": "public, max-age=86400" } });
+}
+
 export async function GET(request: NextRequest) {
   try {
+    if (request.nextUrl.searchParams.get("fields") === "places") {
+      return placeSuggestions(request.nextUrl.searchParams.get("q")?.trim() ?? "", request.nextUrl.searchParams.get("limit"));
+    }
     const region = request.nextUrl.searchParams.get("region")?.trim();
     const id = request.nextUrl.searchParams.get("id")?.trim();
     const zone = request.nextUrl.searchParams.get("zone")?.trim();

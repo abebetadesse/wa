@@ -21,7 +21,7 @@ import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Button, EmptyState, ErrorState, LoadingState, Select } from "@/components/ui";
 import { BusinessCard, LANGUAGE_LABELS, MODE_LABELS, formatEtb, type BusinessSummary } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
-import { getAllRegions } from "@/lib/location/ethiopianPlacesSearch";
+import { ETHIOPIAN_REGIONS } from "@/lib/location/regions";
 
 interface Facets {
   categories: { slug: string; name: string; nameAm: string | null; sector: string; count: number }[];
@@ -76,7 +76,7 @@ export function Directory() {
   const [minPriceInput, setMinPriceInput] = useState(params.get("minPrice") ?? "");
   const [maxPriceInput, setMaxPriceInput] = useState(params.get("maxPrice") ?? "");
   const regions = [...new Set([
-    ...getAllRegions(),
+    ...ETHIOPIAN_REGIONS,
     ...(facets?.regions.flatMap((entry) => entry.region ? [entry.region] : []) ?? []),
   ])].sort((a, b) => a.localeCompare(b));
 

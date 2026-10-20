@@ -3,10 +3,20 @@
 import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
-import HexacoreOrrery from "@/components/cultural/HexacoreOrrery";
+import dynamic from "next/dynamic";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
-import HexacoreCheckoutModal from "@/features/hexacore/HexacoreCheckoutModal";
-import HexacoreCameraScanner from "@/features/hexacore/HexacoreCameraScanner";
+
+// The orrery (a 2,500-line animated visualisation), the camera scanner and the checkout are
+// loaded after the page shell, so the text and links appear first on slow connections.
+const HexacoreOrrery = dynamic(() => import("@/components/cultural/HexacoreOrrery"), {
+  ssr: false,
+  loading: () => <div className="h-[420px] w-full animate-pulse rounded-3xl bg-white/5" aria-hidden="true" />,
+});
+const HexacoreCameraScanner = dynamic(() => import("@/features/hexacore/HexacoreCameraScanner"), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full animate-pulse rounded-3xl bg-white/5" aria-hidden="true" />,
+});
+const HexacoreCheckoutModal = dynamic(() => import("@/features/hexacore/HexacoreCheckoutModal"), { ssr: false });
 import {
   ArrowRight,
   BookOpen,

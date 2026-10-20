@@ -25,10 +25,10 @@ import {
   Sparkles,
   ExternalLink,
 } from "lucide-react";
-import { getAllRegions } from "@/lib/location/ethiopianPlacesSearch";
+import { ETHIOPIAN_REGIONS } from "@/lib/location/regions";
 
 export default function UserManagementPage() {
-  const regions = getAllRegions();
+  const regions = ETHIOPIAN_REGIONS;
   const [usersList, setUsersList] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [page, setPage] = useState(1);

@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ETHIOPIAN_REGION_ALTITUDES } from "@/lib/evaluation/stage1Normalize";
-import { ETHIOPIAN_LOCATIONS, resolveEthiopianLocation } from "@/lib/location/ethiopiaLocations";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { useLanguage } from "@/lib/i18n/context";
 
@@ -85,16 +83,15 @@ export default function IntakePage() {
     disclaimerAccepted: true,
   });
 
-  const handleAdministrativePlaceChange = (locationText: string, region: string, place?: { town: string }) => {
+  const handleAdministrativePlaceChange = (locationText: string, region: string, place?: { town: string; altitudeMeters?: number | null }) => {
     if (!place) {
       setAdministrativeLocationSelected(false);
       setFormData((prev) => ({ ...prev, cultural: { ...prev.cultural, birthLocation: locationText } }));
       return;
     }
     setAdministrativeLocationSelected(true);
-    const knownTown = ETHIOPIAN_LOCATIONS.find((entry) => entry.name.toLocaleLowerCase() === place.town.toLocaleLowerCase());
-    const regionalEstimate = resolveEthiopianLocation(region);
-    const altitude = knownTown?.altitudeMeters ?? regionalEstimate.altitudeMeters ?? ETHIOPIAN_REGION_ALTITUDES[region] ?? 2000;
+    // The suggestion carries the server's altitude estimate (known town, else its region).
+    const altitude = place.altitudeMeters ?? 2000;
     setFormData((prev) => ({
       ...prev,
       region,

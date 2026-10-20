@@ -2,13 +2,17 @@
 
 import { useState, useEffect, useRef, useId } from "react";
 import { ChevronDown, MapPin } from "lucide-react";
-import { searchEthiopianPlaces } from "@/lib/location/ethiopianPlacesSearch";
 import type { EthiopianAdministrativePlace } from "@/lib/location/ethiopianAdministrativePlaces";
+
+/** A suggested place from GET /api/locations?fields=places (the place list stays on the server). */
+export type LocationSuggestion = Pick<EthiopianAdministrativePlace, "id" | "town" | "zone" | "region"> & { altitudeMeters?: number | null };
+
+const SEARCH_DELAY_MS = 200;
 
 interface EthiopianLocationInputProps {
   value: string;
   regionValue?: string;
-  onChange: (location: string, region: string, place?: EthiopianAdministrativePlace) => void;
+  onChange: (location: string, region: string, place?: LocationSuggestion) => void;
   required?: boolean;
   label?: string;
   placeholder?: string;
@@ -26,7 +30,7 @@ export function EthiopianLocationInput({
 }: EthiopianLocationInputProps) {
   const [searchTerm, setSearchTerm] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
-  const [suggestions, setSuggestions] = useState<EthiopianAdministrativePlace[]>([]);
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
   const listId = useId();
@@ -38,13 +42,23 @@ export function EthiopianLocationInput({
   }, [value, isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (searchTerm.trim().length >= 2) {
-      const results = searchEthiopianPlaces(searchTerm, 8);
-      setSuggestions(results);
-    } else {
+    const term = searchTerm.trim();
+    if (term.length < 2 || !isOpen) {
       setSuggestions([]);
+      return;
     }
-  }, [searchTerm]);
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch(`/api/locations?fields=places&limit=8&q=${encodeURIComponent(term)}`, { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((payload) => setSuggestions(Array.isArray(payload?.data) ? payload.data : []))
+        .catch(() => undefined);
+    }, SEARCH_DELAY_MS);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchTerm, isOpen]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -56,7 +70,7 @@ export function EthiopianLocationInput({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (place: EthiopianAdministrativePlace) => {
+  const handleSelect = (place: LocationSuggestion) => {
     const locString = `${place.town}, ${place.zone} (${place.region})`;
     setSearchTerm(locString);
     setIsOpen(false);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles, ShieldCheck, Mail, ArrowRight, Check } from "lucide-react";
-import { ETHIOPIAN_LOCATIONS } from "@/lib/location/ethiopiaLocations";
+import { ETHIOPIAN_PROFILED_LOCATION_COUNT } from "@/lib/location/regions";
 import { KNOWLEDGE_STRANDS } from "@/lib/knowledge/catalog";
 import { useExplore } from "@/features/toolkit/useExplore";
 import { useLanguage } from "@/lib/i18n/context";
@@ -147,7 +147,7 @@ export default function Footer() {
                 <div className="text-[10px] text-stone-400 uppercase font-mono">{t.footer.foods}</div>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
-                <div className="text-base font-black text-cyan-400 font-mono">{ETHIOPIAN_LOCATIONS.length}</div>
+                <div className="text-base font-black text-cyan-400 font-mono">{ETHIOPIAN_PROFILED_LOCATION_COUNT}</div>
                 <div className="text-[10px] text-stone-400 uppercase font-mono">{t.footer.districts}</div>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">

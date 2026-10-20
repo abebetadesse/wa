@@ -65,6 +65,8 @@ jobs:
         run: npm test
       - name: Production build
         run: npm run build
+      - name: Bundle budget (JavaScript phones download)
+        run: node scripts/bundle-budget.mjs
 
   deploy:
     name: Publish release (CD)

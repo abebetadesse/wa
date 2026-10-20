@@ -10,7 +10,8 @@ import { TelsemLibraryViewer } from "@/components/cultural/TelsemLibraryViewer";
 import { AwdeCircleVisualizer } from "@/components/cultural/AwdeCircleVisualizer";
 import { AWDE_NEGEST_CIRCLES } from "@/lib/cultural/spiritualDivinationEngine";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
-import { estimateAgroEcology } from "@/lib/location/ethiopianPlacesSearch";
+import { estimateAgroEcology } from "@/lib/location/regions";
+import { clearQueued, isQueued, queuePut, startOutboxSync } from "@/lib/offline/outbox";
 
 type Answers = Record<string, unknown>;
 type Phase = "domain" | "challenge" | "specific" | "endorsement" | "report" | "causes" | "solutions" | "complete";
@@ -142,7 +143,7 @@ export default function CasePage() {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [answerSync, setAnswerSync] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [answerSync, setAnswerSync] = useState<"idle" | "saving" | "saved" | "queued" | "error">("idle");
   const [profileContext, setProfileContext] = useState<Record<string, unknown>>({});
   const [includeIdentityContext, setIncludeIdentityContext] = useState(false);
   const [profileContextLoaded, setProfileContextLoaded] = useState(false);
@@ -300,25 +301,42 @@ export default function CasePage() {
   }, []);
 
   // Persist each field shortly after it changes so progress survives navigation or refresh.
+  // Without a connection the save is kept on this device and sent when the connection returns.
   useEffect(() => {
     if (!session || Object.keys(answers).length === 0) return;
+    const url = `/api/session/${session.id}/answers`;
     const timer = window.setTimeout(async () => {
       setAnswerSync("saving");
       try {
-        const response = await fetch(`/api/session/${session.id}/answers`, {
+        const response = await fetch(url, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ answers }),
         });
-        if (!response.ok) throw new Error("Unable to save field changes.");
+        if (response.status >= 500) throw new Error("Unable to save field changes.");
+        if (!response.ok) {
+          setAnswerSync("error");
+          return;
+        }
+        clearQueued(url);
         setAnswerSync("saved");
       } catch {
-        setAnswerSync("error");
+        queuePut(url, { answers });
+        setAnswerSync("queued");
       }
     }, 500);
     return () => window.clearTimeout(timer);
   }, [answers, session]);
+
+  // Send saves kept on this device once the connection or the tab comes back.
+  useEffect(() => {
+    if (!session) return;
+    const url = `/api/session/${session.id}/answers`;
+    return startOutboxSync(() => {
+      if (!isQueued(url)) setAnswerSync((current) => (current === "queued" ? "saved" : current));
+    });
+  }, [session]);
 
   // Live assistance when typing detail
   useEffect(() => {
@@ -2007,7 +2025,8 @@ export default function CasePage() {
                       }`} role="status">
                       {answerSync === "saving" && <><span className="w-2 h-2 rounded-full border border-slate-400 border-t-transparent animate-spin" />Saving your progress...</>}
                       {answerSync === "saved" && <><span>✓</span> Progress saved</>}
-                      {answerSync === "error" && "Progress could not be saved yet; your step submission will retry it."}
+                      {answerSync === "queued" && "Saved on this device. It will be sent when you are back online."}
+                      {answerSync === "error" && "Progress could not be saved. Your answers stay in this browser; try the next step again."}
                     </p>
                   )}
 
