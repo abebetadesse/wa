@@ -1,1 +1,1 @@
-"use strict";exports.id=17311,exports.ids=[17311],exports.modules={17311:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Done":"ተወዲኡ","Open":"ክፈት","Submit":"ኣቕርብ"}')}};
+"use strict";exports.id=17311,exports.ids=[17311],exports.modules={17311:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Done":"ተወዲኡ","Open":"ክፈት","Submit":"ኣቕርብ","What you wrote may need urgent help. Please don\'t wait for an answer here.":"ዝጸሓፍኩምዎ ቅልጡፍ ሓገዝ ከድልዮ ይኽእል እዩ። በጃኹም ኣብዚ መልሲ ኣይትጸበዩ።","Your reviewer has been told.":"ገምጋሚኹም ተሓቢሩ ኣሎ።"}')}};

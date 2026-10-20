@@ -90,6 +90,7 @@ __export(schema_exports, {
   businessMembers: () => businessMembers,
   businessTools: () => businessTools,
   businesses: () => businesses,
+  caseAssistantTurns: () => caseAssistantTurns,
   caseCategories: () => caseCategories,
   caseCauses: () => caseCauses,
   caseQuestions: () => caseQuestions,
@@ -865,6 +866,17 @@ var chatIntakes = mysqlTable("chat_intakes", {
   state: jsonb("state").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 });
+var caseAssistantTurns = mysqlTable("case_assistant_turns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id").references(() => workflowCases.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  asker: (0, import_mysql_core.varchar)("asker", { length: 10 }).notNull(),
+  question: (0, import_mysql_core.varchar)("question", { length: 2e3 }).notNull(),
+  answer: (0, import_mysql_core.text)("answer").notNull(),
+  mode: (0, import_mysql_core.varchar)("mode", { length: 12 }).notNull(),
+  sources: jsonb("sources").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+}, (table) => [(0, import_mysql_core.index)("case_assistant_turns_case_idx").on(table.caseId, table.createdAt)]);
 
 // src/lib/db/schema/knowledgeManagement.ts
 var knowledgeStrands = mysqlTable("knowledge_strands", {

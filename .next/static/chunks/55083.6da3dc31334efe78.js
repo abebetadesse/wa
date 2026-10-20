@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[55083],{55083:e=>{e.exports=JSON.parse('{"_status":"machine-draft, needs human review","What you wrote may need urgent help. Please don\'t wait for an answer here.":"ዝጸሓፍኩምዎ ቅልጡፍ ሓገዝ ከድልዮ ይኽእል እዩ። በጃኹም ኣብዚ መልሲ ኣይትጸበዩ።","Your reviewer has been told.":"ገምጋሚኹም ተሓቢሩ ኣሎ።"}')}}]);

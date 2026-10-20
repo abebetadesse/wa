@@ -521,6 +521,14 @@
       "namedRegex": "^/api/case\\-workflows/cases/(?<nxtPcaseId>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/case-workflows/cases/[caseId]/assistant",
+      "regex": "^/api/case\\-workflows/cases/([^/]+?)/assistant(?:/)?$",
+      "routeKeys": {
+        "nxtPcaseId": "nxtPcaseId"
+      },
+      "namedRegex": "^/api/case\\-workflows/cases/(?<nxtPcaseId>[^/]+?)/assistant(?:/)?$"
+    },
+    {
       "page": "/api/case-workflows/cases/[caseId]/consultation",
       "regex": "^/api/case\\-workflows/cases/([^/]+?)/consultation(?:/)?$",
       "routeKeys": {
@@ -1665,6 +1673,12 @@
       "regex": "^/account/bookings(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/account/bookings(?:/)?$"
+    },
+    {
+      "page": "/account/timeline",
+      "regex": "^/account/timeline(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/account/timeline(?:/)?$"
     },
     {
       "page": "/admin",

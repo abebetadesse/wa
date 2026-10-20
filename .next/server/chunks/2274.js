@@ -1,0 +1,1 @@
+"use strict";exports.id=2274,exports.ids=[2274],exports.modules={2274:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","What you wrote may need urgent help. Please don\'t wait for an answer here.":"ዝጸሓፍኩምዎ ቅልጡፍ ሓገዝ ከድልዮ ይኽእል እዩ። በጃኹም ኣብዚ መልሲ ኣይትጸበዩ።","Your reviewer has been told.":"ገምጋሚኹም ተሓቢሩ ኣሎ።"}')}};

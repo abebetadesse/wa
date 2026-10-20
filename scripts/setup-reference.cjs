@@ -675,7 +675,7 @@ var init_diagnostic = __esm({
 });
 
 // src/lib/db/schema/caseWorkflow.ts
-var caseCategories, caseQuestions, caseSessions, caseCauses, caseSolutions, workflowCases, workflowCaseMedia, chatIntakes;
+var caseCategories, caseQuestions, caseSessions, caseCauses, caseSolutions, workflowCases, workflowCaseMedia, chatIntakes, caseAssistantTurns;
 var init_caseWorkflow = __esm({
   "src/lib/db/schema/caseWorkflow.ts"() {
     "use strict";
@@ -773,6 +773,17 @@ var init_caseWorkflow = __esm({
       state: jsonb("state").notNull(),
       updatedAt: timestamp("updated_at").defaultNow().notNull()
     });
+    caseAssistantTurns = mysqlTable("case_assistant_turns", {
+      id: uuid("id").primaryKey().defaultRandom(),
+      caseId: uuid("case_id").references(() => workflowCases.id, { onDelete: "cascade" }).notNull(),
+      userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+      asker: (0, import_mysql_core.varchar)("asker", { length: 10 }).notNull(),
+      question: (0, import_mysql_core.varchar)("question", { length: 2e3 }).notNull(),
+      answer: (0, import_mysql_core.text)("answer").notNull(),
+      mode: (0, import_mysql_core.varchar)("mode", { length: 12 }).notNull(),
+      sources: jsonb("sources").notNull(),
+      createdAt: timestamp("created_at").defaultNow().notNull()
+    }, (table) => [(0, import_mysql_core.index)("case_assistant_turns_case_idx").on(table.caseId, table.createdAt)]);
   }
 });
 
@@ -2271,6 +2282,7 @@ __export(schema_exports, {
   businessMembers: () => businessMembers,
   businessTools: () => businessTools,
   businesses: () => businesses,
+  caseAssistantTurns: () => caseAssistantTurns,
   caseCategories: () => caseCategories,
   caseCauses: () => caseCauses,
   caseQuestions: () => caseQuestions,
