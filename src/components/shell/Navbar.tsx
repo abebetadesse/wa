@@ -23,6 +23,7 @@ import {
   Sun,
   User,
   UserCog,
+  History,
   X,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
@@ -102,6 +103,7 @@ export default function Navbar() {
     { href: "/messages", label: t.nav.messages, icon: MessageCircle },
     { href: "/business", label: "My business", icon: Briefcase },
     { href: "/case/workflows", label: "My cases", icon: BookOpen },
+    { href: "/account/timeline", label: "My health timeline", icon: History },
     ...(user?.permissions?.includes("cases:review") || user?.role === "admin" || user?.role === "super_admin"
       ? [{ href: "/case-review", label: "Case request review", icon: FileText }]
       : []),
@@ -110,7 +112,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65 print:hidden">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-gold via-amber-500 to-brand-strong font-geez text-lg font-bold text-inverse-foreground shadow-lg shadow-gold/25 transition-transform group-hover:scale-105">

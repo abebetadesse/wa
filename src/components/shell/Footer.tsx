@@ -43,7 +43,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="site-footer border-t border-white/10 pt-16 pb-12 mt-24 text-slate-400 text-sm bg-gradient-to-b from-stone-950 to-black relative">
+    <footer className="site-footer print:hidden border-t border-white/10 pt-16 pb-12 mt-24 text-slate-400 text-sm bg-gradient-to-b from-stone-950 to-black relative">
       <div className="pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 h-48 w-96 rounded-full bg-amber-500/5 blur-3xl" />
 
       <div className="app-container">
