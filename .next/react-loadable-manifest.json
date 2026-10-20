@@ -39,7 +39,7 @@
   "lib/i18n/phrases/sections.ts -> ./am/_extra.json": {
     "id": 31608,
     "files": [
-      "static/chunks/31608.394f6271b8b62722.js"
+      "static/chunks/31608.b45b0b221e368eee.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./am/account.json": {
@@ -111,7 +111,7 @@
   "lib/i18n/phrases/sections.ts -> ./am/common.json": {
     "id": 32096,
     "files": [
-      "static/chunks/32096.235e366268d53872.js"
+      "static/chunks/32096.9130e8706add3a18.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./am/constitution.json": {
@@ -345,7 +345,7 @@
   "lib/i18n/phrases/sections.ts -> ./om/common.json": {
     "id": 24794,
     "files": [
-      "static/chunks/24794.a7496f2dc2b1f390.js"
+      "static/chunks/24794.074cf3ac85947b8d.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./om/emergency.json": {
@@ -429,7 +429,7 @@
   "lib/i18n/phrases/sections.ts -> ./so/common.json": {
     "id": 86692,
     "files": [
-      "static/chunks/86692.ae8729b16e219acb.js"
+      "static/chunks/86692.a05f2e05a0681e2e.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./so/emergency.json": {
@@ -513,7 +513,7 @@
   "lib/i18n/phrases/sections.ts -> ./ti/common.json": {
     "id": 7943,
     "files": [
-      "static/chunks/7943.483b258b3d101f9b.js"
+      "static/chunks/7943.c96e58132d888c7e.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./ti/emergency.json": {

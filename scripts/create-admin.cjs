@@ -93,6 +93,7 @@ __export(schema_exports, {
   caseSessions: () => caseSessions,
   caseSolutions: () => caseSolutions,
   caseSummaryCards: () => caseSummaryCards,
+  chatIntakes: () => chatIntakes,
   compounds: () => compounds,
   conversations: () => conversations,
   culturalProfiles: () => culturalProfiles,
@@ -856,6 +857,11 @@ var workflowCaseMedia = mysqlTable("workflow_case_media", {
   sha256: (0, import_mysql_core.varchar)("sha256", { length: 64 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull()
 }, (table) => [(0, import_mysql_core.index)("workflow_case_media_user_idx").on(table.userId, table.createdAt), (0, import_mysql_core.index)("workflow_case_media_case_idx").on(table.caseId)]);
+var chatIntakes = mysqlTable("chat_intakes", {
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).primaryKey(),
+  state: jsonb("state").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
 
 // src/lib/db/schema/knowledgeManagement.ts
 var knowledgeStrands = mysqlTable("knowledge_strands", {

@@ -5,7 +5,7 @@
     "/api/chat/[sessionId]/message": {},
     "/api/intake/uploads/[id]": {},
     "/api/platform/trust": {},
-    "/api/realtime": {},
-    "/api/provider/workspace": {}
+    "/api/provider/workspace": {},
+    "/api/realtime": {}
   }
 }
