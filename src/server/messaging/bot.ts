@@ -2,6 +2,7 @@
 import { caseService } from "@/server/cases/service";
 import { followUpService } from "@/server/followUps";
 import { appOrigin, chatUserLanguage, currentChatLink, findChatUser, linkChat, setChatNotify, touchWhatsApp } from "./accounts";
+import { chatIntake } from "./chatIntakeService";
 import { handleInbound, type InboundDeps } from "./inbound";
 import type { LinkChannel } from "./linkCodes";
 
@@ -17,6 +18,7 @@ const deps = (): InboundDeps => ({
   },
   cases: caseService,
   followUps: followUpService,
+  intake: chatIntake,
 });
 
 export function receiveChatMessage(channel: LinkChannel, sender: string, text: string, meta: { username?: string } = {}) {

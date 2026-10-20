@@ -99,3 +99,10 @@ export const workflowCaseMedia = mysqlTable("workflow_case_media", {
   sha256: varchar("sha256", { length: 64 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [index("workflow_case_media_user_idx").on(table.userId, table.createdAt), index("workflow_case_media_case_idx").on(table.caseId)]);
+
+/** A request being started in Telegram/WhatsApp, one row per person (src/server/messaging/chatIntake.ts). */
+export const chatIntakes = mysqlTable("chat_intakes", {
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).primaryKey(),
+  state: jsonb("state").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

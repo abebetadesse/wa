@@ -100,6 +100,9 @@ WhatsApp lets a business send free-form text only within 24 hours of the person'
 | `STATUS` (or `/status`, `ሁኔታ`) | Lists their recent requests. |
 | `STOP` (or `/stop`, `አቁም`) | Turns updates off for that chat app. |
 | `HELP`, `PRIVACY` | Explains the bot. |
+| `NEW` (or `/new`, `ጀምር`, `ጉዳይ`) | Starts a request in the chat: choose a care pathway by number, answer its safety screen and intake questions one per message (choices by number, `0` skips an optional question), then reply `1` to send it to a reviewer. It runs through the same case service as the app, so crisis answers route to support at once. Progress is kept for two days. |
+| `CANCEL` (or `/cancel`, `ሰርዝ`) | Stops a chat intake; a request already created stays as a draft in the app. |
+| `1` / `2` / `3` (or yes / partly / no, አዎ / በከፊል / አይ) | Answers the latest outcome check-in, within 7 days of it. |
 | Anything else | A reply to the reviewer. It joins the request with an open question, otherwise the newest request under review. |
 
 A chat that is not connected to an account cannot write into any case.

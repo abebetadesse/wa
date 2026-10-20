@@ -5,6 +5,7 @@
  *   status         lists the person's recent requests
  *   stop           turns update forwarding off for this chat app
  *   help, privacy  explain the bot
+ *   new / cancel   start (or stop) a request right here, one question per message (./chatIntake.ts)
  *   1 / 2 / 3      (or yes / partly / no, አዎ / በከፊል / አይ) answers the latest outcome check-in
  *   anything else  is treated as a reply to the reviewer and added to the open request
  *
@@ -76,6 +77,10 @@ export interface InboundDeps {
     replyFromChannel(userId: string, body: string, via: LinkChannel): Promise<{ caseId: string; label: string } | null>;
     statusFor(userId: string): Promise<Array<{ id: string; label: string; stage: string; waitingForReply: boolean }>>;
   };
+  /** Starting a request in the chat; null when the message is not part of one. */
+  intake?: {
+    handle(userId: string, text: string, tr: Translate, language?: string | null): Promise<{ text: string; path?: string } | null>;
+  };
   /** Outcome check-ins (src/server/followUps): a one-word answer to the latest one, or null. */
   followUps?: {
     answerFromChat(userId: string, text: string, via: LinkChannel): Promise<{ helped: "yes" | "partly" | "no"; label: string; href: string } | null>;
@@ -123,7 +128,7 @@ export async function handleInbound(channel: LinkChannel, sender: string, text: 
 
   if (command.type === "start" || command.type === "help") {
     return {
-      text: tr("You are connected. Updates about your requests arrive here. Reply in this chat to answer your reviewer, send STATUS to see your requests, or STOP to turn updates off."),
+      text: tr("You are connected. Updates about your requests arrive here. Send NEW to start a request right here, reply in this chat to answer your reviewer, send STATUS to see your requests, or STOP to turn updates off."),
       link: page("/case/workflows", tr("Open your requests")),
     };
   }
@@ -143,14 +148,21 @@ export async function handleInbound(channel: LinkChannel, sender: string, text: 
 
   if (command.type !== "text") return null;
   try {
+    const intake = await deps.intake?.handle(user.id, command.text, tr, user.preferredLanguage);
+    if (intake) return { text: intake.text, link: intake.path ? page(intake.path, tr("Open in the app")) : undefined };
+  } catch (error) {
+    console.error(`[${channel}] chat intake failed:`, error instanceof Error ? error.message : error);
+    return { text: tr("Something went wrong while saving your answer. Please try again, or continue in the app."), link: page("/case/workflows", tr("Open your requests")) };
+  }
+  try {
     const answered = await deps.followUps?.answerFromChat(user.id, command.text, channel);
     if (answered) {
       return {
         text:
           answered.helped === "yes"
-            ? "Thank you, we are glad it helped. If anything changes or you notice side effects, open the link and tell us."
-            : "Thank you for telling us. If you feel worse or noticed side effects, open the link and tell us; your reviewer can then follow up with you.",
-        link: page(answered.href, "Add details"),
+            ? tr("Thank you, we are glad it helped. If anything changes or you notice side effects, open the link and tell us.")
+            : tr("Thank you for telling us. If you feel worse or noticed side effects, open the link and tell us; your reviewer can then follow up with you."),
+        link: page(answered.href, tr("Add details")),
       };
     }
   } catch (error) {
