@@ -87,7 +87,7 @@ export default function SpiritualDivinationPage({
         <p className="text-lg font-semibold">This Case 1 session is no longer available.</p>
         <p className="text-sm text-stone-400">Start a new reading to create a secure session.</p>
         {error.startsWith("Sign in") && <Link href="/auth" className="rounded-xl border border-stone-700 px-5 py-3 text-stone-200">Sign in</Link>}
-        <Link href="/case/spiritual/intake/step-1" className="rounded-xl bg-amber-500 px-5 py-3 font-bold text-black">
+        <Link href="/case/workflows/new/spiritual" className="rounded-xl bg-amber-500 px-5 py-3 font-bold text-black">
           Start a new reading
         </Link>
       </div>

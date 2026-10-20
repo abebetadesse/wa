@@ -65,7 +65,7 @@ export default function CircleDetailPanel({ circle }: CircleDetailPanelProps) {
       </div>
 
       <Link
-        href="/case/spiritual/intake"
+        href="/case/workflows/new/spiritual"
         className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-sm font-semibold text-stone-950 transition hover:brightness-110"
       >
         Begin Divination Reading

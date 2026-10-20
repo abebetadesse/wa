@@ -161,7 +161,7 @@ export default function LiveGematriaWidget() {
           Want the complete 16-circle Awde Negest reading and talismanic scroll?
         </span>
         <Link
-          href="/case/spiritual/intake"
+          href="/case/workflows/new/spiritual"
           className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-stone-950 transition-all hover:bg-amber-400 hover:shadow-lg hover:shadow-amber-500/25"
         >
           <span>BEGIN FULL READING</span>

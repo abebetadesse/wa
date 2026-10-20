@@ -188,7 +188,7 @@ export default function SpiritualPreviewPage({
               This is an AI-assisted cultural reflection draft. No human practitioner review, verified manuscript citation,
               health guidance, or promised outcome is represented here.
             </p>
-            <Link href="/case/spiritual/intake/step-1" className="inline-flex rounded-xl border border-stone-700 px-5 py-3 text-sm text-stone-200 hover:border-amber-400">
+            <Link href="/case/workflows/new/spiritual" className="inline-flex rounded-xl border border-stone-700 px-5 py-3 text-sm text-stone-200 hover:border-amber-400">
               Start a new reading
             </Link>
           </>

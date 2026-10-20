@@ -1365,7 +1365,7 @@ export default function CasePage() {
                           </div>
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
-                              href="/case/spiritual/intake/step-1"
+                              href="/case/workflows/new/spiritual"
                               className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20"
                             >
                               Launch Engine →
@@ -1413,7 +1413,7 @@ export default function CasePage() {
                           </div>
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
-                              href="/case/career/intake"
+                              href="/case/workflows/new/career"
                               className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-sky-500 text-black font-bold text-xs hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20"
                             >
                               Launch Engine →
@@ -1468,7 +1468,7 @@ export default function CasePage() {
                           </div>
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
-                              href="/case/legal/intake"
+                              href="/case/workflows/new/legal"
                               className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-purple-500 text-white font-bold text-xs hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/20"
                             >
                               Launch Engine →

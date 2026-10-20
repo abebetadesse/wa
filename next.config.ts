@@ -1,5 +1,16 @@
 import type { NextConfig } from "next";
 
+export const CASE_ENTRY_REDIRECTS: Array<{ source: string; destination: string; missing?: Array<{ type: "query"; key: string }> }> = [
+  { source: "/case-pipeline", destination: "/case/workflows" },
+  { source: "/inquiry", destination: "/case/workflows" },
+  { source: "/case/career", destination: "/case/workflows/new/career" },
+  { source: "/case/career/:path*", destination: "/case/workflows/new/career" },
+  { source: "/case/legal/intake", destination: "/case/workflows/new/legal" },
+  { source: "/case/spiritual/intake", destination: "/case/workflows/new/spiritual" },
+  { source: "/case/spiritual/intake/step-1", destination: "/case/workflows/new/spiritual" },
+  { source: "/case/spiritual/intake/step-2", destination: "/case/workflows/new/spiritual", missing: [{ type: "query", key: "caseId" }] },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Lets a verification build run beside a live `next dev` without sharing its .next folder.
@@ -14,6 +25,12 @@ const nextConfig: NextConfig = {
   },
   // Pillar 2 P5: Keep heavy server-only node modules out of the client bundle
   serverExternalPackages: ["node-cron", "postgres"],
+  // One way to start a case: the older entry points lead to the expert-reviewed workflows
+  // (/case/workflows). Spiritual cases already in progress keep their pages under /case/spiritual/[caseId]
+  // and their step-2 link (it carries ?caseId=).
+  async redirects() {
+    return CASE_ENTRY_REDIRECTS.map((rule) => ({ ...rule, permanent: false }));
+  },
   async headers() {
     return [
       {

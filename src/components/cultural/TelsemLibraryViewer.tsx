@@ -282,7 +282,7 @@ export function TelsemLibraryViewer() {
                 </p>
               </div>
               <Link
-                href="/case/spiritual/intake/step-1"
+                href="/case/workflows/new/spiritual"
                 className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 transition"
               >
                 Start Divination →

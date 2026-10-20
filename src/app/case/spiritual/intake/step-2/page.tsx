@@ -373,7 +373,7 @@ function SpiritualStep2Content() {
 
               <div className="flex justify-between items-center mt-7">
                 <Link
-                  href="/case/spiritual/intake/step-1"
+                  href={caseId ? `/case/spiritual/${caseId}/status` : "/case/workflows"}
                   className="px-6 py-3 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 text-sm font-medium hover:bg-stone-800 transition-colors"
                 >
                   ← Back

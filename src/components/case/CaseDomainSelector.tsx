@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { CaseDefinition } from "@/lib/case-workflow/engine";
 import type { Answers } from "./types";
 
@@ -50,8 +51,8 @@ export function CaseDomainSelector({
     <div className="grid gap-6 xl:grid-cols-[minmax(620px,2fr)_minmax(280px,0.8fr)]">
       <div className="space-y-6">
         {/* CASE 1: SPIRITUAL & LIFE DIRECTION HERO BANNER */}
-        <a
-          href="/case/spiritual/intake/step-1"
+        <Link
+          href="/case/workflows/new/spiritual"
           className="block p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-950/60 via-stone-900 to-black border-2 border-amber-500/60 shadow-2xl hover:border-amber-400 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-amber-500 to-amber-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
@@ -95,7 +96,7 @@ export function CaseDomainSelector({
               </span>
             </div>
           </div>
-        </a>
+        </Link>
 
         <div className="text-xs uppercase tracking-wider text-slate-400 font-mono font-bold pt-2">
           Additional Case Domains

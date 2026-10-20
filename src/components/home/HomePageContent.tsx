@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, CalendarCheck, HeartHandshake, Leaf, MessageCircle, Search, ShieldCheck, Sparkles, Store } from "lucide-react";
+import { ArrowRight, BadgeCheck, Briefcase, CalendarCheck, Compass, Dna, Heart, HeartHandshake, Leaf, MessageCircle, Scale, Search, ShieldCheck, Sparkles, Store, Users } from "lucide-react";
 import { ButtonLink } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n/context";
 import { BusinessCard } from "@/features/marketplace/shared";
@@ -16,6 +16,16 @@ type HomeData = {
     businesses?: any[];
   };
 } | null;
+
+/** The expert-reviewed care pathways (labels match src/server/cases/domains; a test keeps them in step). */
+export const CASE_PATHWAYS = [
+  { domain: "biological", label: "Biological, Wellbeing and Health", icon: Dna, color: "text-teal-500" },
+  { domain: "relationship", label: "Relationships & Family", icon: Heart, color: "text-rose-500" },
+  { domain: "social", label: "Belonging & Community", icon: Users, color: "text-emerald-500" },
+  { domain: "spiritual", label: "Spiritual & Life Direction", icon: Compass, color: "text-violet-500" },
+  { domain: "legal", label: "Peace & Harmony", icon: Scale, color: "text-blue-500" },
+  { domain: "career", label: "Money & Business Reflection", icon: Briefcase, color: "text-amber-500" },
+] as const;
 
 export function HomePageContent({ data }: { data: HomeData }) {
   const { t } = useLanguage();
@@ -119,6 +129,34 @@ export function HomePageContent({ data }: { data: HomeData }) {
           </div>
         </section>
       )}
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6" aria-labelledby="start-case-heading">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 id="start-case-heading" className="font-display text-2xl font-extrabold text-foreground sm:text-3xl">Start a case</h2>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              Describe what is happening in your own words. A qualified reviewer reads it and you get a written response; urgent safety concerns are answered first.
+            </p>
+          </div>
+          <Link href="/case/workflows" className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-brand hover:underline">
+            Your cases <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {CASE_PATHWAYS.map((pathway) => (
+            <li key={pathway.domain}>
+              <Link
+                href={`/case/workflows/new/${pathway.domain}`}
+                className="flex h-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-4 transition-colors hover:border-input hover:bg-muted/60"
+              >
+                <pathway.icon className={`size-6 shrink-0 ${pathway.color}`} aria-hidden="true" />
+                <span className="font-semibold text-foreground">{pathway.label}</span>
+                <ArrowRight className="ml-auto size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6" aria-labelledby="featured-heading">
         <div className="flex items-end justify-between gap-4">
