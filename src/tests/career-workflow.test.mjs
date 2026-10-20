@@ -25,7 +25,9 @@ test("case 3 safety screen routes self-harm triggers immediately", () => {
   });
 
   assert.equal(result.action, "crisis_route");
-  assert.ok(result.crisisContent?.hotlines.length > 0);
+  // No emergency number is shown until one is verified (src/lib/safety/emergencyContacts.ts).
+  assert.deepEqual(result.crisisContent?.hotlines, []);
+  assert.ok(result.crisisContent?.safetyPlanSteps.some((step) => /emergency services or go to the nearest health facility/.test(step)));
 });
 
 test("case 3 workflow builds the end-to-end career flow", () => {

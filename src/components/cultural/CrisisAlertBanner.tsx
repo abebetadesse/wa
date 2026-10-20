@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CrisisScreenResult } from "@/lib/case-workflow/spiritualQuestionEngine";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 
 export function CrisisAlertBanner({ crisis }: { crisis?: CrisisScreenResult }) {
   if (!crisis || !crisis.isCrisis || !crisis.crisisContent) {
@@ -25,24 +26,8 @@ export function CrisisAlertBanner({ crisis }: { crisis?: CrisisScreenResult }) {
         </div>
       </div>
 
-      {/* Emergency Hotlines */}
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {emergencyContacts.map((contact) => (
-          <a
-            key={contact.number}
-            href={`tel:${contact.number}`}
-            className="p-4 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between group"
-          >
-            <div>
-              <div className="text-xs text-rose-300 font-medium">{contact.name}</div>
-              <div className="text-lg font-black font-mono text-white group-hover:text-rose-200">
-                {contact.number}
-              </div>
-            </div>
-            <span className="text-xl">📞</span>
-          </a>
-        ))}
-      </div>
+      {/* Verified emergency numbers only (none until verified; the steps below give guidance) */}
+      <EmergencyHelp contacts={emergencyContacts} tone="dark" showGuidance={false} className="mt-5" />
 
       {/* Safety Steps */}
       {safetyPlanSteps && safetyPlanSteps.length > 0 && (

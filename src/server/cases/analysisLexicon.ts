@@ -52,7 +52,7 @@ export const FACTORS: Factor[] = [
     strands: ["psychological", "socioeconomic"],
     weight: 3,
     causeTitle: "Fear of harm from another person is shaping the situation",
-    advice: ["If you feel unsafe now, call the support line 952 or the police 991, and tell one person you trust what is happening."],
+    advice: ["If you feel unsafe now, contact local emergency services or go to the nearest health facility, and tell one person you trust what is happening."],
     followUp: "Are you safe where you are right now, and is there someone you trust who knows what is happening?",
     steps: [
       "Confirm the person's immediate safety before any other guidance, and share the crisis contacts.",

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -585,18 +586,7 @@ export default function CareerIntakePage() {
 
               <div className="space-y-3">
                 <h2 className="text-sm font-semibold text-red-400 uppercase tracking-widest">Emergency Contacts</h2>
-                {crisisContent.hotlines.map((h) => (
-                  <a
-                    key={h.number}
-                    href={`tel:${h.number}`}
-                    className="flex items-center justify-between p-4 rounded-xl bg-red-900/40 border border-red-500/30 hover:bg-red-900/60 transition-colors group"
-                  >
-                    <span className="font-medium text-zinc-200">{h.name}</span>
-                    <span className="text-red-300 font-mono text-lg font-bold group-hover:scale-105 transition-transform">
-                      {h.number}
-                    </span>
-                  </a>
-                ))}
+                <EmergencyHelp contacts={crisisContent.hotlines} tone="dark" />
               </div>
 
               <div className="space-y-2">
@@ -922,10 +912,7 @@ export default function CareerIntakePage() {
                       title: "Support Resources Available",
                       message:
                         "We detected indications of acute distress in your response. Professional and confidential support is available.",
-                      hotlines: [
-                        { name: "Ethiopian Mental Health Hotline", number: "952" },
-                        { name: "National Emergency Helpline", number: "911" },
-                      ],
+                      hotlines: [],
                       safetyPlanSteps: [
                         "Step away from high-stakes decisions and rest in a safe environment.",
                         "Speak with a trusted family member, elder, or counselor.",

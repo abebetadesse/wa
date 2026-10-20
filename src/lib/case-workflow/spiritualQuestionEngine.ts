@@ -4,6 +4,8 @@
  */
 
 import { FullDivinationResult } from "@/lib/cultural/spiritualDivinationEngine";
+import { EMERGENCY_GUIDANCE, verifiedEmergencyContacts } from "@/lib/safety/emergencyContacts";
+import { screenText } from "@/server/safety/urgency";
 
 export interface DynamicQuestion {
   id: string;
@@ -245,7 +247,8 @@ export function generateDynamicQuestions(
 }
 
 /**
- * Crisis Rule Engine: analyzes input text and structured answers for safety indicators.
+ * Crisis Rule Engine: a thin adapter over the shared screen (src/server/safety/urgency.ts) plus the
+ * structured safety answer. Self-harm, violence and medical emergencies are all crises.
  * If crisis is detected, urgency is set to 'crisis', non-gated emergency content
  * is returned, and paywall is omitted completely.
  */
@@ -262,51 +265,27 @@ export function evaluateSpiritualCrisis(
     String(answers.transformation_awareness || ""),
   ].join(" ").toLowerCase();
 
-  const crisisKeywords = [
-    "kill myself",
-    "suicide",
-    "end my life",
-    "want to die",
-    "hurt myself",
-    "hang myself",
-    "take my own life",
-    "slit my",
-    "self harm",
-    "shoot myself",
-  ];
-
-  const violenceKeywords = [
-    "domestic violence",
-    "he beats me",
-    "she beats me",
-    "physically abuse",
-    "threatened to kill",
-    "unsafe at home",
-  ];
-
+  const screen = screenText(combined);
   const isSafetyScreenUnsafe = answers.safety_screening === "unsafe";
-  const matchedCrisis = crisisKeywords.some((kw) => combined.includes(kw));
-  const matchedViolence = violenceKeywords.some((kw) => combined.includes(kw)) || isSafetyScreenUnsafe;
 
-  if (matchedCrisis || matchedViolence) {
+  if (screen.crisis || isSafetyScreenUnsafe) {
+    const contacts = verifiedEmergencyContacts();
+    const medical = screen.crisis === "medical";
     return {
       isCrisis: true,
       urgencyLevel: "crisis",
       crisisContent: {
-        title: "Your Life and Safety Are Sacred",
-        message: "We hear you, and you are not alone. Traditional Ethiopian divination is designed for reflection, never for crisis. Please connect immediately with dedicated, free, 24/7 human support.",
-        hotlines: ["952", "911", "991"],
-        emergencyContacts: [
-          { name: "Ethiopian Gender-Based Violence & Crisis Hotline", number: "952" },
-          { name: "National Emergency Police", number: "911" },
-          { name: "Red Cross Ambulance & Emergency Medical Services", number: "991" },
-          { name: "Mental Health Support Ethiopia (Amanuel Hospital)", number: "+251 11 275 7680" },
-        ],
+        title: medical ? "Get medical help now" : "Your Life and Safety Are Sacred",
+        message: medical
+          ? "What you describe may be a medical emergency. Traditional reflection can wait; please get help now."
+          : "We hear you, and you are not alone. Traditional Ethiopian divination is designed for reflection, never for crisis. Please connect with a person who can help now.",
+        hotlines: contacts.map((contact) => contact.number),
+        emergencyContacts: contacts.map(({ name, number }) => ({ name, number })),
         safetyPlanSteps: [
+          EMERGENCY_GUIDANCE,
           "Reach out to a trusted elder, spiritual father (የንስሐ አባት), family member, or friend.",
-          "Call 952 or 911 immediately if you are in immediate physical danger.",
-          "Move to a public, lit, or safe sanctuary space.",
-          "Remember that this difficult storm will pass, and professional help is waiting for you right now.",
+          ...(medical ? [] : ["Move to a public, lit, or safe place if you can."]),
+          "Remember that this difficult storm will pass, and help is available right now.",
         ],
       },
       // paywall is explicitly undefined to ensure crisis content is NOT gated behind a paywall

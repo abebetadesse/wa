@@ -15,7 +15,6 @@ import {
   Clock,
   FileText,
   Lock,
-  Phone,
   Printer,
   Sparkles,
   Users,
@@ -25,6 +24,7 @@ import type { OwnerView } from "@/server/cases/views";
 import type { WorkflowQuestion } from "@/server/cases/types";
 import { Alert, Badge, Card, CardContent, CardHeader, CardTitle, ChoiceGroup, Field, Input, Select, Textarea } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 
 // ── Questions ────────────────────────────────────────────────────────────────
 
@@ -143,24 +143,7 @@ export function SupportPanel({ safety }: { safety: OwnerView["safety"] }) {
           <span className="font-medium text-foreground">Reason:</span> {safety.reason ?? safety.reasonCode}
         </div>
       )}
-      {support.hotlines.length > 0 && (
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-          {support.hotlines.map((line) => (
-            <li key={line.name}>
-              <a
-                href={`tel:${line.number.replace(/[^\d+]/g, "")}`}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm hover:border-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Phone className="size-4 text-brand" aria-hidden="true" />
-                <span className="flex flex-col">
-                  <span className="font-semibold text-foreground">{line.number}</span>
-                  <span className="text-xs text-muted-foreground">{line.name}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <EmergencyHelp contacts={support.hotlines} showGuidance={false} className="mt-4" />
       {support.steps.length > 0 && (
         <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-foreground">
           {support.steps.map((step) => <li key={step}>{step}</li>)}

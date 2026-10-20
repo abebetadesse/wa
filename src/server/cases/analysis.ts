@@ -23,7 +23,8 @@ import { buildPersonContext } from "./personContext";
 import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foodHerb";
 import { buildClinicalPicture, buildStrandLenses, clinicalSearchTerms } from "./clinical";
 import { correctSpelling, type SpellingCorrection } from "./spelling";
-import { CONTACTS } from "./support";
+import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
+import { emergencyHotlines } from "./support";
 import {
   buildDecisionFramework,
   buildDecisionGuidance,
@@ -362,6 +363,12 @@ export function rankCauses(detected: DetectedFactor[], kept: GroundedFinding[], 
     });
 }
 
+/** " Verified numbers: …" when an administrator has verified any; otherwise nothing. */
+function verifiedNumbers(): string {
+  const contacts = emergencyHotlines();
+  return contacts.length ? ` Verified numbers: ${contacts.map((contact) => `${contact.name} ${contact.number}`).join("; ")}.` : "";
+}
+
 export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFactor[], kept: GroundedFinding[], urgent: boolean, clinical?: ClinicalPicture): AnalysisSolution[] {
   const byId = new Map(detected.map((entry) => [entry.factor.id, entry.factor]));
   const solutions: AnalysisSolution[] = [];
@@ -373,11 +380,11 @@ export function proposeSolutions(causes: AnalysisCause[], detected: DetectedFact
       // A medical emergency starts with the ambulance; fear of harm starts with the support line.
       steps: personalSafety
         ? [
-          `Share the support line ${CONTACTS.crisisLine.number} (${CONTACTS.crisisLine.name}) and police ${CONTACTS.police.number}; ambulance ${CONTACTS.ambulance.number} for a medical emergency.`,
+          `Tell the person: ${EMERGENCY_GUIDANCE}${verifiedNumbers()}`,
           "Check that the person is safe now and has one trusted contact before sending any other guidance.",
         ]
         : [
-          `Tell the person to call the ambulance (${CONTACTS.ambulance.number}) or go to the nearest emergency department now, and not to wait for this report.`,
+          `Tell the person to get emergency medical help now and not to wait for this report: ${EMERGENCY_GUIDANCE}${verifiedNumbers()}`,
           "Confirm by message that they have been seen before sending any other guidance.",
         ],
       horizon: "now",

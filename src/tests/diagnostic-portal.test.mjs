@@ -102,7 +102,8 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     const uCrit = urgencyDetector.detect("Cannot breathe, gasping for air", entitiesCrit);
     assert.equal(uCrit.level, "critical");
     assert.equal(uCrit.score, 100);
-    assert.match(uCrit.action, /907 \/ 991/);
+    assert.match(uCrit.action, /emergency services or go to the nearest health facility/);
+    assert.doesNotMatch(uCrit.action, /\d{3}/, "no unverified emergency number");
 
     // High: severe jaundice with dark urine
     const entitiesHigh = entityExtractor.extract("Severe yellow eyes and high fever");
@@ -297,9 +298,8 @@ describe("Multi-Strand Knowledge Retrieval & Diagnostic Portal System", () => {
     assert.match(solution.astrological_context.disclaimer, /Domain B/i);
 
     // Check Emergency Referral Data
-    assert.ok(solution.referral.emergencyHotlines.length >= 3, "Expected at least 3 emergency hotlines");
-    const ephi = solution.referral.emergencyHotlines.find((h) => h.number === "907");
-    assert.ok(ephi, "Expected 907 EPHI hotline");
+    // Emergency numbers are hidden until verified (src/lib/safety/emergencyContacts.ts).
+    assert.deepEqual(solution.referral.emergencyHotlines, []);
   });
 
   test("8. Diagnostic cache separates scientificly different profiles", async () => {

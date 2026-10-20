@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifiedHotlines } from "@/lib/safety/emergencyContacts";
 import {
   getCareerQuestions,
   getFollowUpQuestion,
@@ -40,9 +41,9 @@ export async function POST(req: NextRequest) {
         action: "route_to_safety",
         message:
           "We want to make sure you have the support you need. " +
-          "Please call 952 (free, confidential mental health support) or speak with a trusted person. " +
+          "Please speak with a trusted person, or contact local emergency services or the nearest health facility if you are in danger. " +
           "We can continue your career session once you are ready.",
-        hotline: { name: "Mental Health Support", number: "952" },
+        hotline: verifiedHotlines()[0] ?? null,
       });
     }
 

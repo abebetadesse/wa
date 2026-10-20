@@ -15,7 +15,7 @@ export class EntityExtractor {
     cough: ["cough", "coughing", "dry cough", "productive cough", "ሳል", "qufaa", "qufac", "ሳዕሊ"],
     fatigue: ["fatigue", "tired", "exhausted", "weakness", "lethargy", "low energy", "ድካም", "ዝለት", "dadhabbi", "daal"],
     chest_pain: ["chest pain", "angina", "tightness in chest", "pressure in chest", "የደረት ህመም", "dhukkubbi qomaa", "xanuun laabta"],
-    breathing_difficulty: ["difficulty breathing", "shortness of breath", "dyspnea", "gasping", "suffocating", "መተንፈስ መቸገር", "ቁርጥማት", "hafuura baafachuu dadhabuu", "neefsasho adag"],
+    breathing_difficulty: ["difficulty breathing", "shortness of breath", "dyspnea", "gasping", "suffocating", "መተንፈስ መቸገር", "hafuura baafachuu dadhabuu", "neefsasho adag"],
     bleeding: ["bleeding", "blood in stool", "blood in vomit", "coughing blood", "hemoptysis", "ደም መፍሰስ", "ደም", "dhiiga dhangala'u", "dhiigbax"],
     rash: ["rash", "hives", "itching", "itchy", "skin eruption", "አለርጂ", "ሽፍታ", "hooqqisa gogaa", "cuncun"],
     jaundice: ["jaundice", "yellow eyes", "yellow skin", "dark urine", "ቢጫ መሆን", "ወፍ በሽታ"],

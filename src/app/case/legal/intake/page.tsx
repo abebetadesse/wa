@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 import Link from "next/link";
 import {
   Scale,
@@ -1016,16 +1017,7 @@ export default function LegalIntakePage() {
 
               <div className="space-y-3">
                 <h2 className="text-xs font-semibold text-red-400 uppercase tracking-widest">Emergency Contacts</h2>
-                {crisisContent.hotlines.map((h) => (
-                  <a
-                    key={h.number}
-                    href={h.number.startsWith("+") || /^\d/.test(h.number) ? `tel:${h.number}` : "#"}
-                    className="flex items-center justify-between p-4 rounded-xl bg-red-900/40 border border-red-500/30 hover:bg-red-900/60 transition-colors"
-                  >
-                    <span className="font-medium text-zinc-200 text-sm">{h.name}</span>
-                    <span className="text-red-300 font-mono font-bold">{h.number}</span>
-                  </a>
-                ))}
+                <EmergencyHelp contacts={crisisContent.hotlines} tone="dark" />
               </div>
 
               <div className="space-y-2">
@@ -1062,7 +1054,7 @@ export default function LegalIntakePage() {
               </div>
               <p className="text-zinc-300 leading-relaxed text-sm">{legalAidContent.message}</p>
 
-              <div className="space-y-3">
+              {legalAidContent.hotlines.length > 0 && <div className="space-y-3">
                 <h2 className="text-xs font-semibold text-amber-400 uppercase tracking-widest">Legal Support</h2>
                 {legalAidContent.hotlines.map((h) => (
                   <a
@@ -1074,7 +1066,7 @@ export default function LegalIntakePage() {
                     <span className="text-amber-300 font-mono text-sm">{h.number}</span>
                   </a>
                 ))}
-              </div>
+              </div>}
 
               <div className="space-y-2">
                 <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Resources</h2>

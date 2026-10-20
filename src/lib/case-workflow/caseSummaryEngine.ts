@@ -21,6 +21,8 @@
  */
 
 import type { KnowledgeStrandType } from "@/lib/knowledge/types";
+import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
+import { screenText, type UrgencyLevel } from "@/server/safety/urgency";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -124,29 +126,9 @@ const SUB_DOMAIN_MAP: Record<string, string> = {
   blessing: "ritual_support",
 };
 
-// ─── Emergency keyword triggers (exact match inside word boundary) ─────────────
+// ─── Urgency: the shared screen (src/server/safety/urgency.ts) ─────────────────
 
-const EMERGENCY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
-  { label: "self-harm or suicide risk", pattern: /\b(suicid\w*|kill myself|end my life|self[- ]harm|want to die)\b/i },
-  { label: "chest pain", pattern: /\b(chest pain|crushing chest pain|heart attack)\b/i },
-  { label: "breathing difficulty", pattern: /\b(can't breathe|cannot breathe|unable to breathe|choking)\b/i },
-  { label: "severe bleeding", pattern: /\b(severe bleeding|heavy bleeding|hemorrhage|major blood loss)\b/i },
-  { label: "loss of consciousness", pattern: /\b(unconscious|loss of consciousness|fainted and unresponsive)\b/i },
-  { label: "seizure", pattern: /\b(seizure|convulsion)\b/i },
-  { label: "severe head injury", pattern: /\b(severe head injury|head trauma|hit my head and lost consciousness)\b/i },
-  { label: "sexual or violent assault", pattern: /\b(rape|sexual assault|violent attack)\b/i },
-  { label: "emergency signal (Amharic)", pattern: /ራሴን ልግደል|ሕይወቴን ማጥፋት|ልቤ ያመኛል|የልብ ህመም|መተንፈስ አልችልም|ደም መፍሰስ|ንቃተ ህሊና ማጣት|መንቀጥቀጥ|የጭንቅላት ጉዳት|የጾታ ጥቃት/i },
-];
-
-const URGENT_TRIGGERS = [
-  "bleeding", "unconscious", "faint", "chest pain", "cannot breathe",
-  "stroke", "seizure", "emergency",
-];
-
-const WATCH_TRIGGERS = [
-  "severe", "worsening", "cannot eat", "cannot sleep", "not eating",
-  "collapsed", "high fever",
-];
+const FLAG_FOR_LEVEL: Record<UrgencyLevel, UrgencyFlag> = { emergency: "emergency", urgent: "urgent", soon: "watch", routine: "none" };
 
 // ─── Strand mapping by domain ─────────────────────────────────────────────────
 
@@ -186,11 +168,10 @@ const STRAND_TIER_DETAILS: Record<KnowledgeStrandType, Omit<SuggestedStrandDetai
   astrological: { tier: "cultural", rationale: "Spiritual reflection; not clinical evidence" },
 };
 
+/** Thin adapter over `screenText`: detected exactly when the shared screen says "emergency". */
 export function detectEmergency(text: string): { detected: boolean; signals: string[] } {
-  const signals = EMERGENCY_PATTERNS
-    .filter(({ pattern }) => pattern.test(text))
-    .map(({ label }) => label);
-  return { detected: signals.length > 0, signals };
+  const result = screenText(text);
+  return { detected: result.level === "emergency", signals: result.level === "emergency" ? result.signs.map((sign) => sign.label) : [] };
 }
 
 // ─── Core engine function ─────────────────────────────────────────────────────
@@ -210,21 +191,16 @@ export function parseCaseNarrative(
   const lower = narrative.toLowerCase().trim();
 
   // ─── 1. Urgency classification ───────────────────────────────────────────
-  let urgencyFlag: UrgencyFlag = "none";
   let crisisMessage: string | undefined;
-  const emergency = detectEmergency(narrative);
+  const screen = screenText(narrative);
+  const urgencyFlag = FLAG_FOR_LEVEL[screen.level];
+  const emergency = { detected: screen.level === "emergency", signals: screen.level === "emergency" ? screen.signs.map((sign) => sign.label) : [] };
 
-  if (emergency.detected) {
-    urgencyFlag = "emergency";
+  if (urgencyFlag === "emergency") {
     crisisMessage =
       "Your message indicates you or someone you know may be in immediate danger. " +
-      "Please call your local emergency number or reach out " +
-      "to a trusted person right now. The platform's counsellors are NOT a substitute " +
-      "for emergency services.";
-  } else if (URGENT_TRIGGERS.some((t) => lower.includes(t.toLowerCase()))) {
-    urgencyFlag = "urgent";
-  } else if (WATCH_TRIGGERS.some((t) => lower.includes(t.toLowerCase()))) {
-    urgencyFlag = "watch";
+      `${EMERGENCY_GUIDANCE} You can also reach out to a trusted person right now. ` +
+      "The platform's counsellors are NOT a substitute for emergency services.";
   }
 
   // ─── 2. Domain classification ─────────────────────────────────────────────

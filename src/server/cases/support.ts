@@ -1,24 +1,15 @@
 /**
  * Crisis and referral support shared by every case domain.
  *
- * VERIFY BEFORE RELEASE: these numbers are shown to people in crisis. Confirm each one with the
- * operating organisation and record the date in `verifiedOn`. Never add placeholder numbers:
- * describe the service instead (see `withoutNumber`).
+ * Emergency phone numbers are never written here: they come only from
+ * src/lib/safety/emergencyContacts.ts (empty until a number is verified, plus the administrator's
+ * verified list). Without a verified number the person is given generic guidance instead.
  */
+import { emergencyStep, verifiedHotlines } from "@/lib/safety/emergencyContacts";
+import { screenText, type CrisisKind } from "@/server/safety/urgency";
 import type { Contact, SafetyOutcome } from "./types";
 
-interface SupportContact extends Contact {
-  verifiedOn: string | null;
-}
-
-export const CONTACTS = {
-  police: { name: "Police emergency", number: "991", verifiedOn: null },
-  ambulance: { name: "Ambulance (Ethiopian Red Cross)", number: "907", verifiedOn: null },
-  fire: { name: "Fire emergency", number: "939", verifiedOn: null },
-  crisisLine: { name: "Mental health and gender-based violence support line", number: "952", verifiedOn: null },
-} satisfies Record<string, SupportContact>;
-
-/** Services with no single verified number: shown as guidance, never as a fake number. */
+/** Services with no single verified number: shown as guidance, never as a number. */
 export const REFERRALS = {
   amanuel: "Amanuel Mental Specialized Hospital, Addis Ababa (or the nearest hospital's mental health service)",
   healthCenter: "Your nearest health centre — ask for the social worker or counsellor",
@@ -28,11 +19,11 @@ export const REFERRALS = {
   elders: "A trusted elder, spiritual father (የንስሐ አባት), relative or friend",
 } as const;
 
-const contact = ({ name, number }: SupportContact): Contact => ({ name, number });
+/** Verified emergency numbers only; empty while none are verified. */
+export const emergencyHotlines: () => Contact[] = verifiedHotlines;
 
-export const EMERGENCY_CONTACTS: Contact[] = [contact(CONTACTS.crisisLine), contact(CONTACTS.police), contact(CONTACTS.ambulance)];
-
-export function crisisOutcome(reason: string, extraSteps: string[] = []): SafetyOutcome {
+export function crisisOutcome(reason: string, extraSteps: string[] = [], kind: CrisisKind = "self_harm"): SafetyOutcome {
+  const medical = kind === "medical";
   return {
     action: "crisis_route",
     priority: "urgent",
@@ -42,46 +33,51 @@ export function crisisOutcome(reason: string, extraSteps: string[] = []): Safety
     evidence: {
       sourceTypes: ["user self-report", "screening pattern"],
       freshnessLabel: "Immediate review required",
-      notes: "High-risk safety language or direct risk indicators triggered a crisis pathway.",
+      notes: medical
+        ? "Danger signs of a medical emergency were described, so a crisis pathway was triggered."
+        : "High-risk safety language or direct risk indicators triggered a crisis pathway.",
     },
-    support: {
-      title: "Your safety comes first",
-      message:
-        "Please reach out for support now. This information is free and always available — no payment and no review are needed.",
-      hotlines: EMERGENCY_CONTACTS,
-      steps: [
-        `If you are in immediate danger, call ${CONTACTS.police.number} (police) or ${CONTACTS.ambulance.number} (ambulance).`,
-        `Call ${CONTACTS.crisisLine.number} for confidential support.`,
-        ...extraSteps,
-        `Reach out to ${REFERRALS.elders}.`,
-      ],
-      resources: [REFERRALS.amanuel, REFERRALS.healthCenter],
-    },
+    support: medical
+      ? {
+        title: "Get medical help now",
+        message: "What you describe may be a medical emergency. Please get help now. This information is free and always available.",
+        hotlines: emergencyHotlines(),
+        steps: [emergencyStep(), "Do not wait for an app report or online review.", ...extraSteps, "Ask someone to go with you if you can."],
+        resources: [REFERRALS.healthCenter],
+      }
+      : {
+        title: "Your safety comes first",
+        message:
+          "Please reach out for support now. This information is free and always available — no payment and no review are needed.",
+        hotlines: emergencyHotlines(),
+        steps: [`If you are in immediate danger: ${emergencyStep()}`, ...extraSteps, `Reach out to ${REFERRALS.elders}.`],
+        resources: [REFERRALS.amanuel, REFERRALS.healthCenter],
+      },
   };
 }
 
-const SELF_HARM = [
-  "kill myself", "suicide", "suicidal", "end my life", "want to die", "hurt myself", "hang myself",
-  "take my own life", "slit my", "self harm", "self-harm", "shoot myself", "no reason to live",
-  "ራሴን ላጠፋ", "መሞት እፈልጋለሁ", "ራሴን ልገድል",
-];
-const VIOLENCE = [
-  "domestic violence", "he beats me", "she beats me", "beats me", "physically abuse", "threatened to kill",
-  "unsafe at home", "raped", "sexual abuse", "ይደበድበኛል",
-];
+/** Crisis outcome for a medical emergency (danger signs such as chest pain or not breathing). */
+export const medicalCrisisOutcome = (reason = "Possible medical emergency described", extraSteps: string[] = []) => crisisOutcome(reason, extraSteps, "medical");
 
-/** Scans every free-text answer for self-harm or violence language. */
+// Option codes such as "fainting_dizziness" are answers to choice questions, not free text.
+const OPTION_CODE = /^[a-z0-9]+(_[a-z0-9]+)+$/;
+
+/**
+ * Scans every free-text answer with the shared screen (src/server/safety/urgency.ts). Self-harm,
+ * violence and medical emergencies all route to crisis support.
+ */
 export function screenFreeText(answers: Record<string, unknown>): SafetyOutcome | null {
   const text = Object.values(answers)
     .flatMap((value) => (Array.isArray(value) ? value : [value]))
-    .filter((value): value is string => typeof value === "string")
-    .join(" ")
-    .toLowerCase();
-  if (!text) return null;
-  if (SELF_HARM.some((phrase) => text.includes(phrase))) return crisisOutcome("Self-harm language in answers");
-  if (VIOLENCE.some((phrase) => text.includes(phrase))) {
-    return crisisOutcome("Violence or abuse language in answers", ["Move to a safer place if you can do so without increasing danger."]);
+    .filter((value): value is string => typeof value === "string" && !OPTION_CODE.test(value.trim()))
+    .join("\n");
+  if (!text.trim()) return null;
+  const { crisis } = screenText(text);
+  if (crisis === "self_harm") return crisisOutcome("Self-harm language in answers");
+  if (crisis === "violence") {
+    return crisisOutcome("Violence or abuse language in answers", ["Move to a safer place if you can do so without increasing danger."], "violence");
   }
+  if (crisis === "medical") return medicalCrisisOutcome("Medical emergency described in answers");
   return null;
 }
 

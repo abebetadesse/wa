@@ -20,7 +20,7 @@ import {
 } from "@/lib/case-workflow/sharedQuestionBank";
 import type { DomainConfig, SafetyOutcome, WorkflowDomain } from "../types";
 import { layoutSections } from "../reportLayout";
-import { concern, crisisOutcome, proceed, REFERRALS, screenFreeText, CONTACTS } from "../support";
+import { concern, crisisOutcome, emergencyHotlines, medicalCrisisOutcome, proceed, REFERRALS, screenFreeText } from "../support";
 import { CAREER_SAFETY, LEGAL_SAFETY, RELATIONSHIP_SAFETY, SOCIAL_SAFETY, SPIRITUAL_SAFETY } from "./safetyQuestions";
 import { aiSection, compact, normalizeQuestions, REPORT_DISCLAIMER, STANDARD_CHECKLIST, text } from "./shared";
 import { buildSpiritualSections } from "./spiritualContent";
@@ -49,7 +49,7 @@ const career: DomainConfig = {
       return concern("Unable to meet basic needs; social support may be required first.", "high", {
         title: "Immediate support is available — for free",
         message: "If you are struggling to meet basic needs, these services can help while your case is reviewed.",
-        hotlines: [{ name: CONTACTS.crisisLine.name, number: CONTACTS.crisisLine.number }],
+        hotlines: emergencyHotlines(),
         steps: ["Contact the social worker at your nearest health centre.", "Ask your kebele or woreda office about the Productive Safety Net Programme."],
         resources: [REFERRALS.psnp, REFERRALS.socialServices, REFERRALS.healthCenter],
       });
@@ -297,7 +297,7 @@ const social: DomainConfig = {
       return concern("Isolation with limited support; community-centred review required.", "high", {
         title: "Support can be built step by step",
         message: "You do not need to handle loneliness alone. These are places to start while your case is reviewed.",
-        hotlines: [{ name: CONTACTS.crisisLine.name, number: CONTACTS.crisisLine.number }],
+        hotlines: emergencyHotlines(),
         steps: ["Reach out to one person this week, even briefly.", "Ask your iddir, church, mosque or community group about gatherings."],
         resources: [REFERRALS.elders, REFERRALS.healthCenter],
       });
@@ -383,10 +383,7 @@ const biological: DomainConfig = {
   ]),
   evaluateSafety(answers) {
     if (answers.urgentSymptoms === "yes") {
-      return crisisOutcome("Possible medical emergency reported", [
-        "Contact local emergency services or go to the nearest emergency department now.",
-        "Do not wait for an app report or online review.",
-      ]);
+      return medicalCrisisOutcome("Possible medical emergency reported");
     }
     return proceed();
   },

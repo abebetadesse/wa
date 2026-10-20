@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 import { useEffect, useState } from "react";
 import { DiagnosticSolution, DiagnosticUrgencyLevel, KnowledgeStrandType } from "@/lib/knowledge/types";
 import { useLanguage } from "@/lib/i18n/context";
@@ -1295,28 +1296,7 @@ export default function DiagnosticClient() {
                 {td.emergencyInstructions}
               </p>
 
-              <div className="space-y-3 mb-6">
-                {[
-                  { name: td.hotlineEphi, number: "907", desc: td.hotlineEphiDescription },
-                  { name: td.hotlineRedCross, number: "991", desc: td.hotlineRedCrossDescription },
-                  { name: td.hotlinePolice, number: "911", desc: td.hotlinePoliceDescription },
-                  { name: td.hotlineTikurAnbessa, number: "+251-11-551-1211", desc: td.hotlineTikurAnbessaDescription },
-                ].map((hl) => (
-                  <div key={hl.number} className="p-3.5 rounded-xl bg-black/60 border border-rose-500/30 flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-xs font-bold text-white">{hl.name}</div>
-                      <div className="text-[10px] text-slate-400">{hl.desc}</div>
-                    </div>
-                    <a
-                      href={`tel:${hl.number}`}
-                      className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-extrabold flex items-center gap-1"
-                    >
-                      <span>📞</span>
-                      <span>{hl.number}</span>
-                    </a>
-                  </div>
-                ))}
-              </div>
+              <EmergencyHelp tone="dark" className="mb-6" />
 
               <button
                 type="button"

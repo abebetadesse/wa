@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 import Link from "next/link";
 import type { CaseDefinition, CaseSession, Question } from "@/lib/case-workflow/engine";
 import type { DiagnosticSolution } from "@/lib/knowledge/types";
@@ -1186,38 +1187,7 @@ export default function CasePage() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <a
-                href="tel:952"
-                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
-              >
-                <div>
-                  <div className="text-xs text-rose-300 font-medium">National Mental Health Hotline</div>
-                  <div className="text-lg font-black font-mono text-white">952 (Free / 24/7)</div>
-                </div>
-                <span className="text-xl">📞</span>
-              </a>
-              <a
-                href="tel:991"
-                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
-              >
-                <div>
-                  <div className="text-xs text-rose-300 font-medium">Emergency Police Dispatch</div>
-                  <div className="text-lg font-black font-mono text-white">991</div>
-                </div>
-                <span className="text-xl">🚨</span>
-              </a>
-              <a
-                href="tel:907"
-                className="p-3.5 rounded-2xl bg-black/40 border border-rose-400/40 hover:bg-rose-900/50 transition-colors flex items-center justify-between"
-              >
-                <div>
-                  <div className="text-xs text-rose-300 font-medium">Emergency Ambulance (Red Cross)</div>
-                  <div className="text-lg font-black font-mono text-white">907</div>
-                </div>
-                <span className="text-xl">🚑</span>
-              </a>
-            </div>
+            <EmergencyHelp tone="dark" className="mt-4" />
           </div>
         )}
 

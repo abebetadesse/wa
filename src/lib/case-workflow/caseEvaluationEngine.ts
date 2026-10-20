@@ -24,6 +24,7 @@
  *   • LLM output never escapes unvalidated.
  */
 
+import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
 import {
   bionicChat,
   isBionicConfigured,
@@ -219,8 +220,7 @@ function normalizeSafetyGate(raw: unknown, issues: ValidationIssue[]): SafetyGat
       issues.push({ path: "safety_gate.escalation_reason", message: "Injected placeholder.", severity: "warning" });
     }
     if (!gate.emergency_protocol) {
-      gate.emergency_protocol =
-        "Activate local emergency services (e.g., 8335 in Ethiopia) or transport to nearest referral facility immediately.";
+      gate.emergency_protocol = EMERGENCY_GUIDANCE;
       issues.push({ path: "safety_gate.emergency_protocol", message: "Injected default protocol.", severity: "warning" });
     }
   }
