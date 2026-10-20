@@ -7,9 +7,11 @@
  *   help, privacy  explain the bot
  *   anything else  is treated as a reply to the reviewer and added to the open request
  *
- * The same commands work on both apps (Telegram also accepts them with a leading slash).
+ * The same commands work on both apps (Telegram also accepts them with a leading slash). Replies to a
+ * known account are written in its preferred language; replies to strangers are in English.
  * Dependencies are injected so the behaviour is tested without a database or network.
  */
+import { serverText, type Translate } from "@/server/i18n/serverText";
 import { readLinkCode, verifyLinkCode, type LinkChannel } from "./linkCodes";
 
 export interface BotReply {
@@ -59,7 +61,11 @@ export const BOT_STAGE_LABELS: Record<string, string> = {
 
 export interface InboundDeps {
   appUrl: string;
-  findUser(channel: LinkChannel, sender: string): Promise<{ id: string } | null>;
+  findUser(channel: LinkChannel, sender: string): Promise<{ id: string; preferredLanguage?: string | null } | null>;
+  /** The account's preferred language, for the reply that confirms a new link. */
+  languageOf?(userId: string): Promise<string | null | undefined>;
+  /** Overrides how replies are translated (tests); defaults to the local phrase catalogues. */
+  text?(language: string | null | undefined): Promise<Translate>;
   currentLink(channel: LinkChannel, userId: string): Promise<string | null | undefined>;
   link(channel: LinkChannel, userId: string, sender: string, username?: string): Promise<boolean>;
   setNotify(channel: LinkChannel, userId: string, enabled: boolean): Promise<void>;
@@ -76,61 +82,68 @@ const NAME = { telegram: "Telegram", whatsapp: "WhatsApp" } as const;
 export async function handleInbound(channel: LinkChannel, sender: string, text: string, deps: InboundDeps, meta: { username?: string } = {}): Promise<BotReply | null> {
   const base = deps.appUrl.replace(/\/$/, "");
   const page = (path: string, label: string) => (/^https:\/\//.test(base) ? { url: `${base}${path}`, label } : undefined);
+  const textIn = deps.text ?? serverText;
   const command = parseBotCommand(text);
 
   if (command.type === "link") {
-    const expired = { text: "This connect link has expired or was already used. Open your account page and tap Connect again.", link: page("/account", "Open your account") };
+    const expired = (tr: Translate) => ({ text: tr("This connect link has expired or was already used. Open your account page and tap Connect again."), link: page("/account", tr("Open your account")) });
     const userId = readLinkCode(command.code);
-    if (!userId) return expired;
+    if (!userId) return expired(await textIn(null));
     const linked = await deps.currentLink(channel, userId);
-    if (linked === undefined || !verifyLinkCode(channel, command.code, linked)) return expired;
+    const tr = await textIn(await deps.languageOf?.(userId));
+    if (linked === undefined || !verifyLinkCode(channel, command.code, linked)) return expired(tr);
     if (!(await deps.link(channel, userId, sender, meta.username))) {
-      return { text: `This ${NAME[channel]} account is already connected to another account. Disconnect it there first.` };
+      return { text: tr("This {} account is already connected to another account. Disconnect it there first.", NAME[channel]) };
     }
     return {
-      text: `Your ${NAME[channel]} is now connected. Updates about your requests, bookings and payments will arrive here, and you can answer your reviewer by replying in this chat. Send STATUS to see your requests or STOP to turn updates off.`,
-      link: page("/case/workflows", "Open your requests"),
+      text: tr("Your {} is now connected. Updates about your requests, bookings and payments will arrive here, and you can answer your reviewer by replying in this chat. Send STATUS to see your requests or STOP to turn updates off.", NAME[channel]),
+      link: page("/case/workflows", tr("Open your requests")),
     };
   }
 
+  const user = await deps.findUser(channel, sender);
+  const tr = await textIn(user?.preferredLanguage);
+
   if (command.type === "privacy") {
-    return { text: `${NAME[channel]} is used only for the updates you switched on and for replies you send to your reviewer. Updates about sensitive requests never include their content. Disconnect or turn forwarding off from your account page, or send STOP here.` };
+    return { text: tr("{} is used only for the updates you switched on and for replies you send to your reviewer. Updates about sensitive requests never include their content. Disconnect or turn forwarding off from your account page, or send STOP here.", NAME[channel]) };
   }
 
-  const user = await deps.findUser(channel, sender);
   if (!user) {
     return {
-      text: `Welcome to Ethiopian Wisdom Atlas. To receive your updates here and reply to your reviewer, sign in on the website, open your account page and tap Connect ${NAME[channel]}.`,
-      link: page("/account", "Open your account"),
+      text: tr("Welcome to Ethiopian Wisdom Atlas. To receive your updates here and reply to your reviewer, sign in on the website, open your account page and tap Connect {}.", NAME[channel]),
+      link: page("/account", tr("Open your account")),
     };
   }
   await deps.touch?.(channel, user.id);
 
   if (command.type === "start" || command.type === "help") {
     return {
-      text: "You are connected. Updates about your requests arrive here. Reply in this chat to answer your reviewer, send STATUS to see your requests, or STOP to turn updates off.",
-      link: page("/case/workflows", "Open your requests"),
+      text: tr("You are connected. Updates about your requests arrive here. Reply in this chat to answer your reviewer, send STATUS to see your requests, or STOP to turn updates off."),
+      link: page("/case/workflows", tr("Open your requests")),
     };
   }
   if (command.type === "stop") {
     await deps.setNotify(channel, user.id, false);
-    return { text: `Updates on ${NAME[channel]} are now off. You can turn them on again from your account page.`, link: page("/account", "Open your account") };
+    return { text: tr("Updates on {} are now off. You can turn them on again from your account page.", NAME[channel]), link: page("/account", tr("Open your account")) };
   }
   if (command.type === "status") {
     const cases = await deps.cases.statusFor(user.id);
-    if (!cases.length) return { text: "You have no requests yet. Open the app to start one.", link: page("/case/workflows", "Start a request") };
-    const lines = cases.map((item) => `• ${item.label}: ${BOT_STAGE_LABELS[item.stage] ?? item.stage}${item.waitingForReply ? " — your reviewer is waiting for your reply" : ""}`);
-    return { text: `Your requests:\n${lines.join("\n")}`, link: page("/case/workflows", "Open your requests") };
+    if (!cases.length) return { text: tr("You have no requests yet. Open the app to start one."), link: page("/case/workflows", tr("Start a request")) };
+    const lines = cases.map((item) => {
+      const stage = tr(BOT_STAGE_LABELS[item.stage] ?? item.stage);
+      return item.waitingForReply ? tr("• {}: {} — your reviewer is waiting for your reply", item.label, stage) : tr("• {}: {}", item.label, stage);
+    });
+    return { text: [tr("Your requests:"), ...lines].join("\n"), link: page("/case/workflows", tr("Open your requests")) };
   }
 
   if (command.type !== "text") return null;
   try {
     const target = await deps.cases.replyFromChannel(user.id, command.text, channel);
-    if (!target) return { text: "You have no request under review at the moment, so this message was not sent to anyone. Open the app to start a request or read your reports.", link: page("/case/workflows", "Open your requests") };
-    return { text: `Thank you. Your reply was added to your ${target.label} request and your reviewer has been told.`, link: page(`/case/workflows/${target.caseId}`, "Open the request") };
+    if (!target) return { text: tr("You have no request under review at the moment, so this message was not sent to anyone. Open the app to start a request or read your reports."), link: page("/case/workflows", tr("Open your requests")) };
+    return { text: tr("Thank you. Your reply was added to your {} request and your reviewer has been told.", target.label), link: page(`/case/workflows/${target.caseId}`, tr("Open the request")) };
   } catch (error) {
     console.error(`[${channel}] could not record a reply:`, error instanceof Error ? error.message : error);
-    return { text: "Your message could not be added to your request. Please reply from the app instead.", link: page("/case/workflows", "Open your requests") };
+    return { text: tr("Your message could not be added to your request. Please reply from the app instead."), link: page("/case/workflows", tr("Open your requests")) };
   }
 }
 

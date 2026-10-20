@@ -103,13 +103,19 @@ export async function unlinkWhatsApp(user: AuthenticatedUser) {
 
 // ── Used by the bots (inbound.ts) ────────────────────────────────────────────
 
-export async function findChatUser(channel: LinkChannel, sender: string): Promise<{ id: string } | null> {
+export async function findChatUser(channel: LinkChannel, sender: string): Promise<{ id: string; preferredLanguage: string } | null> {
   const [row] = await db
-    .select({ id: users.id })
+    .select({ id: users.id, preferredLanguage: users.preferredLanguage })
     .from(users)
     .where(and(eq(column[channel], sender), eq(users.isActive, true), eq(users.isSuspended, false)))
     .limit(1);
   return row ?? null;
+}
+
+/** The account's preferred language, for replies written before the chat is linked to it. */
+export async function chatUserLanguage(userId: string): Promise<string | null> {
+  const [row] = await db.select({ language: users.preferredLanguage }).from(users).where(eq(users.id, userId)).limit(1);
+  return row?.language ?? null;
 }
 
 /** The account's current link on a channel; `undefined` when the account cannot be linked. */

@@ -29,16 +29,24 @@ The platform supports:
 
 The language selector offers English, Amharic, Oromo, Tigrinya, and Somali. Amharic is the default; the selector preference is saved in the browser.
 
-Amharic is translated locally, with no network service. Pages render their English source text and an in-page translator (`src/lib/i18n/domTranslator.ts`) swaps each phrase for its entry in the Amharic catalogue under `src/lib/i18n/phrases/am/`, one file per top-level route plus `common.json`. It also covers text that arrives from the server and content added by client-side navigation and live updates, and it works offline.
+Amharic, Oromo, Tigrinya and Somali are translated locally, with no network service. Pages render their English source text and an in-page translator (`src/lib/i18n/domTranslator.ts`) swaps each phrase for its entry in that language's catalogue under `src/lib/i18n/phrases/<lang>/`, one file per top-level route plus `common.json`. It also covers text that arrives from the server and content added by client-side navigation and live updates, and it works offline.
 
-- `npm run i18n:check` scans the source and fails if any interface phrase has no Amharic translation. Run it after adding or rewording text.
-- `npm run i18n:sync` regroups the catalogue by route after code moves.
-- `node scripts/i18n.mjs todo <dir>` writes the missing phrases as numbered work files; `node scripts/i18n.mjs apply <dir>` merges the translated ones.
+- **Amharic** (`am/`) covers every interface phrase.
+- **Oromo, Tigrinya and Somali** (`om/`, `ti/`, `so/`) are machine drafts of the safety-critical text — the emergency page and offline protocols, the medicine/remedy interaction check, the crisis screen — plus core navigation, sign-in, and the case and chat-bot messages. Every file carries `"_status": "machine-draft, needs human review"`; remove it once a qualified translator has checked the file. Lines with emergency phone numbers are left in English until the phone-number rewrite lands.
+- On routes a draft catalogue covers (at least 90% of the route's phrases, listed in `COMPLETE_ROUTES` in the generated `sections.ts`), the local catalogue translates the page. Elsewhere Oromo, Tigrinya and Somali fall back to the Google Website Translator, which sends the page's visible text to Google and needs internet — **except on private pages** (`/case*`, `/diagnostic`, `/intake`, `/report`, `/profile`, `/messages`, `/account`, a business's `/cases`), where Google is never loaded: the local catalogue translates what it can and the rest stays in English. See `src/lib/i18n/engine.ts`.
+- Case updates (`src/server/cases/notices.ts`) and the Telegram/WhatsApp bot replies (`src/server/messaging/inbound.ts`) are written in the recipient's `users.preferredLanguage` from the same catalogues (`src/server/i18n/serverText.ts`), falling back to English. Write new server messages as `tr("Text with {} holes", value)` so the scan collects them.
+
+Commands (`--lang am|om|ti|so` selects the catalogue, default `am`):
+
+- `npm run i18n:check` scans the source and fails if any interface phrase has no Amharic translation, or if any emergency/safety phrase lacks an Oromo, Tigrinya or Somali translation. It prints each language's coverage. Run it after adding or rewording text.
+- `npm run i18n:sync` regroups every catalogue by route after code moves and regenerates `src/lib/i18n/phrases/sections.ts`.
+- `node scripts/i18n.mjs todo <dir> [size] --lang om [--safety]` writes the missing phrases as numbered work files; `node scripts/i18n.mjs apply <dir> --lang om` merges the translated ones (lines of `id|translation`, keeping `{0}`, `{1}` placeholders).
+- `node scripts/i18n.mjs add <file.json> --lang om` stores `{ "English": "translation" }` pairs for text outside the source scan.
 - Wrap anything that must stay as written (names, codes, user content) in an element with `translate="no"`.
 
-Reference databases (food composition, medicinal plants, knowledge strands, place names) are translated only for the files listed in `CONTENT_FILES` in `scripts/i18n.mjs`; add a file there to bring it into the catalogue. Messages delivered through Telegram, WhatsApp and email are composed on the server and are not covered.
+Reference databases (food composition, medicinal plants, knowledge strands, place names) are translated only for the files listed in `CONTENT_FILES` in `scripts/i18n.mjs`; add a file there to bring it into the catalogue. Email messages are composed on the server in English.
 
-Oromo, Tigrinya and Somali have no local catalogue yet and still use Google Translate, which needs an internet connection. Safety-critical or clinical content should be reviewed by a qualified human translator before being relied on.
+Safety-critical or clinical content in any draft language should be reviewed by a qualified human translator before being relied on.
 
 ## Core user workflow
 

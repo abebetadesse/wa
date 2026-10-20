@@ -2,10 +2,10 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useLanguage } from "@/lib/i18n/context";
+import { translationEngine } from "@/lib/i18n/engine";
 import type { Language } from "@/lib/i18n/translations";
-import { isLocalLanguage } from "./LocalTranslate";
 
 declare global {
   interface Window {
@@ -20,13 +20,27 @@ declare global {
   }
 }
 
-// Amharic comes from the local phrase catalogue (LocalTranslate) and English is the source text,
-// so Google Translate is only loaded for the languages that have no local catalogue yet.
+// Amharic comes from the local phrase catalogue (LocalTranslate) and English is the source text.
+// Oromo, Tigrinya and Somali use their local catalogues on the routes those cover, and Google
+// Translate elsewhere — never on private pages (see translationEngine in src/lib/i18n/engine.ts).
 const LANGUAGES: Language[] = ["om", "ti", "so"];
 const LANGUAGE_CHANGE_EVENT = "ethio:language-change";
 
 function isGoogleLanguage(value: unknown): value is Language {
-  return typeof value === "string" && LANGUAGES.some((language) => language === value) && !isLocalLanguage(value);
+  return (
+    typeof value === "string" &&
+    LANGUAGES.some((language) => language === value) &&
+    translationEngine(value, window.location.pathname) === "google"
+  );
+}
+
+/** Stops Google from translating anything more on this page (it skips "notranslate" content). */
+function shieldPage() {
+  for (const element of [document.documentElement, document.body]) {
+    if (!element) continue;
+    element.classList.add("notranslate");
+    element.setAttribute("translate", "no");
+  }
 }
 
 function readLanguage(): Language | null {
@@ -84,7 +98,7 @@ function isApplicationContentMutation(mutation: MutationRecord) {
 export default function GoogleTranslate() {
   const pathname = usePathname();
   const { language } = useLanguage();
-  const remote = isGoogleLanguage(language);
+  const remote = translationEngine(language, pathname) === "google";
   const wasRemote = useRef(false);
   const contentObserver = useRef<MutationObserver | null>(null);
   const refreshTimeout = useRef<number | null>(null);
@@ -135,15 +149,41 @@ export default function GoogleTranslate() {
     }
   }, []);
 
-  useEffect(() => {
+  // A layout effect runs right after React writes the new page and before Google's own observer
+  // sees it, so a private page reached from a Google-translated one is shielded before any of its
+  // text can be sent.
+  useLayoutEffect(() => {
     if (remote) {
       wasRemote.current = true;
       return;
     }
     clearGoogleCookie();
+    if (!wasRemote.current) return;
+    shieldPage();
+    contentObserver.current?.disconnect();
+    contentObserver.current = null;
     // Google rewrote the page in place; a reload is the reliable way back to the source text.
-    if (wasRemote.current) window.location.reload();
+    window.location.reload();
   }, [remote]);
+
+  // While Google is active, links to pages it must not translate open with a full page load, so
+  // their content is never rendered under Google's translator at all.
+  useEffect(() => {
+    if (!remote) return;
+    const handleClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = (event.target as Element | null)?.closest?.("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement) || (anchor.target && anchor.target !== "_self")) return;
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin || translationEngine(language, url.pathname) === "google") return;
+      event.preventDefault();
+      clearGoogleCookie();
+      shieldPage();
+      window.location.assign(url.href);
+    };
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
+  }, [remote, language]);
 
   useEffect(() => {
     const handleLanguageChange = (event: Event) => {
