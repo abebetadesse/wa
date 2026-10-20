@@ -61,6 +61,7 @@ export default function CaseReviewItemPage() {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [notes, setNotes] = useState("");
   const [message, setMessage] = useState("");
+  const [templates, setTemplates] = useState<Array<{ id: string; title: string; body: string }>>([]);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -90,6 +91,9 @@ export default function CaseReviewItemPage() {
   }, [apply, base]);
 
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    apiFetch<Array<{ id: string; title: string; body: string }>>("/api/expert/templates").then(setTemplates).catch(() => undefined);
+  }, []);
 
   // While the case is open, pick up the person's replies (and the refreshed analysis) without a reload.
   const stage = item?.stage;
@@ -293,7 +297,7 @@ export default function CaseReviewItemPage() {
             )
           )}
 
-          <Conversation messages={item.messages} canAct={mayAct} busy={busy} discreet={item.safety.action !== "proceed"} value={message} onChange={setMessage} onSend={(kind) => void send(kind)} />
+          <Conversation messages={item.messages} canAct={mayAct} busy={busy} discreet={item.safety.action !== "proceed"} value={message} onChange={setMessage} onSend={(kind) => void send(kind)} templates={templates} />
 
           {draft && mayAct && (
             <DraftEditor

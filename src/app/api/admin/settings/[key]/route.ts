@@ -5,7 +5,7 @@ import { paymentStatusForAdmin } from "@/server/payments";
 import { telegramStatus } from "@/server/auth/telegram";
 import { whatsappStatus } from "@/server/messaging/whatsapp";
 
-const params = z.object({ key: z.enum(["payments", "registration", "marketplace", "emergencyContacts"]) });
+const params = z.object({ key: z.enum(["payments", "registration", "marketplace", "emergencyContacts", "reviewDesk"]) });
 const admins = { roles: ["admin", "super_admin"] } as const;
 
 /** Whether each chat app can send updates and receive replies. Reports set / not set only, never values. */
@@ -17,7 +17,7 @@ function chatStatus() {
   };
 }
 
-async function withStatus(key: "payments" | "registration" | "marketplace" | "emergencyContacts") {
+async function withStatus(key: "payments" | "registration" | "marketplace" | "emergencyContacts" | "reviewDesk") {
   const value = await getSettings(key);
   return { value, status: key === "payments" ? await paymentStatusForAdmin() : key === "registration" ? { ...telegramStatus(), chat: chatStatus() } : null };
 }

@@ -163,7 +163,7 @@ export interface ReviewChecklistItem {
 }
 
 export interface ReviewAuditEvent {
-  type: "created" | "claimed" | "approved" | "assigned" | "draft_saved" | "message" | "reanalysed" | "food_herb_added" | "food_herb_removed";
+  type: "created" | "submitted" | "claimed" | "approved" | "assigned" | "draft_saved" | "message" | "reanalysed" | "food_herb_added" | "food_herb_removed";
   actorId: string;
   at: string;
   details?: Record<string, unknown>;

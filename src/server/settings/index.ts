@@ -3,6 +3,7 @@
  * Reads are cached briefly per process; writes invalidate the local cache immediately, and other
  * instances pick the change up within CACHE_MS.
  */
+import { DEFAULT_REPLY_TEMPLATES, DEFAULT_REVIEW_TARGETS } from "@/server/cases/reviewDesk";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -107,7 +108,25 @@ export const emergencyContactSettings = z.object({
 });
 export type EmergencyContactSettings = z.infer<typeof emergencyContactSettings>;
 
-const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings, caseSearch: caseSearchSettings, emergencyContacts: emergencyContactSettings } as const;
+const targetHours = z.coerce.number().min(1).max(720);
+export const reviewDeskSettings = z.object({
+  /** Hours from submission to approval, per priority (src/server/cases/reviewDesk.ts). */
+  targets: z.object({ urgent: targetHours, high: targetHours, routine: targetHours }),
+  /** Reusable replies reviewers can insert in the conversation. */
+  templates: z
+    .array(
+      z.object({
+        id: z.string().trim().min(1).max(40),
+        title: z.string().trim().min(2).max(80),
+        body: z.string().trim().min(2).max(2000),
+        kind: z.enum(["message", "question"]),
+      }),
+    )
+    .max(30),
+});
+export type ReviewDeskSettings = z.infer<typeof reviewDeskSettings>;
+
+const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings, caseSearch: caseSearchSettings, emergencyContacts: emergencyContactSettings, reviewDesk: reviewDeskSettings } as const;
 export type SettingsKey = keyof typeof SCHEMAS;
 export type SettingsValue<K extends SettingsKey> = z.infer<(typeof SCHEMAS)[K]>;
 
@@ -142,6 +161,7 @@ export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
   },
   caseSearch: { caseType: true, herb: true, diet: true, location: true, element: true },
   emergencyContacts: { contacts: [] },
+  reviewDesk: { targets: DEFAULT_REVIEW_TARGETS, templates: DEFAULT_REPLY_TEMPLATES },
 };
 
 // Settings that other modules mirror in memory, so synchronous code (crisis outcomes) can use them.

@@ -915,9 +915,11 @@ interface ConversationProps {
   value: string;
   onChange: (value: string) => void;
   onSend: (kind: CaseMessage["kind"]) => void;
+  /** Reusable replies from the review desk settings; picking one fills the message box. */
+  templates?: Array<{ id: string; title: string; body: string }>;
 }
 
-export function Conversation({ messages, canAct, busy, discreet, value, onChange, onSend }: ConversationProps) {
+export function Conversation({ messages, canAct, busy, discreet, value, onChange, onSend, templates = [] }: ConversationProps) {
   const ready = value.trim().length >= 2;
   return (
     <section className={panel} aria-label="Conversation with the person">
@@ -943,6 +945,22 @@ export function Conversation({ messages, canAct, busy, discreet, value, onChange
       )}
       {canAct ? (
         <div className="mt-4 grid gap-2">
+          {templates.length > 0 && (
+            <select
+              aria-label="Insert a reply template"
+              value=""
+              onChange={(event) => {
+                const template = templates.find((item) => item.id === event.target.value);
+                if (template) onChange(template.body);
+              }}
+              className={input}
+            >
+              <option value="">Insert a template…</option>
+              {templates.map((template) => (
+                <option key={template.id} value={template.id}>{template.title}</option>
+              ))}
+            </select>
+          )}
           <label className="grid gap-2 text-sm font-medium text-slate-200">
             Write to the person
             <textarea value={value} onChange={(event) => onChange(event.target.value)} maxLength={2000} rows={3} className={input} placeholder="Ask for missing information, or tell them what happens next." />

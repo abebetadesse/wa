@@ -28,6 +28,7 @@ import {
   submitCase,
 } from "./machine";
 import { followUpService, scheduleSafely } from "@/server/followUps";
+import { byTriage, deskStats, DEFAULT_REPLY_TEMPLATES, DEFAULT_REVIEW_TARGETS, triage, workload, type ReplyTemplate, type ReviewTargets } from "./reviewDesk";
 import type { CaseBilling, CasePayMethod } from "./billing";
 import { caseBilling } from "@/server/payments/caseBilling";
 import { dbCaseStore, type CaseStore } from "./store";
@@ -114,6 +115,9 @@ interface Deps {
   notifyFoodHerb?: (record: WorkflowCase) => Promise<void>;
   /** The person can now read the full report: schedule outcome check-ins (src/server/followUps). */
   onDelivered?: (record: WorkflowCase) => Promise<void>;
+  /** Response targets and reply templates for the review desk (Admin settings "reviewDesk"). */
+  reviewDesk?: () => Promise<{ targets: ReviewTargets; templates: ReplyTemplate[] }>;
+  now?: () => Date;
   /** Overrides for the section enhancer (tests supply or withhold the language model). */
   enhancer?: Partial<EnhanceDeps>;
   /** Photo recognition; tests supply a stand-in for the vision model. Null when none is configured. */
@@ -460,11 +464,27 @@ export function createCaseService(deps: Deps) {
       const assignmentFilter = isAdministrator
         ? {}
         : { assignedRole: user.role, includeUnassigned: isPractitioner };
-      const [waiting, mine] = await Promise.all([
+      const [waiting, mine, desk] = await Promise.all([
         store.listForReview({ ...(domains ? { domains } : {}), ...assignmentFilter, stages: ["awaiting_expert"], businessId: null }),
         store.listForReview({ ...(domains ? { domains } : {}), ...assignmentFilter, stages: ["in_review"], ...(isAdministrator ? {} : { reviewerId: user.id }), businessId: null }),
+        deps.reviewDesk?.() ?? Promise.resolve({ targets: DEFAULT_REVIEW_TARGETS, templates: DEFAULT_REPLY_TEMPLATES }),
       ]);
-      return { domains, waiting: waiting.sort(byPriority).map(summary), inReview: mine.map(summary) };
+      const now = deps.now?.() ?? new Date();
+      const withTriage = (record: WorkflowCase) => ({ ...summary(record), triage: triage(record, now, desk.targets) });
+      const waitingItems = waiting.sort(byTriage(now, desk.targets)).map(withTriage);
+      const inReviewItems = mine.sort(byTriage(now, desk.targets)).map(withTriage);
+      // Administrators see how much each reviewer is carrying, to balance new assignments.
+      const loads = isAdministrator ? workload(mine, now, desk.targets) : [];
+      const names = loads.length ? await deps.expertSummaries(loads.map((load) => load.reviewerId)) : new Map();
+      return {
+        domains,
+        waiting: waitingItems,
+        inReview: inReviewItems,
+        stats: deskStats(waitingItems.map((item) => item.triage), inReviewItems.map((item) => item.triage)),
+        workload: loads.map((load) => ({ ...load, name: names.get(load.reviewerId)?.name ?? null })),
+        targets: desk.targets,
+        templates: desk.templates,
+      };
     },
 
     /** A business's own cases, for its reviewers. */
@@ -631,6 +651,7 @@ export const caseService = createCaseService({
   notifyReply: (record) => notifyReviewers(record, "reply"),
   notifyFoodHerb: (record) => notifyReviewers(record, "food_herb"),
   vision: () => (visionModel() ? visionDeps : null),
+  reviewDesk: () => getSettings("reviewDesk"),
   onDelivered: (record) =>
     scheduleSafely(() => followUpService.scheduleForCase(record, getDomainConfig(record.domain).label), { caseId: record.id }).then(() => undefined),
 });

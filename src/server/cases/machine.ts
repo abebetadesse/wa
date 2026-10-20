@@ -123,7 +123,9 @@ export function submitCase(record: WorkflowCase, draft: DraftReport, config: Dom
   assertStage(record, ["intake", "referred"], "submit");
   const missing = missingRequired(record, config);
   if (missing.length) throw ApiError.badRequest("Please answer all required questions.", { missing });
-  return { ...record, draft, stage: "awaiting_expert", updatedAt: now() };
+  const timestamp = now();
+  // The review desk measures response targets from this moment (src/server/cases/reviewDesk.ts).
+  return { ...record, draft, stage: "awaiting_expert", auditTrail: [...record.auditTrail, { type: "submitted", actorId: record.userId, at: timestamp }], updatedAt: timestamp };
 }
 
 export function assignCaseRole(record: WorkflowCase, role: string, actorId: string): WorkflowCase {
