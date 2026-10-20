@@ -4,40 +4,51 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useLanguage } from "@/lib/i18n/context";
 import { getDomTranslator } from "@/lib/i18n/domTranslator";
-import { COMMON_PHRASES, ROUTE_PHRASES } from "@/lib/i18n/phrases/sections";
+import { routeSection, translationEngine } from "@/lib/i18n/engine";
+import { CATALOGUE_LANGUAGES, COMMON_PHRASES, ROUTE_PHRASES, type CatalogueLanguage } from "@/lib/i18n/phrases/sections";
 
 declare global {
   interface Window {
-    /** Lists English text on screen that the Amharic catalogue does not cover yet. */
+    /** Lists English text on screen that the active language's catalogue does not cover yet. */
     ethioMissingPhrases?: () => string[];
   }
 }
 
-/** Languages translated from the local phrase catalogue rather than by Google Translate. */
-export const LOCAL_LANGUAGES = ["am"] as const;
+/** Languages translated from a local phrase catalogue. Oromo, Tigrinya and Somali fall back to Google Translate on routes their catalogue does not cover (see translationEngine). */
+export const LOCAL_LANGUAGES = CATALOGUE_LANGUAGES;
 
 export function isLocalLanguage(language: string): boolean {
   return (LOCAL_LANGUAGES as readonly string[]).includes(language);
 }
 
+/** Catalogue files already handed to the translator, as "language:section". */
 const loaded = new Set<string>();
 
-function load(name: string, loader: () => Promise<{ default: Record<string, string> }>) {
-  if (loaded.has(name)) return;
-  loaded.add(name);
+function load(language: CatalogueLanguage, name: string, loader: () => Promise<{ default: Record<string, string> }>) {
+  const key = `${language}:${name}`;
+  if (loaded.has(key)) return;
+  loaded.add(key);
   loader()
-    .then((module) => getDomTranslator().addPhrases(module.default))
+    .then((module) => {
+      const translator = getDomTranslator();
+      // The language changed while this file was loading: its phrases must not be applied.
+      if (translator.language !== language) {
+        loaded.delete(key);
+        return;
+      }
+      translator.addPhrases(module.default);
+    })
     .catch(() => {
       // Offline or a failed chunk: try again on the next navigation.
-      loaded.delete(name);
+      loaded.delete(key);
     });
 }
 
-/** Shows the page in Amharic from the local catalogue: no network translation service involved. */
+/** Shows the page in the chosen language from the local catalogue: no network translation service involved. */
 export default function LocalTranslate() {
   const pathname = usePathname();
   const { language } = useLanguage();
-  const active = isLocalLanguage(language);
+  const active = translationEngine(language, pathname) === "local";
 
   useEffect(() => {
     if (active || language === "en") document.documentElement.lang = language;
@@ -46,6 +57,10 @@ export default function LocalTranslate() {
   useEffect(() => {
     if (!active) return;
     const translator = getDomTranslator();
+    if (translator.language !== language) {
+      translator.reset(language);
+      loaded.clear();
+    }
     translator.start();
     window.ethioMissingPhrases = () => translator.missingPhrases();
     // Choosing the language that is already active translates the page again, in case anything was missed.
@@ -59,12 +74,13 @@ export default function LocalTranslate() {
 
   useEffect(() => {
     if (!active) return;
-    COMMON_PHRASES.forEach((loader, index) => load(`common:${index}`, loader));
-    const section = pathname.split("/")[1] ?? "";
-    const loader = ROUTE_PHRASES[section];
-    if (loader) load(section, loader);
+    const lang = language as CatalogueLanguage;
+    COMMON_PHRASES[lang].forEach((loader, index) => load(lang, `common:${index}`, loader));
+    const section = routeSection(pathname);
+    const loader = ROUTE_PHRASES[lang][section];
+    if (loader) load(lang, section, loader);
     getDomTranslator().refresh();
-  }, [active, pathname]);
+  }, [active, language, pathname]);
 
   return null;
 }

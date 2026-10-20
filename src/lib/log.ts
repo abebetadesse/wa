@@ -34,7 +34,7 @@ export function formatLogLine(level: Level, message: string, fields: Fields = {}
   try {
     return JSON.stringify(entry);
   } catch {
-    return JSON.stringify({ level, time: entry.time, message: entry.message, note: "fields were not serialisable" });
+    return JSON.stringify({ level, time: entry.time, message: entry.message, serialisable: false });
   }
 }
 

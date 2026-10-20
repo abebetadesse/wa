@@ -55,8 +55,15 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** Languages written in Ethiopic script: their translations are recognised by script alone. */
+const ETHIOPIC_LANGUAGES = new Set(["am", "ti"]);
+
 class DomTranslator {
+  /** The language whose phrases are loaded; reset() switches it. */
+  language = "am";
   private phrases = new Map<string, string>();
+  /** Every translation in the catalogue, so translated Latin-script text (Oromo, Somali) is not taken for missing English. */
+  private values = new Set<string>();
   private templates: Template[] | null = null;
   private cache = new Map<string, string | null>();
   private textState = new WeakMap<Text, Applied>();
@@ -79,8 +86,9 @@ class DomTranslator {
     let changed = false;
     for (const key in entries) {
       const value = entries[key];
-      if (typeof value !== "string" || !value || this.phrases.get(key) === value) continue;
+      if (key.startsWith("_") || typeof value !== "string" || !value || this.phrases.get(key) === value) continue;
       this.phrases.set(key, value);
+      this.values.add(normalizeText(value));
       changed = true;
     }
     if (!changed) return;
@@ -103,6 +111,22 @@ class DomTranslator {
       attributeFilter: [...ATTRIBUTES],
     });
     this.scheduleRescans();
+  }
+
+  /**
+   * Switches to another language: the page goes back to its source text and every loaded phrase is
+   * dropped, so nothing of the previous language can be applied. Translation resumes if it was on.
+   */
+  reset(language: string): void {
+    const wasActive = this.active;
+    this.stop();
+    this.language = language;
+    this.phrases.clear();
+    this.values.clear();
+    this.templates = null;
+    this.cache.clear();
+    this.missing.clear();
+    if (wasActive) this.start();
   }
 
   /** Stops translating and puts the source text back. */
@@ -349,7 +373,9 @@ class DomTranslator {
 
   private noteMissing(text: string): void {
     // Text that already carries Ethiopic script is translated content with a Latin name inside it.
-    if (/[ሀ-᎟]/.test(text)) return;
+    if (ETHIOPIC_LANGUAGES.has(this.language) && /[ሀ-᎟]/.test(text)) return;
+    // Oromo and Somali are written in Latin script: text that is one of their translations is done, not missing.
+    if (this.values.has(text)) return;
     if (this.missing.size < MAX_MISSING && text.length <= 600) this.missing.add(text);
   }
 

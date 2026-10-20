@@ -41,6 +41,7 @@ import { enhanceReportSection, type EnhanceDeps, type EnhanceInput } from "./sec
 import { keepGroundedCitations } from "./citations";
 import { loadAnalysisProfile } from "./analysisProfile";
 import { ownerNotice, reviewerNotice, type OwnerNoticeType, type ReviewerNoticeType } from "./notices";
+import { serverText } from "@/server/i18n/serverText";
 import { toExpertView, toOwnerView } from "./views";
 import { caseBridge, type CaseBridge } from "@/server/marketplace/caseBridge";
 import { getSettings } from "@/server/settings";
@@ -49,7 +50,9 @@ import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users, workflowCaseMedia } from "@/lib/db/schema";
 
-async function send(userId: string, notice: { type: string; title: string; body?: string; href: string }, context: string) {
+type NoticeContent = { type: string; title: string; body?: string; href: string };
+
+async function send(userId: string, notice: NoticeContent, context: string) {
   try {
     await notify(userId, notice);
   } catch (error) {
@@ -57,25 +60,37 @@ async function send(userId: string, notice: { type: string; title: string; body?
   }
 }
 
+/** The recipient's preferred language (users.preferredLanguage); English when it cannot be read. */
+async function languageOf(userId: string): Promise<string | null> {
+  try {
+    const [row] = await db.select({ language: users.preferredLanguage }).from(users).where(eq(users.id, userId)).limit(1);
+    return row?.language ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** The people responsible for a platform case: its reviewer once claimed, otherwise the assigned role. */
 async function notifyReviewers(record: WorkflowCase, type: ReviewerNoticeType) {
-  const notice = reviewerNotice(record, getDomainConfig(record.domain).label, type);
-  if (record.review?.expertId) return send(record.review.expertId, notice, "reviewer");
+  const label = getDomainConfig(record.domain).label;
+  const noticeIn = async (language: string | null) => reviewerNotice(record, label, type, await serverText(language));
+  if (record.review?.expertId) return send(record.review.expertId, await noticeIn(await languageOf(record.review.expertId)), "reviewer");
   if (record.businessId) return;
   const role = record.assignedRole ?? "admin";
   try {
     const recipients = await db
-      .select({ id: users.id })
+      .select({ id: users.id, language: users.preferredLanguage })
       .from(users)
       .where(and(eq(users.role, role), eq(users.isActive, true), eq(users.isSuspended, false)));
-    await Promise.all(recipients.map((recipient) => send(recipient.id, notice, "reviewer")));
+    await Promise.all(recipients.map(async (recipient) => send(recipient.id, await noticeIn(recipient.language), "reviewer")));
   } catch (error) {
     console.error("[case-workflow] failed to notify assigned reviewers:", error);
   }
 }
 
-function notifyOwner(record: WorkflowCase, type: OwnerNoticeType, message?: CaseMessage) {
-  return send(record.userId, ownerNotice(record, getDomainConfig(record.domain).label, type, message), "case owner");
+async function notifyOwner(record: WorkflowCase, type: OwnerNoticeType, message?: CaseMessage) {
+  const tr = await serverText(await languageOf(record.userId));
+  return send(record.userId, ownerNotice(record, getDomainConfig(record.domain).label, type, message, tr), "case owner");
 }
 
 interface Deps {

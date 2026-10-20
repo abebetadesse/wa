@@ -1,24 +1,44 @@
 #!/usr/bin/env node
-// Local Amharic phrase catalogue, used by the in-page translator (src/lib/i18n/domTranslator.ts).
+// Local phrase catalogues, used by the in-page translator (src/lib/i18n/domTranslator.ts) and by
+// server messages (src/server/i18n/serverText.ts).
 //
 // Every piece of interface text written in the source is collected as an English phrase, and
-// src/lib/i18n/phrases/am/<section>.json maps each one to Amharic. A section is a top-level
-// route (case, business, foods, ...); "common" holds what several routes share.
+// src/lib/i18n/phrases/<lang>/<section>.json maps each one to that language. A section is a
+// top-level route (case, business, foods, ...); "common" holds what several routes share.
+// Amharic is complete. Oromo, Tigrinya and Somali are machine drafts of the safety-critical
+// sections and core navigation; every file of theirs carries "_status" until a person reviews it.
 //
-//   node scripts/i18n.mjs sync              rescan the source, regroup phrases by section, report what is missing
-//   node scripts/i18n.mjs check             exit 1 when a phrase has no Amharic translation
-//   node scripts/i18n.mjs todo <dir>        write the missing phrases as numbered work files
-//   node scripts/i18n.mjs apply <dir>       merge translated work files (lines of "id|Amharic")
-//   node scripts/i18n.mjs add <file.json>   merge { "English": "Amharic" } pairs found outside the source scan
+//   node scripts/i18n.mjs sync                     rescan the source, regroup every language by section, report coverage
+//   node scripts/i18n.mjs check                    exit 1 when Amharic misses a phrase or om/ti/so miss a safety phrase
+//   node scripts/i18n.mjs todo <dir> [size]        write the missing phrases as numbered work files
+//   node scripts/i18n.mjs apply <dir>              merge translated work files (lines of "id|translation")
+//   node scripts/i18n.mjs add <file.json>          merge { "English": "translation" } pairs found outside the source scan
+//
+// todo, apply and add take --lang am|om|ti|so (default am). `todo --lang om --safety` lists only
+// the safety phrases.
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
 
 const ROOT = process.cwd();
 const PHRASE_DIR = path.join(ROOT, "src/lib/i18n/phrases");
-const AM_DIR = path.join(PHRASE_DIR, "am");
-const EXTRA_FILE = path.join(AM_DIR, "_extra.json");
 const LOADER_FILE = path.join(PHRASE_DIR, "sections.ts");
+
+/** Amharic must cover everything; the others are drafts that must cover the safety phrases. */
+const LANGUAGES = ["am", "om", "ti", "so"];
+const DRAFT_LANGUAGES = ["om", "ti", "so"];
+const DRAFT_STATUS = "machine-draft, needs human review";
+const langDir = (lang) => path.join(PHRASE_DIR, lang);
+const extraFile = (lang) => path.join(langDir(lang), "_extra.json");
+
+// Safety-critical text: the emergency and interaction-check pages, the offline emergency protocols
+// and the crisis screen. Drafts must translate all of it, except lines carrying a phone number,
+// which are being rewritten separately and are filled in once that lands.
+const SAFETY_SECTIONS = new Set(["emergency", "safety"]);
+const SAFETY_FILES = new Set(["src/lib/offline/knowledgeBase.ts", "src/lib/case-workflow/careerSafetyScreen.ts"]);
+const PHONE_NUMBER = /\d{3}/;
+/** A draft route section this complete is translated locally; below it, the page falls back to Google (outside private pages). */
+const COMPLETE_SHARE = 0.9;
 
 // Interface code: every displayed string is collected.
 const UI_ROOTS = ["src/app", "src/components", "src/features", "src/hooks"];
@@ -394,6 +414,9 @@ function createScanner(checker) {
         const tag = ts.isJsxElement(node) ? node.openingElement.tagName.getText() : "";
         if (tag === "style" || tag === "script") return;
         if (ui) scanJsxChildren(node.children, file);
+      } else if (ts.isStringLiteralLike(node) && isLocalizedPhrase(node)) {
+        // tr("Your {} request is ready", label): server text translated by key, holes included.
+        add(node.text, file, { ui });
       } else if (ts.isStringLiteralLike(node)) {
         // A piece of "..." + "..." is never shown alone; the joined text is collected below.
         const joinedElsewhere = ts.isBinaryExpression(node.parent) && node.parent.operatorToken.kind === ts.SyntaxKind.PlusToken;
@@ -433,7 +456,13 @@ function createScanner(checker) {
   return { phrases, scanFile };
 }
 
-const DISPLAYED_PROPERTIES = /^(label|title|name|heading|subtitle|description|summary|hint|help|helper|helpText|placeholder|question|prompt|message|error|warning|notice|note|caption|text|body|detail|details|reason|guidance|instruction|instructions|tooltip|cta|badge|eyebrow|tagline|intro|outro|disclaimer|caution|advice|explanation|rationale|recommendation|options|choices|steps|items|bullets|examples|shortLabel|longLabel|displayName|empty|emptyText)$/;
+/** The phrase argument of tr() from src/server/i18n/serverText.ts. */
+function isLocalizedPhrase(node) {
+  const parent = node.parent;
+  return Boolean(parent && ts.isCallExpression(parent) && parent.arguments[0] === node && calleeName(parent.expression) === "tr");
+}
+
+const DISPLAYED_PROPERTIES = /^(label|title|name|heading|subtitle|description|summary|hint|help|helper|helpText|placeholder|question|prompt|message|error|warning|notice|note|caption|text|body|detail|details|reason|guidance|instruction|instructions|tooltip|cta|badge|eyebrow|tagline|intro|outro|disclaimer|caution|advice|explanation|rationale|recommendation|options|choices|steps|items|bullets|examples|shortLabel|longLabel|displayName|empty|emptyText|immediate|call|herbs|safetyPlanSteps)$/;
 
 // In server and library code only labelled text is collected: `label: "..."`, `error: "..."`, thrown errors, schema messages.
 function dataLiteralIsDisplayed(node) {
@@ -563,16 +592,33 @@ function writeJson(file, data) {
   fs.writeFileSync(file, JSON.stringify(sorted, null, 2) + "\n");
 }
 
-function loadTranslations() {
+/** Every translation of one language, from all of its section files. */
+function loadTranslations(lang) {
   const translations = new Map();
-  if (!fs.existsSync(AM_DIR)) return translations;
-  for (const name of fs.readdirSync(AM_DIR)) {
+  const dir = langDir(lang);
+  if (!fs.existsSync(dir)) return translations;
+  for (const name of fs.readdirSync(dir)) {
     if (!name.endsWith(".json")) continue;
-    for (const [phrase, amharic] of Object.entries(readJson(path.join(AM_DIR, name)))) {
-      if (typeof amharic === "string" && amharic) translations.set(phrase, amharic);
+    for (const [phrase, translated] of Object.entries(readJson(path.join(dir, name)))) {
+      if (phrase.startsWith("_")) continue; // "_status"
+      if (typeof translated === "string" && translated) translations.set(phrase, translated);
     }
   }
   return translations;
+}
+
+/** A catalogue file without its "_status" marker. */
+function readCatalogue(file) {
+  const { _status, ...entries } = readJson(file);
+  void _status;
+  return entries;
+}
+
+function writeCatalogue(lang, file, data) {
+  if (!DRAFT_LANGUAGES.includes(lang)) return writeJson(file, data);
+  const sorted = Object.fromEntries(Object.entries(data).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify({ _status: DRAFT_STATUS, ...sorted }, null, 2) + "\n");
 }
 
 function scanSource() {
@@ -603,64 +649,124 @@ function scanSource() {
 }
 
 // A translation may drop a hole (an English plural "s") but must not use one the phrase lacks.
-function placeholdersMatch(phrase, amharic) {
+function placeholdersMatch(phrase, translated) {
   const holes = (phrase.match(/{}/g) || []).length;
-  if (/{}/.test(amharic)) return false;
-  for (const token of amharic.match(/{(d+)}/g) || []) if (Number(token.slice(1, -1)) >= holes) return false;
+  if (/{}/.test(translated)) return false;
+  for (const token of translated.match(/{(\d+)}/g) || []) if (Number(token.slice(1, -1)) >= holes) return false;
   return true;
 }
 
-function sync({ quiet = false } = {}) {
-  const { phrases, sections } = scanSource();
-  const translations = loadTranslations();
-  const extra = readJson(EXTRA_FILE);
-  const files = new Map([["common", {}]]);
+/** Safety-critical phrases that every draft language must translate. */
+function isSafetyPhrase(phrase, scan) {
+  if ((scan.sections.get(phrase) ?? []).some((section) => SAFETY_SECTIONS.has(section))) return true;
+  return [...(scan.phrases.get(phrase)?.files ?? [])].some((file) => SAFETY_FILES.has(file));
+}
+
+const awaitsPhoneRewrite = (phrase, scan) =>
+  PHONE_NUMBER.test(phrase) && [...(scan.phrases.get(phrase)?.files ?? [])].some((file) => SAFETY_FILES.has(file));
+
+/** Regroups one language's catalogue by section; returns what it still misses. */
+function syncLanguage(lang, scan, amExtra) {
+  const { phrases, sections } = scan;
+  const dir = langDir(lang);
+  const translations = loadTranslations(lang);
+  const extra = readCatalogue(extraFile(lang));
+  // A draft keeps its translations of Amharic's extra phrases (found outside the source scan) in its own _extra.json.
+  if (lang !== "am") {
+    for (const phrase of Object.keys(amExtra)) {
+      const translated = translations.get(phrase);
+      if (translated && !phrases.has(phrase)) extra[phrase] = translated;
+    }
+  }
+  const files = new Map(lang === "am" ? [["common", {}]] : []);
   const missing = [];
   for (const phrase of phrases.keys()) {
-    const amharic = translations.get(phrase);
-    if (!amharic) {
+    const translated = translations.get(phrase);
+    if (!translated) {
       missing.push(phrase);
       continue;
     }
     for (const section of sections.get(phrase)) {
       if (!files.has(section)) files.set(section, {});
-      files.get(section)[phrase] = amharic;
+      files.get(section)[phrase] = translated;
     }
   }
   const stale = [...translations.keys()].filter((phrase) => !phrases.has(phrase) && !(phrase in extra)).length;
-  if (fs.existsSync(AM_DIR)) {
-    for (const name of fs.readdirSync(AM_DIR)) if (name.endsWith(".json") && name !== "_extra.json") fs.rmSync(path.join(AM_DIR, name));
+  if (fs.existsSync(dir)) {
+    for (const name of fs.readdirSync(dir)) if (name.endsWith(".json") && name !== "_extra.json") fs.rmSync(path.join(dir, name));
   }
-  for (const [section, data] of files) writeJson(path.join(AM_DIR, `${section}.json`), data);
-  writeJson(EXTRA_FILE, extra);
-  const names = [...files.keys()].filter((name) => name !== "common").sort();
-  const loader = [
-    "// Generated by `node scripts/i18n.mjs sync`. Do not edit by hand.",
-    "type PhraseModule = { default: Record<string, string> };",
-    "",
-    "/** Phrases every page needs: the shell, shared components, and text that arrives from the server. */",
-    "export const COMMON_PHRASES: Array<() => Promise<PhraseModule>> = [",
-    '  () => import("./am/common.json"),',
-    '  () => import("./am/_extra.json"),',
-    "];",
-    "",
-    "/** Phrases of one top-level route, keyed by the first segment of the path. */",
-    "export const ROUTE_PHRASES: Record<string, () => Promise<PhraseModule>> = {",
-    ...names.map((name) => `  ${JSON.stringify(name)}: () => import(${JSON.stringify(`./am/${name}.json`)}),`),
-    "};",
-    "",
-  ].join("\n");
-  fs.writeFileSync(LOADER_FILE, loader);
-  const total = phrases.size;
-  if (!quiet) {
-    const done = total - missing.length;
-    console.log(`${total} phrases, ${done} translated (${total ? ((done / total) * 100).toFixed(1) : "100.0"}%), ${missing.length} missing, ${stale} stale dropped, ${Object.keys(extra).length} extra.`);
-  }
-  return { phrases, sections, missing, translations };
+  for (const [section, data] of files) writeCatalogue(lang, path.join(dir, `${section}.json`), data);
+  if (lang === "am" || Object.keys(extra).length) writeCatalogue(lang, extraFile(lang), extra);
+  // Routes whose own section is (nearly) all translated: the translator takes the whole page there.
+  const totals = new Map();
+  for (const owners of sections.values()) for (const section of owners) totals.set(section, (totals.get(section) ?? 0) + 1);
+  const complete = [...files.keys()].filter((section) => section !== "common" && Object.keys(files.get(section)).length >= COMPLETE_SHARE * (totals.get(section) ?? Infinity)).sort();
+  return { lang, missing, stale, extra: Object.keys(extra).length, sections: [...files.keys()].sort(), complete, hasExtra: lang === "am" || Object.keys(extra).length > 0 };
 }
 
-function todo(dir, size = 150) {
-  const { phrases, sections, missing } = sync();
+function writeLoader(results) {
+  const importOf = (lang, name) => `() => import(${JSON.stringify(`./${lang}/${name}.json`)})`;
+  const lines = [
+    "// Generated by `node scripts/i18n.mjs sync`. Do not edit by hand.",
+    "type PhraseModule = { default: Record<string, string> };",
+    "type PhraseLoader = () => Promise<PhraseModule>;",
+    "",
+    "/** Languages with a local catalogue. Amharic is complete; the others are machine drafts of the safety-critical sections. */",
+    `export const CATALOGUE_LANGUAGES = ${JSON.stringify(results.map((result) => result.lang))} as const;`,
+    "export type CatalogueLanguage = (typeof CATALOGUE_LANGUAGES)[number];",
+    "",
+    "/** Phrases every page needs: the shell, shared components, and text that arrives from the server. */",
+    "export const COMMON_PHRASES: Record<CatalogueLanguage, PhraseLoader[]> = {",
+  ];
+  for (const result of results) {
+    const common = [result.sections.includes("common") ? importOf(result.lang, "common") : null, result.hasExtra ? importOf(result.lang, "_extra") : null].filter(Boolean);
+    lines.push(`  ${result.lang}: [${common.length ? `\n${common.map((entry) => `    ${entry},`).join("\n")}\n  ` : ""}],`);
+  }
+  lines.push("};", "", "/** Phrases of one top-level route, keyed by language and then by the first segment of the path. */", "export const ROUTE_PHRASES: Record<CatalogueLanguage, Record<string, PhraseLoader>> = {");
+  for (const result of results) {
+    const names = result.sections.filter((name) => name !== "common");
+    lines.push(`  ${result.lang}: {${names.length ? "\n" + names.map((name) => `    ${JSON.stringify(name)}: ${importOf(result.lang, name)},`).join("\n") + "\n  " : ""}},`);
+  }
+  lines.push(
+    "};",
+    "",
+    `/** Routes whose section is at least ${COMPLETE_SHARE * 100}% translated, so the local catalogue takes the whole page. */`,
+    "export const COMPLETE_ROUTES: Record<CatalogueLanguage, readonly string[]> = {",
+    ...results.map((result) => `  ${result.lang}: ${result.lang === "am" ? '["*"]' : JSON.stringify(result.complete)},`),
+    "};",
+    "",
+  );
+  fs.writeFileSync(LOADER_FILE, lines.join("\n"));
+}
+
+function percent(done, total) {
+  return total ? ((done / total) * 100).toFixed(1) : "100.0";
+}
+
+function sync({ quiet = false } = {}) {
+  const scan = scanSource();
+  const amExtra = readCatalogue(extraFile("am"));
+  const results = LANGUAGES.map((lang) => syncLanguage(lang, scan, amExtra));
+  writeLoader(results);
+  const total = scan.phrases.size;
+  const safety = [...scan.phrases.keys()].filter((phrase) => isSafetyPhrase(phrase, scan));
+  if (!quiet) {
+    for (const result of results) {
+      const done = total - result.missing.length;
+      const missingSafety = safety.filter((phrase) => result.missing.includes(phrase));
+      console.log(
+        `${result.lang}: ${total} phrases, ${done} translated (${percent(done, total)}%), ${result.missing.length} missing, ` +
+          `safety ${safety.length - missingSafety.length}/${safety.length}, ${result.stale} stale dropped, ${result.extra} extra.`,
+      );
+    }
+  }
+  return { ...scan, safety, results: Object.fromEntries(results.map((result) => [result.lang, result])) };
+}
+
+function todo(dir, size = 150, lang = "am", safetyOnly = false) {
+  const scan = sync();
+  const { phrases, sections } = scan;
+  const missing = scan.results[lang].missing.filter((phrase) => !safetyOnly || scan.safety.includes(phrase));
   fs.mkdirSync(dir, { recursive: true });
   for (const name of fs.readdirSync(dir)) if (/^(todo|done)-\d+\.tsv$/.test(name) || name === "ids.json") fs.rmSync(path.join(dir, name));
   // Shared and client-facing text first, staff consoles and server messages last; related phrases stay together.
@@ -699,13 +805,13 @@ function todo(dir, size = 150) {
   });
   flush();
   fs.writeFileSync(path.join(dir, "ids.json"), JSON.stringify(ids));
-  console.log(`${missing.length} phrases in ${chunkIndex} work files under ${dir}`);
+  console.log(`${missing.length} ${lang} phrases in ${chunkIndex} work files under ${dir}`);
 }
 
-function apply(dir) {
+function apply(dir, lang = "am") {
   const ids = readJson(path.join(dir, "ids.json"));
-  const extra = readJson(EXTRA_FILE);
-  const pending = readJson(path.join(AM_DIR, "common.json"));
+  const commonFile = path.join(langDir(lang), "common.json");
+  const pending = readCatalogue(commonFile);
   let merged = 0;
   const problems = [];
   for (const name of fs.readdirSync(dir).sort()) {
@@ -715,54 +821,87 @@ function apply(dir) {
       if (!line.trim()) return;
       const cut = line.indexOf("|");
       const id = line.slice(0, cut).trim();
-      const amharic = line.slice(cut + 1).trim();
+      const translated = line.slice(cut + 1).trim();
       const phrase = ids[id];
       if (cut < 1 || !phrase) return problems.push(`${name}:${lineIndex + 1} unknown id "${id}"`);
-      if (!amharic) return problems.push(`${name}:${lineIndex + 1} empty translation for ${id}`);
-      if (!placeholdersMatch(phrase, amharic)) return problems.push(`${name}:${lineIndex + 1} placeholders differ for ${id}: ${phrase} -> ${amharic}`);
-      pending[phrase] = amharic;
+      if (!translated) return problems.push(`${name}:${lineIndex + 1} empty translation for ${id}`);
+      if (!placeholdersMatch(phrase, translated)) return problems.push(`${name}:${lineIndex + 1} placeholders differ for ${id}: ${phrase} -> ${translated}`);
+      pending[phrase] = translated;
       merged++;
     });
   }
   // Parked in common.json; sync then moves each phrase to the section that uses it.
-  writeJson(path.join(AM_DIR, "common.json"), pending);
-  writeJson(EXTRA_FILE, extra);
-  console.log(`${merged} translations merged.`);
+  writeCatalogue(lang, commonFile, pending);
+  console.log(`${merged} ${lang} translations merged.`);
   if (problems.length) console.log(`${problems.length} lines skipped:\n  ${problems.join("\n  ")}`);
   sync();
 }
 
-function addExtra(file) {
-  const extra = readJson(EXTRA_FILE);
+function addExtra(file, lang = "am") {
+  const extra = readCatalogue(extraFile(lang));
   const incoming = readJson(file);
   let added = 0;
-  for (const [phrase, amharic] of Object.entries(incoming)) {
+  for (const [phrase, translated] of Object.entries(incoming)) {
     const key = normalize(phrase);
-    if (!key || typeof amharic !== "string" || !amharic.trim()) continue;
-    if (!placeholdersMatch(key, amharic)) {
+    if (!key || key.startsWith("_") || typeof translated !== "string" || !translated.trim()) continue;
+    if (!placeholdersMatch(key, translated)) {
       console.log(`placeholders differ, skipped: ${key}`);
       continue;
     }
-    extra[key] = amharic.trim();
+    extra[key] = translated.trim();
     added++;
   }
-  writeJson(EXTRA_FILE, extra);
-  console.log(`${added} extra phrases stored.`);
+  writeCatalogue(lang, extraFile(lang), extra);
+  console.log(`${added} extra ${lang} phrases stored.`);
 }
 
-const [command, argument] = process.argv.slice(2);
-if (command === "sync") sync();
-else if (command === "check") {
-  const { missing } = sync();
-  if (missing.length) {
-    console.log(missing.slice(0, 40).map((phrase) => `  - ${phrase}`).join("\n"));
-    if (missing.length > 40) console.log(`  … and ${missing.length - 40} more`);
+function check() {
+  const scan = sync();
+  const failures = [];
+  const amMissing = scan.results.am.missing;
+  if (amMissing.length) {
+    failures.push(`am: ${amMissing.length} phrases have no Amharic translation`);
+    console.log(amMissing.slice(0, 40).map((phrase) => `  - ${phrase}`).join("\n"));
+    if (amMissing.length > 40) console.log(`  … and ${amMissing.length - 40} more`);
+  }
+  const deferred = scan.safety.filter((phrase) => awaitsPhoneRewrite(phrase, scan));
+  for (const lang of DRAFT_LANGUAGES) {
+    const gaps = scan.safety.filter((phrase) => scan.results[lang].missing.includes(phrase) && !awaitsPhoneRewrite(phrase, scan));
+    if (!gaps.length) continue;
+    failures.push(`${lang}: ${gaps.length} safety phrases have no translation`);
+    console.log(gaps.slice(0, 40).map((phrase) => `  - [${lang}] ${phrase}`).join("\n"));
+    if (gaps.length > 40) console.log(`  … and ${gaps.length - 40} more`);
+  }
+  const waiting = deferred.filter((phrase) => DRAFT_LANGUAGES.some((lang) => scan.results[lang].missing.includes(phrase)));
+  if (waiting.length) console.log(`${waiting.length} safety phrases with phone numbers are left for the phone-number rewrite.`);
+  if (failures.length) {
+    console.log(failures.join("\n"));
     process.exit(1);
   }
-} else if (command === "todo" && argument) todo(argument, Number(process.argv[5]) || 150);
-else if (command === "apply" && argument) apply(argument);
-else if (command === "add" && argument) addExtra(argument);
+}
+
+// Flags may sit anywhere: `todo work --lang om 100`.
+const args = process.argv.slice(2);
+let lang = "am";
+let safetyOnly = false;
+const positional = [];
+for (let index = 0; index < args.length; index++) {
+  if (args[index] === "--lang") lang = args[++index];
+  else if (args[index].startsWith("--lang=")) lang = args[index].slice("--lang=".length);
+  else if (args[index] === "--safety") safetyOnly = true;
+  else positional.push(args[index]);
+}
+if (!LANGUAGES.includes(lang)) {
+  console.log(`Unknown language "${lang}". Use one of: ${LANGUAGES.join(", ")}`);
+  process.exit(1);
+}
+const [command, argument, sizeArgument] = positional;
+if (command === "sync") sync();
+else if (command === "check") check();
+else if (command === "todo" && argument) todo(argument, Number(sizeArgument) || 150, lang, safetyOnly);
+else if (command === "apply" && argument) apply(argument, lang);
+else if (command === "add" && argument) addExtra(argument, lang);
 else {
-  console.log("Usage: node scripts/i18n.mjs <sync | check | todo <dir> | apply <dir> | add <file.json>>");
+  console.log("Usage: node scripts/i18n.mjs <sync | check | todo <dir> [size] | apply <dir> | add <file.json>> [--lang am|om|ti|so] [--safety]");
   process.exit(command ? 1 : 0);
 }

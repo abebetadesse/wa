@@ -1,13 +1,14 @@
 /** The bots' production wiring: chat accounts in the database, replies into the case workflow. */
 import { caseService } from "@/server/cases/service";
 import { followUpService } from "@/server/followUps";
-import { appOrigin, currentChatLink, findChatUser, linkChat, setChatNotify, touchWhatsApp } from "./accounts";
+import { appOrigin, chatUserLanguage, currentChatLink, findChatUser, linkChat, setChatNotify, touchWhatsApp } from "./accounts";
 import { handleInbound, type InboundDeps } from "./inbound";
 import type { LinkChannel } from "./linkCodes";
 
 const deps = (): InboundDeps => ({
   appUrl: appOrigin(),
   findUser: findChatUser,
+  languageOf: chatUserLanguage,
   currentLink: currentChatLink,
   link: linkChat,
   setNotify: setChatNotify,
