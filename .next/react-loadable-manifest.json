@@ -3,9 +3,30 @@
     "id": 11987,
     "files": [
       "static/chunks/52619-c48a18d6f62d2371.js",
-      "static/chunks/49766-c6e03d27359be2fb.js",
+      "static/chunks/10062-70ff2dc474e1aba1.js",
       "static/chunks/28112-7d68f1ae38a78805.js",
-      "static/chunks/11987.fe696b52c1219e66.js"
+      "static/chunks/11987.9380ee8096cc8434.js"
+    ]
+  },
+  "app/hexacore/page.tsx -> @/components/cultural/HexacoreOrrery": {
+    "id": 83367,
+    "files": [
+      "static/chunks/7640.8c09e7d0130f4822.js",
+      "static/chunks/21286-0a1f6015db3b45eb.js",
+      "static/chunks/83367.4e8166ffd928c397.js"
+    ]
+  },
+  "app/hexacore/page.tsx -> @/features/hexacore/HexacoreCameraScanner": {
+    "id": 54804,
+    "files": [
+      "static/chunks/91427-7b968ce9c300bc94.js",
+      "static/chunks/54804-e5a4fc6b0dd1116d.js"
+    ]
+  },
+  "app/hexacore/page.tsx -> @/features/hexacore/HexacoreCheckoutModal": {
+    "id": 15765,
+    "files": [
+      "static/chunks/15765.6174266cdfe1565c.js"
     ]
   },
   "components/dashboard/HudDashboard.tsx -> echarts-for-react": {
@@ -18,7 +39,7 @@
   "lib/i18n/phrases/sections.ts -> ./am/_extra.json": {
     "id": 31608,
     "files": [
-      "static/chunks/31608.ffd5107d67de0708.js"
+      "static/chunks/31608.245a395e19635b4a.js"
     ]
   },
   "lib/i18n/phrases/sections.ts -> ./am/account.json": {

@@ -87,6 +87,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Place suggestions for the location field: public reference data, kept for offline use as
+  // they are looked up (never precached: the full list is large).
+  if (url.pathname === "/api/locations" && url.searchParams.get("fields") === "places") {
+    event.respondWith(staleWhileRevalidate(request, KNOWLEDGE_CACHE));
+    return;
+  }
+
   // Skip dynamic API routes (intake, report, export etc)
   if (url.pathname.startsWith("/api/")) return;
 
