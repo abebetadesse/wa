@@ -10,6 +10,60 @@
       "internal": true,
       "statusCode": 308,
       "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    },
+    {
+      "source": "/case-pipeline",
+      "destination": "/case/workflows",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case-pipeline(?:/)?$"
+    },
+    {
+      "source": "/inquiry",
+      "destination": "/case/workflows",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/inquiry(?:/)?$"
+    },
+    {
+      "source": "/case/career",
+      "destination": "/case/workflows/new/career",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/career(?:/)?$"
+    },
+    {
+      "source": "/case/career/:path*",
+      "destination": "/case/workflows/new/career",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/career(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/case/legal/intake",
+      "destination": "/case/workflows/new/legal",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/legal/intake(?:/)?$"
+    },
+    {
+      "source": "/case/spiritual/intake",
+      "destination": "/case/workflows/new/spiritual",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/spiritual/intake(?:/)?$"
+    },
+    {
+      "source": "/case/spiritual/intake/step-1",
+      "destination": "/case/workflows/new/spiritual",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/spiritual/intake/step-1(?:/)?$"
+    },
+    {
+      "source": "/case/spiritual/intake/step-2",
+      "destination": "/case/workflows/new/spiritual",
+      "missing": [
+        {
+          "type": "query",
+          "key": "caseId"
+        }
+      ],
+      "statusCode": 307,
+      "regex": "^(?!/_next)/case/spiritual/intake/step-2(?:/)?$"
     }
   ],
   "headers": [
@@ -1787,36 +1841,6 @@
       "namedRegex": "^/case(?:/)?$"
     },
     {
-      "page": "/case/career",
-      "regex": "^/case/career(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case/career(?:/)?$"
-    },
-    {
-      "page": "/case/career/intake",
-      "regex": "^/case/career/intake(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case/career/intake(?:/)?$"
-    },
-    {
-      "page": "/case/legal/intake",
-      "regex": "^/case/legal/intake(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case/legal/intake(?:/)?$"
-    },
-    {
-      "page": "/case/spiritual/intake",
-      "regex": "^/case/spiritual/intake(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case/spiritual/intake(?:/)?$"
-    },
-    {
-      "page": "/case/spiritual/intake/step-1",
-      "regex": "^/case/spiritual/intake/step\\-1(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case/spiritual/intake/step\\-1(?:/)?$"
-    },
-    {
       "page": "/case/spiritual/intake/step-2",
       "regex": "^/case/spiritual/intake/step\\-2(?:/)?$",
       "routeKeys": {},
@@ -1827,12 +1851,6 @@
       "regex": "^/case/workflows(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/case/workflows(?:/)?$"
-    },
-    {
-      "page": "/case-pipeline",
-      "regex": "^/case\\-pipeline(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/case\\-pipeline(?:/)?$"
     },
     {
       "page": "/case-review",
@@ -1941,12 +1959,6 @@
       "regex": "^/horoscope(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/horoscope(?:/)?$"
-    },
-    {
-      "page": "/inquiry",
-      "regex": "^/inquiry(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/inquiry(?:/)?$"
     },
     {
       "page": "/intake",

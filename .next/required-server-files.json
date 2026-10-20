@@ -295,7 +295,55 @@
     ],
     "turbopack": {
       "root": "/home/runner/work/wa/wa"
-    }
+    },
+    "_originalRedirects": [
+      {
+        "source": "/case-pipeline",
+        "destination": "/case/workflows",
+        "permanent": false
+      },
+      {
+        "source": "/inquiry",
+        "destination": "/case/workflows",
+        "permanent": false
+      },
+      {
+        "source": "/case/career",
+        "destination": "/case/workflows/new/career",
+        "permanent": false
+      },
+      {
+        "source": "/case/career/:path*",
+        "destination": "/case/workflows/new/career",
+        "permanent": false
+      },
+      {
+        "source": "/case/legal/intake",
+        "destination": "/case/workflows/new/legal",
+        "permanent": false
+      },
+      {
+        "source": "/case/spiritual/intake",
+        "destination": "/case/workflows/new/spiritual",
+        "permanent": false
+      },
+      {
+        "source": "/case/spiritual/intake/step-1",
+        "destination": "/case/workflows/new/spiritual",
+        "permanent": false
+      },
+      {
+        "source": "/case/spiritual/intake/step-2",
+        "destination": "/case/workflows/new/spiritual",
+        "missing": [
+          {
+            "type": "query",
+            "key": "caseId"
+          }
+        ],
+        "permanent": false
+      }
+    ]
   },
   "appDir": "/home/runner/work/wa/wa",
   "relativeAppDir": "",
