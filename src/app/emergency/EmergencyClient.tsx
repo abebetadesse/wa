@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { EMERGENCY_PROTOCOLS } from "@/lib/offline/knowledgeBase";
 import { useLanguage } from "@/lib/i18n/context";
+import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 
 interface EmergencyContact {
   name: string;
@@ -97,6 +98,11 @@ export default function EmergencyClient() {
           <p className="text-slate-400 text-sm max-w-2xl">
             {t.emergency.subtitle}
           </p>
+        </div>
+
+        {/* What to do now; verified numbers appear here once an administrator adds them */}
+        <div className="glass-panel p-5 mb-6 border-rose-500/40 bg-rose-950/20">
+          <EmergencyHelp tone="dark" />
         </div>
 
         {/* SOS Banner */}

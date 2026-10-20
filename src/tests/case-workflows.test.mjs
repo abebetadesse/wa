@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createCaseService } from "../server/cases/service.ts";
 import { createMemoryCaseStore } from "../server/cases/store.ts";
 import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
-import { screenFreeText, CONTACTS } from "../server/cases/support.ts";
+import { screenFreeText } from "../server/cases/support.ts";
 import { WORKFLOW_DOMAINS } from "../server/cases/types.ts";
 
 const owner = { id: "user-1", role: "user", permissions: [] };
@@ -238,7 +238,8 @@ test("safety screens route to crisis support, free and without review", async ()
   const { svc } = service();
   const crisis = await svc.start(owner, "career", { safetyAnswers: { ...safe.career, self_harm: "frequently" }, answers: {} });
   assert.equal(crisis.stage, "crisis_routed");
-  assert.ok(crisis.safety.support.hotlines.some((line) => line.number === CONTACTS.crisisLine.number));
+  assert.deepEqual(crisis.safety.support.hotlines, [], "no number until one is verified");
+  assert.ok(crisis.safety.support.steps.some((step) => /local emergency services/.test(step)));
   assert.equal(crisis.questions.length, 0);
   await assert.rejects(svc.submit(owner, crisis.id), (e) => e.status === 409);
 
@@ -257,8 +258,11 @@ test("free-text answers can escalate an open case to crisis", async () => {
   assert.equal(screenFreeText({ a: "I feel fine today" }), null);
 });
 
-test("no placeholder phone numbers in crisis support", () => {
-  for (const contact of Object.values(CONTACTS)) assert.match(contact.number, /^\+?[\d\s-]{3,}$/, contact.name);
+test("no unverified phone numbers in crisis support", () => {
+  const outcome = screenFreeText({ a: "I want to kill myself" });
+  assert.equal(outcome.action, "crisis_route");
+  assert.deepEqual(outcome.support.hotlines, []);
+  for (const step of outcome.support.steps) assert.doesNotMatch(step, /\d{3}/, step);
 });
 
 test("spiritual cases require a Ge'ez name and compute the gematria server-side", async () => {

@@ -10,6 +10,7 @@ import {
   CulturalReportContext,
 } from "../types";
 import { CausalInferenceEngine } from "./causalInference";
+import { EMERGENCY_GUIDANCE, verifiedEmergencyContacts } from "@/lib/safety/emergencyContacts";
 
 export interface ReasoningInput {
   query: string;
@@ -140,7 +141,7 @@ export class AIReasoningEngine {
         timeline: "now",
         title: urgency.level === "critical" ? "Seek Emergency Care" : "Review scientific Red Flags",
         action: urgency.level === "critical"
-          ? "Call 907 (EPHI) or 991 (Red Cross) or proceed immediately to Tikur Anbessa / nearest emergency room"
+          ? `${EMERGENCY_GUIDANCE} Do not wait to see if it passes.`
           : "Note onset time, monitor temperature or pain intensity, and ensure adequate hydration with clean water",
         priority: urgency.level === "critical" ? "critical" : "high",
         category: "scientific",
@@ -286,12 +287,7 @@ export class AIReasoningEngine {
           "Regional Referral Hospitals across Oromia, Amhara, Tigray, Sidama, and Somali regions",
         ],
         urgency: urgency.level,
-        emergencyHotlines: [
-          { name: "EPHI National Health Hotline", number: "907", description: "Ethiopian Public health Institute 24/7 Toll-Free" },
-          { name: "Ethiopian Red Cross Ambulance", number: "991", description: "Emergency Ambulance Dispatch" },
-          { name: "Police & Emergency First Responders", number: "911", description: "National Emergency Police" },
-          { name: "Tikur Anbessa Emergency Desk", number: "+251-11-551-1211", description: "Central Tertiary Referral Desk" },
-        ],
+        emergencyHotlines: verifiedEmergencyContacts().map(({ name, number }) => ({ name, number, description: "Verified emergency number" })),
       },
       cultural_context: {
         isDomainB: true,

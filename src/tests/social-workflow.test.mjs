@@ -19,7 +19,9 @@ test("case 5 safety screen routes crisis situations immediately", () => {
   });
 
   assert.equal(result.action, "crisis_route");
-  assert.ok(result.crisisContent?.hotlines.length > 0);
+  // No emergency number is shown until one is verified (src/lib/safety/emergencyContacts.ts).
+  assert.deepEqual(result.crisisContent?.hotlines, []);
+  assert.ok(result.crisisContent?.safetyPlanSteps.length > 0);
 });
 
 test("case 5 workflow reaches review and purchase flow", () => {

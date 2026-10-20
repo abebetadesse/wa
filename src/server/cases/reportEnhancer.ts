@@ -22,7 +22,8 @@ import { CONFIDENCE_MEANING, FACTOR_GUIDANCE } from "./analysisGuidance";
 import { FACTORS } from "./analysisLexicon";
 import { createTranslator, type ReportLanguage } from "./amharic";
 import { layoutSections } from "./reportLayout";
-import { CONTACTS, REFERRALS } from "./support";
+import { emergencyStep, emergencyStepAmharic } from "@/lib/safety/emergencyContacts";
+import { REFERRALS } from "./support";
 import type { AnalysisConfidence, AnalysisSolution, CaseAnalysis, CaseLens, GroundedFinding, ReportSection } from "./types";
 
 // Limits enforced when a draft is saved (schemas.ts).
@@ -423,8 +424,8 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
     ];
     const services = [
       say(
-        `Urgent help: ${CONTACTS.crisisLine.name} ${CONTACTS.crisisLine.number}; ${CONTACTS.police.name} ${CONTACTS.police.number}; ${CONTACTS.ambulance.name} ${CONTACTS.ambulance.number}.`,
-        `አስቸኳይ እርዳታ፦ ${t(CONTACTS.crisisLine.name)} ${CONTACTS.crisisLine.number}፤ ${t(CONTACTS.police.name)} ${CONTACTS.police.number}፤ ${t(CONTACTS.ambulance.name)} ${CONTACTS.ambulance.number}።`,
+        `Urgent help: ${emergencyStep()}`,
+        `አስቸኳይ እርዳታ፦ ${emergencyStepAmharic()}`,
       ),
       ...(has("low_mood", "anxiety", "sleep", "grief", "substance", "isolation") ? [say(`For support with mood, sleep or substance use: ${REFERRALS.healthCenter}.`, `ለስሜት፣ ለእንቅልፍ ወይም ለሱስ ድጋፍ፦ ${t(REFERRALS.healthCenter)}።`)] : []),
       ...(clinical

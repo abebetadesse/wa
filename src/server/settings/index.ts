@@ -8,6 +8,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { platformSettings } from "@/lib/db/schema";
 import { WORKFLOW_DOMAINS } from "@/server/cases/types";
+import { setConfiguredEmergencyContacts } from "@/lib/safety/emergencyContacts";
 
 const CACHE_MS = 10_000;
 
@@ -88,7 +89,25 @@ export const caseSearchSettings = z.object({
 });
 export type CaseSearchSettings = z.infer<typeof caseSearchSettings>;
 
-const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings, caseSearch: caseSearchSettings } as const;
+export const emergencyContactSettings = z.object({
+  /**
+   * Emergency numbers an administrator has confirmed with the operating service. Shown on every
+   * crisis and emergency screen; while empty, screens show generic guidance only.
+   */
+  contacts: z
+    .array(
+      z.object({
+        name: z.string().trim().min(2, "Enter the service name.").max(120),
+        number: z.string().trim().regex(/^\+?[0-9][0-9 -]{1,24}$/, "Enter a phone number using digits, spaces or dashes."),
+        verifiedOn: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter the date the number was confirmed."),
+      }),
+    )
+    .max(12)
+    .default([]),
+});
+export type EmergencyContactSettings = z.infer<typeof emergencyContactSettings>;
+
+const SCHEMAS = { payments: paymentSettings, registration: registrationSettings, marketplace: marketplaceSettings, caseRouting: caseRoutingSettings, caseSearch: caseSearchSettings, emergencyContacts: emergencyContactSettings } as const;
 export type SettingsKey = keyof typeof SCHEMAS;
 export type SettingsValue<K extends SettingsKey> = z.infer<(typeof SCHEMAS)[K]>;
 
@@ -122,7 +141,13 @@ export const DEFAULT_SETTINGS: { [K in SettingsKey]: SettingsValue<K> } = {
     },
   },
   caseSearch: { caseType: true, herb: true, diet: true, location: true, element: true },
+  emergencyContacts: { contacts: [] },
 };
+
+// Settings that other modules mirror in memory, so synchronous code (crisis outcomes) can use them.
+function mirror<K extends SettingsKey>(key: K, value: SettingsValue<K>) {
+  if (key === "emergencyContacts") setConfiguredEmergencyContacts((value as EmergencyContactSettings).contacts);
+}
 
 const cache = new Map<SettingsKey, { value: unknown; at: number }>();
 
@@ -134,6 +159,7 @@ export async function getSettings<K extends SettingsKey>(key: K): Promise<Settin
   const parsed = SCHEMAS[key].safeParse(deepMerge(DEFAULT_SETTINGS[key], row?.value ?? {}));
   const value = (parsed.success ? parsed.data : DEFAULT_SETTINGS[key]) as SettingsValue<K>;
   cache.set(key, { value, at: Date.now() });
+  mirror(key, value);
   return value;
 }
 
@@ -144,6 +170,7 @@ export async function updateSettings<K extends SettingsKey>(key: K, raw: unknown
     .values({ key, value: value as Record<string, unknown>, updatedBy: actorId })
     .onDuplicateKeyUpdate({ set: { value: value as Record<string, unknown>, updatedBy: actorId, updatedAt: new Date() } });
   cache.set(key, { value, at: Date.now() });
+  mirror(key, value);
   return value;
 }
 

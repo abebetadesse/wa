@@ -23,6 +23,7 @@ import {
   UserCheck,
   Wallet,
   ListFilter,
+  PhoneCall,
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -72,6 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/marketplace", label: "Marketplace", icon: ShieldAlert },
     { href: "/admin/toolkit", label: "Healer toolkit", icon: Compass },
     { href: "/admin/safety", label: "Safety matrix", icon: Pill },
+    { href: "/admin/emergency-numbers", label: "Emergency numbers", icon: PhoneCall },
     { href: "/admin/payments", label: "Payments & pricing", icon: Wallet },
     { href: "/admin/sign-up", label: "Sign-up & Telegram", icon: UserCheck },
     { href: "/admin/users", label: "Users & Accounts", icon: Users },

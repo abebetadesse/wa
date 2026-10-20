@@ -9,7 +9,7 @@ import { FACTOR_GUIDANCE, CONFIDENCE_MEANING } from "../server/cases/analysisGui
 import { SYMPTOM_DETAIL, CLUSTERS, STRAND_LENSES, PRIORITY } from "../server/cases/clinicalLexicon.ts";
 import { LIFE_LENSES } from "../server/cases/strandLexicon.ts";
 import { STRAND_LABEL } from "../server/cases/reportEnhancer.ts";
-import { CONTACTS, REFERRALS } from "../server/cases/support.ts";
+import { REFERRALS } from "../server/cases/support.ts";
 import { approveCase, createCase } from "../server/cases/machine.ts";
 import { DOMAIN_CONFIGS } from "../server/cases/domains/index.ts";
 import { createCaseService } from "../server/cases/service.ts";
@@ -641,7 +641,8 @@ test("health case: a real emergency still routes to the ambulance first", async 
   const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
   assert.equal(analysis.urgency.level, "critical");
   const safety = analysis.solutions.find((solution) => solution.id === "safety");
-  assert.ok(safety && /ambulance \(907\)/.test(safety.steps[0]));
+  assert.ok(safety && /emergency medical help now/.test(safety.steps[0]));
+  assert.doesNotMatch(safety.steps[0], /\d{3}/, "no unverified emergency number");
 });
 
 // ── Every strand, every case type; reports in Amharic ────────────────────────
@@ -669,7 +670,6 @@ test("amharic: every person-facing vocabulary line has an Amharic translation", 
   for (const cluster of Object.values(CLUSTERS)) add(...cluster.checks);
   for (const lens of [...Object.values(STRAND_LENSES), ...Object.values(LIFE_LENSES)].flat()) add(lens.person, lens.ask);
   for (const priority of Object.values(PRIORITY)) add(priority.label, priority.timeframe);
-  for (const contact of Object.values(CONTACTS)) add(contact.name);
   const missing = [...lines].filter((line) => !amharicFor(line));
   assert.deepEqual(missing, [], "add these to src/server/cases/amharicPhrases.json");
 });

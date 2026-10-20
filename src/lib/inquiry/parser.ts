@@ -1,3 +1,6 @@
+import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
+import { screenText, type UrgencyLevel } from "@/server/safety/urgency";
+
 export type InquiryLanguage = "en" | "am" | "om";
 export type InquiryIntent = "emergency" | "symptom" | "treatment" | "dietary" | "herbal" | "lifestyle" | "general";
 export type InquiryUrgency = "critical" | "high" | "medium" | "low";
@@ -48,14 +51,12 @@ const bodyPartAliases: Record<string, string[]> = {
   skin: ["skin", "ሆዳ"],
 };
 
-const emergencySignals = [
-  "unconscious", "unresponsive", "cannot breathe", "gasping", "chest pain",
-  "stroke", "seizure", "heavy bleeding", "vomiting blood", "anaphylaxis",
-  "life-threatening", "አልተነቃም",
-];
-
-const highUrgencySignals = ["severe pain", "faint", "collapse", "worsening", "allergic reaction", "difficulty breathing"];
-const mediumUrgencySignals = ["persistent", "recurrent", "for weeks", "for months", "affecting daily life"];
+const TIER: Record<UrgencyLevel, Omit<ParsedwellbeingInquiry["urgency"], "matchedSignals">> = {
+  emergency: { level: "critical", score: 100, action: "EMERGENCY_CARE", recommendation: EMERGENCY_GUIDANCE },
+  urgent: { level: "high", score: 80, action: "URGENT_REVIEW", recommendation: "Arrange urgent review by a qualified healthcare professional, ideally today." },
+  soon: { level: "medium", score: 55, action: "SCHEDULE_REVIEW", recommendation: "Schedule a healthcare visit soon, especially if symptoms persist or worsen." },
+  routine: { level: "low", score: 20, action: "MONITOR", recommendation: "Monitor the pattern, use the educational tools below, and seek care if it persists or worsens." },
+};
 
 function detectLanguage(text: string): InquiryLanguage {
   if (/[\u1200-\u137F]/.test(text)) return "am";
@@ -79,9 +80,9 @@ function findDuration(text: string): InquiryEntity | null {
   return { value: `${match[1]} ${match[2]}`, label: "duration", confidence: 0.85 };
 }
 
-function detectIntent(text: string, hasSymptoms: boolean): InquiryIntent {
+function detectIntent(text: string, hasSymptoms: boolean, emergency: boolean): InquiryIntent {
   const normalized = text.toLowerCase();
-  if (emergencySignals.some((signal) => normalized.includes(signal))) return "emergency";
+  if (emergency) return "emergency";
   if (hasSymptoms || /pain|ache|hurt|symptom|feel sick|ህመም/.test(normalized)) return "symptom";
   if (/herb|plant|root|leaf|traditional|natural|ዕፅዋት|ተና|ኮሶ/.test(normalized)) return "herbal";
   if (/food|eat|diet|meal|nutrition|ምግብ/.test(normalized)) return "dietary";
@@ -90,17 +91,11 @@ function detectIntent(text: string, hasSymptoms: boolean): InquiryIntent {
   return "general";
 }
 
-function detectUrgency(text: string, symptoms: InquiryEntity[], duration: InquiryEntity | null) {
-  const normalized = text.toLowerCase();
-  const matchedSignals = [...emergencySignals, ...highUrgencySignals, ...mediumUrgencySignals].filter((signal) => normalized.includes(signal));
-  const hasCritical = emergencySignals.some((signal) => normalized.includes(signal)) || symptoms.some((symptom) => symptom.value === "breathing_difficulty" || symptom.value === "bleeding");
-  const hasHigh = highUrgencySignals.some((signal) => normalized.includes(signal));
-  const hasMedium = mediumUrgencySignals.some((signal) => normalized.includes(signal)) || Boolean(duration && /month|year/i.test(duration.value));
-
-  if (hasCritical) return { level: "critical" as const, score: 100, action: "EMERGENCY_CARE", recommendation: "Call local emergency services or go to the nearest emergency department now.", matchedSignals };
-  if (hasHigh) return { level: "high" as const, score: 80, action: "URGENT_REVIEW", recommendation: "Arrange urgent review by a qualified healthcare professional, ideally today.", matchedSignals };
-  if (hasMedium) return { level: "medium" as const, score: 55, action: "SCHEDULE_REVIEW", recommendation: "Schedule a healthcare visit soon, especially if symptoms persist or worsen.", matchedSignals };
-  return { level: "low" as const, score: 20, action: "MONITOR", recommendation: "Monitor the pattern, use the educational tools below, and seek care if it persists or worsens.", matchedSignals };
+/** Thin adapter over the shared screen (src/server/safety/urgency.ts); a long duration can only raise it to "medium". */
+function detectUrgency(text: string, duration: InquiryEntity | null) {
+  const screen = screenText(text);
+  const level: UrgencyLevel = screen.level === "routine" && duration && /month|year/i.test(duration.value) ? "soon" : screen.level;
+  return { ...TIER[level], matchedSignals: screen.signs.map((sign) => sign.label) };
 }
 
 export function parsewellbeingInquiry(raw: string): ParsedwellbeingInquiry {
@@ -108,12 +103,12 @@ export function parsewellbeingInquiry(raw: string): ParsedwellbeingInquiry {
   const symptoms = findEntities(text, symptomAliases);
   const bodyParts = findEntities(text, bodyPartAliases);
   const duration = findDuration(text);
-  const urgency = detectUrgency(text, symptoms, duration);
+  const urgency = detectUrgency(text, duration);
 
   return {
     raw: text,
     language: detectLanguage(text),
-    intent: detectIntent(text, symptoms.length > 0),
+    intent: detectIntent(text, symptoms.length > 0, urgency.level === "critical"),
     symptoms,
     bodyParts,
     duration,

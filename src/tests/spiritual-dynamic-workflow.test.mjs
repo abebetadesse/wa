@@ -109,7 +109,9 @@ describe("Spiritual Case Dynamic Workflow", () => {
     });
     assert.equal(crisisCheck.urgencyLevel, "crisis");
     assert.ok(crisisCheck.crisisContent);
-    assert.ok(crisisCheck.crisisContent.hotlines.includes("952"));
+    // No emergency number is shown until one is verified; generic guidance is given instead.
+    assert.deepEqual(crisisCheck.crisisContent.hotlines, []);
+    assert.ok(crisisCheck.crisisContent.safetyPlanSteps.some((step) => /emergency services or go to the nearest health facility/.test(step)));
   });
 
   test("crisis content is not gated behind paywall", () => {

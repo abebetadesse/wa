@@ -6,6 +6,7 @@
  * ETM-DB herb safety data, and regional health atlas data for offline access.
  * Data is refreshed via the PWA background sync mechanism when online.
  */
+import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
 
 const DB_NAME = "ethio-wellness-kb";
 const DB_VERSION = 1;
@@ -159,7 +160,8 @@ export async function getAtlasWithFallback(): Promise<unknown> {
   return (await kbGet<unknown>("atlas", "regions")) ?? {};
 }
 
-// Ethiopian emergency protocols — hardcoded for guaranteed offline availability
+// Ethiopian emergency protocols — hardcoded for guaranteed offline availability. Phone numbers are
+// never written here; the emergency page adds verified numbers from emergencyContacts.
 export const EMERGENCY_PROTOCOLS = {
   anemia: {
     title: "Severe Anemia Response",
@@ -169,7 +171,7 @@ export const EMERGENCY_PROTOCOLS = {
       "If unconscious, place in recovery position (left side)",
       "Do NOT give iron tablets without medical supervision",
     ],
-    call: "Ethiopian Emergency: 907 (Ambulance) | 911 (Police)",
+    call: EMERGENCY_GUIDANCE,
     herbs: "⚠️ Do NOT administer herbal remedies during acute crisis",
   },
   hypoglycemia: {
@@ -180,7 +182,7 @@ export const EMERGENCY_PROTOCOLS = {
       "Recheck in 15 minutes — repeat if not improved",
       "Seek medical help if unresponsive",
     ],
-    call: "Ethiopian Emergency: 907",
+    call: EMERGENCY_GUIDANCE,
     herbs: "Kosso/Gesho contraindicated — avoid all herbs during hypoglycemia",
   },
   allergicReaction: {
@@ -191,7 +193,7 @@ export const EMERGENCY_PROTOCOLS = {
       "If prescribed epinephrine auto-injector is available, use it",
       "Call emergency services immediately",
     ],
-    call: "Ethiopian Emergency: 907",
+    call: EMERGENCY_GUIDANCE,
     herbs: "Do NOT administer any herbs — proceed to hospital only",
   },
 };

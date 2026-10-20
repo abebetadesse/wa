@@ -13,19 +13,21 @@ describe("Legal case safety pre-screen", () => {
   test("routes immediate physical danger to crisis support", () => {
     const result = evaluateLegalSafetyScreen({ ...safeAnswers, immediateHarm: "physical_danger" });
     assert.equal(result.action, "crisis_route");
-    assert.ok(result.crisisContent?.hotlines.some((contact) => contact.number === "911"));
+    // No emergency number is shown until one is verified.
+    assert.deepEqual(result.crisisContent?.hotlines, []);
+    assert.ok(result.crisisContent?.safetyPlanSteps.some((step) => /emergency services/.test(step)));
   });
 
   test("routes criminal matters to legal aid", () => {
     const result = evaluateLegalSafetyScreen({ ...safeAnswers, criminalMatter: "yes" });
     assert.equal(result.action, "legal_aid_route");
-    assert.ok(result.legalAidContent?.hotlines.some((contact) => contact.name.includes("Bar Association")));
+    assert.ok(result.legalAidContent?.resources.some((resource) => resource.includes("Bar Association")));
   });
 
   test("routes child welfare concerns to crisis support", () => {
     const result = evaluateLegalSafetyScreen({ ...safeAnswers, childWelfare: "concerned" });
     assert.equal(result.action, "crisis_route");
-    assert.ok(result.crisisContent?.hotlines.some((contact) => contact.name.includes("Child Protection")));
+    assert.ok(result.crisisContent?.safetyPlanSteps.some((step) => step.includes("child-protection")));
   });
 
   test("flags eviction deadlines for urgent expert review", () => {

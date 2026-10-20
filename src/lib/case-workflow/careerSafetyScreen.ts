@@ -2,6 +2,7 @@
  * Financial Distress & Safety Pre-Screen for Case 3 (Career & Business)
  * MANDATORY — runs before any other workflow processing
  */
+import { verifiedHotlines } from "@/lib/safety/emergencyContacts";
 
 export type BasicNeedsAnswer = "yes_comfortable" | "yes_difficult" | "no" | "prefer_not";
 export type SelfHarmAnswer = "no" | "occasionally" | "frequently" | "prefer_not";
@@ -53,20 +54,13 @@ export function evaluateCareerSafetyScreen(
         title: "Your safety comes first",
         message:
           "Based on your answers, we are connecting you with immediate support. " +
-          "Please reach out to one of these services now. This information is free " +
+          "Please reach out for support now. This information is free " +
           "and always available — no payment, no registration required.",
-        hotlines: [
-          { name: "Mental Health Crisis Line (GBV & All)", number: "952" },
-          { name: "EPHI Hotline", number: "907" },
-          { name: "Amanuel Mental Health Hospital", number: "+251-11-275-1234" },
-          { name: "Police Emergency", number: "911" },
-          { name: "Ethiopian Red Cross Ambulance", number: "991" },
-        ],
+        hotlines: verifiedHotlines(),
         safetyPlanSteps: [
-          "If you are in immediate danger, call 911 now.",
+          "If you are in immediate danger, contact local emergency services or go to the nearest health facility now.",
           "Reach out to a trusted friend, family member, or elder.",
           "Consider going to the nearest health facility for in-person support.",
-          "Call 952 — the confidential mental health and crisis support line.",
           "You are not alone. Support is available right now, for free.",
         ],
       },
@@ -82,13 +76,9 @@ export function evaluateCareerSafetyScreen(
       crisisContent: {
         title: "Immediate support available — for free",
         message:
-          "If you are struggling to meet your basic needs, please contact one of " +
-          "these services. This information is free and always available.",
-        hotlines: [
-          { name: "Ethiopian Red Cross Assistance", number: "991" },
-          { name: "Social Services Hotline", number: "0800-000-0000" },
-          { name: "Mental Health Support", number: "952" },
-        ],
+          "If you are struggling to meet your basic needs, these services can help. " +
+          "This information is free and always available.",
+        hotlines: verifiedHotlines(),
         safetyPlanSteps: [
           "Contact a social worker at your local health center.",
           "Reach out to community elders or religious leaders for immediate support.",

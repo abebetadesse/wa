@@ -6,7 +6,8 @@
  * profile-driven metabolic/environmental hypotheses, and synthesized decision frameworks.
  */
 import type { UserProfile } from "@/lib/knowledge/types";
-import { CONTACTS, REFERRALS } from "./support";
+import { EMERGENCY_GUIDANCE, EMERGENCY_GUIDANCE_AMHARIC } from "@/lib/safety/emergencyContacts";
+import { REFERRALS } from "./support";
 import type {
   AnalysisCause,
   AnalysisConfidence,
@@ -45,10 +46,10 @@ const STANDARD_RESOURCES: Record<string, DecisionResource> = {
     evidenceGrade: "strong",
   },
   crisis_hotline: {
-    title: "National Crisis & Protection Hotline (952 / 991)",
-    titleAmharic: "ብሔራዊ የድንገተኛ አደጋና ጥበቃ የስልክ መስመር (952 / 991)",
+    title: "Emergency and protection services",
+    titleAmharic: "የድንገተኛ አደጋና የጥበቃ አገልግሎቶች",
     type: "safety_alert",
-    urlOrContact: "952 / 991",
+    urlOrContact: EMERGENCY_GUIDANCE,
     description: "24/7 immediate emergency support for gender-based violence, domestic safety, and crisis intervention.",
     descriptionAmharic: "ለጾታዊ ጥቃት፣ ለቤተሰብ ደህንነት እና ለአስቸኳይ ጥበቃ የሚሰጥ የ24 ሰዓት የነጻ የስልክ አገልግሎት።",
     evidenceGrade: "strong",
@@ -129,8 +130,8 @@ export function buildDecisionGuidance(
       immediateActionAmharic: "ማንኛውንም ተጨማሪ እርምጃ ከመውሰድዎ በፊት ወዲያውኑ አካላዊ ደህንነትዎን ያረጋግጡና ታማኝ የቤተሰብ ሰው ያነጋግሩ።",
       diagnosticCheck: "Urgent safety audit and legal/protection intake with trained social worker or local law enforcement.",
       diagnosticCheckAmharic: "አስቸኳይ የደህንነት ግምገማ እና ከማህበራዊ ሰራተኛ ወይም ከህግ አስከባሪ ጋር የሚደረግ ቃለ-መጠይቅ።",
-      thresholdCriteria: "Any immediate threat of physical harm or intimidation requires immediate contact with emergency hotlines (952 / 991).",
-      thresholdCriteriaAmharic: "ማንኛውም የአካላዊ ጥቃት ወይም የማስፈራራት ስጋት ካለ ወዲያውኑ ወደ ድንገተኛ ስልክ (952 / 991) መደወል ያስፈልጋል።",
+      thresholdCriteria: "Any immediate threat of physical harm or intimidation requires immediate contact with local emergency services.",
+      thresholdCriteriaAmharic: "ማንኛውም የአካላዊ ጥቃት ወይም የማስፈራራት ስጋት ካለ ወዲያውኑ በአካባቢው ያለውን የድንገተኛ አደጋ አገልግሎት ማግኘት ያስፈልጋል።",
       priority: "urgent",
     };
   }
@@ -281,8 +282,8 @@ export function buildDecisionFramework(
   let primaryDecisionAmharic = "የዕለት ተዕለት የአኗኗር ሁኔታዎን ይከታተሉና የተጠቆሙትን እርምጃዎች ይከተሉ።";
 
   if (urgency.level === "critical" || personalSafety) {
-    primaryDecision = `Urgent safety priority: contact emergency responders (${CONTACTS.police.number} / ${CONTACTS.crisisLine.number}) or ambulance (${CONTACTS.ambulance.number}) immediately.`;
-    primaryDecisionAmharic = `አስቸኳይ የደህንነት ቅድሚያ፡ ወዲያውኑ ወደ ድንገተኛ አደጋ መስመር (${CONTACTS.police.number} / ${CONTACTS.crisisLine.number}) ወይም አምቡላንስ (${CONTACTS.ambulance.number}) ይደውሉ።`;
+    primaryDecision = `Urgent safety priority: ${EMERGENCY_GUIDANCE}`;
+    primaryDecisionAmharic = `አስቸኳይ የደህንነት ቅድሚያ፡ ${EMERGENCY_GUIDANCE_AMHARIC}`;
   } else if (clinical && clinical.priority.level !== "routine") {
     primaryDecision = `Prioritize clinical evaluation ${clinical.priority.timeframe}: obtain diagnostic checks (${clinical.checks.slice(0, 3).join(", ")}) before starting self-treatment.`;
     primaryDecisionAmharic = `ክሊኒካዊ ምርመራን ${clinical.priority.timeframe} ቅድሚያ ይስጡ፡ የራስዎን ሕክምና ከመጀመርዎ በፊት በጤና ጣቢያ ምርመራ ያድርጉ።`;
