@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/emergency-numbers/layout,_N_T_/admin/emergency-numbers/page,_N_T_/admin/emergency-numbers"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0664006ff13461c7446004bdeefa08d9ce34aa1bd7cf319354cf4579a8738e83/$/admin/emergency-numbers",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/emergency-numbers/page"
+    },
+    "isFallback": false
+  }
+}

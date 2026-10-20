@@ -1703,6 +1703,12 @@
       "namedRegex": "^/admin/cases(?:/)?$"
     },
     {
+      "page": "/admin/emergency-numbers",
+      "regex": "^/admin/emergency\\-numbers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/emergency\\-numbers(?:/)?$"
+    },
+    {
       "page": "/admin/knowledge",
       "regex": "^/admin/knowledge(?:/)?$",
       "routeKeys": {},

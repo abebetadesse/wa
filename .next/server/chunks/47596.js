@@ -1,0 +1,1 @@
+"use strict";exports.id=47596,exports.ids=[47596],exports.modules={47596:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Open":"Bani","Settings":"Qindaa\'ina"}')}};

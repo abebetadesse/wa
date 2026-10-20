@@ -1822,7 +1822,7 @@ var pipelineProfiles = mysqlTable("pipeline_profiles", {
   consent: jsonb("consent").default({}).notNull(),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
-});
+}, (table) => [(0, import_mysql_core.index)("pipeline_profiles_user_idx").on(table.userIdString, table.updatedAt)]);
 var pipelinePreliminaryAnalyses = mysqlTable("pipeline_preliminary_analyses", {
   id: (0, import_mysql_core.varchar)("id", { length: 120 }).primaryKey(),
   profileId: (0, import_mysql_core.varchar)("profile_id", { length: 120 }).notNull(),
@@ -1830,7 +1830,7 @@ var pipelinePreliminaryAnalyses = mysqlTable("pipeline_preliminary_analyses", {
   sections: jsonb("sections").notNull(),
   confidence: (0, import_mysql_core.varchar)("confidence", { length: 20 }).notNull(),
   generatedAt: timestamp("generated_at").defaultNow().notNull()
-});
+}, (table) => [(0, import_mysql_core.uniqueIndex)("pipeline_preliminary_analyses_profile_idx").on(table.profileId)]);
 var pipelineCases = mysqlTable("pipeline_cases", {
   id: (0, import_mysql_core.varchar)("id", { length: 120 }).primaryKey(),
   userId: (0, import_mysql_core.varchar)("user_id", { length: 120 }).notNull(),
@@ -1844,9 +1844,16 @@ var pipelineCases = mysqlTable("pipeline_cases", {
   emergencySignals: jsonb("emergency_signals").default([]).notNull(),
   emergencyRoutedAt: timestamp("emergency_routed_at"),
   status: (0, import_mysql_core.varchar)("status", { length: 50 }).default("SUBMITTED").notNull(),
+  assignedProfessionalId: (0, import_mysql_core.varchar)("assigned_professional_id", { length: 120 }),
+  overrideJustification: (0, import_mysql_core.text)("override_justification"),
+  overrideActorId: (0, import_mysql_core.varchar)("override_actor_id", { length: 120 }),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
-});
+}, (table) => [
+  (0, import_mysql_core.index)("pipeline_cases_user_status_idx").on(table.userId, table.status),
+  (0, import_mysql_core.index)("pipeline_cases_status_idx").on(table.status, table.submittedAt),
+  (0, import_mysql_core.index)("pipeline_cases_professional_idx").on(table.assignedProfessionalId)
+]);
 var pipelineReports = mysqlTable("pipeline_reports", {
   id: (0, import_mysql_core.varchar)("id", { length: 120 }).primaryKey(),
   caseId: (0, import_mysql_core.varchar)("case_id", { length: 120 }).notNull(),
@@ -1863,7 +1870,7 @@ var pipelineReports = mysqlTable("pipeline_reports", {
   publishedAt: timestamp("published_at"),
   supersededBy: (0, import_mysql_core.varchar)("superseded_by", { length: 120 }),
   createdAt: timestamp("created_at").defaultNow().notNull()
-});
+}, (table) => [(0, import_mysql_core.index)("pipeline_reports_case_idx").on(table.caseId, table.kind, table.version)]);
 var pipelineCaseEvents = mysqlTable("pipeline_case_events", {
   id: (0, import_mysql_core.varchar)("id", { length: 120 }).primaryKey(),
   caseId: (0, import_mysql_core.varchar)("case_id", { length: 120 }).notNull(),
@@ -1874,8 +1881,9 @@ var pipelineCaseEvents = mysqlTable("pipeline_case_events", {
   before: jsonb("before"),
   after: jsonb("after"),
   note: (0, import_mysql_core.text)("note"),
-  at: timestamp("at").defaultNow().notNull()
-});
+  at: timestamp("at").defaultNow().notNull(),
+  seq: bigserial("seq").notNull().unique()
+}, (table) => [(0, import_mysql_core.index)("pipeline_case_events_case_idx").on(table.caseId, table.seq)]);
 var pipelineAssignments = mysqlTable("pipeline_assignments", {
   id: (0, import_mysql_core.varchar)("id", { length: 120 }).primaryKey(),
   caseId: (0, import_mysql_core.varchar)("case_id", { length: 120 }).notNull(),

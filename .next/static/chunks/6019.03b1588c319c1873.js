@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6019],{6019:e=>{e.exports=JSON.parse('{"_status":"machine-draft, needs human review","Evidence: {}":"መርትዖ፦ {0}"}')}}]);

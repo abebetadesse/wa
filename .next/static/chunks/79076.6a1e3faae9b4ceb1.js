@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[79076],{79076:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Everything":"Hunda","Group":"Garee","Kind":"Gosa","Properties":"Amaloota","Search":"Barbaadi","Severity":"Cimina","Traditional":"Aadaa","What happens":"Maaltu ta\'a","What to do":"Maal gochuu qabda","Why":"Maaliif"}')}}]);

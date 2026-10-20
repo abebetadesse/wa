@@ -1,0 +1,1 @@
+"use strict";exports.id=38326,exports.ids=[38326],exports.modules={38326:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Everything":"ኩሉ","Group":"ጉጅለ","Kind":"ዓይነት","Properties":"ባህርያት","Search":"ድለ","Severity":"ክብደት","Traditional":"ባህላዊ","What happens":"እንታይ ይኸውን","What to do":"እንታይ ክግበር","Why":"ስለምንታይ"}')}};

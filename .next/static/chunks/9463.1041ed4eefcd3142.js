@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9463],{9463:e=>{e.exports=JSON.parse('{"_status":"machine-draft, needs human review","Everything":"ኩሉ","Group":"ጉጅለ","Kind":"ዓይነት","Properties":"ባህርያት","Search":"ድለ","Severity":"ክብደት","Traditional":"ባህላዊ","What happens":"እንታይ ይኸውን","What to do":"እንታይ ክግበር","Why":"ስለምንታይ"}')}}]);

@@ -1,0 +1,1 @@
+"use strict";exports.id=42127,exports.ids=[42127],exports.modules={42127:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Everything":"Wax walba","Group":"Koox","Kind":"Nooca","Properties":"Astaamaha","Search":"Raadi","Severity":"Culayska","Traditional":"Dhaqameed","What happens":"Waxa dhaca","What to do":"Waxa la sameeyo","Why":"Sababta"}')}};

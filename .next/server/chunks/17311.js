@@ -1,0 +1,1 @@
+"use strict";exports.id=17311,exports.ids=[17311],exports.modules={17311:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Done":"ተወዲኡ","Open":"ክፈት","Submit":"ኣቕርብ"}')}};

@@ -1,0 +1,1 @@
+"use strict";exports.id=84179,exports.ids=[84179],exports.modules={84179:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Poisonous if swallowed":"Waa sun haddii la liqo"}')}};

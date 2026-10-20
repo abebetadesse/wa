@@ -1,0 +1,1 @@
+"use strict";exports.id=3801,exports.ids=[3801],exports.modules={3801:a=>{a.exports=JSON.parse('{"_status":"machine-draft, needs human review","Everything":"Hunda","Group":"Garee","Kind":"Gosa","Properties":"Amaloota","Search":"Barbaadi","Severity":"Cimina","Traditional":"Aadaa","What happens":"Maaltu ta\'a","What to do":"Maal gochuu qabda","Why":"Maaliif"}')}};
