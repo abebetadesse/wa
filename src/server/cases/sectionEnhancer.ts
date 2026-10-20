@@ -8,6 +8,9 @@
  *  2. Language model, when one is configured. It is asked to write the result out more fully for
  *     this person, under strict limits, with the person's names masked on the way out.
  *
+ * The model may cite only the grounded sources it is given by id (citations.ts); a version that
+ * cites anything else is discarded.
+ *
  * The result goes back to the reviewer's editor unsaved. Nothing reaches the person unless the
  * reviewer keeps it and approves the report.
  */
@@ -15,11 +18,12 @@ import { ApiError } from "@/lib/api/route";
 import { bionicChat, buildBionicMessages, isBionicConfigured } from "@/lib/ai/bionicGPT";
 import type { FullDivinationResult } from "@/lib/cultural/spiritualDivinationEngine";
 import { FACTOR_GUIDANCE } from "./analysisGuidance";
+import { checkModelCitations, citationLabel, sectionCitations } from "./citations";
 import { FACTORS } from "./analysisLexicon";
 import { buildSpiritualSections } from "./domains/spiritualContent";
 import { getDomainConfig } from "./domains";
 import { buildEnhancedReportSections } from "./reportEnhancer";
-import type { ReportSection, WorkflowCase } from "./types";
+import type { Citation, ReportSection, WorkflowCase } from "./types";
 
 const MAX_BODY = 7800;
 const MAX_ITEM = 1900;
@@ -55,11 +59,20 @@ export interface ModelRequest {
   items: string[];
   context: Record<string, unknown>;
   instruction?: string;
+  /** The only sources the section may cite, by id. Empty: cite nothing. */
+  citations: Array<Pick<Citation, "id" | "title" | "source">>;
+}
+
+export interface ModelReply {
+  body?: unknown;
+  items?: unknown;
+  /** Ids from the request's citations that the section relies on. */
+  citations?: unknown;
 }
 
 export interface EnhanceDeps {
   /** Returns the model's version of the section, or null when it has nothing usable. Absent: no model. */
-  model?: (request: ModelRequest) => Promise<{ body?: unknown; items?: unknown } | null>;
+  model?: (request: ModelRequest) => Promise<ModelReply | null>;
   now: () => Date;
 }
 
@@ -79,17 +92,18 @@ const SYSTEM_PROMPT = [
   "- A cultural reflection stays a reflection: describe what the tradition says, never claim it will happen.",
   "- Preserve uncertainty, evidence limitations, and required human-review caveats. The report is a draft, not an official decision.",
   "- Follow the reviewer's editing instruction only when consistent with configured requirements and these rules; flag requests that would misrepresent evidence.",
-  'Return JSON only, in this shape: {"body": string, "items": string[]}. At most 12 items.',
+  "- Cite only sources from the input's \"citations\" list: mark a sentence that relies on one with its id in square brackets, e.g. [psychological:example-entry], and list the ids you used. Never name or link any other study, PMID, DOI, website or source. If the list is empty, cite nothing.",
+  'Return JSON only, in this shape: {"body": string, "items": string[], "citations": string[]}. At most 12 items.',
 ].join("\n");
 
-async function bionicModel(request: ModelRequest): Promise<{ body?: unknown; items?: unknown } | null> {
+async function bionicModel(request: ModelRequest): Promise<ModelReply | null> {
   const response = await bionicChat({
     messages: buildBionicMessages(SYSTEM_PROMPT, [{ role: "user", content: JSON.stringify(request, null, 2) }]),
     temperature: 0.4,
     maxTokens: 1600,
     jsonMode: true,
   });
-  return response.parsedJson && typeof response.parsedJson === "object" ? (response.parsedJson as { body?: unknown; items?: unknown }) : null;
+  return response.parsedJson && typeof response.parsedJson === "object" ? (response.parsedJson as ModelReply) : null;
 }
 
 const defaultDeps = (): EnhanceDeps => ({ model: isBionicConfigured() ? bionicModel : undefined, now: () => new Date() });
@@ -227,6 +241,7 @@ function modelContext(record: WorkflowCase): Record<string, unknown> {
 
 async function withModel(record: WorkflowCase, base: ReportSection, input: EnhanceInput, model: NonNullable<EnhanceDeps["model"]>): Promise<ReportSection | null> {
   const names = nameMask(record, text(input.christianName));
+  const allowed = sectionCitations(record.analysis, base);
   const reply = await model({
     kind: base.cultural ? "cultural reflection" : "evidence-based",
     domain: record.domain,
@@ -235,6 +250,7 @@ async function withModel(record: WorkflowCase, base: ReportSection, input: Enhan
     items: (base.items ?? []).map(names.mask),
     context: modelContext(record),
     instruction: text(input.instruction) ? names.mask(text(input.instruction)) : undefined,
+    citations: allowed.map(({ id, title, source }) => ({ id, title: names.mask(title), source: names.mask(source) })),
   });
   if (!reply) return null;
 
@@ -251,7 +267,19 @@ async function withModel(record: WorkflowCase, base: ReportSection, input: Enhan
   // A leftover name token means the model mangled a name: discard its version.
   const candidate = { ...base, body, items: items.length ? items : undefined };
   if (/⟦N\d+⟧/.test(JSON.stringify(candidate))) return null;
-  return candidate;
+
+  // So does a reference to a source it was not given. Unknown ids in its list are only dropped.
+  const original = [base.title, base.body ?? "", ...(base.items ?? [])].join("\n");
+  const check = checkModelCitations([body ?? "", ...commentary], reply.citations, allowed, original);
+  if (check.unsupported.length) return null;
+  if (!check.cited.length) return candidate;
+  const sources = [...(base.evidence?.sources ?? []), ...check.cited.map(citationLabel)];
+  return {
+    ...candidate,
+    body: body === undefined ? undefined : check.renumber(body),
+    items: candidate.items?.map(check.renumber),
+    evidence: { ...base.evidence, sources: [...new Set(sources)], citations: check.cited },
+  };
 }
 
 // ── Entry point ──────────────────────────────────────────────────────────────

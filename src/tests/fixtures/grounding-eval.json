@@ -1,0 +1,281 @@
+{
+  "about": "Hand-labelled evaluation set for groundFindings (src/server/cases/analysis.ts) and for citation filtering (src/server/cases/citations.ts). Each grounding case is what a person wrote, the knowledge findings a strand offered, and which of those the person's words support (grounded) or do not (unsupported). Labels are a reviewer's judgement, not the algorithm's output; src/tests/grounding-eval.test.mjs scores the algorithm against them and fails when it drops below the recorded baseline.",
+  "baseline": { "precision": 0.938, "recall": 0.968, "citationPrecision": 1, "citationRecall": 1 },
+  "cases": [
+    {
+      "id": "anxiety-sleep",
+      "strand": "psychological",
+      "story": "I feel anxious all the time and I cannot sleep at night.",
+      "candidates": [
+        { "name": "GENERALIZED ANXIETY DISORDER", "description": "Persistent, hard-to-control worry.", "sources": ["WHO mhGAP Intervention Guide 2.0"] },
+        { "name": "INSOMNIA", "description": "Difficulty falling or staying asleep." },
+        { "name": "SCHIZOPHRENIA", "description": "A psychotic disorder with hallucinations." },
+        { "name": "BIPOLAR DISORDER", "description": "Episodes of mania and depression." }
+      ],
+      "grounded": ["GENERALIZED ANXIETY DISORDER", "INSOMNIA"]
+    },
+    {
+      "id": "khat-and-beer",
+      "strand": "addiction",
+      "story": "I chew khat every afternoon and I drink beer at the weekends.",
+      "candidates": [
+        { "name": "KHAT (CATHA EDULIS)", "description": "Stimulant leaf chewed socially." },
+        { "name": "ALCOHOL USE DISORDER", "description": "Harmful patterns of drinking." },
+        { "name": "OPIOIDS", "description": "Morphine, tramadol and heroin." },
+        { "name": "CANNABIS", "description": "Smoked or eaten cannabis products." }
+      ],
+      "grounded": ["KHAT (CATHA EDULIS)", "ALCOHOL USE DISORDER"]
+    },
+    {
+      "id": "fever-night-sweats",
+      "strand": "epidemiological",
+      "story": "I have had fever and chills for a week, and I wake up with night sweats.",
+      "candidates": [
+        { "name": "MALARIA", "description": "Fever with chills, common below 2,000 m.", "pubmedEvidence": [{ "pmid": "31234567", "title": "Malaria in Ethiopian lowlands", "journal": "Malar J", "pubDate": "2019", "source": "pubmed" }] },
+        { "name": "TUBERCULOSIS", "description": "Cough, night sweats, fever and weight loss." },
+        { "name": "CHOLERA", "description": "Acute watery diarrhoea in outbreaks." },
+        { "name": "MEASLES", "description": "Rash and fever in unvaccinated children." }
+      ],
+      "grounded": ["MALARIA", "TUBERCULOSIS"]
+    },
+    {
+      "id": "tired-iron",
+      "strand": "dietary",
+      "story": "I am always tired and weak. A nurse once said my iron was low.",
+      "candidates": [
+        { "name": "IRON DEFICIENCY ANAEMIA", "description": "Low haemoglobin from too little iron." },
+        { "name": "VITAMIN A DEFICIENCY", "description": "Night blindness and dry eyes." },
+        { "name": "IODINE DEFICIENCY GOITRE", "description": "Swelling of the thyroid in the neck." }
+      ],
+      "grounded": ["IRON DEFICIENCY ANAEMIA"]
+    },
+    {
+      "id": "job-rent-debt",
+      "strand": "socioeconomic",
+      "story": "I lost my job in March. I cannot pay the rent and we are in debt to neighbours.",
+      "candidates": [
+        { "name": "UNEMPLOYMENT AND LIVELIHOOD LOSS", "description": "Loss of regular income from work." },
+        { "name": "HOUSEHOLD DEBT AND INFORMAL LOANS", "description": "Borrowing from neighbours, iqub or moneylenders." },
+        { "name": "RURAL-TO-URBAN MIGRATION", "description": "Moving from villages to towns." },
+        { "name": "COFFEE CEREMONY", "description": "Three rounds of buna shared by neighbours." }
+      ],
+      "grounded": ["UNEMPLOYMENT AND LIVELIHOOD LOSS", "HOUSEHOLD DEBT AND INFORMAL LOANS"]
+    },
+    {
+      "id": "not-depressed-but-worried",
+      "strand": "psychological",
+      "story": "I do not feel depressed, but I worry a lot about my exams.",
+      "candidates": [
+        { "name": "DEPRESSION", "description": "Low mood and loss of interest." },
+        { "name": "ANXIETY AND EXAM STRESS", "description": "Worry before tests and deadlines." },
+        { "name": "PSYCHOSIS", "description": "Loss of contact with reality." }
+      ],
+      "grounded": ["ANXIETY AND EXAM STRESS"]
+    },
+    {
+      "id": "yellow-eyes",
+      "strand": "biological",
+      "story": "My eyes turned yellow last week and my urine is dark.",
+      "candidates": [
+        { "name": "HEPATITIS B", "description": "Viral infection of the liver." },
+        { "name": "ALCOHOLIC LIVER DISEASE", "description": "Liver damage from long-term drinking." },
+        { "name": "ASTHMA", "description": "Wheezing and breathlessness." },
+        { "name": "KIDNEY STONES", "description": "Sharp pain in the side." }
+      ],
+      "grounded": ["HEPATITIS B", "ALCOHOLIC LIVER DISEASE"]
+    },
+    {
+      "id": "metformin-adherence",
+      "strand": "medication",
+      "story": "I take metformin tablets for my sugar but I often forget them.",
+      "candidates": [
+        { "name": "METFORMIN", "description": "First-line tablet for type 2 diabetes." },
+        { "name": "MEDICATION ADHERENCE", "description": "Taking medicines as prescribed." },
+        { "name": "WARFARIN", "description": "Anticoagulant with many interactions." },
+        { "name": "AMOXICILLIN", "description": "Penicillin antibiotic." }
+      ],
+      "grounded": ["METFORMIN", "MEDICATION ADHERENCE"]
+    },
+    {
+      "id": "elders-mediate",
+      "strand": "cultural",
+      "story": "My husband and I quarrel every week, and the elders want to mediate between us.",
+      "candidates": [
+        { "name": "SHEMGELNA (ELDER MEDIATION)", "description": "Elders reconcile disputes between families." },
+        { "name": "MARRIAGE AND FAMILY CUSTOMS", "description": "Expectations of spouses and kin." },
+        { "name": "TIMKAT", "description": "Epiphany celebration in January." },
+        { "name": "COFFEE CEREMONY", "description": "Three rounds of buna." }
+      ],
+      "grounded": ["SHEMGELNA (ELDER MEDIATION)", "MARRIAGE AND FAMILY CUSTOMS"]
+    },
+    {
+      "id": "rift-valley-joints",
+      "strand": "ecological",
+      "story": "My knees and back ache, and we have always drunk water from the borehole.",
+      "profile": { "location": { "region": "Oromia", "city": "Adama" } },
+      "candidates": [
+        { "name": "SKELETAL FLUOROSIS", "description": "Joint stiffness from high-fluoride water." },
+        { "name": "WATER-BORNE DIARRHOEAL DISEASE", "description": "Diarrhoea from unsafe water." },
+        { "name": "HIGHLAND FROST AND CROP LOSS", "description": "Cold nights above 3,000 m." }
+      ],
+      "grounded": ["SKELETAL FLUOROSIS"]
+    },
+    {
+      "id": "child-watery-diarrhoea",
+      "strand": "epidemiological",
+      "story": "My son has watery diarrhoea and stomach cramps since Sunday.",
+      "candidates": [
+        { "name": "ACUTE WATERY DIARRHOEA", "description": "Diarrhoeal disease, including cholera." },
+        { "name": "GIARDIASIS", "description": "Intestinal parasite from unsafe water." },
+        { "name": "MALARIA", "description": "Fever with chills." },
+        { "name": "TUBERCULOSIS", "description": "Chronic cough and night sweats." }
+      ],
+      "grounded": ["ACUTE WATERY DIARRHOEA", "GIARDIASIS"]
+    },
+    {
+      "id": "mother-died",
+      "strand": "psychological",
+      "story": "My mother died last month and I cannot stop crying. Everything feels empty.",
+      "candidates": [
+        { "name": "COMPLICATED GRIEF", "description": "Prolonged mourning after a death." },
+        { "name": "DEPRESSION", "description": "Low mood, emptiness and loss of interest." },
+        { "name": "OBSESSIVE-COMPULSIVE DISORDER", "description": "Intrusive thoughts and rituals." }
+      ],
+      "grounded": ["COMPLICATED GRIEF", "DEPRESSION"]
+    },
+    {
+      "id": "smoker-cough",
+      "strand": "addiction",
+      "story": "I smoke a pack of cigarettes a day and I cough every morning.",
+      "candidates": [
+        { "name": "TOBACCO USE", "description": "Cigarette smoking and nicotine dependence." },
+        { "name": "KHAT (CATHA EDULIS)", "description": "Stimulant leaf." },
+        { "name": "GAMBLING", "description": "Betting and lottery spending." }
+      ],
+      "grounded": ["TOBACCO USE"]
+    },
+    {
+      "id": "fasting-dizzy",
+      "strand": "dietary",
+      "story": "During the fasting season I skip breakfast and by noon I feel dizzy.",
+      "candidates": [
+        { "name": "ORTHODOX FASTING DIET", "description": "Plant-based fasting days without animal products." },
+        { "name": "DEHYDRATION", "description": "Too little fluid, causing dizziness." },
+        { "name": "OBESITY", "description": "Excess body weight." },
+        { "name": "COELIAC DISEASE", "description": "Gluten intolerance." }
+      ],
+      "grounded": ["ORTHODOX FASTING DIET", "DEHYDRATION"]
+    },
+    {
+      "id": "thirst-urination",
+      "strand": "biochemical",
+      "story": "I am thirsty all the time and I urinate a lot at night.",
+      "candidates": [
+        { "name": "TYPE 2 DIABETES", "description": "High blood glucose; thirst and frequent urination." },
+        { "name": "HYPOTHYROIDISM", "description": "Underactive thyroid." },
+        { "name": "GOUT", "description": "Uric acid crystals in joints." }
+      ],
+      "grounded": ["TYPE 2 DIABETES"]
+    },
+    {
+      "id": "itchy-rash",
+      "strand": "biological",
+      "story": "I have an itchy rash on both arms that gets worse at night.",
+      "candidates": [
+        { "name": "SCABIES", "description": "Itchy skin infestation, worse at night." },
+        { "name": "FUNGAL SKIN INFECTION", "description": "Ringworm and other dermatophytes." },
+        { "name": "MALARIA", "description": "Fever with chills." }
+      ],
+      "grounded": ["SCABIES", "FUNGAL SKIN INFECTION"]
+    },
+    {
+      "id": "thin-request",
+      "strand": "psychological",
+      "story": "I would like some advice please.",
+      "candidates": [
+        { "name": "GENERALIZED ANXIETY DISORDER", "description": "Persistent worry." },
+        { "name": "DEPRESSION", "description": "Low mood." }
+      ],
+      "grounded": []
+    },
+    {
+      "id": "buna-headaches",
+      "strand": "dietary",
+      "story": "I drink six cups of buna a day and I get headaches in the afternoon.",
+      "candidates": [
+        { "name": "CAFFEINE DEPENDENCE", "description": "Headache and fatigue when coffee is missed." },
+        { "name": "TENSION HEADACHE", "description": "Band-like headache with stress." },
+        { "name": "ALCOHOL USE DISORDER", "description": "Harmful drinking." },
+        { "name": "IODINE DEFICIENCY GOITRE", "description": "Thyroid swelling." }
+      ],
+      "grounded": ["CAFFEINE DEPENDENCE", "TENSION HEADACHE"]
+    },
+    {
+      "id": "lonely-in-addis",
+      "strand": "psychological",
+      "story": "Since moving to the city I feel lonely and I have no friends here.",
+      "profile": { "location": { "region": "Addis Ababa", "city": "Addis Ababa" } },
+      "candidates": [
+        { "name": "SOCIAL ISOLATION", "description": "Few relationships and little support." },
+        { "name": "ADDIS ABABA AIR POLLUTION", "description": "Traffic smoke in the capital." },
+        { "name": "SCHIZOPHRENIA", "description": "A psychotic disorder." }
+      ],
+      "grounded": ["SOCIAL ISOLATION"]
+    },
+    {
+      "id": "land-inheritance",
+      "strand": "socioeconomic",
+      "story": "My brothers are disputing our late father's land and the inheritance.",
+      "candidates": [
+        { "name": "LAND INHERITANCE DISPUTES", "description": "Conflicts over customary tenure after a death." },
+        { "name": "MICROFINANCE LOANS", "description": "Small loans for traders." },
+        { "name": "URBAN YOUTH UNEMPLOYMENT", "description": "Joblessness among young town dwellers." }
+      ],
+      "grounded": ["LAND INHERITANCE DISPUTES"]
+    }
+  ],
+  "citationCases": [
+    {
+      "id": "only-allowed-ids-kept",
+      "allowed": ["psychological:generalized-anxiety-disorder", "psychological:insomnia"],
+      "reply": { "body": "Worry is common [psychological:generalized-anxiety-disorder].", "items": ["Sleep matters [psychological:insomnia]."], "citations": ["psychological:insomnia", "psychological:made-up-entry", "pubmed:99999"] },
+      "cited": ["psychological:generalized-anxiety-disorder", "psychological:insomnia"],
+      "fallback": false
+    },
+    {
+      "id": "unknown-inline-marker-discards",
+      "allowed": ["psychological:insomnia"],
+      "reply": { "body": "Studies agree [psychological:sleep-hygiene-trial].", "items": [], "citations": ["psychological:insomnia"] },
+      "cited": [],
+      "fallback": true
+    },
+    {
+      "id": "invented-pmid-discards",
+      "allowed": ["epidemiological:malaria"],
+      "reply": { "body": "Malaria is common here (PMID: 12345678).", "items": [], "citations": ["epidemiological:malaria"] },
+      "cited": [],
+      "fallback": true
+    },
+    {
+      "id": "allowed-pmid-kept",
+      "allowed": ["epidemiological:malaria"],
+      "reply": { "body": "Malaria is common in the lowlands (PMID 31234567) [epidemiological:malaria].", "items": [], "citations": [] },
+      "cited": ["epidemiological:malaria"],
+      "fallback": false
+    },
+    {
+      "id": "invented-link-discards",
+      "allowed": ["psychological:insomnia"],
+      "reply": { "body": "See https://example.org/sleep-study for more.", "items": [], "citations": [] },
+      "cited": [],
+      "fallback": true
+    },
+    {
+      "id": "no-sources-allowed",
+      "allowed": [],
+      "reply": { "body": "A calm explanation.", "items": ["One step."], "citations": ["psychological:insomnia"] },
+      "cited": [],
+      "fallback": false
+    }
+  ]
+}

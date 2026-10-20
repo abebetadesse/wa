@@ -8,7 +8,19 @@ export const sectionInput = z.object({
   items: z.array(z.string().max(2000)).max(40).optional(),
   locked: z.boolean(),
   cultural: z.boolean().optional(),
-  evidence: z.object({ sources: z.array(z.string()).optional(), confidence: z.number().optional(), note: z.string().optional() }).optional(),
+  evidence: z.object({
+    sources: z.array(z.string()).optional(),
+    confidence: z.number().optional(),
+    note: z.string().optional(),
+    // Checked against the case's grounded findings when the draft is saved (citations.ts).
+    citations: z.array(z.object({
+      id: z.string().min(1).max(120),
+      title: z.string().max(400),
+      source: z.string().max(400),
+      url: z.string().url().max(500).optional(),
+      pmid: z.string().regex(/^\d{1,10}$/).optional(),
+    })).max(40).optional(),
+  }).optional(),
   data: z.record(z.unknown()).optional(),
 });
 

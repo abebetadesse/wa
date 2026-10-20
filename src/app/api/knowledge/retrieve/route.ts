@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { globalOrchestrator } from "@/lib/knowledge/orchestrator";
-import { enrichStrandResultsWithPubMed } from "@/lib/knowledge/pubmedEnrichment";
+import { attachStoredLiterature } from "@/lib/knowledge/search";
 import { KnowledgeStrandType, StrandFinding, UserProfile } from "@/lib/knowledge/types";
 
 export async function POST(request: NextRequest) {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    const enrichedStrands = await enrichStrandResultsWithPubMed(results);
+    const enrichedStrands = await attachStoredLiterature(results);
 
     return NextResponse.json({
       success: true,

@@ -38,6 +38,7 @@ import { analyzeCaseMedia } from "./mediaAnalysis";
 import { readWorkflowMedia } from "./media";
 import { buildCaseAnalysis } from "./analysis";
 import { enhanceReportSection, type EnhanceDeps, type EnhanceInput } from "./sectionEnhancer";
+import { keepGroundedCitations } from "./citations";
 import { loadAnalysisProfile } from "./analysisProfile";
 import { ownerNotice, reviewerNotice, type OwnerNoticeType, type ReviewerNoticeType } from "./notices";
 import { toExpertView, toOwnerView } from "./views";
@@ -482,7 +483,8 @@ export function createCaseService(deps: Deps) {
     /** The claiming reviewer saves an edited report without releasing it. */
     async saveDraft(user: AuthenticatedUser, caseId: string, draft: DraftReport) {
       const record = await reviewable(user, caseId);
-      const next = saveDraft(record, user.id, { ...record.draft, ...draft });
+      const sections = keepGroundedCitations(draft.sections, record.analysis);
+      const next = saveDraft(record, user.id, { ...record.draft, ...draft, sections });
       await store.save(next);
       return toExpertView(next, getDomainConfig(next.domain));
     },

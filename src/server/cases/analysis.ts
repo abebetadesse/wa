@@ -23,6 +23,7 @@ import { buildPersonContext } from "./personContext";
 import { buildFoodHerbReview, foodHerbStatements, foodHerbWarnings } from "./foodHerb";
 import { buildClinicalPicture, buildStrandLenses, clinicalSearchTerms } from "./clinical";
 import { correctSpelling, type SpellingCorrection } from "./spelling";
+import { citationFor } from "./citations";
 import { CONTACTS } from "./support";
 import {
   buildDecisionFramework,
@@ -236,6 +237,7 @@ export function groundFindings(
       severity: finding.severity,
       steps: findingSteps(finding),
       source: strings(finding.sources)[0] ?? (typeof finding.evidence === "string" ? clip(finding.evidence, 160) : undefined),
+      citation: citationFor(strand, finding),
     });
   }
   return grounded.sort((a, b) => b.relevance - a.relevance).slice(0, MAX_PER_STRAND);
