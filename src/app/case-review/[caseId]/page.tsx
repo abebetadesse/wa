@@ -8,6 +8,7 @@ import { useSession } from "@/features/session/SessionProvider";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState, type SectionEnhancement } from "@/features/cases/review/ReviewPanels";
 import { orderSections } from "@/server/cases/reportLayout";
+import { CaseAssistant } from "@/features/cases/CaseAssistant";
 import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/types";
 
 interface ReviewItem {
@@ -278,6 +279,8 @@ export default function CaseReviewItemPage() {
               )}
             </dl>
           </section>
+
+          <CaseAssistant caseId={item.id} variant="desk" />
 
           {item.analysis ? (
             <AnalysisPanel analysis={item.analysis} canAct={mayAct} busy={busy} onAddSection={addSection} onAddSections={addSections} profileConsented={item.consent.dataUsage} onAsk={(question) => void send("question", question)} onReanalyse={() => void reanalyse()} />

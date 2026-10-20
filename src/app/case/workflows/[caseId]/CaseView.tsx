@@ -9,6 +9,7 @@ import type { OwnerView as BaseOwnerView } from "@/server/cases/views";
 import type { PaymentAttempt } from "@/server/cases/billing";
 import { PayPanel } from "@/features/payments/PayPanel";
 import { FollowUpPrompt } from "@/features/followUps/FollowUpPrompt";
+import { CaseAssistant } from "@/features/cases/CaseAssistant";
 import { ApiClientError, apiFetch, errorMessage } from "@/lib/api/client";
 import {
   Alert,
@@ -130,6 +131,7 @@ export function CaseView({ caseId }: { caseId: string }) {
         </Card>
       )}
       {view.report && <ReportView report={view.report} review={view.review} />}
+      {view.report && <CaseAssistant caseId={caseId} />}
       {(view.stage === "full_report_released" || view.stage === "consultation_requested") && (
         <CareActionPlan domain={view.domain} />
       )}

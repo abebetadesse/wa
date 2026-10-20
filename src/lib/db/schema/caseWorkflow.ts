@@ -106,3 +106,16 @@ export const chatIntakes = mysqlTable("chat_intakes", {
   state: jsonb("state").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+/** Questions asked about a case and the grounded answers given (src/server/cases/assistant.ts). */
+export const caseAssistantTurns = mysqlTable("case_assistant_turns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id").references(() => workflowCases.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  asker: varchar("asker", { length: 10 }).notNull(),
+  question: varchar("question", { length: 2000 }).notNull(),
+  answer: text("answer").notNull(),
+  mode: varchar("mode", { length: 12 }).notNull(),
+  sources: jsonb("sources").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("case_assistant_turns_case_idx").on(table.caseId, table.createdAt)]);
