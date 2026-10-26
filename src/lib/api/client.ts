@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 /** Browser-side helper for the `{ success, data | error }` API envelope. */
 
 export class ApiClientError extends Error {
@@ -15,7 +16,8 @@ export async function apiFetch<T>(url: string, init: RequestInit & { json?: unkn
   const { json, headers, ...rest } = init;
   let response: Response;
   try {
-    response = await fetch(url, {
+    // Same-origin paths are prefixed with the app's base path; absolute URLs pass through.
+    response = await fetch(url.startsWith("/") ? withBasePath(url) : url, {
       ...rest,
       headers: { ...(json !== undefined ? { "Content-Type": "application/json" } : {}), ...headers },
       body: json !== undefined ? JSON.stringify(json) : rest.body,

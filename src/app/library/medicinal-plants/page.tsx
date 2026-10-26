@@ -28,6 +28,7 @@ import {
   type TraditionalTherapeuticCategory,
   type SafetyClassification,
 } from "@/lib/knowledge/traditionalMedicineDatabase";
+import { assetUrl } from "@/lib/base-path";
 
 const PREPARATION_ICONS: Record<string, string> = {
   decoction: "🍵",
@@ -74,12 +75,12 @@ function PlantPhoto({
       {(item.imageAttribution || item.imageLicenseUrl) && (
         <figcaption className="flex flex-wrap items-center gap-x-1 px-2.5 py-1.5 text-[9px] leading-tight text-stone-400">
           {item.imageAttribution && (
-            <a href={item.imageSourceUrl} target="_blank" rel="noreferrer" className="hover:text-stone-200">
+            <a href={assetUrl(item.imageSourceUrl)} target="_blank" rel="noreferrer" className="hover:text-stone-200">
               {item.imageAttribution}
             </a>
           )}
           {item.imageLicenseUrl && (
-            <a href={item.imageLicenseUrl} target="_blank" rel="noreferrer" className="underline hover:text-stone-200">
+            <a href={assetUrl(item.imageLicenseUrl)} target="_blank" rel="noreferrer" className="underline hover:text-stone-200">
               License
             </a>
           )}

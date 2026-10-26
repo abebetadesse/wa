@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n/context";
+import { withBasePath } from "@/lib/base-path";
 
 interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -57,7 +58,7 @@ export default function PwaRegister() {
 
     if ("serviceWorker" in navigator) {
       const register = () => navigator.serviceWorker
-        .register("/sw.js")
+        .register(withBasePath("/sw.js"), { scope: withBasePath("/") })
         .then(async (registration) => {
           if ("sync" in registration) {
             try {

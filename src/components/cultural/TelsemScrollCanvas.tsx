@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Sparkles, Scroll, ShieldCheck, Copy, Check, Printer } from "lucide-react";
 import type { TelsemSeal } from "@/lib/cultural/telsemData";
 import { TelsemSacredSeal } from "./TelsemSacredSeal";
+import { assetUrl } from "@/lib/base-path";
 
 interface TelsemScrollCanvasProps {
   seekerNameGeez?: string;
@@ -134,7 +135,7 @@ export function TelsemScrollCanvas({
                   <div className="space-y-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={seal.sourceImage}
+                      src={assetUrl(seal.sourceImage)}
                       alt={seal.nameAm}
                       className="w-full max-h-72 object-contain mx-auto filter sepia-[0.4] contrast-125 rounded-lg border border-[#d97706]/40"
                     />

@@ -38,6 +38,7 @@ import {
   type FeaturePin,
   type LineTrace,
 } from "@/lib/hexacore/HexacoreVisionEngine";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 interface HexacoreCameraScannerProps {
   initialType?: BodyScanType;
@@ -590,7 +591,7 @@ export default function HexacoreCameraScanner({
                   {/* Base Photo */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={capturedImage}
+                    src={assetUrl(capturedImage)}
                     alt="Captured Scan"
                     className="w-full h-full object-cover select-none"
                   />
@@ -1041,7 +1042,7 @@ export default function HexacoreCameraScanner({
                       </a>
 
                       <a
-                        href="/api/admin/knowledge/export/strands?download=true"
+                        href={withBasePath("/api/admin/knowledge/export/strands?download=true")}
                         className="px-2.5 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-xs font-bold transition flex items-center gap-1"
                       >
                         <Download className="h-3 w-3" />
@@ -1049,7 +1050,7 @@ export default function HexacoreCameraScanner({
                       </a>
 
                       <a
-                        href="/api/admin/knowledge/export/strands?format=csv"
+                        href={withBasePath("/api/admin/knowledge/export/strands?format=csv")}
                         className="px-2.5 py-1.5 rounded-lg border border-sky-500/40 bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 text-xs font-bold transition flex items-center gap-1"
                       >
                         <Download className="h-3 w-3" />

@@ -35,6 +35,7 @@ import {
   Filter,
   Layers,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 interface SystemTelemetry {
   database: {
@@ -134,9 +135,9 @@ export default function AdminDashboardPage() {
     if (isManual) setRefreshing(true);
     try {
       const [analyticsRes, auditRes, systemRes] = await Promise.all([
-        fetch("/api/admin/analytics").then((r) => r.json()),
-        fetch("/api/admin/audit?limit=25").then((r) => r.json()),
-        fetch("/api/admin/system").then((r) => r.json()),
+        fetch(withBasePath("/api/admin/analytics")).then((r) => r.json()),
+        fetch(withBasePath("/api/admin/audit?limit=25")).then((r) => r.json()),
+        fetch(withBasePath("/api/admin/system")).then((r) => r.json()),
       ]);
 
       if (analyticsRes.success) setAnalytics(analyticsRes.data);
@@ -184,7 +185,7 @@ export default function AdminDashboardPage() {
   const handleToggleMaintenance = async () => {
     try {
       const current = systemData?.config.maintenance.enabled;
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -204,7 +205,7 @@ export default function AdminDashboardPage() {
 
   const handleSaveAnnouncement = async () => {
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -229,7 +230,7 @@ export default function AdminDashboardPage() {
   const handleTriggerLiteratureSync = async () => {
     setSyncingLiterature(true);
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "trigger_sync" }),
@@ -247,7 +248,7 @@ export default function AdminDashboardPage() {
 
   const handleEmergencyLock = async () => {
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "emergency_lock" }),
@@ -263,7 +264,7 @@ export default function AdminDashboardPage() {
 
   const handleRevalidateCache = async () => {
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "revalidate_cache" }),
@@ -496,7 +497,7 @@ export default function AdminDashboardPage() {
             {/* Export data dropdown/link */}
             <a
               download="users_export.csv"
-              href="/api/admin/users/export?format=csv"
+              href={withBasePath("/api/admin/users/export?format=csv")}
               className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors flex items-center gap-1.5"
             >
               <Download size={13} />

@@ -13,6 +13,7 @@ import { AWDE_NEGEST_CIRCLES } from "@/lib/cultural/spiritualDivinationEngine";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { estimateAgroEcology } from "@/lib/location/regions";
 import { clearQueued, isQueued, queuePut, startOutboxSync } from "@/lib/offline/outbox";
+import { withBasePath } from '@/lib/base-path';
 
 type Answers = Record<string, unknown>;
 type Phase = "domain" | "challenge" | "specific" | "endorsement" | "report" | "causes" | "solutions" | "complete";
@@ -172,7 +173,7 @@ export default function CasePage() {
     setCasesLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/cases", { credentials: "include", cache: "no-store" });
+      const response = await fetch(withBasePath("/api/cases"), { credentials: "include", cache: "no-store" });
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.error || "The case domains could not be loaded.");
       setCases(payload.data || []);
@@ -256,8 +257,8 @@ export default function CasePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/profile", { credentials: "include", cache: "no-store" }),
-      fetch("/api/auth/me", { credentials: "include", cache: "no-store" }),
+      fetch(withBasePath("/api/profile"), { credentials: "include", cache: "no-store" }),
+      fetch(withBasePath("/api/auth/me"), { credentials: "include", cache: "no-store" }),
     ])
       .then(async ([profileResponse, authResponse]) => ({
         profile: profileResponse.ok ? await profileResponse.json() : null,
@@ -309,7 +310,7 @@ export default function CasePage() {
     const timer = window.setTimeout(async () => {
       setAnswerSync("saving");
       try {
-        const response = await fetch(url, {
+        const response = await fetch(withBasePath(url), {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -348,7 +349,7 @@ export default function CasePage() {
     }
     const timer = window.setTimeout(async () => {
       try {
-        const response = await fetch(`/api/diagnostic/assist?query=${encodeURIComponent(detail)}`);
+        const response = await fetch(withBasePath(`/api/diagnostic/assist?query=${encodeURIComponent(detail)}`));
         const payload = await response.json();
         if (payload.success) setAssist(payload.data);
       } catch {
@@ -420,7 +421,7 @@ export default function CasePage() {
     : [];
 
   async function readJson(url: string, options?: RequestInit) {
-    const response = await fetch(url, options);
+    const response = await fetch(withBasePath(url), options);
     const payload = await response.json();
     if (!response.ok || !payload.success) throw new Error(payload.error || "The workflow could not continue.");
     return payload.data;
@@ -463,7 +464,7 @@ export default function CasePage() {
     if (query.length < 2) {
       throw new Error("Describe the case before running the diagnostic assessment.");
     }
-    const response = await fetch("/api/diagnostic/analyze", {
+    const response = await fetch(withBasePath("/api/diagnostic/analyze"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -542,7 +543,7 @@ export default function CasePage() {
             : undefined;
       const activityValue = asText(profileContext["Physical activity level"]).toLowerCase();
       const culturalOptIn = String(answers.reflectionLens || "").toLowerCase().includes("yes");
-      const response = await fetch("/api/intake", {
+      const response = await fetch(withBasePath("/api/intake"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -688,7 +689,7 @@ export default function CasePage() {
         String(answers.detail || ""),
         String(answers.medications || ""),
       ].filter(Boolean).join("\n");
-      const summaryResponse = await fetch("/api/case/summary", {
+      const summaryResponse = await fetch(withBasePath("/api/case/summary"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -703,7 +704,7 @@ export default function CasePage() {
         throw new Error(summaryPayload.error || "Unable to prepare your case summary.");
       }
       if (summaryPayload.data.isCrisis) {
-        window.location.assign(summaryPayload.data.emergencyRoute || "/emergency");
+        window.location.assign(withBasePath(summaryPayload.data.emergencyRoute || "/emergency"));
         return;
       }
       setSummaryReview(summaryPayload.data.card as SummaryReviewCard);
@@ -720,7 +721,7 @@ export default function CasePage() {
     setIsSubmitting(true);
     setError("");
     try {
-      const endorsementResponse = await fetch(`/api/case/summary/${summaryReview.id}/endorse`, {
+      const endorsementResponse = await fetch(withBasePath(`/api/case/summary/${summaryReview.id}/endorse`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

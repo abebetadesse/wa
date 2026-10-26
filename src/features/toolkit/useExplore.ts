@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AUTH_STATE_CHANGED } from "@/lib/auth/clientEvents";
+import { withBasePath } from '@/lib/base-path';
 
 export interface ExploreTool {
   key: string;
@@ -22,7 +23,7 @@ let cache: Promise<ExploreData | null> | null = null;
 
 function load(force = false) {
   if (force || !cache) {
-    cache = fetch("/api/toolkit/explore", { credentials: "same-origin" })
+    cache = fetch(withBasePath("/api/toolkit/explore"), { credentials: "same-origin" })
       .then((res) => res.json())
       .then((payload) => (payload?.success ? (payload.data as ExploreData) : null))
       .catch(() => null);

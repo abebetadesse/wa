@@ -8,6 +8,7 @@ import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
 import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
 import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 import { getAwdeChapter, getAllSpiritCommentary } from "@/lib/cultural/hatataMenafsest";
+import { withBasePath } from '@/lib/base-path';
 
 export default function SpiritualReportPage({
   params,
@@ -41,7 +42,7 @@ export default function SpiritualReportPage({
 
   useEffect(() => {
     let active = true;
-    fetch(`/api/case/spiritual/${caseId}/report`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/report`), { credentials: "include", cache: "no-store" })
       .then(async (response) => {
         if (response.status === 402) {
           router.replace(`/case/spiritual/${caseId}/preview`);
@@ -104,7 +105,7 @@ export default function SpiritualReportPage({
     setError("");
 
     try {
-      const response = await fetch(`/api/case/spiritual/${caseId}/report`, {
+      const response = await fetch(withBasePath(`/api/case/spiritual/${caseId}/report`), {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

@@ -7,6 +7,7 @@ import {
   WORLD_TRADITIONS,
   WORLD_TRADITION_REGIONS,
 } from "@/lib/cultural/worldTraditions";
+import { assetUrl } from "@/lib/base-path";
 
 export default function WorldTraditionsExplorer() {
   const [region, setRegion] = useState<(typeof WORLD_TRADITION_REGIONS)[number]>("All regions");
@@ -120,7 +121,7 @@ export default function WorldTraditionsExplorer() {
                   {item.resources.map((resource) => (
                     <a
                       key={resource.url}
-                      href={resource.url}
+                      href={assetUrl(resource.url)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-300 underline decoration-emerald-300/30 underline-offset-4 hover:text-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
@@ -150,7 +151,7 @@ export default function WorldTraditionsExplorer() {
           {CULTURAL_STARTER_RESOURCES.map((resource) => (
             <a
               key={resource.organization}
-              href={resource.url}
+              href={assetUrl(resource.url)}
               target="_blank"
               rel="noreferrer"
               className="group rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-emerald-300/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"

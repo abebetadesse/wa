@@ -22,6 +22,7 @@ import {
   Info,
   Clock,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function UserPipelinePage() {
   const [locale, setLocale] = useState<"am" | "en">("am");
@@ -108,7 +109,7 @@ export default function UserPipelinePage() {
         },
       };
 
-      const res = await fetch("/api/profile", {
+      const res = await fetch(withBasePath("/api/profile"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +148,7 @@ export default function UserPipelinePage() {
         consentToProfessionalApproval: caseConsent,
       };
 
-      const res = await fetch("/api/cases", {
+      const res = await fetch(withBasePath("/api/cases"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +162,7 @@ export default function UserPipelinePage() {
       }
 
       if (json.data.emergencyDetected && json.data.emergencyRoute) {
-        window.location.assign(json.data.emergencyRoute);
+        window.location.assign(withBasePath(json.data.emergencyRoute));
         return;
       }
 
@@ -177,7 +178,7 @@ export default function UserPipelinePage() {
 
   const fetchUserReport = async (caseId: string) => {
     try {
-      const res = await fetch(`/api/cases/${caseId}/report/user`);
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/report/user`));
       const json = await res.json();
       if (res.ok && json.success) {
         setUserReport(json.data);

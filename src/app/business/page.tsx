@@ -13,6 +13,7 @@ import { BUSINESS_STATUS } from "@/features/workspace/labels";
 import { cn } from "@/lib/utils";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { useLanguage } from "@/lib/i18n/context";
+import { assetUrl } from "@/lib/base-path";
 
 interface MyBusiness {
   id: string;
@@ -66,7 +67,7 @@ export default function BusinessHome() {
                 <Link href={`/business/${business.id}`} className="group flex items-center gap-4 rounded-3xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-input hover:shadow-lg">
                   {business.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={business.logoUrl} alt="" className="size-14 rounded-2xl object-cover" />
+                    <img src={assetUrl(business.logoUrl)} alt="" className="size-14 rounded-2xl object-cover" />
                   ) : (
                     <Monogram name={business.name} className="size-14 text-xl" />
                   )}

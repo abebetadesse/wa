@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, Download, ExternalLink, FileText, Search, ShieldCheck } from "lucide-react";
 import { SUPPLIED_BOOKS } from "@/lib/cultural/suppliedBookCatalog";
+import { assetUrl } from "@/lib/base-path";
 
 function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
@@ -180,7 +181,7 @@ export default function SuppliedBooksLibrary() {
                     {isOpen ? "Close reader" : "Read full book"}
                   </button>
                   <a
-                    href={pdfUrl}
+                    href={assetUrl(pdfUrl)}
                     download={book.fileName}
                     className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
                   >
@@ -189,7 +190,7 @@ export default function SuppliedBooksLibrary() {
                   </a>
                   {book.sourceUrl && (
                     <a
-                      href={book.sourceUrl}
+                      href={assetUrl(book.sourceUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -204,7 +205,7 @@ export default function SuppliedBooksLibrary() {
               {isOpen && (
                 <iframe
                   title={`${book.title} — full PDF`}
-                  src={`${pdfUrl}#view=FitH`}
+                  src={assetUrl(`${pdfUrl}#view=FitH`)}
                   className="h-[min(75vh,800px)] w-full border-t border-stone-800 bg-stone-950"
                   loading="lazy"
                 />

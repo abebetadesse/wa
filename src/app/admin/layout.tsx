@@ -25,6 +25,7 @@ import {
   ListFilter,
   PhoneCall,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -35,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch(withBasePath("/api/auth/me"))
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok || !data.success || !data.data) {
@@ -56,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname]);
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch(withBasePath("/api/auth/logout"), { method: "POST" });
     router.push("/auth");
     router.refresh();
   }

@@ -34,6 +34,7 @@ import {
 import { HEXACORE_DEFAULT_PRODUCTS, type HexacoreCommercialProduct } from "@/lib/db/schema/hexacore";
 import type { HexacoreDossierReport } from "@/lib/hexacore/HexacoreDossierService";
 import HexacoreLiveAlignment from "@/features/hexacore/HexacoreLiveAlignment";
+import { withBasePath } from '@/lib/base-path';
 
 const CORE_REMEDY_PREVIEWS = [
   { core: "Power", coreAm: "ኃይል", herb: "Damakesse", herbAm: "ደማከሴ", hz: 741, color: "#FF6347" },
@@ -112,7 +113,7 @@ export default function HexacorePage() {
     setCatalogStatus("loading");
     const loadProducts = async () => {
       try {
-        const response = await fetch("/api/hexacore/commercial/products", { signal: controller.signal });
+        const response = await fetch(withBasePath("/api/hexacore/commercial/products"), { signal: controller.signal });
         const payload = await response.json() as {
           success?: boolean;
           data?: HexacoreCommercialProduct[];
@@ -576,7 +577,7 @@ export default function HexacorePage() {
               </div>
               <div className="mt-2 flex gap-2">
                 <a
-                  href={`/api/hexacore/commercial/export-pdf/${purchaseRef}`}
+                  href={withBasePath(`/api/hexacore/commercial/export-pdf/${purchaseRef}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[11px] font-bold text-amber-300 hover:underline"

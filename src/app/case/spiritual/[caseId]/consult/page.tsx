@@ -3,6 +3,7 @@
 import React, { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { withBasePath } from '@/lib/base-path';
 
 export default function SpiritualConsultPage({
   params,
@@ -22,7 +23,7 @@ export default function SpiritualConsultPage({
   const [selectedService, setSelectedService] = useState<{ id: string; title: string; label: string; prayer: string; prayerGe?: string; telsemName?: string | null } | null>(null);
 
   useEffect(() => {
-    fetch(`/api/case/spiritual/${caseId}/status`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/status`), { credentials: "include", cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok || !payload.success) return;
@@ -33,7 +34,7 @@ export default function SpiritualConsultPage({
 
   useEffect(() => {
     setLoadingSlots(true);
-    fetch(`/api/experts/expert-selamawit-tadesse/availability?date=${selectedDate}`)
+    fetch(withBasePath(`/api/experts/expert-selamawit-tadesse/availability?date=${selectedDate}`))
       .then((r) => r.json())
       .then((payload) => {
         if (payload.success && payload.data) {
@@ -47,7 +48,7 @@ export default function SpiritualConsultPage({
   const handleBook = async () => {
     setIsBooking(true);
     try {
-      const res = await fetch(`/api/case/spiritual/${caseId}/consult`, {
+      const res = await fetch(withBasePath(`/api/case/spiritual/${caseId}/consult`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BadgeCheck, Home, MapPin, MessageSquare, Phone, Star, UserRound, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { assetUrl } from "@/lib/base-path";
 
 export const MODE_LABELS: Record<string, { label: string; icon: typeof Video }> = {
   in_person: { label: "In person", icon: UserRound },
@@ -90,7 +91,7 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
       <div className="-mt-8 flex flex-1 flex-col gap-2 px-5 pb-5">
         {business.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={business.logoUrl} alt="" className="size-14 rounded-2xl border-4 border-card object-cover" />
+          <img src={assetUrl(business.logoUrl)} alt="" className="size-14 rounded-2xl border-4 border-card object-cover" />
         ) : (
           <Monogram name={businessName} className="size-14 border-4 border-card text-xl" />
         )}

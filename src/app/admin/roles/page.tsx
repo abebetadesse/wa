@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ALL_PERMISSIONS, PERMISSION_CATEGORIES } from "@/lib/db/schema/rbac";
+import { withBasePath } from '@/lib/base-path';
 
 export default function RoleManagementPage() {
   const [rolesList, setRolesList] = useState<any[]>([]);
@@ -51,7 +52,7 @@ export default function RoleManagementPage() {
   async function fetchRoles() {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/roles");
+      const res = await fetch(withBasePath("/api/admin/roles"));
       const data = await res.json();
       if (data.success && data.data) {
         setRolesList(data.data);
@@ -74,7 +75,7 @@ export default function RoleManagementPage() {
     setSelectedRole(role);
     setShowMembersModal(true);
     try {
-      const res = await fetch(`/api/admin/roles/${role.id}/users`);
+      const res = await fetch(withBasePath(`/api/admin/roles/${role.id}/users`));
       const data = await res.json();
       if (data.success && data.data) {
         setRoleMembers(data.data.users || []);
@@ -100,7 +101,7 @@ export default function RoleManagementPage() {
     e.preventDefault();
     if (!selectedRole) return;
     try {
-      const res = await fetch(`/api/admin/roles/${selectedRole.id}/permissions`, {
+      const res = await fetch(withBasePath(`/api/admin/roles/${selectedRole.id}/permissions`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ permissions: selectedPermissions }),
@@ -109,7 +110,7 @@ export default function RoleManagementPage() {
       if (!res.ok || !data.success) throw new Error(data.error || "Save failed");
 
       // Also update description if changed
-      await fetch(`/api/admin/roles/${selectedRole.id}`, {
+      await fetch(withBasePath(`/api/admin/roles/${selectedRole.id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description: roleDescription, permissions: selectedPermissions }),
@@ -126,7 +127,7 @@ export default function RoleManagementPage() {
   async function handleCreateRole(e: FormEvent) {
     e.preventDefault();
     try {
-      const res = await fetch("/api/admin/roles", {
+      const res = await fetch(withBasePath("/api/admin/roles"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -151,7 +152,7 @@ export default function RoleManagementPage() {
   async function handleDeleteRole(role: any) {
     if (!confirm(`Are you sure you want to delete role '${role.name}'?`)) return;
     try {
-      const res = await fetch(`/api/admin/roles/${role.id}`, { method: "DELETE" });
+      const res = await fetch(withBasePath(`/api/admin/roles/${role.id}`), { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Delete failed");
 

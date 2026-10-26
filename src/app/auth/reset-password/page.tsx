@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Lock, ArrowLeft, CheckCircle2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 function ResetPasswordInner() {
   const router = useRouter();
@@ -35,7 +36,7 @@ function ResetPasswordInner() {
     }
 
     try {
-      const res = await fetch("/api/auth/password/reset", {
+      const res = await fetch(withBasePath("/api/auth/password/reset"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword: password, confirmPassword }),

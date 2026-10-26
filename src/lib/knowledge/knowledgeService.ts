@@ -1,7 +1,8 @@
 import { KnowledgeDocument, KnowledgeSearchResult } from "./catalog";
+import { withBasePath } from "@/lib/base-path";
 
 export class KnowledgeService {
-  constructor(private readonly baseUrl = "/api/knowledge") {}
+  constructor(private readonly baseUrl = withBasePath("/api/knowledge")) {}
 
   async loadStrand(document: KnowledgeDocument) {
     const response = await fetch(`${this.baseUrl}/load`, {

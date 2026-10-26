@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState, useMemo } from "react";
 import { SYSTEM_KNOWLEDGE_STRANDS, SystemStrandMetadata } from "@/lib/hexacore/HexacoreVisionEngine";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 type Field = { name: string; label?: string; type?: string; required?: boolean; options?: string[]; default?: unknown };
 type Strand = { id: string; name: string; description: string; version: string; isActive: boolean };
@@ -9,7 +10,7 @@ type Category = { id: string; name: string; description: string; schema: { field
 type Item = { id: string; data: Record<string, unknown>; version: number; status: string; updatedAt: string };
 
 async function api(url: string, options?: RequestInit) {
-  const response = await fetch(url, options);
+  const response = await fetch(withBasePath(url), options);
   const payload = await response.json();
   if (!response.ok || !payload.success) throw new Error(payload.error || "Request failed");
   return payload.data;
@@ -349,7 +350,7 @@ export default function KnowledgeAdminPage() {
 
             {/* Available Strands Exports */}
             <a
-              href="/api/admin/knowledge/export/strands?download=true"
+              href={withBasePath("/api/admin/knowledge/export/strands?download=true")}
               className="px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 text-xs font-bold transition flex items-center gap-1.5"
               title="Download all 11 system strands in JSON format"
             >
@@ -357,7 +358,7 @@ export default function KnowledgeAdminPage() {
             </a>
 
             <a
-              href="/api/admin/knowledge/export/strands?format=csv"
+              href={withBasePath("/api/admin/knowledge/export/strands?format=csv")}
               className="px-3 py-1.5 rounded-xl border border-sky-500/40 bg-sky-500/15 hover:bg-sky-500/25 text-sky-200 text-xs font-bold transition flex items-center gap-1.5"
               title="Download all 11 system strands in CSV format"
             >
@@ -374,15 +375,13 @@ export default function KnowledgeAdminPage() {
             </label>
             <a
               className="btn-secondary text-xs"
-              href={
-                selectedCategory
+              href={assetUrl(selectedCategory
                   ? `/api/admin/knowledge/export/csv?categoryId=${selectedCategory.id}`
-                  : "/api/admin/knowledge/export/csv"
-              }
+                  : "/api/admin/knowledge/export/csv")}
             >
               Export Items CSV
             </a>
-            <a className="btn-secondary text-xs" href="/api/admin/knowledge/export/json">
+            <a className="btn-secondary text-xs" href={withBasePath("/api/admin/knowledge/export/json")}>
               Export Items JSON
             </a>
           </div>

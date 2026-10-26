@@ -10,6 +10,7 @@ import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState, 
 import { orderSections } from "@/server/cases/reportLayout";
 import { CaseAssistant } from "@/features/cases/CaseAssistant";
 import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/types";
+import { assetUrl } from "@/lib/base-path";
 
 interface ReviewItem {
   id: string;
@@ -253,10 +254,10 @@ export default function CaseReviewItemPage() {
                 <div className="mt-4">
                   <p className="text-sm font-semibold text-slate-200">Client attachment</p>
                   {item.answers.mediaKind === "video"
-                    ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 max-h-72 w-full rounded-xl" />
+                    ? <video controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`)} className="mt-2 max-h-72 w-full rounded-xl" />
                     : item.answers.mediaKind === "image"
                       ? <NextImage src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} alt="Private case evidence provided by the client" width={720} height={480} unoptimized className="mt-2 max-h-72 rounded-xl object-contain" />
-                      : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 w-full" />}
+                      : <audio controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`)} className="mt-2 w-full" />}
                   {item.answers.mediaKind !== "audio" && (
                     <div className="mt-3 flex flex-wrap items-center gap-3">
                       <button type="button" disabled={!mayAct || busy || analysingMedia} onClick={() => void analyseMedia(item.answers.mediaId as string)} className="rounded-lg border border-violet-400/30 px-3 py-2 text-xs font-semibold text-violet-100 hover:bg-violet-950/30 disabled:opacity-50">

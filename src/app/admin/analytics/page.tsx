@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BarChart3, Globe, HeartPulse, Shield, Users, Activity, CheckCircle2, AlertTriangle, PieChart } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 interface OutcomeGroup {
   name: string;
@@ -35,7 +36,7 @@ export default function AnalyticsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/admin/analytics")
+    fetch(withBasePath("/api/admin/analytics"))
       .then((r) => r.json())
       .then((res) => {
         if (!res.success || !res.data) throw new Error(res.error || "Unable to load analytics.");

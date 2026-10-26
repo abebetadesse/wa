@@ -6,6 +6,7 @@ import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Button, Field, Input, Select, Textarea } from "@/components/ui";
 import { GeezKeyboard, GeezNamePreview } from "@/features/cases/GeezNameTools";
 import { cn } from "@/lib/utils";
+import { assetUrl } from "@/lib/base-path";
 
 export interface IntakeConfig {
   allowText: boolean;
@@ -145,10 +146,10 @@ export function IntakeStep({ serviceId, config, value, onChange, signedIn, image
                 <li key={attachment.id} className="flex items-center gap-3 rounded-2xl border border-border p-2">
                   {attachment.kind === "image" && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={attachment.previewUrl} alt="" className="size-14 rounded-xl object-cover" />
+                    <img src={assetUrl(attachment.previewUrl)} alt="" className="size-14 rounded-xl object-cover" />
                   )}
-                  {attachment.kind === "audio" && <audio controls src={attachment.previewUrl} className="h-10 min-w-0 flex-1" />}
-                  {attachment.kind === "video" && <video controls src={attachment.previewUrl} className="h-20 min-w-0 flex-1 rounded-xl" />}
+                  {attachment.kind === "audio" && <audio controls src={assetUrl(attachment.previewUrl)} className="h-10 min-w-0 flex-1" />}
+                  {attachment.kind === "video" && <video controls src={assetUrl(attachment.previewUrl)} className="h-20 min-w-0 flex-1 rounded-xl" />}
                   {attachment.kind === "image" && <span className="min-w-0 flex-1 truncate text-sm text-foreground">{attachment.name}</span>}
                   <Button type="button" size="sm" variant="ghost" aria-label={`Remove ${attachment.name}`} onClick={() => set({ attachments: value.attachments.filter((a) => a.id !== attachment.id) })}>
                     <Trash2 className="size-4" aria-hidden="true" />

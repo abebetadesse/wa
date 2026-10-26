@@ -12,6 +12,7 @@ import {
   type ReadingOption,
 } from "@/lib/christian/readingLibrary";
 import { getLiturgicalContext } from "@/lib/christian/liturgicalCalendar";
+import { assetUrl } from "@/lib/base-path";
 
 // ─── Local storage ──────────────────────────────────────────────
 
@@ -293,7 +294,7 @@ export default function ChristianBibleReading() {
       {/* Actions */}
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <a
-          href={sourceUrl}
+          href={assetUrl(sourceUrl)}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-amber-400"
@@ -301,7 +302,7 @@ export default function ChristianBibleReading() {
           Open {selected.label} in WordProject ↗
         </a>
         <a
-          href={WORDPROJECT_INDEX_URL}
+          href={assetUrl(WORDPROJECT_INDEX_URL)}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 transition hover:border-amber-400 hover:text-amber-200"

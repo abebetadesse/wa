@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { useLanguage } from "@/lib/i18n/context";
+import { withBasePath } from '@/lib/base-path';
 
 const SAMPLE_FOODS = [
   { id: "injera-brown", name: "Fermented Brown Teff Injera", nameAmh: "የቡናማ ጤፍ እንጀራ", defaultGrams: 200, category: "Grains" },
@@ -186,7 +187,7 @@ export default function IntakePage() {
         cultural: formData.cultural,
       };
 
-      const res = await fetch("/api/intake", {
+      const res = await fetch(withBasePath("/api/intake"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

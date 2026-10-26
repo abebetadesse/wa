@@ -8,6 +8,7 @@ import { useDynamicFollowUps } from "@/hooks/useDynamicFollowUps";
 import { CrisisAlertBanner } from "@/components/cultural/CrisisAlertBanner";
 import { CrisisScreenResult, evaluateSpiritualCrisis } from "@/lib/case-workflow/spiritualQuestionEngine";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
+import { withBasePath } from '@/lib/base-path';
 
 function SpiritualStep2Content() {
   const router = useRouter();
@@ -50,7 +51,7 @@ function SpiritualStep2Content() {
       return;
     }
 
-    fetch(`/api/case/spiritual/${caseId}/divination`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/divination`), { credentials: "include", cache: "no-store" })
       .then(async (res) => {
         const payload = await res.json();
         if (!res.ok || !payload.success) throw new Error(payload.error || "Unable to restore this spiritual case.");
@@ -141,7 +142,7 @@ function SpiritualStep2Content() {
     setIsSubmitting(true);
     setError("");
     try {
-      const res = await fetch(`/api/case/spiritual/${caseId}/submit`, {
+      const res = await fetch(withBasePath(`/api/case/spiritual/${caseId}/submit`), {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

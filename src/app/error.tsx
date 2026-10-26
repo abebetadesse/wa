@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     console.error("App error boundary triggered:", error);
     // Report it so the crash shows up in the server log; failures here are ignored.
-    void fetch("/api/client-errors", {
+    void fetch(withBasePath("/api/client-errors"), {
       method: "POST",
       keepalive: true,
       headers: { "Content-Type": "application/json" },

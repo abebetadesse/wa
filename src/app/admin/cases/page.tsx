@@ -14,6 +14,7 @@ import {
   Sliders,
   Sparkles,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function AdminQueuePage() {
   const [cases, setCases] = useState<any[]>([]);
@@ -22,7 +23,7 @@ export default function AdminQueuePage() {
   const fetchCases = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cases");
+      const res = await fetch(withBasePath("/api/cases"));
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setCases(json.data);

@@ -26,6 +26,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { ETHIOPIAN_REGIONS } from "@/lib/location/regions";
+import { withBasePath } from '@/lib/base-path';
 
 export default function UserManagementPage() {
   const regions = ETHIOPIAN_REGIONS;
@@ -88,7 +89,7 @@ export default function UserManagementPage() {
         role: roleFilter,
         status: statusFilter,
       });
-      const res = await fetch(`/api/admin/users?${query.toString()}`);
+      const res = await fetch(withBasePath(`/api/admin/users?${query.toString()}`));
       const data = await res.json();
       if (data.success && data.data) {
         setUsersList(data.data.users || []);
@@ -112,7 +113,7 @@ export default function UserManagementPage() {
     setSelectedUser(user);
     setShowDetailModal(true);
     try {
-      const res = await fetch(`/api/admin/users/${user.id}`);
+      const res = await fetch(withBasePath(`/api/admin/users/${user.id}`));
       const data = await res.json();
       if (data.success && data.data) {
         setSelectedUser(data.data);
@@ -138,7 +139,7 @@ export default function UserManagementPage() {
     e.preventDefault();
     setFormLoading(true);
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch(withBasePath("/api/admin/users"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -180,7 +181,7 @@ export default function UserManagementPage() {
     if (!selectedUser) return;
     setFormLoading(true);
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
+      const res = await fetch(withBasePath(`/api/admin/users/${selectedUser.id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -207,7 +208,7 @@ export default function UserManagementPage() {
   async function handleStatusChange(status: "active" | "suspended" | "inactive") {
     if (!selectedUser) return;
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}/status`, {
+      const res = await fetch(withBasePath(`/api/admin/users/${selectedUser.id}/status`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, reason: suspensionReason }),
@@ -226,7 +227,7 @@ export default function UserManagementPage() {
   async function handleResetPassword() {
     if (!selectedUser) return;
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}/reset-password`, {
+      const res = await fetch(withBasePath(`/api/admin/users/${selectedUser.id}/reset-password`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -242,10 +243,10 @@ export default function UserManagementPage() {
 
   async function handleImpersonate(userId: string) {
     try {
-      const res = await fetch(`/api/admin/users/${userId}/impersonate`, { method: "POST" });
+      const res = await fetch(withBasePath(`/api/admin/users/${userId}/impersonate`), { method: "POST" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Impersonation failed");
-      window.location.href = "/case";
+      window.location.href = withBasePath("/case");
     } catch (err) {
       setNotification({ type: "error", text: err instanceof Error ? err.message : "Impersonation failed." });
     }
@@ -254,7 +255,7 @@ export default function UserManagementPage() {
   async function handleDeleteUser(userId: string) {
     if (!confirm("Are you sure you want to delete this user? This action is irreversible.")) return;
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+      const res = await fetch(withBasePath(`/api/admin/users/${userId}`), { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Delete failed");
       setNotification({ type: "success", text: "User account deleted." });
@@ -296,7 +297,7 @@ export default function UserManagementPage() {
           </button>
           <a
             download="users_export.csv"
-            href="/api/admin/users/export?format=csv"
+            href={withBasePath("/api/admin/users/export?format=csv")}
             className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors flex items-center gap-1.5"
           >
             <Download size={14} />

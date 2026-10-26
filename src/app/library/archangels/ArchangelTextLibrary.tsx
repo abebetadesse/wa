@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { BookOpen, Download, ExternalLink, Search, ShieldCheck } from "lucide-react";
+import { assetUrl } from "@/lib/base-path";
 
 const SUPPLIED_EDITION_URL =
   "https://myorthodoxbooks.org/wp-content/uploads/2020/07/85.e18bb5e188ade188b3e18a90-e1889ae18aabe18aa4e1888d-e18bb5e188ade188b3e18a90-e188a9e18d8be18aa4e1888d-geezamharic.pdf";
@@ -71,7 +72,7 @@ export default function ArchangelTextLibrary() {
               {showFullText ? "Close reader" : "Read full text"}
             </button>
             <a
-              href={SUPPLIED_EDITION_URL}
+              href={assetUrl(SUPPLIED_EDITION_URL)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -84,7 +85,7 @@ export default function ArchangelTextLibrary() {
         {showFullText && (
           <iframe
             title="Ge’ez and Amharic Dirsan of Michael and Raphael — complete PDF"
-            src={`${SUPPLIED_EDITION_URL}#view=FitH`}
+            src={assetUrl(`${SUPPLIED_EDITION_URL}#view=FitH`)}
             className="mt-5 h-[min(80vh,900px)] w-full rounded-xl border border-stone-700 bg-stone-950"
             loading="lazy"
           />
@@ -129,7 +130,7 @@ export default function ArchangelTextLibrary() {
               <div className="mt-5 flex flex-wrap gap-2">
                 {angel.suppliedEdition && (
                   <a
-                    href={SUPPLIED_EDITION_URL}
+                    href={assetUrl(SUPPLIED_EDITION_URL)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
@@ -139,7 +140,7 @@ export default function ArchangelTextLibrary() {
                   </a>
                 )}
                 <a
-                  href={webSearch}
+                  href={assetUrl(webSearch)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
@@ -148,7 +149,7 @@ export default function ArchangelTextLibrary() {
                   Search web for this text
                 </a>
                 <a
-                  href={catalogSearch}
+                  href={assetUrl(catalogSearch)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -157,7 +158,7 @@ export default function ArchangelTextLibrary() {
                   Search Internet Archive
                 </a>
                 <a
-                  href={searchUrl(`site:myorthodoxbooks.org "${angel.nameAm}" "${angel.nameEn}" ድርሳነ filetype:pdf`)}
+                  href={assetUrl(searchUrl(`site:myorthodoxbooks.org "${angel.nameAm}" "${angel.nameEn}" ድርሳነ filetype:pdf`))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -166,7 +167,7 @@ export default function ArchangelTextLibrary() {
                   Search My Orthodox Books
                 </a>
                 <a
-                  href={searchUrl(`"${title}" OR "Dersane ${angel.nameEn}"`, "books.google.com")}
+                  href={assetUrl(searchUrl(`"${title}" OR "Dersane ${angel.nameEn}"`, "books.google.com"))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -201,7 +202,7 @@ export default function ArchangelTextLibrary() {
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <a
-            href={searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት"', "archive.org")}
+            href={assetUrl(searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት"', "archive.org"))}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
@@ -210,7 +211,7 @@ export default function ArchangelTextLibrary() {
             Search collective title
           </a>
           <a
-            href={searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት"', "books.google.com")}
+            href={assetUrl(searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት"', "books.google.com"))}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-900 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
@@ -219,7 +220,7 @@ export default function ArchangelTextLibrary() {
             Check catalog for full text
           </a>
           <a
-            href={searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት" (Tigrinya OR Amharic)')}
+            href={assetUrl(searchUrl('"ድርሳነ ፯ቱ ሊቃነ መላእክት" (Tigrinya OR Amharic)'))}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-900 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { withBasePath } from '@/lib/base-path';
 
 type Result = {
   constitution: { tcmLabel: string; doshaLabel: string; humoralLabel: string; fiveElementFocus: string; reflectiveGuidance: string[] };
@@ -36,7 +37,7 @@ export default function IntegrativeExperience() {
     event.preventDefault(); setLoading(true); setError("");
     try {
       const payload = { constitution: { energy: values.energy, digestion: values.digestion, stress: values.stress, sleep: values.sleep, temperature: values.temperature, activity: values.activity }, pulse: { quality: values.pulse }, tongue: { color: values.color, coating: values.coating, shape: values.shape }, vitals: { heartRate: values.heartRate ? Number(values.heartRate) : undefined, bloodOxygen: values.bloodOxygen ? Number(values.bloodOxygen) : undefined, sleepHours: values.sleepHours ? Number(values.sleepHours) : undefined } };
-      const response = await fetch("/api/integrative/assess", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const response = await fetch(withBasePath("/api/integrative/assess"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const body = await response.json(); if (!response.ok || !body.success) throw new Error(body.error || "Assessment failed."); setResult(body.data);
     } catch (caught) { setError(caught instanceof Error ? caught.message : "Assessment failed."); }
     finally { setLoading(false); }

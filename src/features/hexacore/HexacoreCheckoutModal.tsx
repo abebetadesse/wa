@@ -18,6 +18,7 @@ import {
   Shield,
 } from "lucide-react";
 import type { HexacoreDossierReport } from "@/lib/hexacore/HexacoreDossierService";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 interface HexacoreProduct {
   code: string;
@@ -178,7 +179,7 @@ export default function HexacoreCheckoutModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/hexacore/commercial/checkout", {
+      const res = await fetch(withBasePath("/api/hexacore/commercial/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -218,7 +219,7 @@ export default function HexacoreCheckoutModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/hexacore/commercial/verify-payment", {
+      const res = await fetch(withBasePath("/api/hexacore/commercial/verify-payment"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reference: purchaseReference, paymentReference: txRef.trim() }),
@@ -570,7 +571,7 @@ export default function HexacoreCheckoutModal({
               <div className="grid grid-cols-2 gap-3">
                 <a
                   id="hx-view-dossier"
-                  href={purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}` : "#"}
+                  href={assetUrl(purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition hover:opacity-90"
@@ -581,7 +582,7 @@ export default function HexacoreCheckoutModal({
                 </a>
                 <a
                   id="hx-download-pdf"
-                  href={purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}&format=pdf` : "#"}
+                  href={assetUrl(purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}&format=pdf` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 py-3 text-sm font-bold text-amber-300 hover:bg-amber-500/10 transition"

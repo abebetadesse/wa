@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck, Sparkles, LockKeyhole, BookOpenCheck, Users } from "lucide-react";
 import type { TrustSnapshot } from "@/lib/platform/enhancementCatalog";
+import { withBasePath } from '@/lib/base-path';
 
 export default function TrustExperience() {
   const [snapshot, setSnapshot] = useState<TrustSnapshot | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/platform/trust")
+    fetch(withBasePath("/api/platform/trust"))
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to load trust information.");

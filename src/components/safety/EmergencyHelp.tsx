@@ -9,11 +9,12 @@ import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EMERGENCY_GUIDANCE, verifiedEmergencyContacts, type EmergencyContact } from "@/lib/safety/emergencyContacts";
+import { withBasePath } from '@/lib/base-path';
 
 let pending: Promise<EmergencyContact[]> | null = null;
 
 function loadVerified(): Promise<EmergencyContact[]> {
-  pending ??= fetch("/api/platform/settings", { credentials: "same-origin" })
+  pending ??= fetch(withBasePath("/api/platform/settings"), { credentials: "same-origin" })
     .then((response) => response.json())
     .then((payload) => (Array.isArray(payload?.data?.emergencyContacts) ? (payload.data.emergencyContacts as EmergencyContact[]) : []))
     .catch(() => {

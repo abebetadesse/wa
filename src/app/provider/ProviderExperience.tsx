@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Clock3, ClipboardList, ShieldCheck } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 interface WorkspaceData {
   provider: { name: string | null; role: string; verified: boolean; language: string; region: string | null };
@@ -16,7 +17,7 @@ export default function ProviderExperience() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/provider/workspace")
+    fetch(withBasePath("/api/provider/workspace"))
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to load provider workspace.");

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpenText, ArrowRight, Sparkles } from "lucide-react";
 import { ETHIOPIAN_MANUSCRIPT_SOURCES } from "@/lib/cultural/manuscriptSources";
 import { ETHIOPIAN_MANUSCRIPT_INDEX } from "@/lib/cultural/manuscriptIndex";
+import { assetUrl } from "@/lib/base-path";
 
 export default function LibraryPage() {
   return (
@@ -120,7 +121,7 @@ export default function LibraryPage() {
             <div className="overflow-hidden rounded-2xl border border-amber-500/30 bg-stone-950/90 p-3 relative flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/telsem/telsem_p13_1.png"
+                src={assetUrl("/telsem/telsem_p13_1.png")}
                 alt="Ethiopian Telsem Talisman"
                 className="h-52 w-full rounded-xl object-contain filter sepia-[0.3] contrast-125"
               />

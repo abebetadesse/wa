@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { effectiveCautions, CONDITION_LABELS, type Cautions, type Condition } from "@/server/safety/rules";
 import { cn } from "@/lib/utils";
 import { findByLabel } from "@/server/safety/match";
+import { withBasePath } from '@/lib/base-path';
 
 interface ReferenceEntry {
   slug: string;
@@ -24,7 +25,7 @@ let cache: Promise<ReferenceEntry[]> | null = null;
 export function useSafetyReference() {
   const [entries, setEntries] = useState<ReferenceEntry[] | null>(null);
   useEffect(() => {
-    cache ??= fetch("/api/safety/substances")
+    cache ??= fetch(withBasePath("/api/safety/substances"))
       .then((res) => res.json())
       .then((payload) => (payload?.success ? (payload.data.substances as ReferenceEntry[]) : []))
       .catch(() => []);

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useId } from "react";
 import { ChevronDown, MapPin } from "lucide-react";
 import type { EthiopianAdministrativePlace } from "@/lib/location/ethiopianAdministrativePlaces";
+import { withBasePath } from '@/lib/base-path';
 
 /** A suggested place from GET /api/locations?fields=places (the place list stays on the server). */
 export type LocationSuggestion = Pick<EthiopianAdministrativePlace, "id" | "town" | "zone" | "region"> & { altitudeMeters?: number | null };
@@ -49,7 +50,7 @@ export function EthiopianLocationInput({
     }
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetch(`/api/locations?fields=places&limit=8&q=${encodeURIComponent(term)}`, { signal: controller.signal })
+      fetch(withBasePath(`/api/locations?fields=places&limit=8&q=${encodeURIComponent(term)}`), { signal: controller.signal })
         .then((response) => (response.ok ? response.json() : null))
         .then((payload) => setSuggestions(Array.isArray(payload?.data) ? payload.data : []))
         .catch(() => undefined);

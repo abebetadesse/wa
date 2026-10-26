@@ -1,4 +1,5 @@
 import type { AuthenticatedUser } from "@/lib/auth";
+import { withBasePath } from '@/lib/base-path';
 
 let cachedUser: AuthenticatedUser | null | undefined;
 let cachedAt = 0;
@@ -14,7 +15,7 @@ export async function getClientUser(options: { force?: boolean } = {}): Promise<
 
   if (!options.force && request) return request;
 
-  request = fetch("/api/auth/me", {
+  request = fetch(withBasePath("/api/auth/me"), {
     credentials: "include",
     cache: "no-store",
   })

@@ -18,6 +18,7 @@ import {
   Info,
   Pill,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function ProfessionalCaseDetailPage() {
   const params = useParams();
@@ -54,14 +55,14 @@ export default function ProfessionalCaseDetailPage() {
 
     try {
       // 1. Load case details
-      const caseRes = await fetch(`/api/cases/${caseId}`, {
+      const caseRes = await fetch(withBasePath(`/api/cases/${caseId}`), {
       });
       const caseJson = await caseRes.json();
       if (!caseJson.success) throw new Error(caseJson.error || "Failed to load case");
       setCaseRecord(caseJson.data);
 
       // 2. Load professional report
-      const proRes = await fetch(`/api/cases/${caseId}/report/pro`, {
+      const proRes = await fetch(withBasePath(`/api/cases/${caseId}/report/pro`), {
       });
       const proJson = await proRes.json();
       if (!proJson.success) throw new Error(proJson.error || "Failed to load pro report");
@@ -72,7 +73,7 @@ export default function ProfessionalCaseDetailPage() {
       setMonitoringPlan(proJson.data.pharmacology?.monitoringPlan?.join("\n") || "");
 
       // 3. Load user report preview
-      const userRes = await fetch(`/api/cases/${caseId}/report/user`, {
+      const userRes = await fetch(withBasePath(`/api/cases/${caseId}/report/user`), {
       });
       const userJson = await userRes.json();
       if (userJson.success) {
@@ -106,7 +107,7 @@ export default function ProfessionalCaseDetailPage() {
         monitoringPlan: monitoringPlan.split("\n").filter(Boolean),
       };
 
-      const res = await fetch(`/api/cases/${caseId}/report/pro`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/report/pro`), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +136,7 @@ export default function ProfessionalCaseDetailPage() {
   const handleApprove = async () => {
     setActionError(null);
     try {
-      const res = await fetch(`/api/cases/${caseId}/approve`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/approve`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +156,7 @@ export default function ProfessionalCaseDetailPage() {
   const handleOverrideGate = async () => {
     setActionError(null);
     try {
-      const res = await fetch(`/api/cases/${caseId}/override-gate`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/override-gate`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +181,7 @@ export default function ProfessionalCaseDetailPage() {
   const handleReturn = async () => {
     setActionError(null);
     try {
-      const res = await fetch(`/api/cases/${caseId}/return`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/return`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

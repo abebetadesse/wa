@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { matchReligion, type ChristianTradition } from "@/lib/christian/religionMatch";
 import { getClientUser } from "@/lib/auth/clientState";
+import { withBasePath } from '@/lib/base-path';
 
 export function useProfileReligion() {
   const [state, setState] = useState({ loading: true, error: false, rawReligion: "", isChristian: false, tradition: "unspecified" as ChristianTradition });
@@ -16,7 +17,7 @@ export function useProfileReligion() {
           return;
         }
 
-        const response = await fetch("/api/profile", {
+        const response = await fetch(withBasePath("/api/profile"), {
           credentials: "include",
           cache: "no-store",
           signal: controller.signal,

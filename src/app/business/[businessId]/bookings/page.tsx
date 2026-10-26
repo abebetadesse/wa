@@ -14,6 +14,7 @@ import { useToast } from "@/features/feedback/Toaster";
 import { BOOKING_STATUS, BookingStatusBadge, PaymentStatusBadge } from "@/features/marketplace/status";
 import { MODE_LABELS, formatEtb } from "@/features/marketplace/shared";
 import { cn } from "@/lib/utils";
+import { assetUrl } from "@/lib/base-path";
 
 interface Booking {
   id: string;
@@ -120,7 +121,7 @@ export default function BookingsPage() {
           {[["", "Week view"], ["requested", "Requests"], ["confirmed", "Confirmed"], ["completed", "Completed"]].map(([value, label]) => (
             <a
               key={value}
-              href={value ? `?status=${value}` : "?"}
+              href={assetUrl(value ? `?status=${value}` : "?")}
               className={cn("rounded-full px-3 py-1.5 text-xs font-semibold", statusFilter === value ? "bg-brand text-primary-foreground" : "text-muted-foreground hover:bg-accent")}
             >
               {label}

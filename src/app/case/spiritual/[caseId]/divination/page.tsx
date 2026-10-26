@@ -8,6 +8,7 @@ import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
 import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
 import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
+import { withBasePath } from '@/lib/base-path';
 
 export default function SpiritualDivinationPage({
   params,
@@ -28,7 +29,7 @@ export default function SpiritualDivinationPage({
     setIsProcessing(true);
     setError("");
     try {
-      const response = await fetch(`/api/case/spiritual/${caseId}/process`, {
+      const response = await fetch(withBasePath(`/api/case/spiritual/${caseId}/process`), {
         method: "POST",
         credentials: "include",
       });
@@ -43,7 +44,7 @@ export default function SpiritualDivinationPage({
   };
 
   useEffect(() => {
-    fetch(`/api/case/spiritual/${caseId}/divination`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/divination`), { credentials: "include", cache: "no-store" })
       .then(async (res) => {
         const payload = await res.json();
         if (!res.ok || !payload.success) throw new Error(payload.error || "Unable to load the cultural reading.");

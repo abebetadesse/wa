@@ -10,6 +10,7 @@ import { Alert, Badge, ButtonLink } from "@/components/ui";
 import { LANGUAGE_LABELS, MODE_LABELS, Monogram, Stars, formatEtb } from "@/features/marketplace/shared";
 import { MessageButton } from "./MessageButton";
 import { HexacoreActivityGuide } from "@/features/hexacore/HexacoreActivityGuide";
+import { assetUrl } from "@/lib/base-path";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
     <div className="pb-20">
       <div
         className={`relative h-48 bg-cover bg-center sm:h-64 ${business.coverUrl ? "" : cultural ? "bg-gradient-to-br from-gold/50 via-amber-500/25 to-rose-500/25" : "bg-gradient-to-br from-brand/50 via-sky-500/25 to-emerald-500/25"}`}
-        style={business.coverUrl ? { backgroundImage: `url(${business.coverUrl})` } : undefined}
+        style={business.coverUrl ? { backgroundImage: `url(${assetUrl(business.coverUrl)})` } : undefined}
       >
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
       </div>
@@ -64,7 +65,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
         <div className="relative flex flex-col gap-5 rounded-3xl border border-border bg-card p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-end sm:p-8">
           {business.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={business.logoUrl} alt="" className="size-24 rounded-3xl border-4 border-card object-cover shadow-lg" />
+            <img src={assetUrl(business.logoUrl)} alt="" className="size-24 rounded-3xl border-4 border-card object-cover shadow-lg" />
           ) : (
             <Monogram name={business.name} className="size-24 border-4 border-card text-4xl shadow-lg" />
           )}

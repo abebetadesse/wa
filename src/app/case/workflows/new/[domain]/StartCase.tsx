@@ -32,6 +32,7 @@ import { QuestionField } from "@/features/cases/components";
 import { GeezKeyboard, GeezNamePreview } from "@/features/cases/GeezNameTools";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
 import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
+import { assetUrl } from "@/lib/base-path";
 
 interface DomainSummary {
   domain: WorkflowDomain;
@@ -486,8 +487,8 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                           <Trash2 className="size-4" aria-hidden="true" /> Remove
                         </Button>
                       </div>
-                      {mediaPreview?.kind === "audio" && <audio controls src={mediaPreview.url} className="w-full" />}
-                      {mediaPreview?.kind === "video" && <video controls src={mediaPreview.url} className="max-h-64 w-full rounded-xl" />}
+                      {mediaPreview?.kind === "audio" && <audio controls src={assetUrl(mediaPreview.url)} className="w-full" />}
+                      {mediaPreview?.kind === "video" && <video controls src={assetUrl(mediaPreview.url)} className="max-h-64 w-full rounded-xl" />}
                       {mediaPreview?.kind === "image" && <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-64 max-w-full rounded-xl object-contain" />}
                     </div>
                   )}
@@ -725,9 +726,9 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 <div className="flex flex-col gap-2 rounded-2xl border border-border p-4 bg-muted/20">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attached Media</span>
                   {mediaPreview.kind === "audio" ? (
-                    <audio controls src={mediaPreview.url} className="w-full mt-1" />
+                    <audio controls src={assetUrl(mediaPreview.url)} className="w-full mt-1" />
                   ) : mediaPreview.kind === "video" ? (
-                    <video controls src={mediaPreview.url} className="max-h-56 w-full rounded-xl mt-1" />
+                    <video controls src={assetUrl(mediaPreview.url)} className="max-h-56 w-full rounded-xl mt-1" />
                   ) : (
                     <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-56 max-w-full rounded-xl object-contain" />
                   )}

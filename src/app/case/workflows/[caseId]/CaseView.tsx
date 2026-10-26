@@ -41,6 +41,7 @@ import {
 } from "@/features/cases/components";
 import { STAGE_LABELS } from "../WorkflowHub";
 import { FoodHerbCard } from "./FoodHerbCard";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 const POLL_MS = 30_000;
 
@@ -99,8 +100,8 @@ export function CaseView({ caseId }: { caseId: string }) {
           <CardHeader><CardTitle>Attached recording</CardTitle></CardHeader>
           <CardContent>
             {view.answers.mediaKind === "video"
-              ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="max-h-72 w-full rounded-xl" />
-              : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="w-full" />}
+              ? <video controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`)} className="max-h-72 w-full rounded-xl" />
+              : <audio controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`)} className="w-full" />}
           </CardContent>
         </Card>
       )}
@@ -140,7 +141,7 @@ export function CaseView({ caseId }: { caseId: string }) {
       {view.stage === "full_report_released" && !view.bookingId && <ConsultationForm view={view} onChange={setView} />}
       {view.bookingId && view.stage === "full_report_released" && (
         <Alert tone="success" title="Included with your booking">
-          This report is part of your booked session. <a href={`/account/bookings/${view.bookingId}`} className="font-semibold text-brand underline">View your booking</a>
+          This report is part of your booked session. <a href={withBasePath(`/account/bookings/${view.bookingId}`)} className="font-semibold text-brand underline">View your booking</a>
         </Alert>
       )}
       {view.stage === "consultation_requested" && view.consultation && (
@@ -411,7 +412,7 @@ function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><MessageCircle className="size-5 text-brand" aria-hidden="true" /> Messages with your reviewer</CardTitle>
         <CardDescription>
-          Add anything you forgot, or answer your reviewer&apos;s questions. If you connected Telegram or WhatsApp on your <a href="/account" className="font-semibold text-brand underline">account page</a>, messages also arrive there and you can simply reply in the chat.
+          Add anything you forgot, or answer your reviewer&apos;s questions. If you connected Telegram or WhatsApp on your <a href={withBasePath("/account")} className="font-semibold text-brand underline">account page</a>, messages also arrive there and you can simply reply in the chat.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import type { CaseSearchField, CaseSearchResult } from "@/lib/discovery/caseSearch";
+import { withBasePath } from '@/lib/base-path';
 
 const filterFields: { key: CaseSearchField; label: string }[] = [
   { key: "caseType", label: "Case topic" },
@@ -30,7 +31,7 @@ export default function DiscoverExperience() {
       for (const [key, value] of Object.entries(requestedFilters)) {
         if (value) params.set(key, value);
       }
-      const response = await fetch(`/api/case-search?${params.toString()}`);
+      const response = await fetch(withBasePath(`/api/case-search?${params.toString()}`));
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.error || "Case search failed.");
       setResult(payload.data as CaseSearchResult);

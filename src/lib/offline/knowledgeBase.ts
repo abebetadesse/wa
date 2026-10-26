@@ -7,6 +7,7 @@
  * Data is refreshed via the PWA background sync mechanism when online.
  */
 import { EMERGENCY_GUIDANCE } from "@/lib/safety/emergencyContacts";
+import { withBasePath } from '@/lib/base-path';
 
 const DB_NAME = "ethio-wellness-kb";
 const DB_VERSION = 1;
@@ -84,21 +85,21 @@ export async function syncKnowledgeBase(): Promise<void> {
 
   try {
     // Sync foods
-    const foodsRes = await fetch("/api/foods");
+    const foodsRes = await fetch(withBasePath("/api/foods"));
     if (foodsRes.ok) {
       const foods = await foodsRes.json();
       await kbSet("foods", "all", foods);
     }
 
     // Sync atlas
-    const atlasRes = await fetch("/api/atlas");
+    const atlasRes = await fetch(withBasePath("/api/atlas"));
     if (atlasRes.ok) {
       const atlas = await atlasRes.json();
       await kbSet("atlas", "regions", atlas);
     }
 
     // Sync traditional medicines & herbs
-    const herbsRes = await fetch("/api/traditional-medicine");
+    const herbsRes = await fetch(withBasePath("/api/traditional-medicine"));
     if (herbsRes.ok) {
       const herbsData = await herbsRes.json();
       await kbSet("herbs", "all", herbsData.data ?? herbsData);
@@ -113,7 +114,7 @@ export async function syncKnowledgeBase(): Promise<void> {
  */
 export async function getTraditionalMedicinesWithFallback(): Promise<unknown[]> {
   try {
-    const res = await fetch("/api/traditional-medicine");
+    const res = await fetch(withBasePath("/api/traditional-medicine"));
     if (res.ok) {
       const data = await res.json();
       const list = (data.data ?? data) as unknown[];
@@ -131,7 +132,7 @@ export async function getTraditionalMedicinesWithFallback(): Promise<unknown[]> 
  */
 export async function getFoodsWithFallback(): Promise<unknown[]> {
   try {
-    const res = await fetch("/api/foods");
+    const res = await fetch(withBasePath("/api/foods"));
     if (res.ok) {
       const data = await res.json();
       await kbSet("foods", "all", data);
@@ -148,7 +149,7 @@ export async function getFoodsWithFallback(): Promise<unknown[]> {
  */
 export async function getAtlasWithFallback(): Promise<unknown> {
   try {
-    const res = await fetch("/api/atlas");
+    const res = await fetch(withBasePath("/api/atlas"));
     if (res.ok) {
       const data = await res.json();
       await kbSet("atlas", "regions", data);

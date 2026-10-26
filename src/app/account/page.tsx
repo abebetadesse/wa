@@ -12,6 +12,7 @@ import { useApi } from "@/features/workspace/useApi";
 import { useToast } from "@/features/feedback/Toaster";
 import { PAYMENT_STATUS, payMethodLabel } from "@/features/payments/labels";
 import { useLanguage } from "@/lib/i18n/context";
+import { assetUrl } from "@/lib/base-path";
 
 interface TelegramState {
   available: boolean;
@@ -207,7 +208,7 @@ function ChatConnect({ app, endpoint, action, intro, onRefresh }: { app: string;
           .replace("{minutes}", String(link.expiresInMinutes))}
       </p>
       <div className="flex flex-wrap gap-3">
-        <a href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+        <a href={assetUrl(link.url)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
           <ExternalLink className="size-4" aria-hidden="true" /> {t.account.openApp} {app}
         </a>
         <Button variant="outline" size="sm" onClick={() => { setLink(null); onRefresh(); }}>{t.account.doneConnecting}</Button>

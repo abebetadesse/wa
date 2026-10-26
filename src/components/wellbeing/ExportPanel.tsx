@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { withBasePath } from '@/lib/base-path';
 
 interface ExportPanelProps {
   reportId: string;
@@ -14,7 +15,7 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
     setLoading(format);
     setError(null);
     try {
-      const response = await fetch(`/api/export/${reportId}?format=${format}`);
+      const response = await fetch(withBasePath(`/api/export/${reportId}?format=${format}`));
       if (!response.ok) {
         throw new Error("Export failed. Please try again.");
       }

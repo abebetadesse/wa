@@ -25,6 +25,7 @@ import {
 import { TelsemSacredSeal } from "./TelsemSacredSeal";
 import { TelsemScrollCanvas } from "./TelsemScrollCanvas";
 import { RELATED_MANUSCRIPTS } from "@/lib/cultural/relatedManuscripts";
+import { assetUrl } from "@/lib/base-path";
 
 export function TelsemLibraryViewer() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -152,7 +153,7 @@ export function TelsemLibraryViewer() {
                       {seal.sourceImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={seal.sourceImage}
+                          src={assetUrl(seal.sourceImage)}
                           alt={seal.nameAm}
                           className="w-full h-full object-contain filter sepia-[0.3]"
                         />
@@ -259,7 +260,7 @@ export function TelsemLibraryViewer() {
                   <div className="rounded-xl overflow-hidden border border-stone-700 bg-stone-950 p-2 animate-fadeIn">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={selectedSeal.manuscriptPageImage}
+                      src={assetUrl(selectedSeal.manuscriptPageImage)}
                       alt={`Mets'hafe Asmat Page ${selectedSeal.sourcePage}`}
                       className="w-full max-h-96 object-contain rounded-lg"
                     />
@@ -329,7 +330,7 @@ export function TelsemLibraryViewer() {
                       <details className="rounded-xl border border-stone-800 bg-black/20 p-3">
                         <summary className="cursor-pointer text-xs font-semibold text-amber-200">View manuscript page scan</summary>
                         <Image src={seal.manuscriptPageImage} alt={`Manuscript scan for ${seal.nameEn}`} width={1200} height={1600} loading="lazy" className="mx-auto mt-3 max-h-[70vh] w-full object-contain" />
-                        <a href={seal.manuscriptPageImage} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-amber-300 underline">Open scan in a new tab</a>
+                        <a href={assetUrl(seal.manuscriptPageImage)} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-amber-300 underline">Open scan in a new tab</a>
                       </details>
                     )}
                     <button type="button" onClick={() => { selectSeal(seal); document.getElementById("tsifet-builder")?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/20">
@@ -358,10 +359,10 @@ export function TelsemLibraryViewer() {
               Image credit: {record.institution}, {record.licenseLabel}.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 text-sm">
-              <a href={record.catalogueUrl} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View catalogue record</a>
-              <a href={record.imageUrl} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View digitized image</a>
-              <a href={record.apiUrl} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View catalogue metadata</a>
-              <a href={record.licenseUrl} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">Read license</a>
+              <a href={assetUrl(record.catalogueUrl)} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View catalogue record</a>
+              <a href={assetUrl(record.imageUrl)} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View digitized image</a>
+              <a href={assetUrl(record.apiUrl)} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">View catalogue metadata</a>
+              <a href={assetUrl(record.licenseUrl)} target="_blank" rel="noreferrer" className="text-amber-300 underline underline-offset-2 hover:text-amber-200">Read license</a>
             </div>
           </article>
         ))}

@@ -22,6 +22,7 @@ import {
   Server,
   Layers,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 interface SystemConfig {
   maintenance: {
@@ -66,7 +67,7 @@ export default function AdminSettingsPage() {
   // Load current settings from API
   const loadSettings = async () => {
     try {
-      const res = await fetch("/api/admin/system");
+      const res = await fetch(withBasePath("/api/admin/system"));
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || "Failed to load platform settings.");
       setConfig(json.data.config);
@@ -92,7 +93,7 @@ export default function AdminSettingsPage() {
     if (!config) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,7 +115,7 @@ export default function AdminSettingsPage() {
     if (!config) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -457,7 +458,7 @@ export default function AdminSettingsPage() {
 
           <div className="space-y-4">
             {/* Sign-up and verification moved to their own page, stored in the database. */}
-            <a href="/admin/sign-up" className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between hover:border-emerald-500/40">
+            <a href={withBasePath("/admin/sign-up")} className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between hover:border-emerald-500/40">
               <div>
                 <p className="text-xs font-semibold text-white">Sign-up &amp; Telegram verification</p>
                 <p className="text-[11px] text-slate-400">Open or pause registration and choose how Telegram verification is used.</p>

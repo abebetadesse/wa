@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { CaseSearchField, CaseSearchSettings } from "@/lib/discovery/caseSearch";
+import { withBasePath } from '@/lib/base-path';
 
 const fields: { key: CaseSearchField; label: string; description: string }[] = [
   { key: "caseType", label: "Case topics", description: "Show case-topic filters and search case categories." },
@@ -24,7 +25,7 @@ export default function AdminCaseSearchPage() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/admin/case-search/filters");
+      const response = await fetch(withBasePath("/api/admin/case-search/filters"));
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to load search filters.");
       setSettings(payload.data as CaseSearchSettings);
@@ -42,7 +43,7 @@ export default function AdminCaseSearchPage() {
     setError("");
     setNotice("");
     try {
-      const response = await fetch("/api/admin/case-search/filters", {
+      const response = await fetch(withBasePath("/api/admin/case-search/filters"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),

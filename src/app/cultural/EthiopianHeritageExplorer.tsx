@@ -6,6 +6,7 @@ import {
   ETHIOPIAN_HERITAGE_CATEGORIES,
   ETHIOPIAN_HERITAGE_DIRECTORY,
 } from "@/lib/cultural/ethiopianHeritage";
+import { assetUrl } from "@/lib/base-path";
 
 export default function EthiopianHeritageExplorer() {
   const [category, setCategory] =
@@ -151,7 +152,7 @@ export default function EthiopianHeritageExplorer() {
                   {entry.visitorNote}
                 </p>
                 <a
-                  href={entry.source.url}
+                  href={assetUrl(entry.source.url)}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-300 underline decoration-emerald-300/30 underline-offset-4 hover:text-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"

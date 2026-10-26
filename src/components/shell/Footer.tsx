@@ -7,6 +7,7 @@ import { ETHIOPIAN_PROFILED_LOCATION_COUNT } from "@/lib/location/regions";
 import { KNOWLEDGE_STRANDS } from "@/lib/knowledge/catalog";
 import { useExplore } from "@/features/toolkit/useExplore";
 import { useLanguage } from "@/lib/i18n/context";
+import { withBasePath } from '@/lib/base-path';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -22,7 +23,7 @@ export default function Footer() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/nutrition/overview")
+    fetch(withBasePath("/api/nutrition/overview"))
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.success) setFoodCount(data.foodCount ?? null);

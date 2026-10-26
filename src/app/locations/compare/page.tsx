@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEthiopianLocationById } from "@/lib/location/ethiopiaLocations";
+import { withBasePath } from '@/lib/base-path';
 
 export default async function CompareLocationsPage({
   searchParams,
@@ -76,7 +77,7 @@ export default async function CompareLocationsPage({
           </div>
           <div className="flex items-center gap-3">
             <a
-              href={`/api/locations/export?ids=${encodeURIComponent(ids.join(","))}`}
+              href={withBasePath(`/api/locations/export?ids=${encodeURIComponent(ids.join(","))}`)}
               className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-emerald-200 transition hover:border-emerald-400 hover:bg-emerald-500/20"
             >
               Export CSV

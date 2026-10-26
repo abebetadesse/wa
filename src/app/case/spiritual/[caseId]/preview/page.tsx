@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
+import { withBasePath } from '@/lib/base-path';
 
 type PreviewData = {
   status: string;
@@ -41,7 +42,7 @@ export default function SpiritualPreviewPage({
 
   useEffect(() => {
     let active = true;
-    fetch(`/api/case/spiritual/${caseId}/preview`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/preview`), { credentials: "include", cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok || !payload.success) throw new Error(payload.error || "The reading preview is unavailable.");

@@ -26,6 +26,7 @@ import {
   type HexacoreNumerology,
   type JournalPrompt,
 } from "@/lib/cultural/hexacoreArcana";
+import { withBasePath } from '@/lib/base-path';
 import {
   Sparkles,
   Volume2,
@@ -394,7 +395,7 @@ export default function HexacoreOrrery() {
     const loadJournal = async () => {
       setJournalStatus("loading");
       try {
-        const response = await fetch("/api/hexacore/journal");
+        const response = await fetch(withBasePath("/api/hexacore/journal"));
         if (!response.ok) {
           if (response.status === 401) {
             setJournalStatus("local");
@@ -481,7 +482,7 @@ export default function HexacoreOrrery() {
     );
 
     try {
-      const serverResponse = await fetch("/api/hexacore/journal", {
+      const serverResponse = await fetch(withBasePath("/api/hexacore/journal"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

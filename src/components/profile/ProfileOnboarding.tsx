@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
+import { withBasePath } from '@/lib/base-path';
 
 const CASE_TYPES = [
   ["wellbeing", "wellbeing & wellness"],
@@ -46,7 +47,7 @@ export default function ProfileOnboarding() {
     setLoading(true);
     setError("");
     try {
-      const profileResponse = await fetch("/api/profile", {
+      const profileResponse = await fetch(withBasePath("/api/profile"), {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -64,7 +65,7 @@ export default function ProfileOnboarding() {
         const payload = await profileResponse.json();
         throw new Error(payload.error || "Unable to save your profile.");
       }
-      const userResponse = await fetch("/api/auth/me", {
+      const userResponse = await fetch(withBasePath("/api/auth/me"), {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

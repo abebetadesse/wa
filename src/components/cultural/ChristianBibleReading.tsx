@@ -12,6 +12,7 @@ import {
   type ReadingOption,
 } from "@/lib/christian/readingLibrary";
 import { getLiturgicalContext } from "@/lib/christian/liturgicalCalendar";
+import { assetUrl } from "@/lib/base-path";
 
 const LAST_KEY = "ewa.christian.lastReading.v1";
 const BOOKMARKS_KEY = "ewa.christian.bookmarks.v1";
@@ -132,8 +133,8 @@ export default function ChristianBibleReading() {
 
       <blockquote className="mt-5 rounded-2xl border-l-4 border-amber-400 bg-amber-500/5 px-4 py-3 text-sm leading-6 text-stone-200">“በመጀመሪያው ቃል ነበረ፥ ቃልም በእግዚአብሔር ዘንድ ነበረ።”<footer className="mt-2 text-xs text-stone-400">Short quotation · John 1:1 · Source: International Biblical Association / WordProject</footer></blockquote>
       <div className="mt-5 flex flex-wrap gap-3">
-        <a href={wordProjectChapterUrl(selected.book, selected.chapter)} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black hover:bg-amber-400">Open {selected.label} in WordProject ↗</a>
-        <a href={WORDPROJECT_INDEX_URL} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 hover:border-amber-400">Browse Amharic Bible index ↗</a>
+        <a href={assetUrl(wordProjectChapterUrl(selected.book, selected.chapter))} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black hover:bg-amber-400">Open {selected.label} in WordProject ↗</a>
+        <a href={assetUrl(WORDPROJECT_INDEX_URL)} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 hover:border-amber-400">Browse Amharic Bible index ↗</a>
       </div>
       <p className="mt-4 text-[11px] leading-5 text-stone-500">Source and copyright notice: WordProject / International Biblical Association. Ethiopian Wisdom Atlas stores only navigation state locally and does not reproduce the external text.</p>
     </section>

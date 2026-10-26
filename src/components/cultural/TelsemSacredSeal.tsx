@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Sparkles, Eye, BookOpen, ShieldCheck, Maximize2, Scroll } from "lucide-react";
 import type { TelsemSeal } from "@/lib/cultural/telsemData";
+import { assetUrl } from "@/lib/base-path";
 
 interface TelsemSacredSealProps {
   seal: TelsemSeal;
@@ -107,7 +108,7 @@ export function TelsemSacredSeal({
             <div className="relative w-full h-full flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={seal.sourceImage}
+                src={assetUrl(seal.sourceImage)}
                 alt={seal.nameAm}
                 className="max-w-full max-h-full object-contain filter contrast-125 sepia-[0.35] brightness-90 transition-transform duration-500 group-hover:scale-105"
               />
@@ -222,7 +223,7 @@ export function TelsemSacredSeal({
           <div className="relative max-w-4xl max-h-[85vh] overflow-auto rounded-2xl border border-amber-500/40 p-2 bg-stone-950">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={seal.sourceImage}
+              src={assetUrl(seal.sourceImage)}
               alt={seal.nameAm}
               className="max-w-full max-h-[80vh] object-contain rounded-xl"
             />

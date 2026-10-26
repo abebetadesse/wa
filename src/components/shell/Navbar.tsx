@@ -32,6 +32,7 @@ import { useSession } from "@/features/session/SessionProvider";
 import { NotificationBell } from "@/features/realtime/NotificationBell";
 import { useExplore } from "@/features/toolkit/useExplore";
 import { cn } from "@/lib/utils";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 const PRIMARY = [
   { href: "/marketplace", label: "Find a healer", icon: Search },
@@ -140,7 +141,7 @@ export default function Navbar() {
           ))}
           {SCHOOL_APP_URL && (
             <a
-              href={SCHOOL_APP_URL}
+              href={assetUrl(SCHOOL_APP_URL)}
               className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <GraduationCap className="size-4" aria-hidden="true" />
@@ -243,7 +244,7 @@ export default function Navbar() {
                     type="button"
                     onClick={async () => {
                       await signOut();
-                      window.location.href = "/";
+                      window.location.href = withBasePath("/");
                     }}
                     className="mt-1 flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-danger hover:bg-danger/10"
                   >
@@ -280,7 +281,7 @@ export default function Navbar() {
               </Link>
             ))}
             {SCHOOL_APP_URL && (
-              <a href={SCHOOL_APP_URL} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-semibold text-foreground hover:bg-accent">
+              <a href={assetUrl(SCHOOL_APP_URL)} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-semibold text-foreground hover:bg-accent">
                 <GraduationCap className="size-5 text-brand" aria-hidden="true" /> School
               </a>
             )}

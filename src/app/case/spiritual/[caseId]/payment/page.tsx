@@ -4,6 +4,7 @@ import React, { use, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePaymentStream } from "@/hooks/usePaymentStream";
+import { withBasePath } from '@/lib/base-path';
 
 function SpiritualPaymentContent({ caseId }: { caseId: string }) {
   const router = useRouter();
@@ -27,7 +28,7 @@ function SpiritualPaymentContent({ caseId }: { caseId: string }) {
 
     try {
       // Simulate live gateway confirmation
-      const res = await fetch(`/api/case/spiritual/${caseId}/purchase/confirm`, {
+      const res = await fetch(withBasePath(`/api/case/spiritual/${caseId}/purchase/confirm`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

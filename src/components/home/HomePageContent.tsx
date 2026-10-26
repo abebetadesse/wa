@@ -5,6 +5,7 @@ import { ArrowRight, BadgeCheck, Briefcase, CalendarCheck, Compass, Dna, Heart, 
 import { ButtonLink } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n/context";
 import { BusinessCard } from "@/features/marketplace/shared";
+import { withBasePath } from "@/lib/base-path";
 
 type HomeData = {
   facets?: {
@@ -51,7 +52,7 @@ export function HomePageContent({ data }: { data: HomeData }) {
 
             {data?.facets?.searchVisible && (
               <>
-                <form action="/marketplace" className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-xl shadow-brand/5 focus-within:ring-2 focus-within:ring-ring">
+                <form action={withBasePath("/marketplace")} className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-xl shadow-brand/5 focus-within:ring-2 focus-within:ring-ring">
                   <Search className="ml-3 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
                   <label htmlFor="home-search" className="sr-only">{t.home.search}</label>
                   <input

@@ -32,6 +32,7 @@ import { calculateDanMillmanLifePath } from "@/lib/profiling/numerology/danMillm
 import { calculateAwudeNegestReading } from "@/lib/cultural/awudeNegestEngine";
 import { PersonalDayAlignment, PLATFORM_DISCLAIMERS } from "@/lib/profiling/extendedTypes";
 import { notifyAuthStateChanged } from "@/lib/auth/clientEvents";
+import { withBasePath, basePath } from '@/lib/base-path';
 
 type ActiveTab =
   | "synthesis"
@@ -219,7 +220,7 @@ export default function ProfileClient() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/profile", { credentials: "include", cache: "no-store" })
+    fetch(withBasePath("/api/profile"), { credentials: "include", cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json();
         if (!response.ok || !payload.success) throw new Error(payload.error || "Unable to load your profile.");
@@ -286,10 +287,10 @@ export default function ProfileClient() {
     setUnlockLoading(true);
     setUnlockMessage("");
     try {
-      const res = await fetch("/api/profile/unlock", {
+      const res = await fetch(withBasePath("/api/profile/unlock"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ method: "chapa", origin: window.location.origin }),
+        body: JSON.stringify({ method: "chapa", origin: `${window.location.origin}${basePath}` }),
       });
       const data = await res.json();
       if (data.unlocked) {
@@ -315,7 +316,7 @@ export default function ProfileClient() {
     setAccountSaving(true);
     setAccountMessage("Saving...");
     try {
-      const response = await fetch("/api/profile", {
+      const response = await fetch(withBasePath("/api/profile"), {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -417,7 +418,7 @@ export default function ProfileClient() {
   const handleFetchSuggestions = async (overrideReason?: string) => {
     setSuggestLoading(true);
     try {
-      const res = await fetch("/api/profile/suggest-name", {
+      const res = await fetch(withBasePath("/api/profile/suggest-name"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

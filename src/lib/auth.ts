@@ -6,10 +6,13 @@ import { eq, and, isNull, gt, desc } from "drizzle-orm";
 import { getAuthSecret } from "./auth/secret";
 import { DEFAULT_ROLE_PERMISSIONS, roleHasPermission, RoleName } from "./db/schema/rbac";
 import { insertReturning } from "@/lib/db/write";
+import { basePath } from "@/lib/base-path";
 
 const ACCESS_COOKIE = "ethio_access";
 const REFRESH_COOKIE = "ethio_refresh";
 const IMPERSONATE_COOKIE = "ethio_impersonate";
+// Scoped to the app's prefix so the cookies are not sent to other apps on the same domain.
+const COOKIE_PATH = basePath || "/";
 
 const ACCESS_TTL_SECONDS = 15 * 60; // 15 minutes as per specification
 const REFRESH_TTL_DAYS_STANDARD = 7;
@@ -158,7 +161,7 @@ export async function establishAuth(
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: ACCESS_TTL_SECONDS,
-    path: "/",
+    path: COOKIE_PATH,
   });
 
   jar.set(REFRESH_COOKIE, refreshToken, {
@@ -166,7 +169,7 @@ export async function establishAuth(
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: ttlDays * 24 * 60 * 60,
-    path: "/",
+    path: COOKIE_PATH,
   });
 
   return { accessToken, refreshToken, sessionId: session?.id, expiresAt };
@@ -247,7 +250,7 @@ export async function getAuthenticatedUser(options: { refreshAccessCookie?: bool
                 sameSite: "lax",
                 secure: process.env.NODE_ENV === "production",
                 maxAge: ACCESS_TTL_SECONDS,
-                path: "/",
+                path: COOKIE_PATH,
               });
             }
             claims = verifyAccessToken(newAccess);
@@ -358,9 +361,9 @@ export async function clearAuth() {
       .set({ revokedAt: new Date(), isActive: false })
       .where(eq(authSessions.refreshTokenHash, refreshHash));
   }
-  jar.delete(ACCESS_COOKIE);
-  jar.delete(REFRESH_COOKIE);
-  jar.delete(IMPERSONATE_COOKIE);
+  jar.delete({ name: ACCESS_COOKIE, path: COOKIE_PATH });
+  jar.delete({ name: REFRESH_COOKIE, path: COOKIE_PATH });
+  jar.delete({ name: IMPERSONATE_COOKIE, path: COOKIE_PATH });
 }
 
 export async function impersonateUser(targetUserId: string) {
@@ -371,14 +374,14 @@ export async function impersonateUser(targetUserId: string) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: 2 * 60 * 60, // 2 hours
-    path: "/",
+    path: COOKIE_PATH,
   });
   return { success: true, originalUserId: currentUser.id, targetUserId };
 }
 
 export async function stopImpersonation() {
   const jar = await cookies();
-  jar.delete(IMPERSONATE_COOKIE);
+  jar.delete({ name: IMPERSONATE_COOKIE, path: COOKIE_PATH });
   return { success: true };
 }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, FormEvent } from "react";
 import { FileText, Search, Filter, Clock, Eye, X, Terminal, ArrowRight, ArrowLeft } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function AuditLogPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -25,7 +26,7 @@ export default function AuditLogPage() {
         search,
         action: actionFilter,
       });
-      const res = await fetch(`/api/admin/audit?${query.toString()}`);
+      const res = await fetch(withBasePath(`/api/admin/audit?${query.toString()}`));
       const data = await res.json();
       if (data.success && data.data) {
         setLogs(data.data.logs || []);

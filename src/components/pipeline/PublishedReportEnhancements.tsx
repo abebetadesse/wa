@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { UserReport } from "@/lib/reports/types";
+import { assetUrl } from "@/lib/base-path";
 
 export interface PublishedReportHistoryEntry {
   version: number;
@@ -480,7 +481,7 @@ export function PublishedReportEnhancements({
                   return (
                     <li key={`${source.citation}-${source.title}-${index}`}>
                       {externalUri ? (
-                        <a href={externalUri} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full border border-sky-400/30 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-100 underline-offset-2 hover:underline">
+                        <a href={assetUrl(externalUri)} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full border border-sky-400/30 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-100 underline-offset-2 hover:underline">
                           {source.title}{source.year ? ` · ${source.year}` : ""}
                         </a>
                       ) : (

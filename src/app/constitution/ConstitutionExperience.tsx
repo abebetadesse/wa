@@ -8,6 +8,7 @@ import {
   ConstitutionAnswers,
   ConstitutionAssessment,
 } from "@/lib/cultural/constitutionAssessment";
+import { withBasePath } from '@/lib/base-path';
 
 interface Question {
   key: ConstitutionAnswerKey;
@@ -65,7 +66,7 @@ export default function ConstitutionExperience() {
   useEffect(() => {
     let active = true;
     setLoadingHistory(true);
-    fetch("/api/profile/constitution-history")
+    fetch(withBasePath("/api/profile/constitution-history"))
       .then(async (response) => (response.ok ? response.json() : []))
       .then((data: unknown) => {
         if (!active) return;
@@ -96,7 +97,7 @@ export default function ConstitutionExperience() {
   async function saveAssessment() {
     setStatus("Saving...");
     try {
-      const response = await fetch("/api/profile/constitution", {
+      const response = await fetch(withBasePath("/api/profile/constitution"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...assessment, answers }),

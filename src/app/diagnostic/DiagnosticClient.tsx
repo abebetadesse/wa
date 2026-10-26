@@ -5,6 +5,7 @@ import { EmergencyHelp } from "@/components/safety/EmergencyHelp";
 import { useEffect, useState } from "react";
 import { DiagnosticSolution, DiagnosticUrgencyLevel, KnowledgeStrandType } from "@/lib/knowledge/types";
 import { useLanguage } from "@/lib/i18n/context";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 type InputMode = "text" | "voice" | "image" | "symptom";
 
@@ -209,7 +210,7 @@ export default function DiagnosticClient() {
 
       const domainLabel = td.domains[selectedDomain]?.label ?? "wellbeing";
 
-      const response = await fetch("/api/diagnostic/analyze", {
+      const response = await fetch(withBasePath("/api/diagnostic/analyze"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -252,7 +253,7 @@ export default function DiagnosticClient() {
 
   async function loadHistory() {
     try {
-      const res = await fetch("/api/diagnostic/history?limit=10");
+      const res = await fetch(withBasePath("/api/diagnostic/history?limit=10"));
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setHistoryItems(json.data);
@@ -274,7 +275,7 @@ export default function DiagnosticClient() {
     const timer = window.setTimeout(async () => {
       try {
         const contextQuery = userMedications ? `${query} Current medications: ${userMedications}` : query;
-        const response = await fetch(`/api/diagnostic/assist?query=${encodeURIComponent(contextQuery)}`);
+        const response = await fetch(withBasePath(`/api/diagnostic/assist?query=${encodeURIComponent(contextQuery)}`));
         const payload = await response.json();
         if (payload.success) setAssist(payload.data);
       } catch {
@@ -1165,7 +1166,7 @@ export default function DiagnosticClient() {
                             <div key={itemIdx} className="flex gap-3 items-start p-2 rounded-lg bg-black/20 border border-white/5">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
-                                src={item.imageUrl}
+                                src={assetUrl(item.imageUrl)}
                                 alt={item.imageAlt}
                                 width={40}
                                 height={40}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AIChatMessage, AIChatSessionData, PLATFORM_DISCLAIMERS } from "@/lib/profiling/extendedTypes";
+import { withBasePath } from '@/lib/base-path';
 
 interface AIChatViewProps {
   userId?: string;
@@ -48,7 +49,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       setError(null);
 
       try {
-        const response = await fetch("/api/chat/start", {
+        const response = await fetch(withBasePath("/api/chat/start"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, userProfile: userContext }),
@@ -102,7 +103,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
     setSession((current) => (current ? { ...current, messages: [...current.messages, userMessage] } : current));
 
     try {
-      const response = await fetch(`/api/chat/${encodeURIComponent(session.sessionId)}/message`, {
+      const response = await fetch(withBasePath(`/api/chat/${encodeURIComponent(session.sessionId)}/message`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -183,7 +184,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
 
     setError(null);
     try {
-      const response = await fetch("/api/chat/reading", {
+      const response = await fetch(withBasePath("/api/chat/reading"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, type, userProfile: ctx }),

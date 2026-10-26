@@ -17,6 +17,7 @@ import {
   Send,
   Eye,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 export default function AdminCaseDetailPage() {
   const params = useParams();
@@ -53,14 +54,14 @@ export default function AdminCaseDetailPage() {
 
     try {
       // 1. Load case details
-      const caseRes = await fetch(`/api/cases/${caseId}`, {
+      const caseRes = await fetch(withBasePath(`/api/cases/${caseId}`), {
       });
       const caseJson = await caseRes.json();
       if (!caseJson.success) throw new Error(caseJson.error || "Failed to load case");
       setCaseRecord(caseJson.data);
 
       // 2. Load audit events
-      const eventsRes = await fetch(`/api/cases/${caseId}/events`, {
+      const eventsRes = await fetch(withBasePath(`/api/cases/${caseId}/events`), {
       });
       const eventsJson = await eventsRes.json();
       if (eventsJson.success) {
@@ -68,13 +69,13 @@ export default function AdminCaseDetailPage() {
       }
 
       // 3. Load professional report
-      const proRes = await fetch(`/api/cases/${caseId}/report/pro`, {
+      const proRes = await fetch(withBasePath(`/api/cases/${caseId}/report/pro`), {
       });
       const proJson = await proRes.json();
       if (proJson.success) setProReport(proJson.data);
 
       // 4. Load user report
-      const userRes = await fetch(`/api/cases/${caseId}/report/user`, {
+      const userRes = await fetch(withBasePath(`/api/cases/${caseId}/report/user`), {
       });
       const userJson = await userRes.json();
       if (userJson.success) setUserReport(userJson.data);
@@ -93,7 +94,7 @@ export default function AdminCaseDetailPage() {
   const handlePublish = async () => {
     setActionError(null);
     try {
-      const res = await fetch(`/api/cases/${caseId}/publish`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/publish`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +115,7 @@ export default function AdminCaseDetailPage() {
   const handleReturnToPro = async () => {
     setActionError(null);
     try {
-      const res = await fetch(`/api/cases/${caseId}/return`, {
+      const res = await fetch(withBasePath(`/api/cases/${caseId}/return`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

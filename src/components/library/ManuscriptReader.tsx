@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { BookOpenText, ChevronLeft, ChevronRight, FileText, Layers3 } from "lucide-react";
 import { AWUDE_CIRCLES } from "@/lib/cultural/awudeNegestEngine";
+import { assetUrl } from "@/lib/base-path";
 
 interface ManuscriptReaderProps {
   selectedCircleId: number;
@@ -99,7 +100,7 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
           <iframe
             key={`frame-${selectedCircleId}-${page}`}
             title="Awde Negest manuscript viewer"
-            src={`${EMBED_URL}&page=${page}`}
+            src={assetUrl(`${EMBED_URL}&page=${page}`)}
             className="h-[720px] w-full bg-stone-950"
             loading="lazy"
           />

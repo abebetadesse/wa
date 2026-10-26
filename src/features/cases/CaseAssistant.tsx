@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { MessageSquareText, ShieldAlert } from "lucide-react";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
+import { assetUrl } from "@/lib/base-path";
 
 interface Turn {
   id: string;
@@ -84,7 +85,7 @@ export function CaseAssistant({ caseId, variant = "owner" }: { caseId: string; v
                       <li key={`${turn.id}-${index}`}>
                         [{index + 1}]{" "}
                         {source.citation?.url ? (
-                          <a href={source.citation.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">{source.citation.title}</a>
+                          <a href={assetUrl(source.citation.url)} target="_blank" rel="noreferrer" className="underline underline-offset-2">{source.citation.title}</a>
                         ) : (
                           source.title
                         )}

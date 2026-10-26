@@ -2,7 +2,7 @@
 /**
  * useUser — Pillar 2, Point 7: Unified deduplicating session hook
  *
- * Replaces scattered fetch("/api/auth/me") + fetch("/api/profile") calls
+ * Replaces scattered fetch(withBasePath("/api/auth/me")) + fetch(withBasePath("/api/profile")) calls
  * in Navbar, Footer, AuthGate, and case pages with a single shared in-memory
  * store. All components that call `useUser()` share one request and one
  * cached response — reducing 6 redundant network calls per page to 1.
@@ -16,6 +16,7 @@
  */
 import { useSyncExternalStore, useEffect, useCallback } from "react";
 import type { AuthenticatedUser } from "@/lib/auth";
+import { withBasePath } from '@/lib/base-path';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -100,7 +101,7 @@ async function fetchUser(): Promise<void> {
   notify();
 
   try {
-    const res = await fetch("/api/auth/me", {
+    const res = await fetch(withBasePath("/api/auth/me"), {
       credentials: "include",
       cache: "no-store",
     });
@@ -115,7 +116,7 @@ async function fetchUser(): Promise<void> {
       // Lazily fetch profile only when authenticated
       if (store.user) {
         try {
-          const profileRes = await fetch("/api/profile", {
+          const profileRes = await fetch(withBasePath("/api/profile"), {
             credentials: "include",
             cache: "no-store",
           });
@@ -165,7 +166,7 @@ export function invalidateUser(): void {
 }
 
 /**
- * Unified hook: replaces all scattered fetch("/api/auth/me") & fetch("/api/profile") calls.
+ * Unified hook: replaces all scattered fetch(withBasePath("/api/auth/me")) & fetch(withBasePath("/api/profile")) calls.
  */
 export function useUser(): UseUserResult {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

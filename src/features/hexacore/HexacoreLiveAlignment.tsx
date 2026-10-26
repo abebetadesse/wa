@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Activity, RefreshCw, Sparkles } from "lucide-react";
 import type { AlignmentReading, Core } from "@/lib/hexacore/HexacoreEngine";
+import { withBasePath } from "@/lib/base-path";
 
 type TimelineEntry = {
   recordedAt: string;
@@ -24,7 +25,7 @@ const CORE_NAMES: Record<Core, string> = {
 };
 
 async function readApi<T>(url: string, signal: AbortSignal): Promise<T> {
-  const response = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  const response = await fetch(withBasePath(url), { signal, headers: { Accept: "application/json" } });
   const payload = await response.json() as { success?: boolean; data?: T; error?: string };
   if (!response.ok || payload.success !== true || payload.data === undefined) {
     const error = new Error(payload.error || `Request failed (${response.status}).`);

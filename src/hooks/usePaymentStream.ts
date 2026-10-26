@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { withBasePath } from '@/lib/base-path';
 
 export type PaymentStatus = "pending" | "processing" | "completed" | "failed";
 
@@ -14,7 +15,7 @@ export function usePaymentStream(caseId: string, purchaseId?: string) {
     let isMounted = true;
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/case/spiritual/${caseId}/status`);
+        const response = await fetch(withBasePath(`/api/case/spiritual/${caseId}/status`));
         const payload = await response.json();
         if (isMounted && payload.success && payload.data) {
           if (payload.data.paymentConfirmed || payload.data.status === "full_report_released") {

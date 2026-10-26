@@ -11,6 +11,7 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { useToast } from "@/features/feedback/Toaster";
 import { cn } from "@/lib/utils";
 import { HexacoreActivityGuide } from "@/features/hexacore/HexacoreActivityGuide";
+import { assetUrl } from "@/lib/base-path";
 
 // ── API shapes ───────────────────────────────────────────────────────────────
 
@@ -258,13 +259,13 @@ function IntakePanel({ review }: { review: Review }) {
             {attachments.map((a) => (
               <figure key={a.id} className="overflow-hidden rounded-2xl border border-border">
                 {a.kind === "image" && (
-                  <a href={a.url} target="_blank" rel="noreferrer">
+                  <a href={assetUrl(a.url)} target="_blank" rel="noreferrer">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={a.url} alt={a.originalName ?? "Client photo"} className="max-h-72 w-full object-contain bg-muted" />
+                    <img src={assetUrl(a.url)} alt={a.originalName ?? "Client photo"} className="max-h-72 w-full object-contain bg-muted" />
                   </a>
                 )}
-                {a.kind === "audio" && <audio controls preload="metadata" src={a.url} className="w-full" />}
-                {a.kind === "video" && <video controls preload="metadata" src={a.url} className="max-h-72 w-full bg-black" />}
+                {a.kind === "audio" && <audio controls preload="metadata" src={assetUrl(a.url)} className="w-full" />}
+                {a.kind === "video" && <video controls preload="metadata" src={assetUrl(a.url)} className="max-h-72 w-full bg-black" />}
                 <figcaption className="px-3 py-1.5 text-xs text-muted-foreground">{a.kind === "audio" ? "Voice note" : a.originalName ?? a.kind}</figcaption>
               </figure>
             ))}
@@ -573,7 +574,7 @@ function AnalysisPanel({ api, bookingId, regions, defaultRegion, defaultAge, onI
                     {c.reasons.map((r) => <p key={r} className="mt-1 text-xs text-muted-foreground">{r}</p>)}
                     {c.literature.length > 0 && (
                       <ul className="mt-2 flex flex-col gap-1">
-                        {c.literature.map((a) => <li key={a.pmid}><a href={a.url} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">PMID {a.pmid}: {a.title} ({a.journal} {a.year})</a></li>)}
+                        {c.literature.map((a) => <li key={a.pmid}><a href={assetUrl(a.url)} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">PMID {a.pmid}: {a.title} ({a.journal} {a.year})</a></li>)}
                       </ul>
                     )}
                   </div>
