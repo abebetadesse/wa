@@ -61,8 +61,8 @@ export default function DiscoverExperience() {
     <section className="mx-auto max-w-6xl">
       <header className="mb-7 max-w-3xl">
         <div className="badge badge-safe mb-3">Illustrative case library · Educational only</div>
-        <h2 className="text-2xl font-bold text-white md:text-3xl">Search sample cases and practical next steps</h2>
-        <p className="mt-3 text-sm leading-relaxed text-slate-300">
+        <h2 className="text-2xl font-bold text-foreground md:text-3xl">Search sample cases and practical next steps</h2>
+        <p className="mt-3 text-sm leading-relaxed text-soft">
           Explore 200 generated examples by topic, food or herb, diet, Ethiopian location, and Hexacore element.
           These are not real patient cases or personalized medical advice; Hexacore tags are reflective cultural context, not clinical categories.
         </p>
@@ -70,12 +70,12 @@ export default function DiscoverExperience() {
 
       <form onSubmit={submit} className="glass-panel mb-8 space-y-4 p-5 md:p-7">
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-white">Search all enabled case fields</span>
+          <span className="mb-2 block text-sm font-semibold text-foreground">Search all enabled case fields</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Try sleep, ginger, injera, Gondar, or Water"
-            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-border bg-sunken/80 px-4 py-3 text-foreground outline-none focus:border-brand"
           />
         </label>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -83,12 +83,12 @@ export default function DiscoverExperience() {
             const options = result?.settings[key] ? result.options[key] : [];
             if (!options.length) return null;
             return (
-              <label key={key} className="text-xs font-medium text-slate-300">
+              <label key={key} className="text-xs font-medium text-soft">
                 <span className="mb-1.5 block">{label}</span>
                 <select
                   value={filters[key]}
                   onChange={(event) => setFilters((current) => ({ ...current, [key]: event.target.value }))}
-                  className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-white"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground"
                 >
                   <option value="">Any {label.toLowerCase()}</option>
                   {options.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -101,7 +101,7 @@ export default function DiscoverExperience() {
           <button className="btn-primary" disabled={loading}>{loading ? "Searching..." : "Find cases"}</button>
           <button type="button" onClick={clearFilters} className="btn-secondary" disabled={loading}>Clear filters</button>
         </div>
-        {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
+        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       </form>
 
       {result && (
@@ -109,10 +109,10 @@ export default function DiscoverExperience() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <div className="badge badge-moderate mb-2">{result.total} example{result.total === 1 ? "" : "s"}</div>
-              <h3 className="text-xl font-bold text-white">{result.isFallback ? "Helpful starting points" : "Matching sample cases"}</h3>
+              <h3 className="text-xl font-bold text-foreground">{result.isFallback ? "Helpful starting points" : "Matching sample cases"}</h3>
             </div>
           </div>
-          {result.message && <p className="rounded-xl border border-amber-400/20 bg-amber-950/20 p-3 text-sm text-amber-100">{result.message}</p>}
+          {result.message && <p className="rounded-xl border border-gold/20 bg-gold-soft p-3 text-sm text-gold-strong">{result.message}</p>}
           <div className="grid gap-4 lg:grid-cols-2">
             {result.results.map((sample) => (
               <article key={sample.id} className="glass-panel p-5">
@@ -121,17 +121,17 @@ export default function DiscoverExperience() {
                   <span className="badge badge-moderate normal-case tracking-normal">{sample.location}</span>
                   <span className="badge badge-safe normal-case tracking-normal">Hexacore · {sample.element}</span>
                 </div>
-                <h4 className="mt-3 text-lg font-bold text-white">{sample.title}</h4>
-                <p className="mt-2 text-sm leading-relaxed text-slate-300">{sample.summary}</p>
+                <h4 className="mt-3 text-lg font-bold text-foreground">{sample.title}</h4>
+                <p className="mt-2 text-sm leading-relaxed text-soft">{sample.summary}</p>
                 <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-                  <div><dt className="text-xs uppercase tracking-wide text-emerald-300">Food / herb context</dt><dd className="mt-1 text-slate-200">{sample.herb}</dd></div>
-                  <div><dt className="text-xs uppercase tracking-wide text-emerald-300">Diet idea</dt><dd className="mt-1 text-slate-200">{sample.diet}</dd></div>
+                  <div><dt className="text-xs uppercase tracking-wide text-brand">Food / herb context</dt><dd className="mt-1 text-soft">{sample.herb}</dd></div>
+                  <div><dt className="text-xs uppercase tracking-wide text-brand">Diet idea</dt><dd className="mt-1 text-soft">{sample.diet}</dd></div>
                 </dl>
-                <div className="mt-4 rounded-xl border border-emerald-500/15 bg-emerald-950/20 p-3">
-                  <h5 className="text-xs font-bold uppercase tracking-wide text-emerald-200">Possible next step</h5>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-200">{sample.recommendation}</p>
+                <div className="mt-4 rounded-xl border border-brand/15 bg-brand-soft p-3">
+                  <h5 className="text-xs font-bold uppercase tracking-wide text-brand-strong">Possible next step</h5>
+                  <p className="mt-1 text-sm leading-relaxed text-soft">{sample.recommendation}</p>
                 </div>
-                <p className="mt-4 border-t border-white/10 pt-3 text-xs leading-relaxed text-rose-200/80">{sample.safetyNote}</p>
+                <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-danger-strong">{sample.safetyNote}</p>
               </article>
             ))}
           </div>

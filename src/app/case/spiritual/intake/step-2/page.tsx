@@ -178,50 +178,50 @@ function SpiritualStep2Content() {
   };
 
   return (
-    <main className="min-h-screen bg-[#110f0c] text-stone-100">
+    <main className="min-h-screen bg-background text-foreground">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 opacity-40">
-          <div className="absolute left-[-10%] top-[-12%] h-80 w-80 rounded-full bg-amber-500/15 blur-3xl" />
-          <div className="absolute right-[-8%] top-[12%] h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute left-[-10%] top-[-12%] h-80 w-80 rounded-full bg-gold/15 blur-3xl" />
+          <div className="absolute right-[-8%] top-[12%] h-96 w-96 rounded-full bg-brand/10 blur-3xl" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          <nav className="flex items-center justify-between border-b border-amber-500/20 pb-6">
-            <Link href="/case" className="flex items-center gap-3 text-sm font-semibold tracking-[0.22em] text-amber-100">
-              <span className="h-2 w-2 rounded-full bg-amber-300 shadow-[0_0_18px_#fbbf24]" />
+          <nav className="flex items-center justify-between border-b border-gold/20 pb-6">
+            <Link href="/case" className="flex items-center gap-3 text-sm font-semibold tracking-[0.22em] text-gold-strong">
+              <span className="h-2 w-2 rounded-full bg-gold-fill" />
               CASE / SPIRITUAL
             </Link>
-            <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] text-stone-400">
+            <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
               <span>Step 02</span>
-              <span className="text-amber-400">✧</span>
+              <span className="text-gold">✧</span>
               <span>Adaptive Inquiry</span>
             </div>
           </nav>
 
           <section className="grid lg:grid-cols-[minmax(620px,1.8fr)_minmax(380px,1fr)] gap-8 mt-8">
-            <section className="rounded-[2rem] border border-amber-500/30 bg-stone-950/60 p-8 shadow-2xl shadow-amber-950/20 backdrop-blur-sm">
-              <div className="flex items-center justify-between gap-4 border-b border-stone-800 pb-5">
+            <section className="rounded-[2rem] border border-gold/30 bg-background/60 p-8 shadow-raised backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-4 border-b border-border pb-5">
                 <div>
-                  <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-amber-300">
+                  <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.28em] text-gold">
                     <span>🌿</span>
                     <span>Step 2 of 5 — Adaptive inquiry</span>
                   </div>
                   <div className="mt-6"><SpiritualIntakeProgress current={2} /></div>
-                  <h1 className="mt-4 font-serif text-4xl md:text-5xl font-black text-amber-50">
+                  <h1 className="mt-4 font-serif text-4xl md:text-5xl font-bold text-gold-strong">
                     Tell Us What Is on Your Heart
                   </h1>
                 </div>
-                <span className="hidden md:inline-flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/60 bg-emerald-500/5 text-emerald-200 text-2xl">
+                <span className="hidden md:inline-flex h-16 w-16 items-center justify-center rounded-full border border-brand/60 bg-brand/5 text-brand-strong text-2xl">
                   ✎
                 </span>
               </div>
 
-              <p className="mt-4 text-sm text-stone-300 leading-7">
+              <p className="mt-4 text-sm text-soft leading-7">
                 {gematriaData?.nameGeez ? (
                   <>
-                    Reading for <span className="text-amber-300 font-bold">{gematriaData.nameGeez}</span> · Constellation:{" "}
-                    <span className="text-amber-300 font-medium">{gematriaData.zodiac?.name}</span> ({gematriaData.zodiac?.nameAmharic}) · Circle{" "}
-                    <span className="text-amber-300 font-medium">{gematriaData.awdeCircle?.number}</span> ({gematriaData.awdeCircle?.nameAmharic})
+                    Reading for <span className="text-gold font-bold">{gematriaData.nameGeez}</span> · Constellation:{" "}
+                    <span className="text-gold font-medium">{gematriaData.zodiac?.name}</span> ({gematriaData.zodiac?.nameAmharic}) · Circle{" "}
+                    <span className="text-gold font-medium">{gematriaData.awdeCircle?.number}</span> ({gematriaData.awdeCircle?.nameAmharic})
                   </>
                 ) : (
                   "Every question adapts in real time to your numerical resonance and life situation."
@@ -232,43 +232,43 @@ function SpiritualStep2Content() {
                 <CrisisAlertBanner crisis={crisisState} />
               </div>
               {birthContext && (birthContext.birthDate || birthContext.birthLocationName) && (
-                <div className="mt-4 rounded-2xl border border-sky-500/20 bg-sky-950/10 px-4 py-3 text-xs text-sky-200">
+                <div className="mt-4 rounded-2xl border border-info/20 bg-info-soft/70 px-4 py-3 text-xs text-info-strong">
                   Birth context: {birthContext.birthDate || "date not supplied"} · {birthContext.birthLocationName || "location not supplied"}
                   {typeof birthContext.birthLatitude === "number" && typeof birthContext.birthLongitude === "number" && (
-                    <span className="ml-2 font-mono text-emerald-300">({birthContext.birthLatitude.toFixed(4)}, {birthContext.birthLongitude.toFixed(4)})</span>
+                    <span className="ml-2 font-mono text-brand">({birthContext.birthLatitude.toFixed(4)}, {birthContext.birthLongitude.toFixed(4)})</span>
                   )}
                 </div>
               )}
 
               {error && (
-                <div role="alert" className="mt-5 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm text-rose-200">
+                <div role="alert" className="mt-5 rounded-2xl border border-danger/40 bg-danger-soft px-4 py-3 text-sm text-danger-strong">
                   {error}
                   {error.startsWith("Sign in") && <Link href="/auth" className="ml-2 font-bold underline underline-offset-2">Sign in</Link>}
                 </div>
               )}
 
-              <div className="mt-6 p-6 sm:p-8 rounded-3xl bg-stone-900/50 border border-amber-500/20 shadow-2xl space-y-6">
+              <div className="mt-6 p-6 sm:p-8 rounded-3xl bg-card/50 border border-gold/20 shadow-raised space-y-6">
                 {dynamicQuestions.map((q: DynamicQuestion) => (
-                  <div key={q.id} className="space-y-2.5 pb-4 border-b border-stone-800 last:border-0 last:pb-0">
+                  <div key={q.id} className="space-y-2.5 pb-4 border-b border-border last:border-0 last:pb-0">
                     <div className="flex justify-between items-start">
-                      <label className="text-sm font-bold text-amber-200 block">
-                        {q.text} {q.required && <span className="text-amber-500">*</span>}
+                      <label className="text-sm font-bold text-gold-strong block">
+                        {q.text} {q.required && <span className="text-gold">*</span>}
                       </label>
                       {q.branchingReason && (
-                        <span className="text-[10px] text-stone-500 font-mono italic">
+                        <span className="text-[10px] text-subtle font-mono italic">
                           {q.branchingReason}
                         </span>
                       )}
                     </div>
                     {q.textAmharic && (
-                      <p className="text-xs text-stone-400 font-serif">{q.textAmharic}</p>
+                      <p className="text-xs text-muted-foreground font-serif">{q.textAmharic}</p>
                     )}
 
                     {q.type === "select" && (
                       <select
                         value={answers[q.id] || ""}
                         onChange={(e) => handleSelectChange(q.id, e.target.value)}
-                        className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-stone-700 text-stone-100 focus:border-amber-400 outline-none text-sm transition-all"
+                        className="w-full px-4 py-3 rounded-2xl bg-sunken/80 border border-border text-foreground focus:border-gold outline-none text-sm transition-all"
                       >
                         <option value="" disabled>Select an option...</option>
                         {q.options?.map((opt) => (
@@ -286,8 +286,8 @@ function SpiritualStep2Content() {
                             key={opt.value}
                             className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                               answers[q.id] === opt.value
-                                ? "bg-amber-950/40 border-amber-500 text-white"
-                                : "bg-black/40 border-stone-800 text-stone-300 hover:border-stone-700"
+                                ? "bg-gold-soft border-gold text-foreground"
+                                : "bg-sunken/80 border-border text-soft hover:border-border"
                             }`}
                           >
                             <input
@@ -296,11 +296,11 @@ function SpiritualStep2Content() {
                               value={opt.value}
                               checked={answers[q.id] === opt.value}
                               onChange={(e) => handleSelectChange(q.id, e.target.value)}
-                              className="text-amber-500 focus:ring-amber-400"
+                              className="text-gold focus:ring-gold"
                             />
                             <span className="text-sm font-medium">{opt.label}</span>
                             {opt.labelAmharic && (
-                              <span className="text-xs text-stone-400 font-serif">({opt.labelAmharic})</span>
+                              <span className="text-xs text-muted-foreground font-serif">({opt.labelAmharic})</span>
                             )}
                           </label>
                         ))}
@@ -316,8 +316,8 @@ function SpiritualStep2Content() {
                             onClick={() => handleSelectChange(q.id, opt.value)}
                             className={`p-3 rounded-xl border text-center transition-all ${
                               answers[q.id] === opt.value
-                                ? "bg-amber-500 border-amber-400 text-black font-bold"
-                                : "bg-black/40 border-stone-800 text-stone-300 hover:border-stone-700 text-xs"
+                                ? "bg-gold-fill border-gold text-gold-foreground font-bold"
+                                : "bg-sunken/80 border-border text-soft hover:border-border text-xs"
                             }`}
                           >
                             <div className="text-lg font-bold">{opt.value}</div>
@@ -334,7 +334,7 @@ function SpiritualStep2Content() {
                           value={answers[q.id] || ""}
                           onChange={(e) => handleTextChange(q.id, e.target.value)}
                           placeholder="Write freely in English or Amharic..."
-                          className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-stone-700 focus:border-amber-400 text-stone-100 text-sm outline-none transition-all placeholder-stone-600"
+                          className="w-full px-4 py-3 rounded-2xl bg-sunken/80 border border-border focus:border-gold text-foreground text-sm outline-none transition-all placeholder:text-subtle"
                         />
                       </div>
                     )}
@@ -342,29 +342,29 @@ function SpiritualStep2Content() {
                 ))}
 
                 {isAILoading && (
-                  <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-300 flex items-center gap-2 animate-pulse">
+                  <div className="p-4 rounded-2xl bg-gold-soft border border-gold/20 text-xs text-gold-strong flex items-center gap-2 animate-pulse">
                     <span>✨</span>
                     <span>Our spiritual intake assistant is tuning clarifying questions to your response...</span>
                   </div>
                 )}
 
                 {followUps.length > 0 && (
-                  <div className="p-5 rounded-2xl bg-stone-900 border border-emerald-500/40 space-y-4">
-                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono">
+                  <div className="p-5 rounded-2xl bg-card border border-brand/40 space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-brand uppercase tracking-wider">
                       <span>✨ Personalized Clarifying Reflection</span>
                     </div>
                     {followUps.map((fu) => (
                       <div key={fu.id} className="space-y-2">
-                        <label className="text-xs font-semibold text-stone-200 block">
+                        <label className="text-xs font-semibold text-soft block">
                           {fu.text}
                         </label>
-                        {fu.textAmharic && <p className="text-xs text-stone-400">{fu.textAmharic}</p>}
+                        {fu.textAmharic && <p className="text-xs text-muted-foreground">{fu.textAmharic}</p>}
                         <textarea
                           rows={2}
                           value={answers[fu.id] || ""}
                           onChange={(e) => handleTextChange(fu.id, e.target.value)}
                           placeholder="Add deeper reflection..."
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-black/70 border border-stone-700 text-xs text-stone-200 focus:border-emerald-400 outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-soft focus:border-brand outline-none"
                         />
                       </div>
                     ))}
@@ -375,7 +375,7 @@ function SpiritualStep2Content() {
               <div className="flex justify-between items-center mt-7">
                 <Link
                   href={caseId ? `/case/spiritual/${caseId}/status` : "/case/workflows"}
-                  className="px-6 py-3 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 text-sm font-medium hover:bg-stone-800 transition-colors"
+                  className="px-6 py-3 rounded-xl bg-card border border-border text-soft text-sm font-medium hover:bg-muted transition-colors"
                 >
                   ← Back
                 </Link>
@@ -383,59 +383,59 @@ function SpiritualStep2Content() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting || isLoadingCase || !gematriaData}
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-base shadow-xl shadow-amber-500/20 transition-all"
+                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-base shadow-panel transition-all"
                 >
                   {isSubmitting ? "Saving your answers..." : "Save answers & review cultural reading →"}
                 </button>
               </div>
             </section>
 
-            <aside className="rounded-[2rem] border border-stone-800 bg-stone-900/60 p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+            <aside className="rounded-[2rem] border border-border bg-card/60 p-6 backdrop-blur-sm">
+              <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <div className="text-[11px] font-black uppercase tracking-[0.24em] text-amber-300">Reading Stream</div>
-                  <div className="mt-2 text-xs text-stone-500">Intake Circuit // 02</div>
+                  <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold">Reading Stream</div>
+                  <div className="mt-2 text-xs text-subtle">Intake Circuit // 02</div>
                 </div>
-                <span className="rounded-full border border-emerald-500/50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-300">
+                <span className="rounded-full border border-brand/50 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-brand">
                   Active
                 </span>
               </div>
 
               <div className="mt-8 space-y-4">
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/8 p-5">
+                <div className="rounded-2xl border border-gold/30 bg-gold/8 p-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-[0.24em] text-amber-200">Branch Quality</span>
-                    <span className="text-emerald-300 text-xs font-bold">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-strong">Branch Quality</span>
+                    <span className="text-brand text-xs font-bold">
                       {isAILoading ? "Synced" : "Ready"}
                     </span>
                   </div>
-                  <div className="mt-4 h-2 rounded-full bg-stone-800">
-                    <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-amber-300 to-emerald-400" />
+                  <div className="mt-4 h-2 rounded-full bg-muted">
+                    <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-gold-fill to-brand" />
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Case Context</div>
-                  <div className="mt-2 font-serif text-2xl font-black text-amber-100">
+                <div className="rounded-2xl border border-border bg-sunken/50 p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-subtle">Case Context</div>
+                  <div className="mt-2 font-serif text-2xl font-bold text-gold-strong">
                     {gematriaData?.nameGeez || "Oracle Signal"}
                   </div>
-                  <div className="mt-2 text-[11px] text-stone-400">
+                  <div className="mt-2 text-[11px] text-muted-foreground">
                     {gematriaData?.zodiac?.name || "Constellation"} / {gematriaData?.awdeCircle?.nameAmharic || "Awde"}
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Inquiry Focus</div>
-                  <div className="mt-2 text-sm font-bold text-stone-100">
+                <div className="rounded-2xl border border-border bg-sunken/50 p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-subtle">Inquiry Focus</div>
+                  <div className="mt-2 text-sm font-bold text-foreground">
                     {category === "life_direction" ? "Life Direction" : category.replace(/_/g, " ")}
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-stone-800 bg-black/20 p-4">
-                  <div className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Clarifying Signals</div>
+                <div className="rounded-2xl border border-border bg-sunken/50 p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-subtle">Clarifying Signals</div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-amber-500/40 px-3 py-1 text-[10px] font-bold text-amber-100">{followUps.length || 0} active</span>
-                    <span className="rounded-full border border-emerald-500/40 px-3 py-1 text-[10px] font-bold text-emerald-100">
+                    <span className="rounded-full border border-gold/40 px-3 py-1 text-[10px] font-bold text-gold-strong">{followUps.length || 0} active</span>
+                    <span className="rounded-full border border-brand/40 px-3 py-1 text-[10px] font-bold text-brand-strong">
                       {crisisState?.isCrisis ? "Care watch" : "Stable"}
                     </span>
                   </div>
@@ -451,7 +451,7 @@ function SpiritualStep2Content() {
 
 export default function SpiritualStep2Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-stone-950 text-amber-200 flex items-center justify-center">Loading inquiry...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background text-gold-strong flex items-center justify-center">Loading inquiry...</div>}>
       <SpiritualStep2Content />
     </Suspense>
   );

@@ -194,19 +194,19 @@ export default function UserPipelinePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header with Bilingual Toggle */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand-strong text-xs font-semibold uppercase tracking-wider mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               {locale === "am" ? "የሁለትዮሽ ባህላዊ የጤና ምርመራ" : "Two-Track Clinical Health Pipeline"}
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
               {i18n.profile.title}
             </h1>
-            <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
               {i18n.profile.subtitle}
             </p>
           </div>
@@ -214,19 +214,19 @@ export default function UserPipelinePage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLocale(locale === "am" ? "en" : "am")}
-              className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-300 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border text-xs font-medium text-soft transition-colors"
             >
               {locale === "am" ? "English" : "አማርኛ"}
             </button>
             <Link
               href="/professional/cases"
-              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-medium text-amber-300 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-gold/20 hover:bg-gold/30 border border-gold/40 text-xs font-medium text-gold-strong transition-colors"
             >
               {locale === "am" ? "የባለሙያ ገጽ (Pro View)" : "Professional Desk"}
             </Link>
             <Link
               href="/admin/cases"
-              className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-xs font-medium text-purple-300 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-plum/20 hover:bg-plum/30 border border-plum/40 text-xs font-medium text-plum-strong transition-colors"
             >
               {locale === "am" ? "አስተዳዳሪ (Admin View)" : "Admin Desk"}
             </Link>
@@ -235,8 +235,8 @@ export default function UserPipelinePage() {
 
         {/* Global Error Alert */}
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-sm flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+          <div className="p-4 rounded-xl bg-danger/15 border border-danger/40 text-danger-strong text-sm flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-danger mt-0.5" />
             <div>
               <p className="font-semibold">{locale === "am" ? "ስህተት ተከስቷል" : "Notice"}</p>
               <p>{errorMessage}</p>
@@ -255,14 +255,14 @@ export default function UserPipelinePage() {
 
         {/* STAGE 1: Profile & Location Intake */}
         {!profile && (
-          <div className="glass-panel p-6 md:p-8 rounded-2xl border border-white/10 shadow-2xl space-y-6">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-              <MapPin className="w-6 h-6 text-emerald-400" />
+          <div className="glass-panel p-6 md:p-8 rounded-2xl border border-border shadow-raised space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-4">
+              <MapPin className="w-6 h-6 text-brand" />
               <div>
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   {locale === "am" ? "ደረጃ 1፡ የመገለጫ እና የመልክአ-ምድር መረጃ" : "Stage 1: Profile & Geographic Location"}
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {locale === "am"
                     ? "አካባቢው የመጀመሪያ ደረጃ ግብዓት በመሆኑ ትክክለኛውን ክልል እና ወረዳ ይምረጡ"
                     : "Location is a first-class input. Health insights are grounded in your agro-ecological context."}
@@ -273,13 +273,13 @@ export default function UserPipelinePage() {
             <form onSubmit={handleProfileSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {i18n.profile.ageBand}
                   </label>
                   <select
                     value={ageBand}
                     onChange={(e) => setAgeBand(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-brand"
                   >
                     <option value="18-24">18-24</option>
                     <option value="25-40">25-40</option>
@@ -289,13 +289,13 @@ export default function UserPipelinePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {locale === "am" ? "የፆታ መረጃ (አማራጭ)" : "Sex-specific health context (optional)"}
                   </label>
                   <select
                     value={sex}
                     onChange={(e) => setSex(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-brand"
                   >
                     <option value="Unspecified">Prefer not to say</option>
                     <option value="Female">Female</option>
@@ -304,13 +304,13 @@ export default function UserPipelinePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {locale === "am" ? "የእርግዝና ሁኔታ" : "Pregnancy Status"}
                   </label>
                   <select
                     value={pregnancyStatus}
                     onChange={(e) => setPregnancyStatus(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-brand"
                   >
                     <option value="Non-pregnant">Non-pregnant</option>
                     <option value="Pregnant">Pregnant</option>
@@ -320,7 +320,7 @@ export default function UserPipelinePage() {
               </div>
 
               {/* Geographic Location Selection */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="rounded-xl border border-border bg-foreground/5 p-4">
                 <EthiopianLocationInput
                   label={`${i18n.profile.region} / ${i18n.profile.zone} / ${i18n.profile.woreda} *`}
                   required
@@ -342,13 +342,13 @@ export default function UserPipelinePage() {
                     }
                   }}
                 />
-                {!administrativeLocationSelected && <p className="mt-2 text-xs text-amber-200">Select a matching region, zone, and district/town result to continue.</p>}
+                {!administrativeLocationSelected && <p className="mt-2 text-xs text-gold-strong">Select a matching region, zone, and district/town result to continue.</p>}
               </div>
 
               {/* Medications & Traditional Use */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {i18n.profile.currentMeds}
                   </label>
                   <input
@@ -356,12 +356,12 @@ export default function UserPipelinePage() {
                     value={currentMeds}
                     onChange={(e) => setCurrentMeds(e.target.value)}
                     placeholder="e.g. Metformin 500mg, Warfarin 5mg"
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {i18n.profile.traditionalRemedies}
                   </label>
                   <input
@@ -369,22 +369,22 @@ export default function UserPipelinePage() {
                     value={traditionalRemedies}
                     onChange={(e) => setTraditionalRemedies(e.target.value)}
                     placeholder="e.g. Kosso, Tena Adam, Feto"
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
 
               {/* Opt-ins and Consent */}
-              <div className="space-y-3 p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="space-y-3 p-4 rounded-xl bg-foreground/5 border border-border">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={spiritualOptIn}
                     onChange={(e) => setSpiritualOptIn(e.target.checked)}
-                    className="mt-1 rounded bg-slate-900 border-white/20 text-emerald-500 focus:ring-emerald-500"
+                    className="mt-1 rounded bg-card border-border-strong text-brand focus:ring-brand"
                   />
-                  <span className="text-xs text-slate-300">
-                    <strong className="text-white block">{i18n.profile.spiritualConsent}</strong>
+                  <span className="text-xs text-soft">
+                    <strong className="text-foreground block">{i18n.profile.spiritualConsent}</strong>
                     {locale === "am"
                       ? "መንፈሳዊ ክፍል እንደ አማራጭ ብቻ የሚካተት ሲሆን ያለእርስዎ ፈቃድ አይካተትም።"
                       : "Spiritual analysis is strictly opt-in and will be omitted if you decline."}
@@ -396,10 +396,10 @@ export default function UserPipelinePage() {
                     type="checkbox"
                     checked={consentAcknowledged}
                     onChange={(e) => setConsentAcknowledged(e.target.checked)}
-                    className="mt-1 rounded bg-slate-900 border-white/20 text-emerald-500 focus:ring-emerald-500"
+                    className="mt-1 rounded bg-card border-border-strong text-brand focus:ring-brand"
                   />
-                  <span className="text-xs text-slate-300">
-                    <strong className="text-white block">{i18n.disclaimers.preliminaryOrientationNotDiagnosis}</strong>
+                  <span className="text-xs text-soft">
+                    <strong className="text-foreground block">{i18n.disclaimers.preliminaryOrientationNotDiagnosis}</strong>
                     {i18n.profile.consentNotice}
                   </span>
                 </label>
@@ -408,7 +408,7 @@ export default function UserPipelinePage() {
               <button
                 type="submit"
                 disabled={loading || !administrativeLocationSelected}
-                className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-900/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-brand to-brand hover:from-brand hover:to-brand text-brand-foreground font-semibold text-sm shadow-panel transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
@@ -426,29 +426,29 @@ export default function UserPipelinePage() {
         {/* STAGE 2: Preliminary Analysis Display */}
         {preliminaryAnalysis && !currentCase && (
           <div className="space-y-6">
-            <div className="glass-panel p-6 rounded-2xl border border-white/10 shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div className="glass-panel p-6 rounded-2xl border border-border shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white">
+                  <h3 className="text-lg font-bold text-foreground">
                     {i18n.preliminary.title}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted-foreground">
                     {preliminaryAnalysis.locationSummary.narrative}
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand/20 text-brand-strong border border-brand/40">
                   {locale === "am" ? "የተረጋገጠ አቀማመጥ" : "Resolved Zone"}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 {/* Cultural Patterns */}
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                  <h4 className="font-semibold text-emerald-400 flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-foreground/5 border border-border space-y-2">
+                  <h4 className="font-semibold text-brand flex items-center gap-2">
                     <BookOpen className="w-4 h-4" />
                     {i18n.preliminary.culturalPatterns}
                   </h4>
-                  <ul className="list-disc list-inside space-y-1 text-slate-300">
+                  <ul className="list-disc list-inside space-y-1 text-soft">
                     {preliminaryAnalysis.cultural.observedPatterns.map((p: string, idx: number) => (
                       <li key={idx}>{p}</li>
                     ))}
@@ -456,15 +456,15 @@ export default function UserPipelinePage() {
                 </div>
 
                 {/* Nutrition & Seasonal Gaps */}
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                  <h4 className="font-semibold text-amber-400 flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-foreground/5 border border-border space-y-2">
+                  <h4 className="font-semibold text-gold flex items-center gap-2">
                     <Leaf className="w-4 h-4" />
                     {i18n.preliminary.nutritionEcological}
                   </h4>
-                  <p className="text-slate-300">
+                  <p className="text-soft">
                     <strong>Staples:</strong> {preliminaryAnalysis.nutrition.localStaples.join(", ")}
                   </p>
-                  <p className="text-slate-300">
+                  <p className="text-soft">
                     <strong>Seasonal Gaps:</strong>{" "}
                     {preliminaryAnalysis.nutrition.seasonalGaps.map((g: any) => `${g.month}: ${g.gap}`).join("; ")}
                   </p>
@@ -472,40 +472,40 @@ export default function UserPipelinePage() {
 
                 {/* Spiritual Framing (if consented) */}
                 {preliminaryAnalysis.spiritual?.framing && (
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                    <h4 className="font-semibold text-purple-400 flex items-center gap-2">
+                  <div className="p-4 rounded-xl bg-foreground/5 border border-border space-y-2">
+                    <h4 className="font-semibold text-plum flex items-center gap-2">
                       <HeartHandshake className="w-4 h-4" />
                       {i18n.preliminary.spiritualFraming}
                     </h4>
-                    <p className="text-slate-300">{preliminaryAnalysis.spiritual.framing}</p>
+                    <p className="text-soft">{preliminaryAnalysis.spiritual.framing}</p>
                   </div>
                 )}
 
                 {/* Body Science */}
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                  <h4 className="font-semibold text-cyan-400 flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-foreground/5 border border-border space-y-2">
+                  <h4 className="font-semibold text-info flex items-center gap-2">
                     <Info className="w-4 h-4" />
                     {i18n.preliminary.bodyScience}
                   </h4>
-                  <p className="text-slate-300">{preliminaryAnalysis.bodyScience.summary}</p>
+                  <p className="text-soft">{preliminaryAnalysis.bodyScience.summary}</p>
                 </div>
               </div>
 
               {/* Mandatory Verbatim Disclaimer (§1) */}
-              <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300">
+              <div className="mt-4 p-3 rounded-lg bg-gold/10 border border-gold/30 text-[11px] text-gold-strong">
                 <strong>{i18n.disclaimers.noRuleMatchedNotSafe}</strong>
               </div>
             </div>
 
             {/* STAGE 3: Case Intake Form */}
-            <div className="glass-panel p-6 md:p-8 rounded-2xl border border-white/10 shadow-2xl space-y-6">
-              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                <FileText className="w-6 h-6 text-amber-400" />
+            <div className="glass-panel p-6 md:p-8 rounded-2xl border border-border shadow-raised space-y-6">
+              <div className="flex items-center gap-3 border-b border-border pb-4">
+                <FileText className="w-6 h-6 text-gold" />
                 <div>
-                  <h2 className="text-xl font-bold text-white">
+                  <h2 className="text-xl font-bold text-foreground">
                     {i18n.caseIntake.title}
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted-foreground">
                     {i18n.caseIntake.subtitle}
                   </p>
                 </div>
@@ -513,7 +513,7 @@ export default function UserPipelinePage() {
 
               <form onSubmit={handleCaseSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-soft mb-1">
                     {i18n.caseIntake.narrativeLabel} *
                   </label>
                   <textarea
@@ -521,14 +521,14 @@ export default function UserPipelinePage() {
                     value={narrative}
                     onChange={(e) => setNarrative(e.target.value)}
                     placeholder={i18n.caseIntake.narrativePlaceholder}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+                    className="w-full bg-card border border-border rounded-xl p-3 text-sm text-soft focus:outline-none focus:border-gold"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-soft mb-1">
                       {i18n.caseIntake.symptomsLabel} *
                     </label>
                     <input
@@ -536,13 +536,13 @@ export default function UserPipelinePage() {
                       value={symptoms}
                       onChange={(e) => setSymptoms(e.target.value)}
                       placeholder="e.g. Abdominal cramping, Dizziness"
-                      className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+                      className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-gold"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-soft mb-1">
                       {i18n.caseIntake.durationLabel} *
                     </label>
                     <input
@@ -550,13 +550,13 @@ export default function UserPipelinePage() {
                       value={duration}
                       onChange={(e) => setDuration(e.target.value)}
                       placeholder="e.g. 4 days"
-                      className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+                      className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-gold"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-soft mb-1">
                       {i18n.caseIntake.priorTreatmentsLabel} *
                     </label>
                     <input
@@ -564,22 +564,22 @@ export default function UserPipelinePage() {
                       value={selfTreatments}
                       onChange={(e) => setSelfTreatments(e.target.value)}
                       placeholder="e.g. Kosso tea, Metformin"
-                      className="w-full bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+                      className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-soft focus:outline-none focus:border-gold"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-4 rounded-xl bg-foreground/5 border border-border">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={caseConsent}
                       onChange={(e) => setCaseConsent(e.target.checked)}
-                      className="mt-1 rounded bg-slate-900 border-white/20 text-emerald-500 focus:ring-emerald-500"
+                      className="mt-1 rounded bg-card border-border-strong text-brand focus:ring-brand"
                       required
                     />
-                    <span className="text-xs text-slate-300">
+                    <span className="text-xs text-soft">
                       {i18n.disclaimers.professionalApprovalRequired}
                     </span>
                   </label>
@@ -588,7 +588,7 @@ export default function UserPipelinePage() {
                 <button
                   type="submit"
                   disabled={loading || !caseConsent}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-sm shadow-lg shadow-amber-900/30 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-sm shadow-panel transition-all flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -617,21 +617,21 @@ export default function UserPipelinePage() {
 
         {/* Pending Review Notice when case is not published yet */}
         {currentCase && !userReport && (
-          <div className="p-8 rounded-2xl glass-panel border border-amber-500/30 text-center space-y-3">
-            <Clock className="w-12 h-12 text-amber-400 mx-auto animate-pulse" />
-            <h3 className="text-lg font-bold text-white">
+          <div className="p-8 rounded-2xl glass-panel border border-gold/30 text-center space-y-3">
+            <Clock className="w-12 h-12 text-gold mx-auto animate-pulse" />
+            <h3 className="text-lg font-bold text-foreground">
               {locale === "am"
                 ? "ጉዳዩ በክሊኒካል ባለሙያዎች ግምገማ ላይ ነው"
                 : "Case is Under Professional Review"}
             </h3>
-            <p className="text-xs text-slate-300 max-w-lg mx-auto">
+            <p className="text-xs text-soft max-w-lg mx-auto">
               {locale === "am"
                 ? "የሁለትዮሽ ሪፖርት ማመንጫው ጉዳይዎን ገምግሟል። ይፋዊ ሪፖርትዎ ለደህንነትዎ ሲባል በህክምና ባለሙያ እና በአስተዳዳሪ ተገምግሞ ሲጸድቅ እዚህ ይገለጻል።"
                 : "Your case is undergoing safety gate analysis and clinical review. Once approved and published by the medical director and administrative board, your personalized User Report will appear here."}
             </p>
             <button
               onClick={() => fetchUserReport(currentCase.caseId)}
-              className="mt-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition-colors inline-flex items-center gap-2"
+              className="mt-2 px-4 py-2 rounded-xl bg-foreground/10 hover:bg-foreground/20 text-xs font-semibold text-soft transition-colors inline-flex items-center gap-2"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {locale === "am" ? "የሪፖርት ሁኔታን አድስ" : "Check for Published Report"}

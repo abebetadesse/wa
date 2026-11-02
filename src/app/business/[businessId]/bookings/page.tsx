@@ -144,7 +144,7 @@ export default function BookingsPage() {
               const flags = booking.safety?.flags ?? [];
               const outstanding = Number(booking.priceEtb) - Number(booking.paidEtb);
               return (
-                <li key={booking.id} id={`booking-${booking.id}`} className={cn("rounded-3xl border bg-card p-4 transition-shadow", focus === booking.id ? "border-brand shadow-lg ring-2 ring-brand/30" : "border-border")}>
+                <li key={booking.id} id={`booking-${booking.id}`} className={cn("rounded-3xl border bg-card p-4 transition-shadow", focus === booking.id ? "border-brand shadow-panel ring-2 ring-brand/30" : "border-border")}>
                   <div className="flex flex-wrap items-start gap-4">
                     <div className="w-20 shrink-0">
                       <p className="font-display text-xl font-extrabold text-foreground">{new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(new Date(booking.startsAt))}</p>

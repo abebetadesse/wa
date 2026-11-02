@@ -85,27 +85,27 @@ export default function ChristianBibleReading() {
   }, [selected]);
 
   if (loading) {
-    return <section aria-busy="true" className="mt-8 animate-pulse rounded-3xl border border-amber-500/20 bg-stone-950/70 p-6"><div className="h-6 w-72 rounded bg-stone-800" /><div className="mt-4 h-4 max-w-xl rounded bg-stone-800/60" /><div className="mt-6 h-24 rounded-2xl bg-stone-800/40" /></section>;
+    return <section aria-busy="true" className="mt-8 animate-pulse rounded-3xl border border-gold/20 bg-background/70 p-6"><div className="h-6 w-72 rounded bg-muted" /><div className="mt-4 h-4 max-w-xl rounded bg-muted/60" /><div className="mt-6 h-24 rounded-2xl bg-muted/40" /></section>;
   }
   if (error || !isChristian) return null;
 
   return (
-    <section aria-labelledby="christian-reading-heading" className="mt-8 rounded-3xl border border-amber-500/30 bg-stone-950/70 p-6 shadow-xl shadow-amber-950/10">
+    <section aria-labelledby="christian-reading-heading" className="mt-8 rounded-3xl border border-gold/30 bg-background/70 p-6 shadow-panel">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-300">Christian reading path · Amharic Bible</p>
-          <h2 id="christian-reading-heading" className="mt-2 text-2xl font-bold text-white">Read a chapter in Amharic</h2>
-          <p className="mt-2 text-sm leading-6 text-stone-300">Open a selected chapter from WordProject. This platform provides navigation and short attributed context; it does not copy or host the full text.</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">Christian reading path · Amharic Bible</p>
+          <h2 id="christian-reading-heading" className="mt-2 text-2xl font-bold text-foreground">Read a chapter in Amharic</h2>
+          <p className="mt-2 text-sm leading-6 text-soft">Open a selected chapter from WordProject. This platform provides navigation and short attributed context; it does not copy or host the full text.</p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          {traditionLabel(tradition) && <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">{traditionLabel(tradition)}</span>}
-          {liturgical.summary !== "Ordinary day" && <span className="rounded-full border border-violet-500/40 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">{liturgical.summary}</span>}
+          {traditionLabel(tradition) && <span className="rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-strong">{traditionLabel(tradition)}</span>}
+          {liturgical.summary !== "Ordinary day" && <span className="rounded-full border border-plum/40 bg-plum/10 px-3 py-1 text-xs font-semibold text-plum-strong">{liturgical.summary}</span>}
         </div>
       </header>
 
-      <nav aria-label="Reading categories" className="mt-6 flex flex-wrap gap-2 border-b border-stone-800 pb-3">
+      <nav aria-label="Reading categories" className="mt-6 flex flex-wrap gap-2 border-b border-border pb-3">
         {READING_CATEGORIES.map((item) => (
-          <button key={item.id} type="button" aria-current={category === item.id ? "page" : undefined} onClick={() => setCategory(item.id)} className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider ${category === item.id ? "bg-amber-500 text-black" : "border border-stone-700 text-stone-300 hover:border-amber-500/50"}`}>
+          <button key={item.id} type="button" aria-current={category === item.id ? "page" : undefined} onClick={() => setCategory(item.id)} className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider ${category === item.id ? "bg-gold-fill text-gold-foreground" : "border border-border text-soft hover:border-gold/50"}`}>
             {item.label}
           </button>
         ))}
@@ -113,30 +113,30 @@ export default function ChristianBibleReading() {
 
       <div role="list" className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {readings.map((reading) => (
-          <button key={reading.id} type="button" aria-pressed={selected.id === reading.id} onClick={() => setSelected(reading)} className={`rounded-2xl border p-4 text-left ${selected.id === reading.id ? "border-amber-400 bg-amber-500/10" : "border-stone-800 bg-black/20 hover:border-amber-500/50"}`}>
-            <div className="flex justify-between gap-2 font-semibold text-amber-100">{reading.label}{bookmarks.includes(reading.id) && <span aria-label="Bookmarked">★</span>}</div>
-            <div className="mt-1 text-xs leading-5 text-stone-400">{reading.description}</div>
-            {reading.ethiopianNote && <div className="mt-2 border-l-2 border-violet-500/50 pl-2 text-[11px] text-violet-300">{reading.ethiopianNote}</div>}
+          <button key={reading.id} type="button" aria-pressed={selected.id === reading.id} onClick={() => setSelected(reading)} className={`rounded-2xl border p-4 text-left ${selected.id === reading.id ? "border-gold bg-gold/10" : "border-border bg-sunken/50 hover:border-gold/50"}`}>
+            <div className="flex justify-between gap-2 font-semibold text-gold-strong">{reading.label}{bookmarks.includes(reading.id) && <span aria-label="Bookmarked">★</span>}</div>
+            <div className="mt-1 text-xs leading-5 text-muted-foreground">{reading.description}</div>
+            {reading.ethiopianNote && <div className="mt-2 border-l-2 border-plum/50 pl-2 text-[11px] text-plum">{reading.ethiopianNote}</div>}
           </button>
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-stone-800 bg-black/30 p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-sunken/50 p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div><p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500">Now selected</p><h3 className="mt-1 text-lg font-bold text-amber-100">{selected.label} <span className="ml-2 text-sm font-normal text-stone-400">{selected.labelAm}</span></h3><p className="mt-1 text-sm text-stone-400">{selected.description}</p></div>
+          <div><p className="text-[11px] font-bold uppercase tracking-[0.22em] text-subtle">Now selected</p><h3 className="mt-1 text-lg font-bold text-gold-strong">{selected.label} <span className="ml-2 text-sm font-normal text-muted-foreground">{selected.labelAm}</span></h3><p className="mt-1 text-sm text-muted-foreground">{selected.description}</p></div>
           <div className="flex gap-2">
-            <button type="button" onClick={toggleBookmark} aria-pressed={bookmarked} className="rounded-lg border border-stone-700 px-3 py-2 text-xs font-semibold text-stone-300 hover:border-amber-500/50">{bookmarked ? "★ Bookmarked" : "☆ Bookmark"}</button>
-            <button type="button" onClick={share} className="rounded-lg border border-stone-700 px-3 py-2 text-xs font-semibold text-stone-300 hover:border-amber-500/50">{copied ? "Copied ✓" : "Share / Copy link"}</button>
+            <button type="button" onClick={toggleBookmark} aria-pressed={bookmarked} className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-soft hover:border-gold/50">{bookmarked ? "★ Bookmarked" : "☆ Bookmark"}</button>
+            <button type="button" onClick={share} className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-soft hover:border-gold/50">{copied ? "Copied ✓" : "Share / Copy link"}</button>
           </div>
         </div>
       </div>
 
-      <blockquote className="mt-5 rounded-2xl border-l-4 border-amber-400 bg-amber-500/5 px-4 py-3 text-sm leading-6 text-stone-200">“በመጀመሪያው ቃል ነበረ፥ ቃልም በእግዚአብሔር ዘንድ ነበረ።”<footer className="mt-2 text-xs text-stone-400">Short quotation · John 1:1 · Source: International Biblical Association / WordProject</footer></blockquote>
+      <blockquote className="mt-5 rounded-2xl border-l-4 border-gold bg-gold/5 px-4 py-3 text-sm leading-6 text-soft">“በመጀመሪያው ቃል ነበረ፥ ቃልም በእግዚአብሔር ዘንድ ነበረ።”<footer className="mt-2 text-xs text-muted-foreground">Short quotation · John 1:1 · Source: International Biblical Association / WordProject</footer></blockquote>
       <div className="mt-5 flex flex-wrap gap-3">
-        <a href={assetUrl(wordProjectChapterUrl(selected.book, selected.chapter))} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black hover:bg-amber-400">Open {selected.label} in WordProject ↗</a>
-        <a href={assetUrl(WORDPROJECT_INDEX_URL)} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 hover:border-amber-400">Browse Amharic Bible index ↗</a>
+        <a href={assetUrl(wordProjectChapterUrl(selected.book, selected.chapter))} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-gold-fill px-5 py-3 text-sm font-bold text-gold-foreground hover:bg-gold-fill">Open {selected.label} in WordProject ↗</a>
+        <a href={assetUrl(WORDPROJECT_INDEX_URL)} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-border px-5 py-3 text-sm font-semibold text-soft hover:border-gold">Browse Amharic Bible index ↗</a>
       </div>
-      <p className="mt-4 text-[11px] leading-5 text-stone-500">Source and copyright notice: WordProject / International Biblical Association. Ethiopian Wisdom Atlas stores only navigation state locally and does not reproduce the external text.</p>
+      <p className="mt-4 text-[11px] leading-5 text-subtle">Source and copyright notice: WordProject / International Biblical Association. Ethiopian Wisdom Atlas stores only navigation state locally and does not reproduce the external text.</p>
     </section>
   );
 }

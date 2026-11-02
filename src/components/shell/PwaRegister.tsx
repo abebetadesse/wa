@@ -107,7 +107,7 @@ export default function PwaRegister() {
 
   if (!installPrompt && !showIosHelp) return null;
   return (
-    <aside className="fixed inset-x-3 bottom-3 z-[100] mx-auto flex max-w-xl items-center gap-3 rounded-2xl border border-border bg-background/95 p-4 shadow-2xl backdrop-blur">
+    <aside className="fixed inset-x-3 bottom-3 z-[100] mx-auto flex max-w-xl items-center gap-3 rounded-2xl border border-border bg-background/95 p-4 shadow-raised backdrop-blur">
       <div className="min-w-0 flex-1">
         <p className="font-semibold text-foreground">{t.pwa.installTitle}</p>
         {showIosHelp && !installPrompt ? (
@@ -117,7 +117,7 @@ export default function PwaRegister() {
         )}
       </div>
       {installPrompt && (
-        <button type="button" onClick={() => void install()} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
+        <button type="button" onClick={() => void install()} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground">
           {t.pwa.install}
         </button>
       )}

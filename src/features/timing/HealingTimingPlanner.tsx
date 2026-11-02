@@ -434,7 +434,7 @@ export function HealingTimingPlanner({ defaultPlace }: { defaultPlace?: string |
       </Card>
 
       {forecastError && (
-        <p className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
+        <p className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning-strong">
           <TriangleAlert className="size-4 shrink-0" aria-hidden="true" /> {forecastError} Times are matched on the sky, calendar and season only.
         </p>
       )}

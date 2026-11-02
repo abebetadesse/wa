@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 
 export default function BodyReadingLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-stone-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* ── Disclaimer Banner ─────────────────────────────────────── */}
-      <div className="border-b border-amber-900/40 bg-amber-950/30 px-4 py-2">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 text-[11px] text-amber-300/80">
-          <AlertTriangle className="size-3.5 shrink-0 text-amber-500" aria-hidden="true" />
+      <div className="border-b border-gold/40 bg-gold-soft px-4 py-2">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 text-[11px] text-gold">
+          <AlertTriangle className="size-3.5 shrink-0 text-gold" aria-hidden="true" />
           <span>
             Body-sign readings are reflective and educational tools rooted in Ethiopian cultural tradition.
             They are <strong>not</strong> a medical diagnosis, substitute for urgent care, or forensic assessment.
@@ -24,7 +24,7 @@ export default function BodyReadingLayout({ children }: { children: ReactNode })
       </div>
 
       {/* ── Tab Navigation ────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-30 border-b border-stone-800 bg-stone-950/90 backdrop-blur-md px-4">
+      <nav className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur px-4">
         <BodyReadingNavTabs />
       </nav>
 

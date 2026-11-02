@@ -302,7 +302,7 @@ function Checker({
                 aria-autocomplete="list"
               />
               {suggestions.length > 0 && (
-                <ul role="listbox" className="absolute left-0 right-0 z-20 mt-1 max-h-80 overflow-y-auto rounded-2xl border border-border bg-card p-1 shadow-xl">
+                <ul role="listbox" className="absolute left-0 right-0 z-20 mt-1 max-h-80 overflow-y-auto rounded-2xl border border-border bg-card p-1 shadow-panel">
                   {suggestions.map((s) => (
                     <li key={s.slug}>
                       <button type="button" role="option" aria-selected="false" onClick={() => add(s.slug)} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent">

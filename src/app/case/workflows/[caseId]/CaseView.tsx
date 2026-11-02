@@ -319,7 +319,7 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
           aria-labelledby="confirm-submit-title"
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
         >
-          <div className="mx-4 flex max-w-sm flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-xl">
+          <div className="mx-4 flex max-w-sm flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-panel">
             <div className="flex items-start gap-3">
               <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
               <div>
@@ -560,7 +560,7 @@ function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view
                     type="button"
                     onClick={() => setFormat(value as typeof format)}
                     aria-pressed={selected}
-                    className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${selected ? "border-brand bg-brand/10 text-brand" : "border-border bg-background text-muted-foreground hover:border-input hover:text-foreground"}`}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${selected ? "border-brand bg-brand/10 text-brand-strong" : "border-border bg-background text-muted-foreground hover:border-input hover:text-foreground"}`}
                   >
                     <FormatIcon className="size-4" aria-hidden="true" />
                     {FORMAT_LABELS[value]}
@@ -606,7 +606,7 @@ function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view
                   <span
                     key={slot}
                     role="listitem"
-                    className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand"
+                    className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand-strong"
                   >
                     {slot}
                     <button

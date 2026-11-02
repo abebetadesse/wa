@@ -283,21 +283,21 @@ export default function AdminDashboardPage() {
       value: analytics?.users?.total ?? "—",
       change: analytics ? `${analytics.users.active} Active (${analytics.users.suspended} Suspended)` : "Loading...",
       icon: Users,
-      color: "from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400",
+      color: "from-brand/20 to-brand/10 border-brand/30 text-brand",
     },
     {
       title: "Scientific Evaluations",
       value: analytics?.operations?.totalCases ?? "—",
       change: `${systemData?.telemetry?.activeSessions ?? 0} Concurrent Sessions`,
       icon: FileCheck2,
-      color: "from-amber-500/20 to-amber-600/10 border-amber-500/30 text-amber-400",
+      color: "from-gold/20 to-gold/10 border-gold/30 text-gold",
     },
     {
       title: "Audit & Safety Events",
       value: systemData?.telemetry?.totalAuditEvents ?? analytics?.operations?.totalAuditLogs ?? "—",
       change: `Authentication Success: ${analytics?.security?.successRate ?? 100}%`,
       icon: FileSpreadsheet,
-      color: "from-sky-500/20 to-sky-600/10 border-sky-500/30 text-sky-400",
+      color: "from-info/20 to-info/10 border-info/30 text-info",
     },
     {
       title: "Scientific Knowledge Base",
@@ -306,7 +306,7 @@ export default function AdminDashboardPage() {
         ? `Last Synced: ${new Date(systemData.telemetry.lastSync.startedAt).toLocaleTimeString()}`
         : "Automated PubMed/EFCT Sync",
       icon: BookOpen,
-      color: "from-purple-500/20 to-purple-600/10 border-purple-500/30 text-purple-400",
+      color: "from-plum/20 to-plum/10 border-plum/30 text-plum",
     },
   ];
 
@@ -337,8 +337,8 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 text-xs shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-3">
-          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-soft border border-brand/50 text-brand-strong text-xs shadow-raised backdrop-blur animate-in slide-in-from-bottom-3">
+          <CheckCircle2 size={16} className="text-brand shrink-0" />
           <span className="font-medium">{toastMessage}</span>
         </div>
       )}
@@ -346,17 +346,17 @@ export default function AdminDashboardPage() {
       {/* Global Broadcast Banner (if enabled) */}
       {systemData?.config.announcement.enabled && (
         <div
-          className={`px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-semibold backdrop-blur-md shadow-sm ${systemData.config.announcement.severity === "critical"
-            ? "bg-rose-950/80 border-rose-500/50 text-rose-200"
+          className={`px-4 py-2.5 rounded-xl border flex items-center justify-between text-xs font-semibold  shadow-sm ${systemData.config.announcement.severity === "critical"
+            ? "bg-danger-soft border-danger/50 text-danger-strong"
             : systemData.config.announcement.severity === "warning"
-              ? "bg-amber-950/80 border-amber-500/50 text-amber-200"
-              : "bg-sky-950/80 border-sky-500/50 text-sky-200"
+              ? "bg-gold-soft border-gold/50 text-gold-strong"
+              : "bg-info-soft border-info/50 text-info-strong"
             }`}
         >
           <div className="flex items-center gap-2.5">
             <Megaphone size={16} className="animate-pulse shrink-0" />
             <span>
-              <strong className="uppercase tracking-wider mr-1.5 font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/40">
+              <strong className="uppercase tracking-wider mr-1.5 text-[10px] px-1.5 py-0.5 rounded bg-sunken/80">
                 Broadcast:
               </strong>
               {systemData.config.announcement.message}
@@ -373,17 +373,17 @@ export default function AdminDashboardPage() {
 
       {/* Maintenance Mode Warning */}
       {systemData?.config.maintenance.enabled && (
-        <div className="px-4 py-3 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-semibold flex items-center justify-between">
+        <div className="px-4 py-3 rounded-xl bg-danger-soft border border-danger/50 text-danger-strong text-xs font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <AlertTriangle size={18} className="text-rose-400 animate-pulse" />
+            <AlertTriangle size={18} className="text-danger animate-pulse" />
             <div>
               <p className="font-bold">Maintenance Mode Active</p>
-              <p className="text-[11px] text-rose-300/80 font-normal">{systemData.config.maintenance.message}</p>
+              <p className="text-[11px] text-danger font-normal">{systemData.config.maintenance.message}</p>
             </div>
           </div>
           <button
             onClick={handleToggleMaintenance}
-            className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold transition-all shadow"
+            className="px-3 py-1 rounded-lg bg-danger hover:bg-danger text-danger-foreground text-[11px] font-bold transition-all shadow"
           >
             Deactivate Now
           </button>
@@ -391,18 +391,18 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Header & Quick Telemetry Ribbon */}
-      <div className="flex flex-col gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col gap-4 border-b border-border pb-5">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-emerald-400/40 bg-emerald-500/10 text-emerald-300 flex items-center gap-1.5">
-                <Radio size={10} className="text-emerald-400 animate-pulse" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-brand/40 bg-brand/10 text-brand-strong flex items-center gap-1.5">
+                <Radio size={10} className="text-brand animate-pulse" />
                 <span>Control Plane v3.0</span>
               </span>
 
               {/* PostgreSQL DB Live Status */}
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono border border-sky-400/30 bg-sky-500/10 text-sky-200 flex items-center gap-1.5">
-                <Database size={11} className="text-sky-400" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono border border-info/30 bg-info/10 text-info-strong flex items-center gap-1.5">
+                <Database size={11} className="text-info" />
                 <span>
                   Postgres:{" "}
                   {systemData?.database.status === "healthy"
@@ -412,16 +412,16 @@ export default function AdminDashboardPage() {
               </span>
 
               {/* Memory Usage */}
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono border border-purple-400/30 bg-purple-500/10 text-purple-200 flex items-center gap-1.5">
-                <Cpu size={11} className="text-purple-400" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono border border-plum/30 bg-plum/10 text-plum-strong flex items-center gap-1.5">
+                <Cpu size={11} className="text-plum" />
                 <span>RSS: {systemData?.runtime.memory.rssMb ?? 0}MB</span>
               </span>
 
               {/* Safety Gate Strictness Indicator */}
               <span
                 className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border flex items-center gap-1.5 ${systemData?.config.flags.safetyGateStrictness === "strict_lock"
-                  ? "border-rose-500/40 bg-rose-950/40 text-rose-300"
-                  : "border-emerald-500/30 bg-emerald-950/30 text-emerald-300"
+                  ? "border-danger/40 bg-danger-soft text-danger-strong"
+                  : "border-brand/30 bg-brand-soft text-brand-strong"
                   }`}
               >
                 <ShieldCheck size={11} />
@@ -432,10 +432,10 @@ export default function AdminDashboardPage() {
               </span>
             </div>
 
-            <h1 className="text-2xl font-bold text-white tracking-tight mt-1.5">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight mt-1.5">
               Platform Administration & Operational Control
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Live telemetry, Ethiopian wellbeing governance, literature synchronizer, and application management.
             </p>
           </div>
@@ -443,21 +443,21 @@ export default function AdminDashboardPage() {
           {/* Action Toolbar */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Auto-refresh interval dropdown */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
-              <Clock size={13} className="text-slate-400" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-foreground/5 border border-border text-xs text-soft">
+              <Clock size={13} className="text-muted-foreground" />
               <select
                 value={autoRefreshInterval}
                 onChange={(e) => setAutoRefreshInterval(Number(e.target.value))}
-                className="bg-transparent text-xs text-white outline-none cursor-pointer font-mono"
+                className="bg-transparent text-xs text-foreground outline-none cursor-pointer font-mono"
                 aria-label="Auto-refresh interval"
               >
-                <option value={10} className="bg-slate-900 text-white">Live 10s</option>
-                <option value={30} className="bg-slate-900 text-white">Every 30s</option>
-                <option value={60} className="bg-slate-900 text-white">Every 1m</option>
-                <option value={0} className="bg-slate-900 text-white">Off</option>
+                <option value={10} className="bg-card text-foreground">Live 10s</option>
+                <option value={30} className="bg-card text-foreground">Every 30s</option>
+                <option value={60} className="bg-card text-foreground">Every 1m</option>
+                <option value={0} className="bg-card text-foreground">Off</option>
               </select>
               {autoRefreshInterval > 0 && (
-                <span className="text-[10px] font-mono text-emerald-400 ml-1">
+                <span className="text-[10px] font-mono text-brand ml-1">
                   ({secondsRemaining}s)
                 </span>
               )}
@@ -467,28 +467,28 @@ export default function AdminDashboardPage() {
             <button
               onClick={() => void fetchData(true)}
               disabled={refreshing}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all text-xs flex items-center justify-center"
+              className="p-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border text-soft hover:text-foreground transition-all text-xs flex items-center justify-center"
               title="Refresh Telemetry"
               aria-label="Refresh Telemetry"
             >
-              <RefreshCw size={14} className={refreshing ? "animate-spin text-emerald-400" : ""} />
+              <RefreshCw size={14} className={refreshing ? "animate-spin text-brand" : ""} />
             </button>
 
             {/* Quick Literature Sync Trigger */}
             <button
               onClick={handleTriggerLiteratureSync}
               disabled={syncingLiterature}
-              className="px-3 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/40 text-purple-300 hover:text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-plum-soft hover:bg-plum-soft border border-plum/40 text-plum-strong hover:text-foreground text-xs font-medium transition-all flex items-center gap-1.5 shadow-sm"
               title="Sync PubMed, Europe PMC, and Ethiopian Literature"
             >
-              <RotateCcw size={13} className={syncingLiterature ? "animate-spin text-purple-300" : ""} />
+              <RotateCcw size={13} className={syncingLiterature ? "animate-spin text-plum" : ""} />
               <span>{syncingLiterature ? "Syncing..." : "Sync Literature"}</span>
             </button>
 
             {/* User Management shortcut */}
             <Link
               href="/admin/users"
-              className="btn-primary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
+              className="btn-primary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1.5 shadow-md"
             >
               <UserPlus size={13} />
               <span>Users</span>
@@ -498,7 +498,7 @@ export default function AdminDashboardPage() {
             <a
               download="users_export.csv"
               href={withBasePath("/api/admin/users/export?format=csv")}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border text-xs font-medium text-soft transition-colors flex items-center gap-1.5"
             >
               <Download size={13} />
               <span>Export CSV</span>
@@ -507,19 +507,19 @@ export default function AdminDashboardPage() {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200 flex items-center gap-2">
-            <AlertTriangle size={15} className="text-rose-400 shrink-0" />
+          <div className="rounded-xl border border-danger/40 bg-danger-soft p-3 text-xs text-danger-strong flex items-center gap-2">
+            <AlertTriangle size={15} className="text-danger shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+        <div className="flex items-center gap-2 pt-2 border-t border-border">
           <button
             onClick={() => setActiveTab("overview")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "overview"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
           >
             <Activity size={14} />
@@ -528,8 +528,8 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("services")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "services"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
           >
             <Server size={14} />
@@ -538,8 +538,8 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("controls")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "controls"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
           >
             <Sliders size={14} />
@@ -548,8 +548,8 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("audit")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === "audit"
-              ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+              ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
           >
             <ShieldCheck size={14} />
@@ -568,18 +568,18 @@ export default function AdminDashboardPage() {
               return (
                 <div
                   key={i}
-                  className={`p-5 rounded-2xl bg-gradient-to-br ${stat.color} border shadow-lg backdrop-blur-md relative overflow-hidden`}
+                  className={`p-5 rounded-2xl bg-gradient-to-br ${stat.color} border shadow-panel  relative overflow-hidden`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-300">{stat.title}</span>
-                    <div className="p-2 rounded-xl bg-black/30 border border-white/10">
+                    <span className="text-xs font-medium text-soft">{stat.title}</span>
+                    <div className="p-2 rounded-xl bg-sunken/50 border border-border">
                       <Icon size={18} />
                     </div>
                   </div>
                   <div className="mt-3">
-                    <div className="text-3xl font-extrabold text-white tracking-tight">{stat.value}</div>
-                    <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-300">
-                      <TrendingUp size={12} className="text-emerald-400" />
+                    <div className="text-3xl font-extrabold text-foreground tracking-tight">{stat.value}</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-[11px] text-soft">
+                      <TrendingUp size={12} className="text-brand" />
                       <span>{stat.change}</span>
                     </div>
                   </div>
@@ -591,18 +591,18 @@ export default function AdminDashboardPage() {
           {/* Quick Operational Status Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Platform Activity & Ingestion Trend */}
-            <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-white/10">
+            <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-border">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Activity size={16} className="text-emerald-400" />
+                  <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Activity size={16} className="text-brand" />
                     <span>Scientific Intake Velocity & Ingestion Trajectory</span>
                   </h2>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-muted-foreground">
                     Calculated against Ethiopian high-altitude nutritional norms
                   </p>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                <span className="text-[11px] font-mono text-brand-strong bg-brand/10 px-2 py-0.5 rounded-full border border-brand/30">
                   Live Stream
                 </span>
               </div>
@@ -641,7 +641,7 @@ export default function AdminDashboardPage() {
                   <circle cx="600" cy="30" r="5" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
                 </svg>
 
-                <div className="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                <div className="flex justify-between text-[11px] text-muted-foreground mt-2 font-mono">
                   <span>Day -30</span>
                   <span>Day -20</span>
                   <span>Day -10</span>
@@ -649,37 +649,37 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4 mt-4 pt-3 border-t border-white/5 text-xs text-slate-300">
+              <div className="flex items-center justify-between gap-4 mt-4 pt-3 border-t border-border text-xs text-soft">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand" />
                   <span>Scientific Gap Evaluations (+28.4% WoW)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-gold-fill" />
                   <span>Stage 5 Safety Gates: Zero Contraindication Breaches</span>
                 </div>
               </div>
             </div>
 
             {/* Reports by Case Domain */}
-            <div className="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col justify-between">
               <div>
-                <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Layers size={16} className="text-amber-400" />
+                <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Layers size={16} className="text-gold" />
                   <span>Evaluations by Domain</span>
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5">Multi-strand case categorization</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Multi-strand case categorization</p>
 
                 <div className="space-y-3.5 mt-5">
                   {caseTypeBreakdown.map((entry: { caseType: string; count: number }) => (
                     <div key={entry.caseType} className="text-xs">
-                      <div className="flex justify-between text-slate-300 mb-1 font-medium">
+                      <div className="flex justify-between text-soft mb-1 font-medium">
                         <span className="capitalize">{entry.caseType}</span>
-                        <span className="font-mono text-slate-400">{entry.count} cases</span>
+                        <span className="font-mono text-muted-foreground">{entry.count} cases</span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                      <div className="w-full h-2 rounded-full bg-foreground/10 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-500"
+                          className="h-full rounded-full bg-gradient-to-r from-brand to-gold-fill transition-all duration-500"
                           style={{ width: `${Math.round((entry.count / maxCaseTypeCount) * 100)}%` }}
                         />
                       </div>
@@ -688,9 +688,9 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-4 p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Total Analyzed:</span>
-                <span className="font-bold text-emerald-400 font-mono">
+              <div className="mt-4 p-3 rounded-xl bg-sunken/80 border border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Total Analyzed:</span>
+                <span className="font-bold text-brand font-mono">
                   {analytics?.operations?.totalCases ?? 0} cases
                 </span>
               </div>
@@ -700,12 +700,12 @@ export default function AdminDashboardPage() {
           {/* Regional Adoption & Ethiopian Language Distribution */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Ethiopian Regional Coverage */}
-            <div className="glass-panel p-6 rounded-2xl border border-white/10">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-                <span className="text-emerald-400">📍</span>
+            <div className="glass-panel p-6 rounded-2xl border border-border">
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-1">
+                <span className="text-brand">��</span>
                 <span>Regional Adoption (48 Ethiopian Districts)</span>
               </h2>
-              <p className="text-[11px] text-slate-400 mb-4">Patient origin calibrated with regional growing conditions and soils</p>
+              <p className="text-[11px] text-muted-foreground mb-4">Patient origin calibrated with regional growing conditions and soils</p>
 
               <div className="space-y-3">
                 {(analytics?.regionalDistribution || [
@@ -717,9 +717,9 @@ export default function AdminDashboardPage() {
                 ])
                   .slice(0, 5)
                   .map((r: { region: string; count: number }, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
-                      <span className="text-slate-200 font-medium">{r.region}</span>
-                      <span className="font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/20 text-[11px]">
+                    <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-0">
+                      <span className="text-soft font-medium">{r.region}</span>
+                      <span className="font-mono text-brand-strong bg-brand-soft px-2 py-0.5 rounded border border-brand/20 text-[11px]">
                         {r.count} users
                       </span>
                     </div>
@@ -728,12 +728,12 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Language Distribution */}
-            <div className="glass-panel p-6 rounded-2xl border border-white/10">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-                <span className="text-amber-400">🌐</span>
+            <div className="glass-panel p-6 rounded-2xl border border-border">
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-1">
+                <span className="text-gold">��</span>
                 <span>Multilingual Engagement</span>
               </h2>
-              <p className="text-[11px] text-slate-400 mb-4">Local language access across Ethiopia and diaspora</p>
+              <p className="text-[11px] text-muted-foreground mb-4">Local language access across Ethiopia and diaspora</p>
 
               <div className="space-y-3">
                 {(analytics?.languageDistribution || [
@@ -743,14 +743,14 @@ export default function AdminDashboardPage() {
                   { label: "ትግርኛ (Tigrinya)", count: 14, code: "ti" },
                   { label: "Af-Soomaali", count: 9, code: "so" },
                 ]).map((lang: { label: string; count: number; code: string }) => (
-                  <div key={lang.code} className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+                  <div key={lang.code} className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-0">
                     <div className="flex items-center gap-2">
-                      <span className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-slate-300 uppercase">
+                      <span className="px-1.5 py-0.5 rounded bg-foreground/10 text-[10px] text-soft uppercase">
                         {lang.code}
                       </span>
-                      <span className="text-slate-200 font-medium">{lang.label}</span>
+                      <span className="text-soft font-medium">{lang.label}</span>
                     </div>
-                    <span className="font-mono text-slate-400">{lang.count} users</span>
+                    <span className="font-mono text-muted-foreground">{lang.count} users</span>
                   </div>
                 ))}
               </div>
@@ -763,60 +763,60 @@ export default function AdminDashboardPage() {
       {activeTab === "services" && (
         <div className="space-y-6">
           {/* Runtime & Server Specs Card */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/10">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-              <Server size={16} className="text-sky-400" />
+          <div className="glass-panel p-6 rounded-2xl border border-border">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-1">
+              <Server size={16} className="text-info" />
               <span>Node.js Process & Host Environment</span>
             </h2>
-            <p className="text-[11px] text-slate-400 mb-5">Containerized runtime telemetry and memory allocation</p>
+            <p className="text-[11px] text-muted-foreground mb-5">Containerized runtime telemetry and memory allocation</p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                <span className="text-[10px] text-slate-400 uppercase font-mono">Process Uptime</span>
-                <div className="text-xl font-bold text-white mt-1">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase">Process Uptime</span>
+                <div className="text-xl font-bold text-foreground mt-1">
                   {Math.floor((systemData?.runtime.uptimeSeconds || 0) / 3600)}h{" "}
                   {Math.floor(((systemData?.runtime.uptimeSeconds || 0) % 3600) / 60)}m
                 </div>
-                <span className="text-[10px] text-emerald-400 font-mono">healthy continuous run</span>
+                <span className="text-[10px] text-brand font-mono">healthy continuous run</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                <span className="text-[10px] text-slate-400 uppercase font-mono">Memory Allocation (RSS)</span>
-                <div className="text-xl font-bold text-purple-400 mt-1">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase">Memory Allocation (RSS)</span>
+                <div className="text-xl font-bold text-plum mt-1">
                   {systemData?.runtime.memory.rssMb ?? 0} MB
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-muted-foreground font-mono">
                   Heap: {systemData?.runtime.memory.heapUsedMb ?? 0} / {systemData?.runtime.memory.heapTotalMb ?? 0} MB
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                <span className="text-[10px] text-slate-400 uppercase font-mono">Node Runtime</span>
-                <div className="text-xl font-bold text-white mt-1">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase">Node Runtime</span>
+                <div className="text-xl font-bold text-foreground mt-1">
                   {systemData?.runtime.nodeVersion || process.version}
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono capitalize">
+                <span className="text-[10px] text-muted-foreground font-mono capitalize">
                   {systemData?.runtime.platform || process.platform}
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                <span className="text-[10px] text-slate-400 uppercase font-mono">DB Ping Latency</span>
-                <div className="text-xl font-bold text-emerald-400 mt-1">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase">DB Ping Latency</span>
+                <div className="text-xl font-bold text-brand mt-1">
                   {systemData?.database.latencyMs ?? 0} ms
                 </div>
-                <span className="text-[10px] text-emerald-400 font-mono">PostgreSQL Pool Ready</span>
+                <span className="text-[10px] text-brand font-mono">PostgreSQL Pool Ready</span>
               </div>
             </div>
           </div>
 
           {/* Subsystem & Micro-Service Wellbeing Matrix */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/10">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-              <Activity size={16} className="text-emerald-400" />
+          <div className="glass-panel p-6 rounded-2xl border border-border">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-1">
+              <Activity size={16} className="text-brand" />
               <span>Platform Subsystems Wellbeing Matrix</span>
             </h2>
-            <p className="text-[11px] text-slate-400 mb-4">Real-time status of Scientific, security, and knowledge engines</p>
+            <p className="text-[11px] text-muted-foreground mb-4">Real-time status of Scientific, security, and knowledge engines</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {(systemData?.services || [
@@ -829,18 +829,18 @@ export default function AdminDashboardPage() {
               ]).map((svc, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-black/30 border border-white/5 hover:border-white/15 transition-all flex items-center justify-between"
+                  className="p-4 rounded-xl bg-sunken/50 border border-border hover:border-border transition-all flex items-center justify-between"
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <p className="text-xs font-semibold text-slate-200">{svc.name}</p>
+                      <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+                      <p className="text-xs font-semibold text-soft">{svc.name}</p>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-mono mt-1">
+                    <p className="text-[10px] text-muted-foreground font-mono mt-1">
                       Type: {svc.type} • Latency: {svc.latency}
                     </p>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-mono font-semibold bg-emerald-950/70 border border-emerald-500/30 text-emerald-300">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold bg-brand-soft border border-brand/30 text-brand-strong">
                     {svc.status}
                   </span>
                 </div>
@@ -855,28 +855,28 @@ export default function AdminDashboardPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Maintenance Mode Controller */}
-            <div className="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Power size={16} className="text-rose-400" />
+                  <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Power size={16} className="text-danger" />
                     <span>Maintenance Mode</span>
                   </h2>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${systemData?.config.maintenance.enabled
-                      ? "bg-rose-950/80 border border-rose-500/40 text-rose-300"
-                      : "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300"
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${systemData?.config.maintenance.enabled
+                      ? "bg-danger-soft border border-danger/40 text-danger-strong"
+                      : "bg-brand-soft border border-brand/40 text-brand-strong"
                       }`}
                   >
                     {systemData?.config.maintenance.enabled ? "Active" : "Normal Operation"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   When enabled, standard user requests show a maintenance window, while administrators retain full access
                   to console diagnostics and knowledge tools.
                 </p>
-                <div className="mt-4 p-3 rounded-xl bg-black/40 border border-white/5 text-xs font-mono text-slate-300">
-                  <span className="text-[10px] text-slate-400 block mb-1">Current Public Notice:</span>
+                <div className="mt-4 p-3 rounded-xl bg-sunken/80 border border-border text-xs font-mono text-soft">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Current Public Notice:</span>
                   &ldquo;{systemData?.config.maintenance.message || "Scheduled platform maintenance."}&rdquo;
                 </div>
               </div>
@@ -885,8 +885,8 @@ export default function AdminDashboardPage() {
                 <button
                   onClick={() => setShowMaintenanceModal(true)}
                   className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all shadow ${systemData?.config.maintenance.enabled
-                    ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                    : "bg-rose-600 hover:bg-rose-500 text-white"
+                    ? "bg-brand hover:bg-brand text-brand-foreground"
+                    : "bg-danger hover:bg-danger text-brand-foreground"
                     }`}
                 >
                   {systemData?.config.maintenance.enabled ? "Deactivate Maintenance" : "Configure & Activate"}
@@ -895,28 +895,28 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Global Broadcast Announcement */}
-            <div className="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Megaphone size={16} className="text-amber-400" />
+                  <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Megaphone size={16} className="text-gold" />
                     <span>Global Platform Announcement</span>
                   </h2>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${systemData?.config.announcement.enabled
-                      ? "bg-amber-950/80 border border-amber-500/40 text-amber-300"
-                      : "bg-white/5 border border-white/10 text-slate-400"
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${systemData?.config.announcement.enabled
+                      ? "bg-gold-soft border border-gold/40 text-gold-strong"
+                      : "bg-foreground/5 border border-border text-muted-foreground"
                       }`}
                   >
                     {systemData?.config.announcement.enabled ? "Broadcasting" : "Disabled"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Pin a high-visibility banner across the entire platform for emergency notices, EFCT dataset updates,
                   or traditional medicine regulatory alerts.
                 </p>
-                <div className="mt-4 p-3 rounded-xl bg-black/40 border border-white/5 text-xs font-mono text-slate-300">
-                  <span className="text-[10px] text-slate-400 block mb-1">Preview:</span>
+                <div className="mt-4 p-3 rounded-xl bg-sunken/80 border border-border text-xs font-mono text-soft">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Preview:</span>
                   {systemData?.config.announcement.message || "No announcement set."}
                 </div>
               </div>
@@ -924,7 +924,7 @@ export default function AdminDashboardPage() {
               <div className="mt-6 flex gap-3">
                 <button
                   onClick={() => setShowAnnouncementModal(true)}
-                  className="flex-1 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-all shadow"
+                  className="flex-1 py-2 px-3 rounded-xl bg-gold-fill hover:bg-gold-fill text-gold-foreground text-xs font-semibold transition-all shadow"
                 >
                   Edit Announcement Banner
                 </button>
@@ -933,29 +933,29 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Operational Feature Toggles */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/10">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-              <Sliders size={16} className="text-emerald-400" />
+          <div className="glass-panel p-6 rounded-2xl border border-border">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-1">
+              <Sliders size={16} className="text-brand" />
               <span>Runtime Feature Governance Flags</span>
             </h2>
-            <p className="text-[11px] text-slate-400 mb-5">
+            <p className="text-[11px] text-muted-foreground mb-5">
               Live operational controls modifying system security and intake rules without server redeployment
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Emergency Lock */}
-              <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-white">Stage 5 Safety Gate Strictness</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs font-semibold text-foreground">Stage 5 Safety Gate Strictness</p>
+                  <p className="text-[11px] text-muted-foreground">
                     Lock enforces absolute block on all unverified traditional herb combinations
                   </p>
                 </div>
                 <button
                   onClick={handleEmergencyLock}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all flex items-center gap-1.5 ${systemData?.config.flags.safetyGateStrictness === "strict_lock"
-                    ? "bg-rose-600 text-white"
-                    : "bg-white/10 text-slate-300 hover:bg-white/20"
+                    ? "bg-danger text-danger-foreground"
+                    : "bg-foreground/10 text-soft hover:bg-foreground/20"
                     }`}
                 >
                   {systemData?.config.flags.safetyGateStrictness === "strict_lock" ? (
@@ -973,16 +973,16 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Cache Purge */}
-              <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-white">Revalidate Static & Client Cache</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs font-semibold text-foreground">Revalidate Static & Client Cache</p>
+                  <p className="text-[11px] text-muted-foreground">
                     Purge in-memory nutritional lookup tables and refresh live state
                   </p>
                 </div>
                 <button
                   onClick={handleRevalidateCache}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-foreground/10 hover:bg-foreground/20 text-foreground transition-all flex items-center gap-1.5"
                 >
                   <RotateCcw size={12} />
                   <span>Purge Cache</span>
@@ -995,44 +995,44 @@ export default function AdminDashboardPage() {
 
       {/* TAB 4: SECURITY & AUDIT STREAM */}
       {activeTab === "audit" && (
-        <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-white/10">
+        <div className="glass-panel p-6 rounded-2xl border border-border space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-border">
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <ShieldCheck size={16} className="text-emerald-400" />
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <ShieldCheck size={16} className="text-brand" />
                 <span>Immutable Security & Audit Ledger</span>
               </h2>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted-foreground">
                 Tamper-evident trace of all administrative access, evaluations, and role updates
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search user or action..."
                   value={auditSearch}
                   onChange={(e) => setAuditSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500/50 w-48"
+                  className="pl-8 pr-3 py-1.5 rounded-xl bg-foreground/5 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-brand/50 w-48"
                 />
               </div>
 
               <select
                 value={auditFilter}
                 onChange={(e) => setAuditFilter(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white outline-none cursor-pointer"
+                className="px-2.5 py-1.5 rounded-xl bg-foreground/5 border border-border text-xs text-foreground outline-none cursor-pointer"
                 aria-label="Filter audit events"
               >
-                <option value="all" className="bg-slate-900 text-white">All Events</option>
-                <option value="security" className="bg-slate-900 text-white">Auth & Roles</option>
-                <option value="system" className="bg-slate-900 text-white">System Controls</option>
+                <option value="all" className="bg-card text-foreground">All Events</option>
+                <option value="security" className="bg-card text-foreground">Auth & Roles</option>
+                <option value="system" className="bg-card text-foreground">System Controls</option>
               </select>
 
               <Link
                 href="/admin/audit"
-                className="text-xs text-emerald-400 hover:underline font-medium ml-2 flex items-center gap-1"
+                className="text-xs text-brand hover:underline font-medium ml-2 flex items-center gap-1"
               >
                 <span>Full Ledger</span>
                 <ArrowUpRight size={13} />
@@ -1040,27 +1040,27 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-border">
             {filteredActivities.length === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-400">No matching audit logs found.</div>
+              <div className="py-8 text-center text-xs text-muted-foreground">No matching audit logs found.</div>
             ) : (
               filteredActivities.map((act) => (
-                <div key={act.id} className="py-3 flex items-center justify-between text-xs hover:bg-white/[0.02] px-2 rounded-lg transition-colors">
+                <div key={act.id} className="py-3 flex items-center justify-between text-xs hover:bg-foreground/[0.02] px-2 rounded-lg transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-brand-soft border border-brand/30 flex items-center justify-center text-brand-strong shrink-0">
                       <Sparkles size={13} />
                     </div>
                     <div>
-                      <p className="font-medium text-slate-200">
-                        <span className="text-emerald-400 font-mono mr-2">[{act.action || act.eventType}]</span>
+                      <p className="font-medium text-soft">
+                        <span className="text-brand font-mono mr-2">[{act.action || act.eventType}]</span>
                         {act.userName ? `${act.userName} (${act.userEmail})` : act.userEmail || "System Engine"}
                       </p>
-                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                      <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
                         IP: {act.ipAddress || "127.0.0.1"} • Resource: {act.resourceType || "platform"}
                       </p>
                     </div>
                   </div>
-                  <div className="text-[11px] text-slate-400 font-mono">
+                  <div className="text-[11px] text-muted-foreground font-mono">
                     {new Date(act.createdAt).toLocaleString([], {
                       month: "short",
                       day: "numeric",
@@ -1077,25 +1077,25 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: BROADCAST ANNOUNCEMENT */}
       {showAnnouncementModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="glass-panel max-w-lg w-full p-6 rounded-2xl border border-white/20 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Megaphone size={18} className="text-amber-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm p-4">
+          <div className="glass-panel max-w-lg w-full p-6 rounded-2xl border border-border-strong shadow-raised space-y-4">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Megaphone size={18} className="text-gold" />
               <span>Manage Global Platform Announcement</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               This message will be rendered as a prominent banner on all platform client pages.
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Announcement Status</label>
+                <label className="text-xs text-soft block mb-1">Announcement Status</label>
                 <button
                   type="button"
                   onClick={() => setAnnouncementEnabled(!announcementEnabled)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${announcementEnabled
-                    ? "bg-emerald-600 text-white border-emerald-500"
-                    : "bg-white/10 text-slate-400 border-white/10"
+                    ? "bg-brand text-brand-foreground border-brand"
+                    : "bg-foreground/10 text-muted-foreground border-border"
                     }`}
                 >
                   {announcementEnabled ? "Broadcasting (Active)" : "Hidden (Disabled)"}
@@ -1103,7 +1103,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Severity Level</label>
+                <label className="text-xs text-soft block mb-1">Severity Level</label>
                 <div className="flex gap-2">
                   {(["info", "warning", "critical"] as const).map((sev) => (
                     <button
@@ -1112,11 +1112,11 @@ export default function AdminDashboardPage() {
                       onClick={() => setAnnouncementSeverity(sev)}
                       className={`flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize border ${announcementSeverity === sev
                         ? sev === "critical"
-                          ? "bg-rose-600 text-white border-rose-500"
+                          ? "bg-danger text-danger-foreground border-danger"
                           : sev === "warning"
-                            ? "bg-amber-600 text-white border-amber-500"
-                            : "bg-sky-600 text-white border-sky-500"
-                        : "bg-white/5 text-slate-400 border-white/10"
+                            ? "bg-gold-fill text-danger-foreground border-gold"
+                            : "bg-info text-danger-foreground border-info"
+                        : "bg-foreground/5 text-muted-foreground border-border"
                         }`}
                     >
                       {sev}
@@ -1126,13 +1126,13 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Message Text</label>
+                <label className="text-xs text-soft block mb-1">Message Text</label>
                 <textarea
                   rows={3}
                   value={announcementText}
                   onChange={(e) => setAnnouncementText(e.target.value)}
                   placeholder="e.g. Traditional Medicine Safety Advisory: ETM-DB dataset updated to v3.0."
-                  className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-500/50"
+                  className="w-full p-3 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-gold/50"
                 />
               </div>
             </div>
@@ -1141,14 +1141,14 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => setShowAnnouncementModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-soft hover:text-foreground bg-foreground/5 hover:bg-foreground/10 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveAnnouncement}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 transition-colors shadow"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gold-foreground bg-gold-fill hover:bg-gold-fill transition-colors shadow"
               >
                 Save Announcement
               </button>
@@ -1159,25 +1159,25 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: MAINTENANCE MODE */}
       {showMaintenanceModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="glass-panel max-w-md w-full p-6 rounded-2xl border border-white/20 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Power size={18} className="text-rose-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm p-4">
+          <div className="glass-panel max-w-md w-full p-6 rounded-2xl border border-border-strong shadow-raised space-y-4">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Power size={18} className="text-danger" />
               <span>Configure Platform Maintenance</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Are you sure you want to toggle maintenance mode? When active, users without administrator roles will see
               a maintenance screen.
             </p>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Downtime Notice to Visitors</label>
+              <label className="text-xs text-soft block mb-1">Downtime Notice to Visitors</label>
               <textarea
                 rows={3}
                 value={maintenanceMessage}
                 onChange={(e) => setMaintenanceMessage(e.target.value)}
                 placeholder="The Ethiopian Wellbeing Platform is undergoing scheduled regulatory updates..."
-                className="w-full p-3 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-rose-500/50"
+                className="w-full p-3 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-danger/50"
               />
             </div>
 
@@ -1185,14 +1185,14 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => setShowMaintenanceModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-soft hover:text-foreground bg-foreground/5 hover:bg-foreground/10 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleToggleMaintenance}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 transition-colors shadow"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-danger-foreground bg-danger hover:bg-danger transition-colors shadow"
               >
                 {systemData?.config.maintenance.enabled ? "Deactivate Mode" : "Activate Maintenance"}
               </button>

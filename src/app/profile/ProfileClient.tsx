@@ -134,28 +134,28 @@ const PRESETS = [
 
 const HUMOR_COLORS: Record<HumoralElement, { badge: string; bg: string; border: string; text: string }> = {
   esat: {
-    badge: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-    bg: "from-amber-950/40 to-orange-950/20",
-    border: "border-amber-500/30",
-    text: "text-amber-400",
+    badge: "bg-gold/20 text-gold-strong border-gold/40",
+    bg: "from-gold-soft to-warning-soft",
+    border: "border-gold/30",
+    text: "text-gold",
   },
   afere: {
-    badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-    bg: "from-emerald-950/40 to-stone-950/20",
-    border: "border-emerald-500/30",
-    text: "text-emerald-400",
+    badge: "bg-brand/20 text-brand-strong border-brand/40",
+    bg: "from-brand-soft to-background/20",
+    border: "border-brand/30",
+    text: "text-brand",
   },
   nifas: {
-    badge: "bg-sky-500/20 text-sky-300 border-sky-500/40",
-    bg: "from-sky-950/40 to-indigo-950/20",
-    border: "border-sky-500/30",
-    text: "text-sky-400",
+    badge: "bg-info/20 text-info-strong border-info/40",
+    bg: "from-info-soft to-info-soft",
+    border: "border-info/30",
+    text: "text-info",
   },
   may: {
-    badge: "bg-teal-500/20 text-teal-300 border-teal-500/40",
-    bg: "from-teal-950/40 to-cyan-950/20",
-    border: "border-teal-500/30",
-    text: "text-teal-400",
+    badge: "bg-brand/20 text-brand-strong border-brand/40",
+    bg: "from-brand-soft to-info-soft",
+    border: "border-brand/30",
+    text: "text-brand",
   },
 };
 
@@ -456,19 +456,19 @@ export default function ProfileClient() {
       <div className="app-container space-y-8">
         {/* Finalize Profile Coordinates Request Banner */}
         {showFinalizeBanner && (
-          <div className="p-5 md:p-6 rounded-2xl bg-gradient-to-r from-amber-950/70 via-stone-900/95 to-amber-950/50 border-2 border-amber-500/60 shadow-2xl relative animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="p-5 md:p-6 rounded-2xl bg-gradient-to-r from-gold-soft via-card/95 to-gold-soft border-2 border-gold/60 shadow-raised relative animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
               <div className="space-y-1.5 max-w-3xl">
-                <div className="flex items-center gap-2 text-amber-300 font-extrabold text-sm uppercase tracking-wide">
+                <div className="flex items-center gap-2 text-gold font-extrabold text-sm uppercase tracking-wide">
                   <span className="text-xl">🌟</span>
                   <span>እንኳን ደህና መጡ! Welcome! Please finalize your profile coordinates to get the best results</span>
                 </div>
-                <p className="text-xs md:text-sm text-slate-200 leading-relaxed">
+                <p className="text-xs md:text-sm text-soft leading-relaxed">
                   Add your birth date and location to generate preliminary astrology and numerology, name and heritage reflection, and the dietary overview. If birth time is unavailable, charts use an approximate noon time. These cultural readings and food patterns are educational only, not medical advice.
                 </p>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <Link href="/case/workflows" className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-white/5">
+                <Link href="/case/workflows" className="rounded-xl border border-border px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-foreground/5">
                   Explore care pathways
                 </Link>
                 <button
@@ -477,7 +477,7 @@ export default function ProfileClient() {
                     const el = document.getElementById("coordinates-section");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs shadow-xl transition flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs shadow-panel transition flex items-center gap-2"
                 >
                   <span>✍️</span>
                   <span>Finalize Coordinates</span>
@@ -485,7 +485,7 @@ export default function ProfileClient() {
                 <button
                   type="button"
                   onClick={() => setShowFinalizeBanner(false)}
-                  className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 transition"
+                  className="text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg border border-border hover:bg-foreground/5 transition"
                 >
                   Dismiss
                 </button>
@@ -496,12 +496,12 @@ export default function ProfileClient() {
 
         {/* 50% Gating Paywall Banner */}
         {isGated && (
-          <div className="p-4 rounded-xl bg-gradient-to-r from-amber-900/40 via-stone-900/70 to-amber-950/30 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs shadow-lg">
-            <div className="flex items-center gap-3 text-amber-300">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-gold-soft via-card/70 to-gold-soft border border-gold/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs shadow-panel">
+            <div className="flex items-center gap-3 text-gold">
               <span className="text-2xl">🔐</span>
               <div>
-                <strong className="block text-white text-sm">Previewing 50% of Your Personal Profile Results</strong>
-                <span className="text-slate-300 text-xs">
+                <strong className="block text-foreground text-sm">Previewing 50% of Your Personal Profile Results</strong>
+                <span className="text-soft text-xs">
                   {gatingSettings?.title || "Complete 5-System Sacred Blueprint"}: Administrator policy requires unlocking to view complete botanical formulas, dietary strategy, D9 Navamsha chart, and full lineage formulas.
                 </span>
               </div>
@@ -509,11 +509,11 @@ export default function ProfileClient() {
             <button
               onClick={handleUnlockProfile}
               disabled={unlockLoading}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs transition flex items-center gap-2 shadow-panel shrink-0"
             >
               {unlockLoading ? (
                 <>
-                  <span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin"></span>
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-border border-t-transparent animate-spin"></span>
                   <span>Connecting...</span>
                 </>
               ) : (
@@ -527,19 +527,19 @@ export default function ProfileClient() {
         )}
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold mb-2">
+              <span className="w-2 h-2 rounded-full bg-gold-fill animate-pulse"></span>
               <span>የግል መገለጫ • Domain B Sacred Heritage, Astrology &amp; Numerology</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight">
               Astrology, Numerology &amp; Cultural Profiling
             </h1>
             <Link href="/profile/edit" className="mt-4 inline-block btn-pill-primary">
               Edit wellbeing profile
             </Link>
-            <p className="text-slate-300 text-sm md:text-base mt-2 max-w-3xl">
+            <p className="text-soft text-sm md:text-base mt-2 max-w-3xl">
               World-class profiling unifying Western &amp; Vedic Astrology, Dan Millman's 45-path framework, the 16 Circular Tables of AwudeNegest, Däbtära healing scrolls, and multi-dimensional relationship compatibility.
             </p>
           </div>
@@ -554,7 +554,7 @@ export default function ProfileClient() {
                   setTimeout(() => setCopied(false), 2500);
                 }
               }}
-              className="px-4 py-2 rounded-lg bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition flex items-center gap-2 border border-emerald-500/30"
+              className="px-4 py-2 rounded-lg bg-brand/80 hover:bg-brand text-brand-foreground text-xs font-semibold shadow-md transition flex items-center gap-2 border border-brand/30"
               title="Copy shareable link"
             >
               <span>{copied ? "✓ Copied!" : "🔗 Share Reading"}</span>
@@ -562,14 +562,14 @@ export default function ProfileClient() {
             <button
               type="button"
               onClick={() => window.print()}
-              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-white/10 transition flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-muted hover:bg-sunken text-soft text-xs font-medium border border-border transition flex items-center gap-2"
             >
               <span>🖨️</span>
               <span>Print Profile</span>
             </button>
             <Link
               href="/cultural"
-              className="px-4 py-2 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white text-xs font-semibold shadow-md transition flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-gold-fill/80 hover:bg-gold-fill text-gold-foreground text-xs font-semibold shadow-md transition flex items-center gap-2"
             >
               <span>📜</span>
               <span>Heritage Portal</span>
@@ -578,9 +578,9 @@ export default function ProfileClient() {
         </div>
 
         {/* Profile Hero Identity Card */}
-        <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-stone-900/90 via-stone-950/80 to-stone-900/90 p-5 md:p-6 mb-8 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="rounded-2xl border border-gold/30 bg-gradient-to-r from-card/90 via-background/80 to-card/90 p-5 md:p-6 mb-8  shadow-panel flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-2xl font-black text-stone-950 shadow-lg shadow-amber-500/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-fill to-gold-fill text-2xl font-bold text-gold-foreground shadow-panel">
               {(accountProfile?.name || fullName || "TC")
                 .split(" ")
                 .map((n) => n[0])
@@ -590,14 +590,14 @@ export default function ProfileClient() {
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h2 className="text-xl md:text-2xl font-black text-white">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">
                   {accountProfile?.name || fullName || "Verified Client"}
                 </h2>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-mono text-emerald-300 font-semibold">
+                <span className="rounded-full border border-brand/30 bg-brand/10 px-2.5 py-0.5 text-[10px] font-mono text-brand-strong font-semibold">
                   ● {accountProfile?.role === "admin" ? "System Admin" : "Verified Client"}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-xs text-stone-400 font-mono">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground font-mono">
                 <span>📍 {accountProfile?.city || city || "Ethiopia"}</span>
                 <span>🌐 {accountProfile?.preferredLanguage?.toUpperCase() || "EN"}</span>
                 <span>🎂 {accountProfile?.dateOfBirth || birthDate || "Birth date not set"}</span>
@@ -606,32 +606,32 @@ export default function ProfileClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:self-center">
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
-              <div className="text-[10px] uppercase font-mono text-stone-400">Sun Sign</div>
-              <div className="text-xs font-bold text-amber-300">
+            <div className="rounded-xl border border-border bg-foreground/5 px-3.5 py-2 text-center">
+              <div className="text-[10px] uppercase text-muted-foreground">Sun Sign</div>
+              <div className="text-xs font-bold text-gold">
                 {profile?.astrology?.sunSign || "—"}
               </div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
-              <div className="text-[10px] uppercase font-mono text-stone-400">Life Path</div>
-              <div className="text-xs font-bold text-cyan-300">
+            <div className="rounded-xl border border-border bg-foreground/5 px-3.5 py-2 text-center">
+              <div className="text-[10px] uppercase text-muted-foreground">Life Path</div>
+              <div className="text-xs font-bold text-info">
                 {multiNumeroData?.danMillman?.unreducedComposite || (birthDate ? danMillmanPath.unreducedNumber : "—")}
               </div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-center">
-              <div className="text-[10px] uppercase font-mono text-stone-400">Vitality</div>
-              <div className="text-xs font-bold text-emerald-300">
+            <div className="rounded-xl border border-border bg-foreground/5 px-3.5 py-2 text-center">
+              <div className="text-[10px] uppercase text-muted-foreground">Vitality</div>
+              <div className="text-xs font-bold text-brand">
                 {profile ? `${profile.synthesis.vitalityScore}/100` : "—"}
               </div>
             </div>
           </div>
         </div>
 
-        <section className="glass-panel p-6 mb-8 border border-emerald-500/20">
+        <section className="glass-panel p-6 mb-8 border border-brand/20">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
             <div>
-              <h2 className="text-lg font-bold text-white">Manage your account profile</h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <h2 className="text-lg font-bold text-foreground">Manage your account profile</h2>
+              <p className="text-xs text-muted-foreground mt-1">
                 Update your personal details used across your wellness workflows. Your email and role are managed securely.
               </p>
             </div>
@@ -640,12 +640,12 @@ export default function ProfileClient() {
             </Link>
           </div>
           {accountLoading ? (
-            <p className="text-sm text-slate-400" role="status">Loading your profile...</p>
+            <p className="text-sm text-muted-foreground" role="status">Loading your profile...</p>
           ) : accountProfile ? (
             <form onSubmit={saveAccountProfile} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Full name</span>
+                  <span className="text-xs font-medium text-muted-foreground">Full name</span>
                   <input
                     required
                     value={accountProfile.name}
@@ -654,11 +654,11 @@ export default function ProfileClient() {
                   />
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Email</span>
+                  <span className="text-xs font-medium text-muted-foreground">Email</span>
                   <input value={accountProfile.email} readOnly className="input-warm w-full opacity-70 cursor-not-allowed" />
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Phone</span>
+                  <span className="text-xs font-medium text-muted-foreground">Phone</span>
                   <input
                     value={accountProfile.phone}
                     onChange={(event) => setAccountProfile({ ...accountProfile, phone: event.target.value })}
@@ -667,7 +667,7 @@ export default function ProfileClient() {
                   />
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Date of birth</span>
+                  <span className="text-xs font-medium text-muted-foreground">Date of birth</span>
                   <input
                     type="date"
                     value={accountProfile.dateOfBirth}
@@ -676,7 +676,7 @@ export default function ProfileClient() {
                   />
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Preferred language</span>
+                  <span className="text-xs font-medium text-muted-foreground">Preferred language</span>
                   <select
                     value={accountProfile.preferredLanguage}
                     onChange={(event) => setAccountProfile({ ...accountProfile, preferredLanguage: event.target.value })}
@@ -702,7 +702,7 @@ export default function ProfileClient() {
                   })}
                 />
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Gender identity (optional)</span>
+                  <span className="text-xs font-medium text-muted-foreground">Gender identity (optional)</span>
                   <input
                     type="text"
                     maxLength={100}
@@ -711,12 +711,12 @@ export default function ProfileClient() {
                     placeholder="Share only if you choose"
                     className="input-warm w-full"
                   />
-                  <span className="block text-[11px] leading-relaxed text-slate-500">
+                  <span className="block text-[11px] leading-relaxed text-subtle">
                     Used for respectful language only when you opt in for a specific case.
                   </span>
                 </label>
                 <label className="space-y-1">
-                  <span className="text-xs font-medium text-slate-400">Religion or faith tradition (optional)</span>
+                  <span className="text-xs font-medium text-muted-foreground">Religion or faith tradition (optional)</span>
                   <input
                     type="text"
                     maxLength={100}
@@ -725,21 +725,21 @@ export default function ProfileClient() {
                     placeholder="Share only if you choose"
                     className="input-warm w-full"
                   />
-                  <span className="block text-[11px] leading-relaxed text-slate-500">
+                  <span className="block text-[11px] leading-relaxed text-subtle">
                     Use your own terms, leave blank, or clear it at any time.
                   </span>
                 </label>
               </div>
-              <fieldset className="space-y-3 border-t border-white/10 pt-4">
-                <legend className="text-sm font-semibold text-white">Optional data and content permissions</legend>
-                <p className="max-w-3xl text-xs leading-relaxed text-slate-400">
+              <fieldset className="space-y-3 border-t border-border pt-4">
+                <legend className="text-sm font-semibold text-foreground">Optional data and content permissions</legend>
+                <p className="max-w-3xl text-xs leading-relaxed text-muted-foreground">
                   Religion and gender identity are optional sensitive information. They are private to your profile by default.
                   This permission allows their use only in cultural reflection when you also opt in for an individual case.
                   Changing or clearing these details is always allowed.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {CONSENT_OPTIONS.map(({ key, label, detail }) => (
-                    <label key={key} className="flex items-start gap-3 rounded-lg border border-white/10 p-3">
+                    <label key={key} className="flex items-start gap-3 rounded-lg border border-border p-3">
                       <input
                         type="checkbox"
                         checked={accountProfile.consent[key]}
@@ -747,11 +747,11 @@ export default function ProfileClient() {
                           ...accountProfile,
                           consent: { ...accountProfile.consent, [key]: event.target.checked },
                         })}
-                        className="mt-1 accent-emerald-500"
+                        className="mt-1 accent-brand"
                       />
                       <span>
-                        <span className="block text-sm font-medium text-white">{label}</span>
-                        <span className="mt-1 block text-xs text-slate-400">{detail}</span>
+                        <span className="block text-sm font-medium text-foreground">{label}</span>
+                        <span className="mt-1 block text-xs text-muted-foreground">{detail}</span>
                       </span>
                     </label>
                   ))}
@@ -761,29 +761,29 @@ export default function ProfileClient() {
                 <button type="submit" disabled={accountSaving} className="btn-pill-primary disabled:opacity-60">
                   {accountSaving ? "Saving..." : "Save account profile"}
                 </button>
-                {accountMessage && <p className="text-sm text-slate-300" role="status">{accountMessage}</p>}
+                {accountMessage && <p className="text-sm text-soft" role="status">{accountMessage}</p>}
               </div>
             </form>
           ) : (
-            <p className="text-sm text-rose-300" role="alert">{accountMessage || "Unable to load your profile."}</p>
+            <p className="text-sm text-danger" role="alert">{accountMessage || "Unable to load your profile."}</p>
           )}
         </section>
 
         {/* Client Intake & Preset Selector */}
-        <div id="coordinates-section" className="glass-panel p-6 mb-8 border border-white/10 space-y-6 scroll-mt-20">
+        <div id="coordinates-section" className="glass-panel p-6 mb-8 border border-border space-y-6 scroll-mt-20">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <span>👤</span> Client Profile Coordinates
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Select an Ethiopian archetype preset or enter custom birth coordinates to recalculate all celestial &amp; numerological systems.
               </p>
             </div>
 
             {/* Presets as dropdown list */}
             <div className="flex flex-wrap gap-2">
-              <label className="block text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
                 <span className="sr-only">Preset</span>
                 <select
                   value={PRESETS.some((p) => p.name === fullName) ? fullName : "my_profile"}
@@ -805,14 +805,14 @@ export default function ProfileClient() {
                       if (chosen) handlePresetSelect(chosen);
                     }
                   }}
-                  className="w-full min-w-[220px] px-3 py-2 rounded-lg bg-black/40 border border-amber-500/30 text-white text-sm focus:border-amber-400 focus:outline-none"
+                  className="w-full min-w-[220px] px-3 py-2 rounded-lg bg-sunken/80 border border-gold/30 text-foreground text-sm focus:border-gold focus:outline-none"
                 >
-                  <option value="my_profile" className="bg-slate-900 text-amber-300 font-bold">
+                  <option value="my_profile" className="bg-card text-gold font-bold">
                     {accountProfile?.name ? `👤 ${accountProfile.name} (Registered Profile)` : "👤 My Profile Coordinates"}
                   </option>
                   <optgroup label="Sample Archetypes">
                     {PRESETS.map((p) => (
-                      <option key={p.name} value={p.name} className="bg-slate-900 text-white">
+                      <option key={p.name} value={p.name} className="bg-card text-foreground">
                         {p.name}
                       </option>
                     ))}
@@ -822,32 +822,32 @@ export default function ProfileClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-white/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-border">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Full Legal / Indigenous Name</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Full Legal / Indigenous Name</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-sm focus:border-amber-400 focus:outline-none"
+                className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Birth Date (Gregorian)</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Birth Date (Gregorian)</label>
               <input
                 type="date"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-sm focus:border-amber-400 focus:outline-none"
+                className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Birth Time (Local 24-hr)</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Birth Time (Local 24-hr)</label>
               <input
                 type="time"
                 value={birthTime}
                 onChange={(e) => setBirthTime(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-sm focus:border-amber-400 focus:outline-none"
+                className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold focus:outline-none"
               />
             </div>
             <div>
@@ -865,11 +865,11 @@ export default function ProfileClient() {
             <button
               onClick={() => handleGenerateProfile()}
               disabled={loading}
-              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-sm shadow-lg hover:from-amber-400 hover:to-orange-400 transition flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-gold-fill to-gold-fill text-gold-foreground font-bold text-sm shadow-panel hover:from-gold-fill hover:to-gold-fill transition flex items-center gap-2"
             >
               {loading ? (
                 <>
-                  <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin"></span>
+                  <span className="w-4 h-4 rounded-full border-2 border-border border-t-transparent animate-spin"></span>
                   <span>Synthesizing Multi-System Blueprint...</span>
                 </>
               ) : (
@@ -885,29 +885,29 @@ export default function ProfileClient() {
         {profile && (
           <>
             {/* Top Summary Banner with Multi-System Metrics */}
-            <div className={`p-6 rounded-2xl bg-gradient-to-br ${humorStyle.bg} border ${humorStyle.border} shadow-xl mb-8`}>
+            <div className={`p-6 rounded-2xl bg-gradient-to-br ${humorStyle.bg} border ${humorStyle.border} shadow-panel mb-8`}>
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${humorStyle.badge}`}>
                       {profile.synthesis.humoralDominance.toUpperCase()} ELEMENT • {profile.astrology.ethiopianZodiacSign.geezName}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-medium">
+                    <span className="px-2.5 py-0.5 rounded-full bg-foreground/10 text-foreground text-xs font-medium">
                       Sun in {profile.astrology.sunSign}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-medium">
+                    <span className="px-2.5 py-0.5 rounded-full bg-foreground/10 text-foreground text-xs font-medium">
                       Moon in {profile.astrology.moonSign}
                     </span>
                     {!profile.astrology.birthTimeAssumed && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-medium">
+                      <span className="px-2.5 py-0.5 rounded-full bg-foreground/10 text-foreground text-xs font-medium">
                         {profile.astrology.risingSign} rising
                       </span>
                     )}
-                    <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold">
+                    <span className="px-2.5 py-0.5 rounded-full bg-info/20 text-info-strong border border-info/30 text-xs font-bold">
                       Life Path {danMillmanPath.unreducedNumber}
                     </span>
                     {awudeReadingData && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-gold/20 text-gold-strong border border-gold/30 text-xs font-bold">
                         Awude Circle #{awudeReadingData.circle.number}
                       </span>
                     )}
@@ -924,26 +924,26 @@ export default function ProfileClient() {
                       </span>
                     )}
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-white">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">
                     {profile.userInfo.fullName}
                   </h2>
-                  <p className="text-sm text-slate-300 max-w-3xl">
+                  <p className="text-sm text-soft max-w-3xl">
                     {profile.synthesis.constitutionalType} — {profile.naming.overallNameIdentitySynergy.identityNarrative}
                   </p>
-                  <p className="text-xs text-slate-400 max-w-3xl">
+                  <p className="text-xs text-muted-foreground max-w-3xl">
                     {castDescription(profile.astrology, profile.userInfo.birthDate, profile.userInfo.birthTime)}
                   </p>
                 </div>
 
                 {/* Vitality Gauge Card */}
-                <div className="flex items-center gap-4 bg-black/40 px-5 py-3 rounded-xl border border-white/10 self-start md:self-auto">
+                <div className="flex items-center gap-4 bg-sunken/80 px-5 py-3 rounded-xl border border-border self-start md:self-auto">
                   <div className="text-center">
-                    <div className="text-3xl font-black text-amber-400">{profile.synthesis.vitalityScore}</div>
-                    <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Vitality Index</div>
+                    <div className="text-3xl font-bold text-gold">{profile.synthesis.vitalityScore}</div>
+                    <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Vitality Index</div>
                   </div>
-                  <div className="h-10 w-[1px] bg-white/10"></div>
-                  <div className="text-xs text-slate-300">
-                    <div className="font-semibold text-white">Your natal aspects</div>
+                  <div className="h-10 w-[1px] bg-foreground/10"></div>
+                  <div className="text-xs text-soft">
+                    <div className="font-semibold text-foreground">Your natal aspects</div>
                     <div>{profile.astrology.aspects.filter((a) => a.nature === "harmonious").length} flowing • {profile.astrology.aspects.filter((a) => a.nature === "challenging").length} testing</div>
                   </div>
                 </div>
@@ -951,12 +951,12 @@ export default function ProfileClient() {
             </div>
 
             {/* Navigation Tabs Bar */}
-            <div className="flex rounded-2xl bg-stone-900/60 p-2 border border-white/10 overflow-x-auto no-scrollbar gap-1.5 mb-8 shadow-inner backdrop-blur-md">
+            <div className="flex rounded-2xl bg-card/60 p-2 border border-border overflow-x-auto no-scrollbar gap-1.5 mb-8 shadow-inner ">
               <button
                 onClick={() => setActiveTab("synthesis")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "synthesis"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>🌿</span>
@@ -966,8 +966,8 @@ export default function ProfileClient() {
               <button
                 onClick={() => setActiveTab("astrology")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "astrology"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>🌌</span>
@@ -977,8 +977,8 @@ export default function ProfileClient() {
               <button
                 onClick={() => setActiveTab("numerology")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "numerology"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>🔢</span>
@@ -988,8 +988,8 @@ export default function ProfileClient() {
               <button
                 onClick={() => setActiveTab("awudenegest")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "awudenegest"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>👑</span>
@@ -1000,8 +1000,8 @@ export default function ProfileClient() {
                 <button
                   onClick={() => setActiveTab("aichat")}
                   className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "aichat"
-                      ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                      ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                     }`}
                 >
                   <span>🧠</span>
@@ -1012,8 +1012,8 @@ export default function ProfileClient() {
               <button
                 onClick={() => setActiveTab("compatibility")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "compatibility"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>❤️</span>
@@ -1023,8 +1023,8 @@ export default function ProfileClient() {
               <button
                 onClick={() => setActiveTab("naming")}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "naming"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>📜</span>
@@ -1037,8 +1037,8 @@ export default function ProfileClient() {
                   if (suggestions.length === 0) handleFetchSuggestions();
                 }}
                 className={`py-2.5 px-4 text-xs md:text-sm font-semibold rounded-xl transition whitespace-nowrap flex items-center gap-2 ${activeTab === "suggester"
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-gradient-to-r from-gold/20 to-warning/20 text-gold border border-gold/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
                   }`}
               >
                 <span>✨</span>
@@ -1061,14 +1061,14 @@ export default function ProfileClient() {
                 {/* Strengths & Vulnerabilities Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Enduring Strengths */}
-                  <div className="glass-panel p-6 border border-emerald-500/20 space-y-4">
-                    <h3 className="text-base font-bold text-emerald-400 flex items-center gap-2">
+                  <div className="glass-panel p-6 border border-brand/20 space-y-4">
+                    <h3 className="text-base font-bold text-brand flex items-center gap-2">
                       <span>🛡️</span> Enduring Constitutional Strengths
                     </h3>
                     <ul className="space-y-2.5">
                       {profile.synthesis.enduringStrengths.map((str, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-sm text-slate-200">
-                          <span className="text-emerald-400 mt-1">✓</span>
+                        <li key={i} className="flex items-start gap-2.5 text-sm text-soft">
+                          <span className="text-brand mt-1">✓</span>
                           <span>{str}</span>
                         </li>
                       ))}
@@ -1076,14 +1076,14 @@ export default function ProfileClient() {
                   </div>
 
                   {/* Primary Wellbeing Risks */}
-                  <div className="glass-panel p-6 border border-rose-500/20 space-y-4">
-                    <h3 className="text-base font-bold text-rose-400 flex items-center gap-2">
+                  <div className="glass-panel p-6 border border-danger/20 space-y-4">
+                    <h3 className="text-base font-bold text-danger flex items-center gap-2">
                       <span>⚠️</span> Primary Constitutional Vulnerabilities
                     </h3>
                     <ul className="space-y-2.5">
                       {profile.synthesis.primarywellbeingRisks.map((risk, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-sm text-slate-200">
-                          <span className="text-rose-400 mt-1">!</span>
+                        <li key={i} className="flex items-start gap-2.5 text-sm text-soft">
+                          <span className="text-danger mt-1">!</span>
                           <span>{risk}</span>
                         </li>
                       ))}
@@ -1096,92 +1096,92 @@ export default function ProfileClient() {
                   <div className="relative rounded-2xl overflow-hidden">
                     {/* Blurred preview */}
                     <div className="pointer-events-none select-none filter blur-[6px] opacity-40 space-y-6">
-                      <div className="glass-panel p-6 border border-white/10 space-y-4">
-                        <h3 className="text-lg font-bold text-white">🍲 Personalized Ethiopian Dietary Strategy (EFCT 2025)</h3>
+                      <div className="glass-panel p-6 border border-border space-y-4">
+                        <h3 className="text-lg font-bold text-foreground">🍲 Personalized Ethiopian Dietary Strategy (EFCT 2025)</h3>
                         <div className="grid grid-cols-3 gap-4">
                           {["Therapeutic Principles","Favored Foods","Foods to Moderate"].map(t => (
                             <div key={t} className="space-y-2">
-                              <div className="text-xs font-bold text-amber-400">{t}</div>
-                              {[1,2,3].map(i => <div key={i} className="h-3 rounded bg-white/10 my-1" />)}
+                              <div className="text-xs font-bold text-gold">{t}</div>
+                              {[1,2,3].map(i => <div key={i} className="h-3 rounded bg-foreground/10 my-1" />)}
                             </div>
                           ))}
                         </div>
                       </div>
-                      <div className="glass-panel p-6 border border-white/10 space-y-4">
-                        <h3 className="text-lg font-bold text-white">🌿 Indigenous Botanical Adaptogens &amp; Humoral Synergies</h3>
+                      <div className="glass-panel p-6 border border-border space-y-4">
+                        <h3 className="text-lg font-bold text-foreground">🌿 Indigenous Botanical Adaptogens &amp; Humoral Synergies</h3>
                         <div className="grid grid-cols-3 gap-4">
-                          {[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-white/5" />)}
+                          {[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-foreground/5" />)}
                         </div>
                       </div>
                     </div>
                     {/* Frosted glass unlock overlay */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-3xl shadow-xl shadow-amber-500/30">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-background/80  rounded-2xl border border-gold/30 p-6 text-center">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-fill to-gold-fill flex items-center justify-center text-3xl shadow-panel">
                         🔐
                       </div>
                       <div className="space-y-1.5">
-                        <h3 className="text-lg font-black text-white">{gatingSettings?.title || "Complete 5-System Sacred Blueprint"}</h3>
-                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">
+                        <h3 className="text-lg font-bold text-foreground">{gatingSettings?.title || "Complete 5-System Sacred Blueprint"}</h3>
+                        <p className="text-xs text-soft max-w-sm leading-relaxed">
                           {gatingSettings?.description || "Unlock your full personalized dietary strategy, botanical adaptogens formula, and cross-strand wellbeing notes — calibrated uniquely to your cosmic profile."}
                         </p>
-                        <p className="text-[11px] text-amber-400 font-semibold">Previewing 50% of your results — admin policy requires payment to view full reading.</p>
+                        <p className="text-[11px] text-gold font-semibold">Previewing 50% of your results — admin policy requires payment to view full reading.</p>
                       </div>
                       <button
                         onClick={handleUnlockProfile}
                         disabled={unlockLoading}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-sm transition flex items-center gap-2 shadow-xl shadow-amber-500/30"
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-sm transition flex items-center gap-2 shadow-panel"
                       >
                         {unlockLoading ? (
-                          <><span className="w-4 h-4 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></>
+                          <><span className="w-4 h-4 rounded-full border-2 border-border border-t-transparent animate-spin" /><span>Connecting...</span></>
                         ) : (
                           <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>
                         )}
                       </button>
-                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                      {unlockMessage && <p className="text-xs text-brand">{unlockMessage}</p>}
                     </div>
                   </div>
                 ) : (
                   <>
                     {/* Dietary Principles & Favored Foods */}
-                    <div className="glass-panel p-6 border border-white/10 space-y-6">
+                    <div className="glass-panel p-6 border border-border space-y-6">
                       <div>
-                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                           <span>🍲</span> Personalized Ethiopian Dietary Strategy (EFCT 2025)
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Calibrated for {profile.synthesis.humoralDominance.toUpperCase()} elemental balance and Life Path {profile.numerology.lifePath.number} metabolic rhythms.
                         </p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-3">
-                          <div className="text-xs font-semibold uppercase tracking-wider text-amber-400">Therapeutic Principles</div>
-                          <ul className="space-y-2 text-xs text-slate-300">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-gold">Therapeutic Principles</div>
+                          <ul className="space-y-2 text-xs text-soft">
                             {profile.synthesis.recommendations.dietary.therapeuticPrinciples.map((tp, idx) => (
                               <li key={idx} className="flex items-start gap-2">
-                                <span className="text-amber-400">•</span>
+                                <span className="text-gold">•</span>
                                 <span>{tp}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                         <div className="space-y-3">
-                          <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Favored Ethiopian Foods</div>
-                          <ul className="space-y-2 text-xs text-slate-300">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-brand">Favored Ethiopian Foods</div>
+                          <ul className="space-y-2 text-xs text-soft">
                             {profile.synthesis.recommendations.dietary.favoredEthiopianFoods.map((f, idx) => (
                               <li key={idx} className="flex items-start gap-2">
-                                <span className="text-emerald-400">•</span>
+                                <span className="text-brand">•</span>
                                 <span>{f}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                         <div className="space-y-3">
-                          <div className="text-xs font-semibold uppercase tracking-wider text-rose-400">Foods to Moderate</div>
-                          <ul className="space-y-2 text-xs text-slate-300">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-danger">Foods to Moderate</div>
+                          <ul className="space-y-2 text-xs text-soft">
                             {profile.synthesis.recommendations.dietary.foodsToModerate.map((f, idx) => (
                               <li key={idx} className="flex items-start gap-2">
-                                <span className="text-rose-400">•</span>
+                                <span className="text-danger">•</span>
                                 <span>{f}</span>
                               </li>
                             ))}
@@ -1191,17 +1191,17 @@ export default function ProfileClient() {
                     </div>
 
                     {/* Botanical Adaptogens Table */}
-                    <div className="glass-panel p-6 border border-white/10 space-y-4">
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <div className="glass-panel p-6 border border-border space-y-4">
+                      <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                         <span>🌿</span> Indigenous Botanical Adaptogens &amp; Humoral Synergies
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {profile.synthesis.recommendations.herbalAdaptogens.map((herb, idx) => (
-                          <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
-                            <div className="text-sm font-bold text-emerald-300">{herb.herb}</div>
-                            <div className="text-xs text-slate-300"><strong>Traditional Use:</strong> {herb.traditionalUse}</div>
-                            <div className="text-xs text-slate-400">{herb.synergyNote}</div>
-                            <div className="text-[11px] text-amber-300/90 pt-1 border-t border-white/5">
+                          <div key={idx} className="p-4 rounded-xl bg-card/60 border border-border space-y-2">
+                            <div className="text-sm font-bold text-brand">{herb.herb}</div>
+                            <div className="text-xs text-soft"><strong>Traditional Use:</strong> {herb.traditionalUse}</div>
+                            <div className="text-xs text-muted-foreground">{herb.synergyNote}</div>
+                            <div className="text-[11px] text-gold pt-1 border-t border-border">
                               <strong>Precaution:</strong> {herb.safetyPrecaution}
                             </div>
                           </div>
@@ -1257,20 +1257,20 @@ export default function ProfileClient() {
                 {isGated && (
                   <div className="relative rounded-2xl overflow-hidden">
                     <div className="pointer-events-none select-none filter blur-sm opacity-30 p-6 space-y-3">
-                      <div className="h-4 rounded bg-white/10 w-2/3" />
-                      <div className="h-4 rounded bg-white/10 w-1/2" />
-                      <div className="h-4 rounded bg-white/10 w-3/4" />
-                      <div className="h-4 rounded bg-white/10 w-1/3" />
+                      <div className="h-4 rounded bg-foreground/10 w-2/3" />
+                      <div className="h-4 rounded bg-foreground/10 w-1/2" />
+                      <div className="h-4 rounded bg-foreground/10 w-3/4" />
+                      <div className="h-4 rounded bg-foreground/10 w-1/3" />
                     </div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/80  rounded-2xl border border-gold/30 p-6 text-center">
                       <span className="text-4xl">🔢</span>
                       <div className="space-y-1">
-                        <h4 className="text-base font-black text-white">Advanced Numerology Cycles & Forecasts</h4>
-                        <p className="text-xs text-slate-300 max-w-xs leading-relaxed">Deep personal year forecasts, pinnacle cycles, and karmic debt analysis are in the full reading.</p>
+                        <h4 className="text-base font-bold text-foreground">Advanced Numerology Cycles & Forecasts</h4>
+                        <p className="text-xs text-soft max-w-xs leading-relaxed">Deep personal year forecasts, pinnacle cycles, and karmic debt analysis are in the full reading.</p>
                       </div>
                       <button onClick={handleUnlockProfile} disabled={unlockLoading}
-                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg">
-                        {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs transition flex items-center gap-2 shadow-panel">
+                        {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-border border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
                       </button>
                     </div>
                   </div>
@@ -1284,24 +1284,24 @@ export default function ProfileClient() {
                 {isGated ? (
                   <div className="relative rounded-2xl overflow-hidden">
                     <div className="pointer-events-none select-none filter blur-md opacity-25 p-10 flex flex-col gap-4">
-                      <div className="h-6 rounded bg-amber-500/20 w-1/2" />
-                      <div className="h-4 rounded bg-white/10 w-3/4" />
-                      <div className="h-4 rounded bg-white/10 w-2/3" />
+                      <div className="h-6 rounded bg-gold/20 w-1/2" />
+                      <div className="h-4 rounded bg-foreground/10 w-3/4" />
+                      <div className="h-4 rounded bg-foreground/10 w-2/3" />
                       <div className="grid grid-cols-3 gap-4 mt-4">
-                        {[1,2,3,4,5,6].map(i => <div key={i} className="h-20 rounded-xl bg-white/5" />)}
+                        {[1,2,3,4,5,6].map(i => <div key={i} className="h-20 rounded-xl bg-foreground/5" />)}
                       </div>
                     </div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/85 backdrop-blur-md rounded-2xl border border-amber-500/30 p-8 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/85  rounded-2xl border border-gold/30 p-8 text-center">
                       <span className="text-4xl">👑</span>
                       <div className="space-y-1.5">
-                        <h4 className="text-lg font-black text-white">AwudeNegest — 16 Circles of Sacred Wisdom</h4>
-                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">Your complete AwudeNegest circle reading, Däbtära scroll interpretations, and Ethiopian lunar calendar alignments require a full unlock.</p>
+                        <h4 className="text-lg font-bold text-foreground">AwudeNegest — 16 Circles of Sacred Wisdom</h4>
+                        <p className="text-xs text-soft max-w-sm leading-relaxed">Your complete AwudeNegest circle reading, Däbtära scroll interpretations, and Ethiopian lunar calendar alignments require a full unlock.</p>
                       </div>
                       <button onClick={handleUnlockProfile} disabled={unlockLoading}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-sm transition flex items-center gap-2 shadow-xl">
-                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-sm transition flex items-center gap-2 shadow-panel">
+                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-border border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
                       </button>
-                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                      {unlockMessage && <p className="text-xs text-brand">{unlockMessage}</p>}
                     </div>
                   </div>
                 ) : (
@@ -1340,24 +1340,24 @@ export default function ProfileClient() {
                 {isGated ? (
                   <div className="relative rounded-2xl overflow-hidden min-h-[320px]">
                     <div className="pointer-events-none select-none filter blur-md opacity-25 p-10 flex flex-col gap-4">
-                      <div className="h-6 rounded bg-rose-500/20 w-1/2" />
-                      <div className="h-4 rounded bg-white/10 w-3/4" />
-                      <div className="h-4 rounded bg-white/10 w-2/3" />
+                      <div className="h-6 rounded bg-danger/20 w-1/2" />
+                      <div className="h-4 rounded bg-foreground/10 w-3/4" />
+                      <div className="h-4 rounded bg-foreground/10 w-2/3" />
                       <div className="grid grid-cols-2 gap-4 mt-4">
-                        {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-white/5" />)}
+                        {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-xl bg-foreground/5" />)}
                       </div>
                     </div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/85 backdrop-blur-md rounded-2xl border border-rose-500/30 p-8 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/85  rounded-2xl border border-danger/30 p-8 text-center">
                       <span className="text-4xl">❤️</span>
                       <div className="space-y-1.5">
-                        <h4 className="text-lg font-black text-white">Multi-Dimensional Compatibility Analyzer</h4>
-                        <p className="text-xs text-slate-300 max-w-sm leading-relaxed">Full relationship compatibility — astrology, numerology, humoral, and AwudeNegest cross-analysis — is available in the complete reading.</p>
+                        <h4 className="text-lg font-bold text-foreground">Multi-Dimensional Compatibility Analyzer</h4>
+                        <p className="text-xs text-soft max-w-sm leading-relaxed">Full relationship compatibility — astrology, numerology, humoral, and AwudeNegest cross-analysis — is available in the complete reading.</p>
                       </div>
                       <button onClick={handleUnlockProfile} disabled={unlockLoading}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-black text-sm transition flex items-center gap-2 shadow-xl">
-                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-danger to-plum hover:from-danger hover:to-plum text-danger-foreground font-bold text-sm transition flex items-center gap-2 shadow-panel">
+                        {unlockLoading ? <><span className="w-4 h-4 rounded-full border-2 border-border-strong border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock Full Reading — {gatingSettings?.priceEtb || 150} ETB</span></>}
                       </button>
-                      {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                      {unlockMessage && <p className="text-xs text-brand">{unlockMessage}</p>}
                     </div>
                   </div>
                 ) : (
@@ -1369,48 +1369,48 @@ export default function ProfileClient() {
             {/* TAB 7: NAMING & IDENTITY */}
             {activeTab === "naming" && (
               <div className="space-y-8">
-                <div className="glass-panel p-6 border border-white/10 space-y-6">
+                <div className="glass-panel p-6 border border-border space-y-6">
                   <div>
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                       <span>🏷️</span> Indigenous Name Identity Analysis
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Evaluates the cultural etymology, language origin, and vibrational resonances of your given and family names.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 space-y-2">
+                  <div className="p-4 rounded-xl bg-card/60 border border-border space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="text-lg font-bold text-amber-300">
+                      <div className="text-lg font-bold text-gold">
                         {profile.naming.givenNameProfile.name}
                         {profile.naming.givenNameProfile.geezFidel && ` (${profile.naming.givenNameProfile.geezFidel})`}
                       </div>
-                      <span className="text-xs px-2.5 py-0.5 rounded bg-emerald-950/80 border border-emerald-700 text-emerald-300">
+                      <span className="text-xs px-2.5 py-0.5 rounded bg-brand-soft border border-brand text-brand-strong">
                         {profile.naming.givenNameProfile.language}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 italic">
+                    <p className="text-xs text-soft italic">
                       &quot;{profile.naming.givenNameProfile.meaning}&quot;
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted-foreground">
                       {profile.naming.givenNameProfile.culturalContext}
                     </p>
                   </div>
 
                   {/* Lineage & Father Name Card if present */}
                   {profile.naming.familyLineageProfile && (
-                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 space-y-2">
-                      <div className="text-xs uppercase tracking-wider text-slate-400">Patronymic Ancestral Pillar</div>
+                    <div className="p-4 rounded-xl bg-card/60 border border-border space-y-2">
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">Patronymic Ancestral Pillar</div>
                       <div className="flex items-center justify-between">
-                        <div className="text-base font-bold text-white">
+                        <div className="text-base font-bold text-foreground">
                           {profile.naming.familyLineageProfile.name}
                           {profile.naming.familyLineageProfile.geezFidel && ` (${profile.naming.familyLineageProfile.geezFidel})`}
                         </div>
-                        <span className="text-xs text-slate-400 italic">
+                        <span className="text-xs text-muted-foreground italic">
                           {profile.naming.familyLineageProfile.meaning}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300">
+                      <p className="text-xs text-soft">
                         {profile.naming.familyLineageProfile.culturalContext}
                       </p>
                     </div>
@@ -1418,28 +1418,28 @@ export default function ProfileClient() {
 
                   {/* Registered Profile Lineage & Roots */}
                   {(accountProfile?.fatherName || accountProfile?.motherName || accountProfile?.birthLocation) && (
-                    <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/20 space-y-3">
-                      <div className="text-xs uppercase font-bold tracking-wider text-amber-400 flex items-center gap-2">
+                    <div className="p-4 rounded-xl bg-card/80 border border-gold/20 space-y-3">
+                      <div className="text-xs uppercase font-bold tracking-wider text-gold flex items-center gap-2">
                         <span>🌳</span>
                         <span>የተመዘገበ የዘር ሐረግ እና የትውልድ መረጃ (Registered Heritage &amp; Roots)</span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                         {accountProfile.fatherName && (
-                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
-                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የአባት ስም (Father&apos;s Name)</span>
-                            <span className="text-white font-bold text-sm">{accountProfile.fatherName}</span>
+                          <div className="p-3 rounded-lg bg-sunken/80 border border-border">
+                            <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">የአባት ስም (Father&apos;s Name)</span>
+                            <span className="text-foreground font-bold text-sm">{accountProfile.fatherName}</span>
                           </div>
                         )}
                         {accountProfile.motherName && (
-                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
-                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የእናት ስም (Mother&apos;s Name)</span>
-                            <span className="text-white font-bold text-sm">{accountProfile.motherName}</span>
+                          <div className="p-3 rounded-lg bg-sunken/80 border border-border">
+                            <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">የእናት ስም (Mother&apos;s Name)</span>
+                            <span className="text-foreground font-bold text-sm">{accountProfile.motherName}</span>
                           </div>
                         )}
                         {accountProfile.birthLocation && (
-                          <div className="p-3 rounded-lg bg-black/40 border border-white/10">
-                            <span className="text-slate-400 block text-[10px] uppercase tracking-wider mb-0.5">የትውልድ ቦታ (Birth Location)</span>
-                            <span className="text-white font-bold text-sm">{accountProfile.birthLocation}</span>
+                          <div className="p-3 rounded-lg bg-sunken/80 border border-border">
+                            <span className="text-muted-foreground block text-[10px] uppercase tracking-wider mb-0.5">የትውልድ ቦታ (Birth Location)</span>
+                            <span className="text-foreground font-bold text-sm">{accountProfile.birthLocation}</span>
                           </div>
                         )}
                       </div>
@@ -1450,22 +1450,22 @@ export default function ProfileClient() {
                   {isGated ? (
                     <div className="relative rounded-2xl overflow-hidden">
                       <div className="pointer-events-none select-none filter blur-sm opacity-30 p-6 space-y-2">
-                        <div className="h-4 rounded bg-white/10 w-3/4" />
-                        <div className="h-4 rounded bg-white/10 w-1/2" />
-                        <div className="h-4 rounded bg-white/10 w-2/3" />
+                        <div className="h-4 rounded bg-foreground/10 w-3/4" />
+                        <div className="h-4 rounded bg-foreground/10 w-1/2" />
+                        <div className="h-4 rounded bg-foreground/10 w-2/3" />
                       </div>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-5 text-center">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/80  rounded-2xl border border-gold/30 p-5 text-center">
                         <span className="text-2xl">📜</span>
-                        <p className="text-xs text-slate-300 max-w-xs">Full identity synthesis and wellbeing behavior analysis are in the complete reading.</p>
+                        <p className="text-xs text-soft max-w-xs">Full identity synthesis and wellbeing behavior analysis are in the complete reading.</p>
                         <button onClick={handleUnlockProfile} disabled={unlockLoading}
-                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2">
-                          {unlockLoading ? <span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs transition flex items-center gap-2">
+                          {unlockLoading ? <span className="w-3.5 h-3.5 rounded-full border-2 border-border border-t-transparent animate-spin" /> : <><span>🔓</span><span>Unlock — {gatingSettings?.priceEtb || 150} ETB</span></>}
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 text-xs text-slate-300">
-                      <span className="font-bold text-white block">Holistic Identity &amp; wellbeing Behavior Synthesis:</span>
+                    <div className="p-4 rounded-xl bg-background/60 border border-border space-y-2 text-xs text-soft">
+                      <span className="font-bold text-foreground block">Holistic Identity &amp; wellbeing Behavior Synthesis:</span>
                       <p>{profile.naming.overallNameIdentitySynergy.wellbeingBehaviorInfluence}</p>
                       <p>{profile.naming.overallNameIdentitySynergy.mindBodyResilience}</p>
                     </div>
@@ -1477,12 +1477,12 @@ export default function ProfileClient() {
             {/* TAB 8: NAME HARMONY SUGGESTER */}
             {activeTab === "suggester" && (
               <div className="space-y-8">
-                <div className="glass-panel p-6 border border-white/10 space-y-6">
+                <div className="glass-panel p-6 border border-border space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                       <span>✨</span> Name Harmony &amp; Elemental Alignment Suggester
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Explore culturally authentic Ethiopian &amp; Biblical names dynamically calculated using your astrology, numerology, and intentional purpose.
                     </p>
                   </div>
@@ -1491,34 +1491,34 @@ export default function ProfileClient() {
                   {appreciation && (
                     <div className={`p-5 rounded-2xl border ${
                       appreciation.isAppreciated
-                        ? "bg-gradient-to-r from-amber-950/40 via-emerald-950/30 to-slate-900/60 border-amber-500/40"
-                        : "bg-slate-900/60 border-white/10"
+                        ? "bg-gradient-to-r from-gold-soft via-brand-soft to-card/60 border-gold/40"
+                        : "bg-card/60 border-border"
                     } space-y-3`}>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{appreciation.isAppreciated ? "👑" : "📜"}</span>
-                          <h4 className="text-sm font-bold text-amber-300">
+                          <h4 className="text-sm font-bold text-gold">
                             {appreciation.headline}
                           </h4>
                         </div>
-                        <span className="text-xs px-3 py-1 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="text-xs px-3 py-1 rounded-full font-bold bg-gold/20 text-gold-strong border border-gold/30">
                           Sacred Resonance: {appreciation.harmonyScore}%
                         </span>
                       </div>
-                      <div className="text-xs text-emerald-300 font-semibold bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-500/30 flex items-center gap-2">
+                      <div className="text-xs text-brand-strong font-semibold bg-brand-soft p-2.5 rounded-lg border border-brand/30 flex items-center gap-2">
                         <span>✨</span>
                         <span>{appreciation.recommendation}</span>
                       </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
+                      <p className="text-xs text-soft leading-relaxed">
                         {appreciation.reasoning}
                       </p>
                     </div>
                   )}
 
                   {/* Filter & Purpose Controls */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-white/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-border">
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Reason / Purpose for Suggestion</label>
+                      <label className="block text-xs font-medium text-muted-foreground mb-1">Reason / Purpose for Suggestion</label>
                       <select
                         value={suggestReason}
                         onChange={(e) => {
@@ -1526,7 +1526,7 @@ export default function ProfileClient() {
                           setSuggestReason(val);
                           handleFetchSuggestions(val);
                         }}
-                        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-xs focus:outline-none"
                       >
                         <option value="general_alignment">General Alignment (አጠቃላይ ማመጣጠን)</option>
                         <option value="new_baby">New Baby Blessing (የህፃን ምርቃትና ስም)</option>
@@ -1539,11 +1539,11 @@ export default function ProfileClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Target Humoral Element</label>
+                      <label className="block text-xs font-medium text-muted-foreground mb-1">Target Humoral Element</label>
                       <select
                         value={suggestTargetElement}
                         onChange={(e) => setSuggestTargetElement(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-xs focus:outline-none"
                       >
                         <option value="may">Water (Maye) — Cooling &amp; Calming</option>
                         <option value="afere">Earth (Afere) — Grounding &amp; Steady</option>
@@ -1553,11 +1553,11 @@ export default function ProfileClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Name style (optional)</label>
+                      <label className="block text-xs font-medium text-muted-foreground mb-1">Name style (optional)</label>
                       <select
                         value={suggestGender}
                         onChange={(e) => setSuggestGender(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-xs focus:outline-none"
                       >
                         <option value="">No preference</option>
                         <option value="female">Feminine names</option>
@@ -1567,11 +1567,11 @@ export default function ProfileClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Linguistic Tradition</label>
+                      <label className="block text-xs font-medium text-muted-foreground mb-1">Linguistic Tradition</label>
                       <select
                         value={suggestLanguage}
                         onChange={(e) => setSuggestLanguage(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/15 text-white text-xs focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-sunken/80 border border-border text-foreground text-xs focus:outline-none"
                       >
                         <option value="">All Traditions (Ethiopian &amp; Biblical)</option>
                         <option value="Biblical">Biblical / ቅዱሳት መጻሕፍት (Hebrew, Greek, Ge&apos;ez)</option>
@@ -1587,11 +1587,11 @@ export default function ProfileClient() {
                     <button
                       onClick={() => handleFetchSuggestions()}
                       disabled={suggestLoading}
-                      className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs transition flex items-center gap-2 shadow-lg"
+                      className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs transition flex items-center gap-2 shadow-panel"
                     >
                       {suggestLoading ? (
                         <>
-                          <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-950 border-t-transparent animate-spin"></span>
+                          <span className="w-3.5 h-3.5 rounded-full border-2 border-border border-t-transparent animate-spin"></span>
                           <span>Calculating Harmonies...</span>
                         </>
                       ) : (
@@ -1612,30 +1612,30 @@ export default function ProfileClient() {
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {visibleItems.map((item, idx) => (
-                          <div key={idx} className="glass-panel p-5 border border-white/10 space-y-3">
+                          <div key={idx} className="glass-panel p-5 border border-border space-y-3">
                             <div className="flex items-center justify-between">
                               <div>
-                                <div className="text-base font-bold text-white flex items-center gap-2">
+                                <div className="text-base font-bold text-foreground flex items-center gap-2">
                                   <span>{item.suggestedName}</span>
-                                  {item.geezFidel && <span className="text-amber-400 font-serif">({item.geezFidel})</span>}
+                                  {item.geezFidel && <span className="text-gold font-serif">({item.geezFidel})</span>}
                                 </div>
                                 {idx === 0 && item.score !== undefined && (
-                                  <span className="inline-block mt-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-300">Best match</span>
+                                  <span className="inline-block mt-1 rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-strong">Best match</span>
                                 )}
-                                <div className="text-xs text-amber-300 italic">&quot;{item.meaning}&quot;</div>
+                                <div className="text-xs text-gold italic">&quot;{item.meaning}&quot;</div>
                                 {item.sourceTradition && (
-                                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{item.sourceTradition} · Score {item.score ?? "—"}/85</div>
+                                  <div className="text-[10px] uppercase tracking-wide text-subtle">{item.sourceTradition} · Score {item.score ?? "—"}/85</div>
                                 )}
                               </div>
                               <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${HUMOR_COLORS[item.primaryElement].badge}`}>{item.primaryElement}</span>
                             </div>
-                            <div className="text-xs text-slate-300"><strong className="text-white">Cultural Heritage:</strong> {item.language} • Destiny {item.destinyNumber}</div>
-                            <div className="text-xs text-slate-400">{item.alignmentReason}</div>
-                            <div className="text-xs p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-200">
+                            <div className="text-xs text-soft"><strong className="text-foreground">Cultural Heritage:</strong> {item.language} • Destiny {item.destinyNumber}</div>
+                            <div className="text-xs text-muted-foreground">{item.alignmentReason}</div>
+                            <div className="text-xs p-2.5 rounded-lg bg-brand-soft border border-brand/20 text-brand-strong">
                               <strong>Wellbeing Benefit:</strong> {item.wellbeingHarmonizationBenefit}
                             </div>
                             {item.recommendation && (
-                              <div className="text-xs p-2.5 rounded-lg bg-sky-950/30 border border-sky-500/20 text-sky-100">
+                              <div className="text-xs p-2.5 rounded-lg bg-info-soft border border-info/20 text-info-strong">
                                 <strong>Profile Recommendation:</strong> {item.recommendation}
                               </div>
                             )}
@@ -1648,29 +1648,29 @@ export default function ProfileClient() {
                         <div className="relative rounded-2xl overflow-hidden">
                           <div className="pointer-events-none select-none filter blur-sm opacity-25 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                             {hiddenItems.slice(0, 4).map((_, i) => (
-                              <div key={i} className="h-32 rounded-xl bg-white/5" />
+                              <div key={i} className="h-32 rounded-xl bg-foreground/5" />
                             ))}
                           </div>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 text-center">
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/80  rounded-2xl border border-gold/30 p-6 text-center">
                             <span className="text-3xl">✨</span>
                             <div className="space-y-1">
-                              <h4 className="text-base font-black text-white">{hiddenItems.length} More Name Suggestions Hidden</h4>
-                              <p className="text-xs text-slate-300 max-w-xs leading-relaxed">Unlock your complete set of harmonically-calculated name suggestions with full alignment scores, deep lineage notes, and biblical resonance analysis.</p>
+                              <h4 className="text-base font-bold text-foreground">{hiddenItems.length} More Name Suggestions Hidden</h4>
+                              <p className="text-xs text-soft max-w-xs leading-relaxed">Unlock your complete set of harmonically-calculated name suggestions with full alignment scores, deep lineage notes, and biblical resonance analysis.</p>
                             </div>
                             <button onClick={handleUnlockProfile} disabled={unlockLoading}
-                              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-black text-xs transition flex items-center gap-2 shadow-lg">
-                              {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-stone-950 border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock All — {gatingSettings?.priceEtb || 150} ETB</span></>}
+                              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-xs transition flex items-center gap-2 shadow-panel">
+                              {unlockLoading ? <><span className="w-3.5 h-3.5 rounded-full border-2 border-border border-t-transparent animate-spin" /><span>Connecting...</span></> : <><span>🔓</span><span>Unlock All — {gatingSettings?.priceEtb || 150} ETB</span></>}
                             </button>
-                            {unlockMessage && <p className="text-xs text-emerald-300">{unlockMessage}</p>}
+                            {unlockMessage && <p className="text-xs text-brand">{unlockMessage}</p>}
                           </div>
                         </div>
                       )}
 
                       {/* Gate: no suggestions loaded yet */}
                       {isGated && suggestions.length === 0 && (
-                        <div className="flex flex-col items-center justify-center gap-4 p-10 rounded-2xl border border-amber-500/30 bg-slate-950/50 text-center">
+                        <div className="flex flex-col items-center justify-center gap-4 p-10 rounded-2xl border border-gold/30 bg-background/50 text-center">
                           <span className="text-3xl">✨</span>
-                          <p className="text-xs text-slate-400">Generate suggestions above, then unlock to view the full set.</p>
+                          <p className="text-xs text-muted-foreground">Generate suggestions above, then unlock to view the full set.</p>
                         </div>
                       )}
                     </>
@@ -1682,8 +1682,8 @@ export default function ProfileClient() {
         )}
 
         {/* Global Compliance & Disclaimer Section */}
-        <div className="mt-12 p-6 rounded-2xl bg-slate-950/90 border border-slate-800 text-xs text-slate-400 space-y-2">
-          <div className="flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider text-[11px]">
+        <div className="mt-12 p-6 rounded-2xl bg-background/90 border border-border text-xs text-muted-foreground space-y-2">
+          <div className="flex items-center gap-2 text-gold font-bold uppercase tracking-wider text-[11px]">
             <span>⚖️</span>
             <span>Domain B Compliance &amp; Multi-Tradition Disclaimers</span>
           </div>

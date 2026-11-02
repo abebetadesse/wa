@@ -97,7 +97,7 @@ function AuthScreen() {
           </ul>
         </section>
 
-        <Card className="shadow-xl shadow-black/5">
+        <Card className="shadow-panel shadow-black/5">
           <CardContent className="flex flex-col gap-6 p-6 sm:p-8">
             <div role="tablist" aria-label="Sign in or create an account" className="grid grid-cols-2 rounded-2xl bg-muted p-1">
               {(["login", "register"] as const).map((tab) => (

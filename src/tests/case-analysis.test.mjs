@@ -636,6 +636,42 @@ test("health case: the report explains the visit without naming conditions to th
   }
 });
 
+test("detailed report: every resource, each pattern's full guidance, each strand's questions and grounded entries", async () => {
+  const { record, config } = healthCase("I have not slept properly for weeks, I wake at 3am and cannot get back to sleep. I feel low and I can't cope at work. My body aches, I have headaches and stomach pain.");
+  const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });
+  const sections = buildEnhancedReportSections(analysis, false);
+  const byId = Object.fromEntries(sections.map((entry) => [entry.id, entry]));
+
+  // Every curated resource behind a shown pattern is described once, with its kind and evidence label.
+  const resources = new Set([...analysis.causes.slice(0, 5).flatMap((cause) => cause.resources ?? []), ...analysis.decisionFramework.relevantResources].map((resource) => resource.title));
+  assert.ok(resources.size >= 2);
+  for (const title of resources) assert.equal(byId["analysis-resources"].items.filter((item) => item.startsWith(`${title} (`)).length, 1, `${title} is described once`);
+  assert.ok(byId["analysis-resources"].items.some((item) => /evidence\)/.test(item) && /It answers: /.test(item)));
+  assert.ok(byId["analysis-resources"].items.some((item) => /^Knowledge-strand libraries: \d+ entries in 11 areas/.test(item)));
+
+  // Each pattern carries its decision step, the check that can help, when not to wait and all its resources.
+  for (const item of byId["analysis-patterns"].items) {
+    for (const part of [/Decision step: /, /A check that can help: /, /When not to wait: /, /Resources: /]) assert.match(item, part);
+  }
+  assert.ok(byId["analysis-angles"].items.some((item) => / — a question worth answering: /.test(item)), "each strand's question is asked");
+
+  // Reference entries come from several strands, numbered against their sources, and none is a disease
+  // that only a symptom brought into view.
+  const knowledge = byId["analysis-knowledge"];
+  assert.ok(new Set(knowledge.items.map((item) => /\(([^;]+);/.exec(item)[1])).size >= 2, "entries from more than one strand");
+  assert.equal(knowledge.evidence.citations.length, knowledge.items.length);
+  knowledge.items.forEach((item, index) => assert.ok(item.includes(`[${index + 1}]`), "numbered against its source"));
+  assert.ok(byId["analysis-coverage"].items.some((item) => /Entries tied to your words: /.test(item) && /Supports the pattern/.test(item)));
+  const text = sections.map((entry) => [entry.body, ...(entry.items ?? [])].join(" ")).join(" ");
+  assert.ok(!/malaria|hepatitis|hypertension/i.test(text), "symptom-only catalogue entries stay with the reviewer");
+
+  // In Amharic the resources are written in Amharic.
+  const amharic = buildEnhancedReport(analysis, false, { language: "am" });
+  assert.deepEqual(amharic.untranslated, []);
+  const amResources = amharic.sections.find((entry) => entry.id === "analysis-resources");
+  assert.ok(amResources && mostlyAmharic([amResources.body, ...amResources.items].join(" ")));
+});
+
 test("health case: a real emergency still routes to the ambulance first", async () => {
   const { record, config } = healthCase("Sudden chest pain and I cannot breathe", "no");
   const analysis = await buildCaseAnalysis(record, config, {}, { now: () => NOW });

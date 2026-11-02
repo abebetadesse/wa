@@ -80,12 +80,12 @@ export function EthiopianLocationInput({
 
   return (
     <div ref={containerRef} className={`relative space-y-2 ${className}`}>
-      <label htmlFor={inputId} className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-        {label} {required && <span className="text-amber-400">*</span>}
+      <label htmlFor={inputId} className="block text-xs font-semibold text-soft uppercase tracking-wide">
+        {label} {required && <span className="text-gold">*</span>}
       </label>
 
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-400">
+        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand">
           <MapPin className="w-4 h-4" />
         </div>
         <input
@@ -105,13 +105,13 @@ export function EthiopianLocationInput({
           aria-autocomplete="list"
           aria-expanded={isOpen && suggestions.length > 0}
           aria-controls={listId}
-          className="w-full rounded-xl bg-black/40 border border-white/10 pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600"
+          className="w-full rounded-xl bg-sunken/80 border border-border pl-10 pr-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors placeholder:text-subtle"
         />
         {suggestions.length > 0 && (
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground"
           >
             <ChevronDown className="w-4 h-4" />
           </button>
@@ -120,8 +120,8 @@ export function EthiopianLocationInput({
 
       {/* Autocomplete Dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div id={listId} role="listbox" className="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-xl border border-emerald-500/40 bg-zinc-950/95 shadow-2xl backdrop-blur-xl p-1.5 space-y-1">
-          <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-mono text-emerald-400 flex items-center justify-between border-b border-white/10">
+        <div id={listId} role="listbox" className="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-xl border border-brand/40 bg-background/95 shadow-raised  p-1.5 space-y-1">
+          <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-brand flex items-center justify-between border-b border-border">
             <span>Region / Zone / District or town</span>
             <span>{suggestions.length} matches</span>
           </div>
@@ -132,24 +132,24 @@ export function EthiopianLocationInput({
               role="option"
               aria-selected={false}
               onClick={() => handleSelect(place)}
-              className="w-full text-left px-3 py-2 rounded-lg hover:bg-emerald-950/40 transition-colors flex items-center justify-between group"
+              className="w-full text-left px-3 py-2 rounded-lg hover:bg-brand-soft transition-colors flex items-center justify-between group"
             >
               <div>
-                <span className="font-semibold text-white text-sm group-hover:text-emerald-300">
+                <span className="font-semibold text-foreground text-sm group-hover:text-brand">
                   {place.town}
                 </span>
-                <span className="text-xs text-slate-400 ml-2">
+                <span className="text-xs text-muted-foreground ml-2">
                   {place.zone}
                 </span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand/20 text-brand-strong border border-brand/30">
                 {place.region}
               </span>
             </button>
           ))}
         </div>
       )}
-      <p className="text-[11px] text-slate-500">Choose a result to save its official region, zone, and district/town. You can enter a place outside the list as text.</p>
+      <p className="text-[11px] text-subtle">Choose a result to save its official region, zone, and district/town. You can enter a place outside the list as text.</p>
     </div>
   );
 }

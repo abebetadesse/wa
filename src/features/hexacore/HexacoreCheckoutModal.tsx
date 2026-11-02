@@ -243,37 +243,37 @@ export default function HexacoreCheckoutModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
+      style={{ background: "var(--bg-overlay)", backdropFilter: "blur(8px)" }}
     >
       <div
         className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-3xl"
         style={{
-          background: "radial-gradient(circle at top right, rgba(212,175,55,0.1), transparent 55%), #0D1322",
-          border: "1px solid rgba(212,175,55,0.3)",
-          boxShadow: "0 25px 50px -12px rgba(0,0,0,0.8)",
+          background: "radial-gradient(circle at top right, color-mix(in srgb, var(--gold-fill) 10%, transparent), transparent 55%), var(--bg-card)",
+          border: "1px solid color-mix(in srgb, var(--gold-fill) 30%, transparent)",
+          boxShadow: "0 25px 50px -12px var(--bg-overlay)",
         }}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-white/10"
-          style={{ background: "rgba(13,19,34,0.95)", backdropFilter: "blur(12px)" }}>
+        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border"
+          style={{ background: "var(--bg-card)", backdropFilter: "blur(12px)" }}>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-400">Hexacore Arcana</span>
+              <Sparkles className="h-4 w-4 text-gold" />
+              <span className="text-xs font-bold uppercase tracking-widest text-gold">Hexacore Arcana</span>
               {/* Language Toggle */}
               <button
                 onClick={() => setLang(lang === "en" ? "am" : "en")}
-                className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 transition"
+                className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold border border-gold/30 text-gold-strong hover:bg-gold/10 transition"
               >
                 {lang === "en" ? "አማርኛ" : "English"}
               </button>
             </div>
-            <h2 className="text-lg font-black text-white">{i18n.title}</h2>
-            <p className="text-xs text-slate-400 mt-0.5">{lang === "en" ? product.name : (product.nameAm || product.name)}</p>
+            <h2 className="text-lg font-bold text-foreground">{i18n.title}</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{lang === "en" ? product.name : (product.nameAm || product.name)}</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-white/10 hover:text-white transition"
+            className="rounded-full p-2 text-muted-foreground hover:bg-foreground/10 hover:text-foreground transition"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -289,8 +289,8 @@ export default function HexacoreCheckoutModal({
                   className="w-full h-1.5 rounded-full transition-all duration-500"
                   style={{
                     background: steps.indexOf(step) >= i
-                      ? "linear-gradient(90deg, #D4AF37, #10B981)"
-                      : "rgba(255,255,255,0.1)",
+                      ? "linear-gradient(90deg, var(--gold-fill), var(--brand))"
+                      : "var(--border-subtle)",
                   }}
                 />
               </div>
@@ -298,7 +298,7 @@ export default function HexacoreCheckoutModal({
           </div>
           <div className="flex justify-between mt-1">
             {stepLabels.map((label, i) => (
-              <span key={i} className="text-[9px] text-slate-500 uppercase tracking-wide" style={{ flex: 1 }}>{label}</span>
+              <span key={i} className="text-[9px] text-subtle uppercase tracking-wide" style={{ flex: 1 }}>{label}</span>
             ))}
           </div>
         </div>
@@ -306,7 +306,7 @@ export default function HexacoreCheckoutModal({
         <div className="px-5 pb-6 space-y-5">
           {/* Error Banner */}
           {error && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+            <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger-strong">
               <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -316,51 +316,51 @@ export default function HexacoreCheckoutModal({
           {step === "intake" && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">{i18n.fullName} *</label>
+                <label className="block text-xs font-semibold text-soft mb-1">{i18n.fullName} *</label>
                 <input
                   id="hx-client-name"
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder={i18n.fullNamePlaceholder}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                  className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-gold/60 focus:outline-none focus:ring-1 focus:ring-gold/30"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">{i18n.motherName}</label>
+                <label className="block text-xs font-semibold text-soft mb-1">{i18n.motherName}</label>
                 <input
                   id="hx-mother-name"
                   type="text"
                   value={motherName}
                   onChange={(e) => setMotherName(e.target.value)}
                   placeholder={i18n.motherNamePlaceholder}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-amber-500/60 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-gold/60 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">{i18n.birthDate} *</label>
+                <label className="block text-xs font-semibold text-soft mb-1">{i18n.birthDate} *</label>
                 <input
                   id="hx-birth-date"
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
                   max={new Date().toISOString().split("T")[0]}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white focus:border-amber-500/60 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground focus:border-gold/60 focus:outline-none"
                   style={{ colorScheme: "dark" }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">{i18n.focusQuestion}</label>
+                <label className="block text-xs font-semibold text-soft mb-1">{i18n.focusQuestion}</label>
                 <textarea
                   id="hx-focus-question"
                   value={focusQuestion}
                   onChange={(e) => setFocusQuestion(e.target.value)}
                   placeholder={i18n.focusQuestionPlaceholder}
                   rows={2}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-amber-500/60 focus:outline-none resize-none"
+                  className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-gold/60 focus:outline-none resize-none"
                 />
               </div>
 
@@ -368,8 +368,8 @@ export default function HexacoreCheckoutModal({
                 id="hx-intake-next"
                 onClick={handleIntakeSubmit}
                 disabled={loading}
-                className="w-full rounded-xl py-3 font-bold text-sm text-black transition hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-60"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #10B981)" }}
+                className="w-full rounded-xl py-3 font-bold text-sm text-foreground transition hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-60"
+                style={{ background: "var(--gold-fill)" }}
               >
                 {loading ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> {i18n.generating}</>
@@ -386,7 +386,7 @@ export default function HexacoreCheckoutModal({
           {step === "payment" && (
             <div className="space-y-4">
               {/* Currency Switcher */}
-              <div className="flex items-center gap-2 p-1 rounded-xl border border-white/10 bg-white/[0.03] w-fit">
+              <div className="flex items-center gap-2 p-1 rounded-xl border border-border bg-foreground/[0.03] w-fit">
                 {(["ETB", "USD"] as const).map((c) => (
                   <button
                     key={c}
@@ -394,8 +394,8 @@ export default function HexacoreCheckoutModal({
                     onClick={() => setCurrency(c)}
                     className="rounded-lg px-4 py-1.5 text-sm font-bold transition"
                     style={{
-                      background: currency === c ? "linear-gradient(135deg, #D4AF37, #B8952A)" : "transparent",
-                      color: currency === c ? "#000" : "#94A3B8",
+                      background: currency === c ? "var(--gold-fill)" : "transparent",
+                      color: currency === c ? "#000" : "var(--text-muted)",
                     }}
                   >
                     {c}
@@ -404,18 +404,18 @@ export default function HexacoreCheckoutModal({
               </div>
 
               {/* Price Display */}
-              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-4">
+              <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-xs text-amber-300 font-bold uppercase tracking-wider">
+                    <span className="text-xs text-gold font-bold uppercase tracking-wider">
                       {lang === "en" ? product.badgeEn : product.badgeAm}
                     </span>
-                    <div className="text-white font-semibold text-sm mt-1">
+                    <div className="text-foreground font-semibold text-sm mt-1">
                       {lang === "en" ? product.name : (product.nameAm || product.name)}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-amber-300">{priceDisplay}</span>
+                    <span className="text-2xl font-bold text-gold">{priceDisplay}</span>
                   </div>
                 </div>
               </div>
@@ -433,19 +433,19 @@ export default function HexacoreCheckoutModal({
                     onClick={() => setPaymentMethod(id)}
                     className="w-full flex items-start gap-3 rounded-2xl border p-4 transition text-left"
                     style={{
-                      background: paymentMethod === id ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.02)",
-                      borderColor: paymentMethod === id ? "rgba(212,175,55,0.6)" : "rgba(255,255,255,0.1)",
+                      background: paymentMethod === id ? "color-mix(in srgb, var(--gold-fill) 8%, transparent)" : "color-mix(in srgb, var(--text-primary) 2%, transparent)",
+                      borderColor: paymentMethod === id ? "color-mix(in srgb, var(--gold-fill) 60%, transparent)" : "var(--border-subtle)",
                     }}
                   >
                     <div className="shrink-0 mt-0.5">
-                      <Icon className="h-5 w-5" style={{ color: paymentMethod === id ? "#D4AF37" : "#64748B" }} />
+                      <Icon className="h-5 w-5" style={{ color: paymentMethod === id ? "var(--gold)" : "var(--text-dim)" }} />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-semibold text-sm text-white">{label}</div>
-                      <div className="text-xs text-slate-400 mt-0.5">{desc}</div>
+                      <div className="font-semibold text-sm text-foreground">{label}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
                     </div>
                     {paymentMethod === id && (
-                      <CheckCircle2 className="h-4 w-4 text-amber-400 shrink-0 mt-0.5 ml-auto" />
+                      <CheckCircle2 className="h-4 w-4 text-gold shrink-0 mt-0.5 ml-auto" />
                     )}
                   </button>
                 ))}
@@ -455,8 +455,8 @@ export default function HexacoreCheckoutModal({
                 id="hx-pay-confirm"
                 onClick={handleCheckout}
                 disabled={loading}
-                className="w-full rounded-xl py-3 font-bold text-sm text-black transition disabled:opacity-60 flex items-center justify-center gap-2"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #10B981)" }}
+                className="w-full rounded-xl py-3 font-bold text-sm text-foreground transition disabled:opacity-60 flex items-center justify-center gap-2"
+                style={{ background: "var(--gold-fill)" }}
               >
                 {loading ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> {i18n.generating}</>
@@ -470,46 +470,46 @@ export default function HexacoreCheckoutModal({
           {/* ── STEP 3: VERIFY ──────────────────────────────────── */}
           {step === "verify" && paymentInstructions && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
-                <p className="text-sm font-semibold text-white">
+              <div className="rounded-2xl border border-border bg-foreground/[0.03] p-4 space-y-3">
+                <p className="text-sm font-semibold text-foreground">
                   {lang === "en" ? paymentInstructions.instructionsEn : paymentInstructions.instructionsAm}
                 </p>
                 {paymentInstructions.accountDetails && (
-                  <div className="text-xs text-slate-300 space-y-1 rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                    <div><span className="text-slate-500">Bank: </span><strong>{paymentInstructions.accountDetails.bankName}</strong></div>
-                    <div><span className="text-slate-500">Account: </span><strong className="text-amber-300">{paymentInstructions.accountDetails.accountNumber}</strong></div>
-                    <div><span className="text-slate-500">Name: </span>{paymentInstructions.accountDetails.accountHolder}</div>
+                  <div className="text-xs text-soft space-y-1 rounded-xl border border-border bg-foreground/[0.04] p-3">
+                    <div><span className="text-subtle">Bank: </span><strong>{paymentInstructions.accountDetails.bankName}</strong></div>
+                    <div><span className="text-subtle">Account: </span><strong className="text-gold">{paymentInstructions.accountDetails.accountNumber}</strong></div>
+                    <div><span className="text-subtle">Name: </span>{paymentInstructions.accountDetails.accountHolder}</div>
                   </div>
                 )}
                 {paymentInstructions.telebirrCode && (
-                  <div className="text-center rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
-                    <div className="text-xs text-amber-300 mb-1">Telebirr Number</div>
-                    <div className="text-xl font-black text-white tracking-widest">{paymentInstructions.telebirrCode}</div>
+                  <div className="text-center rounded-xl border border-gold/30 bg-gold/10 p-3">
+                    <div className="text-xs text-gold mb-1">Telebirr Number</div>
+                    <div className="text-xl font-bold text-foreground tracking-widest">{paymentInstructions.telebirrCode}</div>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-xs font-mono text-amber-300">
+                  <div className="flex-1 rounded-lg border border-border bg-foreground/[0.03] px-3 py-2 text-xs font-mono text-gold">
                     {purchaseReference}
                   </div>
                   <button
                     id="hx-copy-ref"
                     onClick={handleCopy}
-                    className="shrink-0 rounded-lg border border-white/15 p-2 text-slate-400 hover:text-white hover:bg-white/10 transition"
+                    className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition"
                   >
-                    {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                    {copied ? <CheckCircle2 className="h-4 w-4 text-brand" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">{i18n.txRef}</label>
+                <label className="block text-xs font-semibold text-soft mb-1">{i18n.txRef}</label>
                 <input
                   id="hx-tx-ref"
                   type="text"
                   value={txRef}
                   onChange={(e) => setTxRef(e.target.value)}
                   placeholder={i18n.txRefPlaceholder}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-amber-500/60 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-gold/60 focus:outline-none"
                 />
               </div>
 
@@ -517,8 +517,8 @@ export default function HexacoreCheckoutModal({
                 id="hx-verify"
                 onClick={handleVerify}
                 disabled={loading || !txRef.trim()}
-                className="w-full rounded-xl py-3 font-bold text-sm text-black transition disabled:opacity-60 flex items-center justify-center gap-2"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #10B981)" }}
+                className="w-full rounded-xl py-3 font-bold text-sm text-foreground transition disabled:opacity-60 flex items-center justify-center gap-2"
+                style={{ background: "var(--gold-fill)" }}
               >
                 {loading ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> {i18n.verifying}</>
@@ -535,35 +535,35 @@ export default function HexacoreCheckoutModal({
               <div
                 className="rounded-3xl border p-6"
                 style={{
-                  background: "radial-gradient(circle at center, rgba(212,175,55,0.15), transparent 70%)",
-                  borderColor: "rgba(212,175,55,0.4)",
+                  background: "radial-gradient(circle at center, color-mix(in srgb, var(--gold-fill) 15%, transparent), transparent 70%)",
+                  borderColor: "color-mix(in srgb, var(--gold-fill) 40%, transparent)",
                 }}
               >
                 <div className="text-5xl mb-3">✨</div>
-                <h3 className="text-xl font-black text-white mb-1">{i18n.unlocked}</h3>
-                <p className="text-sm text-slate-300">
+                <h3 className="text-xl font-bold text-foreground mb-1">{i18n.unlocked}</h3>
+                <p className="text-sm text-soft">
                   {lang === "en"
                     ? `Your complete 14-layer natal dossier has been synthesized for ${unlockedDossier.client.clientName}.`
                     : `ለ${unlockedDossier.client.clientName} ሙሉ 14ቱ የጥበብ ደረጃዎች ተዘጋጅቷል።`}
                 </p>
 
                 {/* Core Archetype Summary */}
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left space-y-2">
+                <div className="mt-4 rounded-2xl border border-border bg-foreground/[0.04] p-4 text-left space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">{lang === "en" ? "Dominant Core" : "ዋናው ማዕከል"}</span>
-                    <strong className="text-amber-300">{unlockedDossier.dominantCore}</strong>
+                    <span className="text-muted-foreground">{lang === "en" ? "Dominant Core" : "ዋናው ማዕከል"}</span>
+                    <strong className="text-gold">{unlockedDossier.dominantCore}</strong>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">{lang === "en" ? "Core Number" : "የቁጥር ስሌት"}</span>
-                    <strong className="text-white">#{unlockedDossier.coreNumber}</strong>
+                    <span className="text-muted-foreground">{lang === "en" ? "Core Number" : "የቁጥር ስሌት"}</span>
+                    <strong className="text-foreground">#{unlockedDossier.coreNumber}</strong>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">{lang === "en" ? "Archetype" : "ምልክት"}</span>
-                    <strong className="text-emerald-300">{unlockedDossier.masterArchetype}</strong>
+                    <span className="text-muted-foreground">{lang === "en" ? "Archetype" : "ምልክት"}</span>
+                    <strong className="text-brand">{unlockedDossier.masterArchetype}</strong>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">{lang === "en" ? "Solfeggio Hz" : "የድምፅ ፍሪኩዌንሲ"}</span>
-                    <strong className="text-indigo-300">{unlockedDossier.solfeggioHz} Hz</strong>
+                    <span className="text-muted-foreground">{lang === "en" ? "Solfeggio Hz" : "የድምፅ ፍሪኩዌንሲ"}</span>
+                    <strong className="text-info">{unlockedDossier.solfeggioHz} Hz</strong>
                   </div>
                 </div>
               </div>
@@ -574,8 +574,8 @@ export default function HexacoreCheckoutModal({
                   href={assetUrl(purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition hover:opacity-90"
-                  style={{ background: "linear-gradient(135deg, #D4AF37, #10B981)" }}
+                  className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-foreground transition hover:opacity-90"
+                  style={{ background: "var(--gold-fill)" }}
                 >
                   <ExternalLink className="h-4 w-4" />
                   {i18n.viewDossier}
@@ -585,7 +585,7 @@ export default function HexacoreCheckoutModal({
                   href={assetUrl(purchaseReference ? `/api/hexacore/commercial/export-pdf/${purchaseReference}?lang=${lang}&format=pdf` : "#")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 py-3 text-sm font-bold text-amber-300 hover:bg-amber-500/10 transition"
+                  className="flex items-center justify-center gap-2 rounded-xl border border-gold/30 py-3 text-sm font-bold text-gold-strong hover:bg-gold/10 transition"
                 >
                   <FileText className="h-4 w-4" />
                   {i18n.downloadPdf}
@@ -595,8 +595,8 @@ export default function HexacoreCheckoutModal({
           )}
 
           {/* Safety Disclaimer */}
-          <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-xs text-slate-500">
-            <Shield className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs text-subtle">
+            <Shield className="h-3.5 w-3.5 shrink-0 text-gold" />
             {i18n.disclaimer}
           </div>
         </div>

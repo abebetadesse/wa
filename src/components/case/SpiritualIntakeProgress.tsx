@@ -20,10 +20,10 @@ export function SpiritualIntakeProgress({ current }: { current: 1 | 2 | 3 | 4 | 
               aria-current={active ? "step" : undefined}
               className={`min-w-0 border-t-2 pt-2 ${
                 active
-                  ? "border-amber-400 text-amber-200"
+                  ? "border-gold text-gold-strong"
                   : complete
-                    ? "border-emerald-500 text-emerald-300"
-                    : "border-stone-700 text-stone-500"
+                    ? "border-brand text-brand"
+                    : "border-border text-subtle"
               }`}
             >
               <span className="block text-[10px] font-bold uppercase tracking-wide">

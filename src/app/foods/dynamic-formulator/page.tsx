@@ -236,12 +236,12 @@ export default function DynamicFormulatorPage() {
   }, [basisMode, extendedNutrientsDry, extendedNutrientsWet]);
 
   return (
-    <main className="min-h-screen bg-[#070a08] text-stone-200">
+    <main className="min-h-screen bg-background text-soft">
       {/* ───────────────── HEADER / HERO ───────────────── */}
-      <header className="relative overflow-hidden border-b border-emerald-500/15 bg-gradient-to-br from-[#0c1a12] via-[#09130d] to-[#060a08] px-6 py-10 md:py-14">
+      <header className="relative overflow-hidden border-b border-brand/15 bg-gradient-to-br from-brand-soft via-background to-gold-soft px-6 py-10 md:py-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="absolute right-0 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-teal-500/10 blur-3xl" />
+          <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-brand/10 blur-3xl" />
+          <div className="absolute right-0 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-brand/10 blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-7xl">
@@ -249,46 +249,46 @@ export default function DynamicFormulatorPage() {
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href="/foods"
-                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-400/20"
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-brand/10 px-3.5 py-1.5 text-xs font-semibold text-brand-strong transition-colors hover:bg-brand/20"
               >
                 ← Food Science Library
               </Link>
               <Link
                 href="/foods/composite-formulator"
-                className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/20 bg-amber-400/10 px-3.5 py-1.5 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400/20"
+                className="inline-flex items-center gap-1.5 rounded-full border border-gold/20 bg-gold/10 px-3.5 py-1.5 text-xs font-semibold text-gold-strong transition-colors hover:bg-gold/20"
               >
                 🍲 100 Ethiopian Diets Catalog →
               </Link>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-400/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-strong">
               ⚡ Multi-Scale Dynamic Synthesis
             </div>
           </div>
 
           <div className="mt-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl md:text-5xl">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
                 Dynamic Composite Diet & <br />
-                <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-brand via-brand-soft to-gold-fill bg-clip-text text-transparent">
                   Platter Formulation Engine
                 </span>
               </h1>
-              <p className="mt-1 text-base text-emerald-400 font-serif">
+              <p className="mt-1 text-base text-brand font-serif">
                 ተለዋዋጭ የተመጣጠነ ማዕድና ምግብ ቀመር አስሊ (የኢትዮጵያና ዓለም አቀፍ ግብአቶች ቅንብር)
               </p>
             </div>
 
             {/* Random Diet Code Generator Banner */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-xl shrink-0">
-              <div className="text-[10px] uppercase tracking-wider text-stone-400 font-bold">Active Diet Protocol</div>
+            <div className="rounded-2xl border border-border bg-foreground/5 p-3.5  shrink-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Active Diet Protocol</div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="font-mono text-xs font-bold text-amber-300 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
+                <span className="font-mono text-xs font-bold text-gold-strong bg-gold/10 px-2.5 py-1 rounded-lg border border-gold/20">
                   {dietCode}
                 </span>
                 <button
                   type="button"
                   onClick={handleRandomizeDiet}
-                  className="rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 px-2.5 py-1 text-xs text-emerald-300 font-medium transition-all"
+                  className="rounded-lg bg-brand/20 hover:bg-brand/30 border border-brand/30 px-2.5 py-1 text-xs text-brand-strong font-medium transition-all"
                 >
                   🎲 Randomize
                 </button>
@@ -296,7 +296,7 @@ export default function DynamicFormulatorPage() {
             </div>
           </div>
 
-          <p className="mt-4 max-w-3xl text-xs leading-relaxed text-stone-300 md:text-sm">
+          <p className="mt-4 max-w-3xl text-xs leading-relaxed text-soft md:text-sm">
             Configure your custom <strong>Proximate Composition</strong> targets (protein, lipid, carbohydrate, fiber, moisture, and ash), select your preferred authentic <strong>Ethiopian staples & international superfoods from our 70+ ingredient library</strong>, and specify presentation formats. Computes exact gram recipes, ranks matching dishes from the <strong>100-dish catalog</strong>, and evaluates results on both <strong>Wet Weight Basis</strong> and <strong>100% Dry Matter Basis</strong>.
           </p>
         </div>
@@ -310,13 +310,13 @@ export default function DynamicFormulatorPage() {
              ═══════════════════════════════════════════════════════════════ */}
           <div className="space-y-6 lg:col-span-5">
             {/* 1. HEALTH ISSUES PRESETS */}
-            <section className="rounded-3xl border border-white/10 bg-stone-900/60 p-5 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+            <section className="rounded-3xl border border-border bg-card/60 p-5  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-brand flex items-center gap-2">
                   <span>1. Health Goal & Indication</span>
-                  <span className="text-[10px] font-normal text-stone-400 font-serif">(የጤና ሁኔታ)</span>
+                  <span className="text-[10px] font-normal text-muted-foreground font-serif">(የጤና ሁኔታ)</span>
                 </h2>
-                <span className="text-[10px] font-mono text-stone-400">{FORMULATOR_HEALTH_ISSUES.length} Protocols</span>
+                <span className="text-[10px] font-mono text-muted-foreground">{FORMULATOR_HEALTH_ISSUES.length} Protocols</span>
               </div>
 
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -329,16 +329,16 @@ export default function DynamicFormulatorPage() {
                       onClick={() => handleSelectHealthIssue(issue)}
                       className={`text-left rounded-xl p-3 border transition-all text-xs ${
                         isSelected
-                          ? "border-emerald-400/50 bg-emerald-500/15 text-white shadow-lg shadow-emerald-500/10"
-                          : "border-white/5 bg-white/[0.02] text-stone-300 hover:border-white/20 hover:bg-white/5"
+                          ? "border-brand/50 bg-brand/15 text-foreground shadow-panel"
+                          : "border-border bg-foreground/[0.02] text-soft hover:border-border-strong hover:bg-foreground/5"
                       }`}
                     >
-                      <div className="font-semibold text-emerald-200 line-clamp-1">{issue.titleEn}</div>
-                      <div className="text-[10px] text-stone-400 font-serif mt-0.5 line-clamp-1">{issue.titleAmharic}</div>
-                      <div className="mt-1.5 flex items-center gap-1.5 text-[9px] text-stone-400 font-mono">
-                        <span className="rounded bg-black/40 px-1 py-0.5">{issue.recommendedTargets.caloriesPerServing} kcal</span>
-                        <span className="rounded bg-black/40 px-1 py-0.5">{issue.recommendedTargets.proteinPercent}% P</span>
-                        <span className="rounded bg-black/40 px-1 py-0.5">{issue.recommendedTargets.minFiber_g}g Fib</span>
+                      <div className="font-semibold text-brand-strong line-clamp-1">{issue.titleEn}</div>
+                      <div className="text-[10px] text-muted-foreground font-serif mt-0.5 line-clamp-1">{issue.titleAmharic}</div>
+                      <div className="mt-1.5 flex items-center gap-1.5 text-[9px] text-muted-foreground font-mono">
+                        <span className="rounded bg-sunken/80 px-1 py-0.5">{issue.recommendedTargets.caloriesPerServing} kcal</span>
+                        <span className="rounded bg-sunken/80 px-1 py-0.5">{issue.recommendedTargets.proteinPercent}% P</span>
+                        <span className="rounded bg-sunken/80 px-1 py-0.5">{issue.recommendedTargets.minFiber_g}g Fib</span>
                       </div>
                     </button>
                   );
@@ -347,28 +347,28 @@ export default function DynamicFormulatorPage() {
             </section>
 
             {/* 2. PROXIMATE COMPOSITION TARGET SLIDERS & ADVANCED MICROS */}
-            <section className="rounded-3xl border border-white/10 bg-stone-900/60 p-5 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+            <section className="rounded-3xl border border-border bg-card/60 p-5  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-brand flex items-center gap-2">
                   <span>2. Target Proximate Composition</span>
-                  <span className="text-[10px] font-normal text-stone-400 font-serif">(የቀመር ዒላማ)</span>
+                  <span className="text-[10px] font-normal text-muted-foreground font-serif">(የቀመር ዒላማ)</span>
                 </h2>
-                <div className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                <div className="text-[10px] font-mono text-brand-strong bg-brand/10 px-2 py-0.5 rounded">
                   {targetCalories} kcal ({Math.round(targetCalories * 4.184)} kJ)
                 </div>
               </div>
 
               {/* Macro Partition Visual Bar */}
               <div className="mt-4">
-                <div className="flex justify-between text-[10px] font-mono text-stone-400 mb-1.5">
-                  <span className="text-emerald-400 font-bold">Protein: {proteinPct}%</span>
-                  <span className="text-amber-400 font-bold">Fat: {fatPct}%</span>
-                  <span className="text-sky-400 font-bold">Carbs: {carbPct}%</span>
+                <div className="flex justify-between text-[10px] font-mono text-muted-foreground mb-1.5">
+                  <span className="text-brand font-bold">Protein: {proteinPct}%</span>
+                  <span className="text-gold font-bold">Fat: {fatPct}%</span>
+                  <span className="text-info font-bold">Carbs: {carbPct}%</span>
                 </div>
-                <div className="h-3 w-full rounded-full overflow-hidden flex bg-stone-800">
-                  <div style={{ width: `${proteinPct}%` }} className="bg-emerald-500 transition-all" title="Protein %" />
-                  <div style={{ width: `${fatPct}%` }} className="bg-amber-500 transition-all" title="Fat %" />
-                  <div style={{ width: `${carbPct}%` }} className="bg-sky-500 transition-all" title="Carbohydrates %" />
+                <div className="h-3 w-full rounded-full overflow-hidden flex bg-muted">
+                  <div style={{ width: `${proteinPct}%` }} className="bg-brand transition-all" title="Protein %" />
+                  <div style={{ width: `${fatPct}%` }} className="bg-gold-fill transition-all" title="Fat %" />
+                  <div style={{ width: `${carbPct}%` }} className="bg-info transition-all" title="Carbohydrates %" />
                 </div>
               </div>
 
@@ -376,9 +376,9 @@ export default function DynamicFormulatorPage() {
               <div className="mt-4 space-y-3.5 text-xs">
                 {/* Calories Slider */}
                 <div>
-                  <div className="flex justify-between text-stone-300 mb-1">
+                  <div className="flex justify-between text-soft mb-1">
                     <span>Target Calories per Serving:</span>
-                    <span className="font-mono text-emerald-300 font-bold">{targetCalories} kcal / {Math.round(targetCalories * 4.184)} kJ</span>
+                    <span className="font-mono text-brand font-bold">{targetCalories} kcal / {Math.round(targetCalories * 4.184)} kJ</span>
                   </div>
                   <input
                     type="range"
@@ -387,9 +387,9 @@ export default function DynamicFormulatorPage() {
                     step="25"
                     value={targetCalories}
                     onChange={(e) => setTargetCalories(Number(e.target.value))}
-                    className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                    className="w-full accent-brand cursor-pointer h-1.5 bg-sunken rounded-lg"
                   />
-                  <div className="flex justify-between text-[9px] text-stone-500 font-mono mt-0.5">
+                  <div className="flex justify-between text-[9px] text-subtle font-mono mt-0.5">
                     <span>250 kcal (Light / Fasting)</span>
                     <span>550 kcal (Standard Platter)</span>
                     <span>1100 kcal (Surplus Mass)</span>
@@ -398,9 +398,9 @@ export default function DynamicFormulatorPage() {
 
                 {/* Protein Slider */}
                 <div>
-                  <div className="flex justify-between text-stone-300 mb-1">
-                    <span className="text-emerald-300 font-semibold">Crude Protein Target:</span>
-                    <span className="font-mono text-emerald-400 font-bold">{proteinPct}% ({Math.round((targetCalories * (proteinPct / 100)) / 4)}g)</span>
+                  <div className="flex justify-between text-soft mb-1">
+                    <span className="text-brand font-semibold">Crude Protein Target:</span>
+                    <span className="font-mono text-brand font-bold">{proteinPct}% ({Math.round((targetCalories * (proteinPct / 100)) / 4)}g)</span>
                   </div>
                   <input
                     type="range"
@@ -409,15 +409,15 @@ export default function DynamicFormulatorPage() {
                     step="1"
                     value={proteinPct}
                     onChange={(e) => setProteinPct(Number(e.target.value))}
-                    className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                    className="w-full accent-brand cursor-pointer h-1.5 bg-sunken rounded-lg"
                   />
                 </div>
 
                 {/* Fat Slider */}
                 <div>
-                  <div className="flex justify-between text-stone-300 mb-1">
-                    <span className="text-amber-300 font-semibold">Total Lipids / Healthy Fat:</span>
-                    <span className="font-mono text-amber-400 font-bold">{fatPct}% ({Math.round((targetCalories * (fatPct / 100)) / 9)}g)</span>
+                  <div className="flex justify-between text-soft mb-1">
+                    <span className="text-gold font-semibold">Total Lipids / Healthy Fat:</span>
+                    <span className="font-mono text-gold font-bold">{fatPct}% ({Math.round((targetCalories * (fatPct / 100)) / 9)}g)</span>
                   </div>
                   <input
                     type="range"
@@ -426,15 +426,15 @@ export default function DynamicFormulatorPage() {
                     step="1"
                     value={fatPct}
                     onChange={(e) => setFatPct(Number(e.target.value))}
-                    className="w-full accent-amber-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                    className="w-full accent-gold cursor-pointer h-1.5 bg-sunken rounded-lg"
                   />
                 </div>
 
                 {/* Carbohydrates Slider */}
                 <div>
-                  <div className="flex justify-between text-stone-300 mb-1">
-                    <span className="text-sky-300 font-semibold">Complex Carbohydrate Target:</span>
-                    <span className="font-mono text-sky-400 font-bold">{carbPct}% ({Math.round((targetCalories * (carbPct / 100)) / 4)}g)</span>
+                  <div className="flex justify-between text-soft mb-1">
+                    <span className="text-info font-semibold">Complex Carbohydrate Target:</span>
+                    <span className="font-mono text-info font-bold">{carbPct}% ({Math.round((targetCalories * (carbPct / 100)) / 4)}g)</span>
                   </div>
                   <input
                     type="range"
@@ -443,15 +443,15 @@ export default function DynamicFormulatorPage() {
                     step="1"
                     value={carbPct}
                     onChange={(e) => setCarbPct(Number(e.target.value))}
-                    className="w-full accent-sky-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                    className="w-full accent-info cursor-pointer h-1.5 bg-sunken rounded-lg"
                   />
                 </div>
 
                 {/* Dietary Fiber Slider */}
                 <div>
-                  <div className="flex justify-between text-stone-300 mb-1">
-                    <span className="text-teal-300 font-semibold">Minimum Dietary Fiber:</span>
-                    <span className="font-mono text-teal-400 font-bold">{minFiber} grams</span>
+                  <div className="flex justify-between text-soft mb-1">
+                    <span className="text-brand font-semibold">Minimum Dietary Fiber:</span>
+                    <span className="font-mono text-brand font-bold">{minFiber} grams</span>
                   </div>
                   <input
                     type="range"
@@ -460,16 +460,16 @@ export default function DynamicFormulatorPage() {
                     step="1"
                     value={minFiber}
                     onChange={(e) => setMinFiber(Number(e.target.value))}
-                    className="w-full accent-teal-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                    className="w-full accent-brand cursor-pointer h-1.5 bg-sunken rounded-lg"
                   />
                 </div>
 
                 {/* Moisture & Ash Targets */}
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/5">
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
                   <div>
-                    <div className="flex justify-between text-[11px] text-stone-300 mb-1">
+                    <div className="flex justify-between text-[11px] text-soft mb-1">
                       <span>Target Moisture:</span>
-                      <span className="font-mono text-sky-300 font-bold">{targetMoisturePct}%</span>
+                      <span className="font-mono text-info font-bold">{targetMoisturePct}%</span>
                     </div>
                     <input
                       type="range"
@@ -478,13 +478,13 @@ export default function DynamicFormulatorPage() {
                       step="5"
                       value={targetMoisturePct}
                       onChange={(e) => setTargetMoisturePct(Number(e.target.value))}
-                      className="w-full accent-sky-400 cursor-pointer h-1 bg-stone-700 rounded-lg"
+                      className="w-full accent-info cursor-pointer h-1 bg-sunken rounded-lg"
                     />
                   </div>
                   <div>
-                    <div className="flex justify-between text-[11px] text-stone-300 mb-1">
+                    <div className="flex justify-between text-[11px] text-soft mb-1">
                       <span>Target Mineral Ash:</span>
-                      <span className="font-mono text-amber-300 font-bold">{targetAshGrams}g</span>
+                      <span className="font-mono text-gold font-bold">{targetAshGrams}g</span>
                     </div>
                     <input
                       type="range"
@@ -493,29 +493,29 @@ export default function DynamicFormulatorPage() {
                       step="0.5"
                       value={targetAshGrams}
                       onChange={(e) => setTargetAshGrams(Number(e.target.value))}
-                      className="w-full accent-amber-400 cursor-pointer h-1 bg-stone-700 rounded-lg"
+                      className="w-full accent-gold cursor-pointer h-1 bg-sunken rounded-lg"
                     />
                   </div>
                 </div>
 
                 {/* Expandable Advanced Target Micronutrients */}
-                <div className="pt-2 border-t border-white/5">
+                <div className="pt-2 border-t border-border">
                   <button
                     type="button"
                     onClick={() => setShowAdvancedTargets(!showAdvancedTargets)}
-                    className="w-full flex items-center justify-between text-[11px] text-stone-400 hover:text-white font-mono p-2 rounded-xl bg-white/[0.02] border border-white/5"
+                    className="w-full flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground font-mono p-2 rounded-xl bg-foreground/[0.02] border border-border"
                   >
                     <span>🔬 Advanced Target Amino Acids & Micronutrients</span>
                     <span>{showAdvancedTargets ? "▲ Hide" : "▼ Expand (Leucine, Iron, Ca, Zn, Vit C)"}</span>
                   </button>
 
                   {showAdvancedTargets && (
-                    <div className="mt-3 space-y-3 p-3 rounded-2xl bg-black/40 border border-white/5 text-[11px]">
+                    <div className="mt-3 space-y-3 p-3 rounded-2xl bg-sunken/80 border border-border text-[11px]">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Leucine (mTOR):</span>
-                            <span className="font-mono text-emerald-400">{targetLeucine} mg</span>
+                            <span className="font-mono text-brand">{targetLeucine} mg</span>
                           </div>
                           <input
                             type="range"
@@ -524,13 +524,13 @@ export default function DynamicFormulatorPage() {
                             step="100"
                             value={targetLeucine}
                             onChange={(e) => setTargetLeucine(Number(e.target.value))}
-                            className="w-full accent-emerald-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-brand h-1 bg-sunken rounded-lg"
                           />
                         </div>
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Lysine:</span>
-                            <span className="font-mono text-emerald-400">{targetLysine} mg</span>
+                            <span className="font-mono text-brand">{targetLysine} mg</span>
                           </div>
                           <input
                             type="range"
@@ -539,16 +539,16 @@ export default function DynamicFormulatorPage() {
                             step="100"
                             value={targetLysine}
                             onChange={(e) => setTargetLysine(Number(e.target.value))}
-                            className="w-full accent-emerald-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-brand h-1 bg-sunken rounded-lg"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Iron (Fe):</span>
-                            <span className="font-mono text-amber-300">{targetIron} mg</span>
+                            <span className="font-mono text-gold">{targetIron} mg</span>
                           </div>
                           <input
                             type="range"
@@ -557,13 +557,13 @@ export default function DynamicFormulatorPage() {
                             step="1"
                             value={targetIron}
                             onChange={(e) => setTargetIron(Number(e.target.value))}
-                            className="w-full accent-amber-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-gold h-1 bg-sunken rounded-lg"
                           />
                         </div>
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Calcium (Ca):</span>
-                            <span className="font-mono text-amber-300">{targetCalcium} mg</span>
+                            <span className="font-mono text-gold">{targetCalcium} mg</span>
                           </div>
                           <input
                             type="range"
@@ -572,16 +572,16 @@ export default function DynamicFormulatorPage() {
                             step="50"
                             value={targetCalcium}
                             onChange={(e) => setTargetCalcium(Number(e.target.value))}
-                            className="w-full accent-amber-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-gold h-1 bg-sunken rounded-lg"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Vitamin C:</span>
-                            <span className="font-mono text-teal-300">{targetVitC} mg</span>
+                            <span className="font-mono text-brand">{targetVitC} mg</span>
                           </div>
                           <input
                             type="range"
@@ -590,13 +590,13 @@ export default function DynamicFormulatorPage() {
                             step="5"
                             value={targetVitC}
                             onChange={(e) => setTargetVitC(Number(e.target.value))}
-                            className="w-full accent-teal-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-brand h-1 bg-sunken rounded-lg"
                           />
                         </div>
                         <div>
-                          <div className="flex justify-between text-stone-300">
+                          <div className="flex justify-between text-soft">
                             <span>Target Vitamin B12:</span>
-                            <span className="font-mono text-teal-300">{targetVitB12} mcg</span>
+                            <span className="font-mono text-brand">{targetVitB12} mcg</span>
                           </div>
                           <input
                             type="range"
@@ -605,7 +605,7 @@ export default function DynamicFormulatorPage() {
                             step="0.5"
                             value={targetVitB12}
                             onChange={(e) => setTargetVitB12(Number(e.target.value))}
-                            className="w-full accent-teal-400 h-1 bg-stone-700 rounded-lg"
+                            className="w-full accent-brand h-1 bg-sunken rounded-lg"
                           />
                         </div>
                       </div>
@@ -616,17 +616,17 @@ export default function DynamicFormulatorPage() {
             </section>
 
             {/* 3. EXTENSIVE INGREDIENT SELECTION MATRIX (70+ ITEMS) */}
-            <section className="rounded-3xl border border-white/10 bg-stone-900/60 p-5 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+            <section className="rounded-3xl border border-border bg-card/60 p-5  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-gold flex items-center gap-2">
                   <span>3. Selected Ingredients ({selectedIngredientIds.length})</span>
-                  <span className="text-[10px] font-normal text-stone-400 font-serif">(የተመረጡ ግብአቶች)</span>
+                  <span className="text-[10px] font-normal text-muted-foreground font-serif">(የተመረጡ ግብአቶች)</span>
                 </h2>
                 <div className="flex items-center gap-1.5 font-mono text-[9px]">
-                  <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-emerald-300">
+                  <span className="rounded-full bg-brand/10 px-2 py-0.5 text-brand-strong">
                     {FORMULATOR_INGREDIENTS.filter(i => selectedIngredientIds.includes(i.id) && i.origin === "ethiopian").length} 🇪🇹 Eth
                   </span>
-                  <span className="rounded-full bg-teal-400/10 px-2 py-0.5 text-teal-300">
+                  <span className="rounded-full bg-brand/10 px-2 py-0.5 text-brand-strong">
                     {FORMULATOR_INGREDIENTS.filter(i => selectedIngredientIds.includes(i.id) && i.origin === "international").length} 🌐 Intl
                   </span>
                 </div>
@@ -652,8 +652,8 @@ export default function DynamicFormulatorPage() {
                     onClick={() => setIngredientFilter(tab.id)}
                     className={`rounded-lg px-2.5 py-1 font-medium transition-all ${
                       ingredientFilter === tab.id
-                        ? "bg-white/15 text-white border border-white/20"
-                        : "bg-white/5 text-stone-400 hover:text-stone-200"
+                        ? "bg-foreground/15 text-foreground border border-border-strong"
+                        : "bg-foreground/5 text-muted-foreground hover:text-soft"
                     }`}
                   >
                     {tab.label}
@@ -667,7 +667,7 @@ export default function DynamicFormulatorPage() {
                   placeholder="Filter 70+ ingredients (e.g. Teff, Shiro, Salmon, Quinoa, Telba, Gomen, Anchote)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white placeholder-stone-500 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-sunken/80 px-3 py-1.5 text-xs text-foreground placeholder:text-subtle focus:border-brand focus:outline-none"
                 />
               </div>
 
@@ -681,35 +681,35 @@ export default function DynamicFormulatorPage() {
                       onClick={() => toggleIngredient(ing.id)}
                       className={`flex items-start gap-2.5 rounded-xl border p-2.5 cursor-pointer transition-all ${
                         isChecked
-                          ? "border-emerald-400/40 bg-emerald-950/20 text-white shadow-sm"
-                          : "border-white/5 bg-white/[0.01] text-stone-400 hover:border-white/15 hover:bg-white/5"
+                          ? "border-brand/40 bg-brand-soft text-foreground shadow-sm"
+                          : "border-border bg-foreground/[0.01] text-muted-foreground hover:border-border hover:bg-foreground/5"
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        className="mt-0.5 accent-emerald-500 rounded cursor-pointer"
+                        className="mt-0.5 accent-brand rounded cursor-pointer"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-semibold text-xs text-stone-200 truncate">{ing.nameEn}</span>
+                          <span className="font-semibold text-xs text-soft truncate">{ing.nameEn}</span>
                           <span className="text-[10px] font-mono shrink-0">
                             {ing.origin === "ethiopian" ? "🇪🇹" : "🌐"}
                           </span>
                         </div>
-                        <div className="text-[10px] text-stone-400 font-serif">{ing.nameAmharic}</div>
-                        <div className="mt-1 flex flex-wrap gap-1 text-[9px] font-mono text-stone-400">
-                          <span className="rounded bg-black/40 px-1 py-0.5 text-emerald-400">
+                        <div className="text-[10px] text-muted-foreground font-serif">{ing.nameAmharic}</div>
+                        <div className="mt-1 flex flex-wrap gap-1 text-[9px] font-mono text-muted-foreground">
+                          <span className="rounded bg-sunken/80 px-1 py-0.5 text-brand">
                             {ing.per100g.protein_g}g Prot
                           </span>
-                          <span className="rounded bg-black/40 px-1 py-0.5 text-amber-400">
+                          <span className="rounded bg-sunken/80 px-1 py-0.5 text-gold">
                             {ing.per100g.fat_g}g Fat
                           </span>
-                          <span className="rounded bg-black/40 px-1 py-0.5 text-sky-400">
+                          <span className="rounded bg-sunken/80 px-1 py-0.5 text-info">
                             {ing.per100g.fiber_g}g Fib
                           </span>
-                          <span className="rounded bg-black/40 px-1 py-0.5 text-stone-300">
+                          <span className="rounded bg-sunken/80 px-1 py-0.5 text-soft">
                             ~{ing.costPer100gETB.standard} ETB/100g
                           </span>
                         </div>
@@ -721,13 +721,13 @@ export default function DynamicFormulatorPage() {
             </section>
 
             {/* 4. EXPANDED PLATTER & DISH PRESENTATION FORMATS (8 FORMATS) */}
-            <section className="rounded-3xl border border-white/10 bg-stone-900/60 p-5 backdrop-blur-xl shadow-xl space-y-4">
+            <section className="rounded-3xl border border-border bg-card/60 p-5  shadow-panel space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-plum">
                     4. Platter & Dish Presentation Format (8 Formats)
                   </h2>
-                  <span className="text-[10px] font-mono text-stone-400">የማዕድ አቀራረብ</span>
+                  <span className="text-[10px] font-mono text-muted-foreground">የማዕድ አቀራረብ</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
@@ -747,28 +747,28 @@ export default function DynamicFormulatorPage() {
                       onClick={() => setPlatterType(format.id)}
                       className={`rounded-xl p-2.5 border text-left transition-all ${
                         platterType === format.id
-                          ? "border-purple-400/50 bg-purple-500/15 text-white shadow-md shadow-purple-500/10"
-                          : "border-white/5 bg-white/[0.02] text-stone-400 hover:border-white/20"
+                          ? "border-plum/50 bg-plum/15 text-foreground shadow-md"
+                          : "border-border bg-foreground/[0.02] text-muted-foreground hover:border-border-strong"
                       }`}
                     >
-                      <div className="font-semibold text-xs flex items-center gap-1.5 text-purple-200">
+                      <div className="font-semibold text-xs flex items-center gap-1.5 text-plum-strong">
                         <span>{format.icon}</span>
                         <span className="truncate">{format.label}</span>
                       </div>
-                      <div className="text-[10px] text-stone-400 mt-1 line-clamp-1">{format.desc}</div>
+                      <div className="text-[10px] text-muted-foreground mt-1 line-clamp-1">{format.desc}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Economic Tier & Enzyme Cofactor */}
-              <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-white/10">
+              <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-border">
                 <div>
-                  <label className="text-stone-300 font-semibold block mb-1">Economic Tier:</label>
+                  <label className="text-soft font-semibold block mb-1">Economic Tier:</label>
                   <select
                     value={economicTier}
                     onChange={(e) => setEconomicTier(e.target.value as EconomicTier)}
-                    className="w-full rounded-xl border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs text-white focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-sunken/80 px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
                   >
                     <option value="economy">Economy (ቆጣቢ - Brown Teff / Shiro)</option>
                     <option value="standard">Standard (መካከለኛ - Balanced Mix)</option>
@@ -776,11 +776,11 @@ export default function DynamicFormulatorPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-stone-300 font-semibold block mb-1">Enzyme Reaction:</label>
+                  <label className="text-soft font-semibold block mb-1">Enzyme Reaction:</label>
                   <select
                     value={enzymeReaction}
                     onChange={(e) => setEnzymeReaction(e.target.value as EnzymeReactionType)}
-                    className="w-full rounded-xl border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs text-white focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-sunken/80 px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
                   >
                     <option value="ersho_phytase_96h">Ersho Phytase 96h (Fe & Zn ×2.4)</option>
                     <option value="sprouting_germination">Sprouting Germination (Lysine +22%)</option>
@@ -792,10 +792,10 @@ export default function DynamicFormulatorPage() {
               </div>
 
               {/* Servings per day slider */}
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex justify-between text-xs text-stone-300 mb-1">
+              <div className="pt-2 border-t border-border">
+                <div className="flex justify-between text-xs text-soft mb-1">
                   <span>Daily Schedule (Servings / Day):</span>
-                  <span className="font-mono text-emerald-400 font-bold">{servingsPerDay} servings</span>
+                  <span className="font-mono text-brand font-bold">{servingsPerDay} servings</span>
                 </div>
                 <input
                   type="range"
@@ -804,7 +804,7 @@ export default function DynamicFormulatorPage() {
                   step="0.5"
                   value={servingsPerDay}
                   onChange={(e) => setServingsPerDay(Number(e.target.value))}
-                  className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-stone-700 rounded-lg"
+                  className="w-full accent-brand cursor-pointer h-1.5 bg-sunken rounded-lg"
                 />
               </div>
             </section>
@@ -815,60 +815,60 @@ export default function DynamicFormulatorPage() {
              ═══════════════════════════════════════════════════════════════ */}
           <div className="space-y-6 lg:col-span-7">
             {/* PLATTER HERO SUMMARY CARD WITH DUAL-BASIS CONTROLLER */}
-            <div className="rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 via-stone-900/60 to-teal-950/30 p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="rounded-3xl border border-brand/25 bg-gradient-to-br from-brand-soft via-card/60 to-brand-soft p-6  shadow-raised relative overflow-hidden">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-emerald-300 bg-emerald-400/10 px-2.5 py-0.5 rounded-full border border-emerald-400/20">
+                    <span className="font-mono text-xs font-bold text-brand-strong bg-brand/10 px-2.5 py-0.5 rounded-full border border-brand/20">
                       {result.dietCode}
                     </span>
-                    <span className="text-[10px] uppercase font-bold text-amber-300 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+                    <span className="text-[10px] uppercase font-bold text-gold-strong bg-gold/10 px-2.5 py-0.5 rounded-full border border-gold/20">
                       {result.isInternationalOrHybrid ? "🌐 Hybrid Global-Ethiopian" : "🇪🇹 Authentic Ethiopian Heritage"}
                     </span>
-                    <span className="text-[10px] text-stone-400 font-mono bg-black/40 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-muted-foreground font-mono bg-sunken/80 px-2 py-0.5 rounded-full">
                       {totalServingGrams}g fresh / serving
                     </span>
                   </div>
 
-                  <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl leading-tight">
+                  <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl leading-tight">
                     {result.dietName}
                   </h2>
-                  <div className="text-sm text-emerald-400 font-serif mt-0.5">
+                  <div className="text-sm text-brand font-serif mt-0.5">
                     {result.dietNameAmharic}
                   </div>
                 </div>
 
                 {/* Cost Box */}
-                <div className="rounded-2xl border border-white/10 bg-black/40 p-3.5 text-right shrink-0">
-                  <div className="text-[10px] uppercase tracking-wider text-stone-400">Formulated Cost</div>
-                  <div className="font-mono text-xl font-black text-emerald-300">
-                    ~{costs.perServingETB} <span className="text-xs font-normal text-stone-400">ETB/meal</span>
+                <div className="rounded-2xl border border-border bg-sunken/80 p-3.5 text-right shrink-0">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Formulated Cost</div>
+                  <div className="font-mono text-xl font-bold text-brand">
+                    ~{costs.perServingETB} <span className="text-xs font-normal text-muted-foreground">ETB/meal</span>
                   </div>
-                  <div className="text-[10px] text-stone-400 font-mono mt-0.5">
+                  <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
                     {costs.perDayETB} ETB/day · {costs.perMonthETB.toLocaleString()} ETB/mo
                   </div>
                 </div>
               </div>
 
               {/* 💧 WET WEIGHT BASIS VS 🌾 100% DRY MATTER BASIS CONTROLLER */}
-              <div className="mt-5 p-3 rounded-2xl bg-black/50 border border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="mt-5 p-3 rounded-2xl bg-sunken/80 border border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="text-xs">
-                  <div className="font-bold text-white flex items-center gap-1.5">
+                  <div className="font-bold text-foreground flex items-center gap-1.5">
                     <span>{basisMode === "wet" ? "💧 As-Eaten Wet Weight Basis" : "🌾 100% Dry Matter Basis (Moisture-Free)"}</span>
                   </div>
-                  <div className="text-[10px] text-stone-400 mt-0.5">
+                  <div className="text-[10px] text-muted-foreground mt-0.5">
                     {basisMode === "wet"
                       ? `Normalized to ${totalServingGrams}g fresh meal weight (${dryMatterAnalysis.moisturePercent}% water)`
                       : `Normalized per 100g of dry matter solids (stripping out all moisture for standard food science comparison)`}
                   </div>
                 </div>
 
-                <div className="flex rounded-xl bg-stone-900 p-1 border border-white/10 shrink-0 text-xs font-semibold">
+                <div className="flex rounded-xl bg-card p-1 border border-border shrink-0 text-xs font-semibold">
                   <button
                     type="button"
                     onClick={() => setBasisMode("wet")}
                     className={`rounded-lg px-3 py-1.5 transition-all ${
-                      basisMode === "wet" ? "bg-emerald-500 text-black shadow font-bold" : "text-stone-400 hover:text-white"
+                      basisMode === "wet" ? "bg-brand text-brand-foreground shadow font-bold" : "text-muted-foreground hover:text-brand-foreground"
                     }`}
                   >
                     💧 Wet Basis (Fresh)
@@ -877,7 +877,7 @@ export default function DynamicFormulatorPage() {
                     type="button"
                     onClick={() => setBasisMode("dry")}
                     className={`rounded-lg px-3 py-1.5 transition-all ${
-                      basisMode === "dry" ? "bg-amber-400 text-black shadow font-bold" : "text-stone-400 hover:text-white"
+                      basisMode === "dry" ? "bg-gold-fill text-gold-foreground shadow font-bold" : "text-muted-foreground hover:text-gold-foreground"
                     }`}
                   >
                     🌾 Dry Matter (100% DM)
@@ -887,108 +887,108 @@ export default function DynamicFormulatorPage() {
 
               {/* Macro Pills Bar */}
               <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 font-mono text-xs">
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-stone-400 block">
+                <div className="rounded-xl border border-border bg-sunken/50 p-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
                     {basisMode === "wet" ? "Energy / Serving" : "Energy / 100g DM"}
                   </span>
-                  <span className="text-lg font-bold text-white">
+                  <span className="text-lg font-bold text-foreground">
                     {basisMode === "wet" ? nutrientsPerServing.proximate.energyKcal : dryMatterAnalysis.energyKcalPer100gDry}
                   </span>
-                  <span className="text-[10px] text-stone-400"> kcal</span>
+                  <span className="text-[10px] text-muted-foreground"> kcal</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-400 block">
+                <div className="rounded-xl border border-border bg-sunken/50 p-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-brand block">
                     {basisMode === "wet" ? "Protein / Serving" : "Protein / 100g DM"}
                   </span>
-                  <span className="text-lg font-bold text-emerald-300">
+                  <span className="text-lg font-bold text-brand">
                     {basisMode === "wet" ? `${nutrientsPerServing.proximate.protein_g}g` : `${dryMatterAnalysis.proteinGramsPer100gDry}g`}
                   </span>
-                  <span className="text-[10px] text-stone-400"> ({nutrientsPerServing.aminoAcids.pdcaasEquivalentPct}% PDCAAS)</span>
+                  <span className="text-[10px] text-muted-foreground"> ({nutrientsPerServing.aminoAcids.pdcaasEquivalentPct}% PDCAAS)</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-amber-400 block">
+                <div className="rounded-xl border border-border bg-sunken/50 p-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-gold block">
                     {basisMode === "wet" ? "Lipids / Serving" : "Lipids / 100g DM"}
                   </span>
-                  <span className="text-lg font-bold text-amber-300">
+                  <span className="text-lg font-bold text-gold">
                     {basisMode === "wet" ? `${nutrientsPerServing.proximate.fat_g}g` : `${dryMatterAnalysis.fatGramsPer100gDry}g`}
                   </span>
-                  <span className="text-[10px] text-stone-400"> (Ω3:Ω6 {nutrientsPerServing.fattyAcids.omega3ToOmega6Ratio})</span>
+                  <span className="text-[10px] text-muted-foreground"> (Ω3:Ω6 {nutrientsPerServing.fattyAcids.omega3ToOmega6Ratio})</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2.5">
-                  <span className="text-[10px] uppercase tracking-wider text-teal-400 block">
+                <div className="rounded-xl border border-border bg-sunken/50 p-2.5">
+                  <span className="text-[10px] uppercase tracking-wider text-brand block">
                     {basisMode === "wet" ? "Fiber / Serving" : "Fiber / 100g DM"}
                   </span>
-                  <span className="text-lg font-bold text-teal-300">
+                  <span className="text-lg font-bold text-brand">
                     {basisMode === "wet" ? `${nutrientsPerServing.proximate.dietaryFiber_g}g` : `${dryMatterAnalysis.fiberGramsPer100gDry}g`}
                   </span>
-                  <span className="text-[10px] text-stone-400"> (Prebiotic)</span>
+                  <span className="text-[10px] text-muted-foreground"> (Prebiotic)</span>
                 </div>
               </div>
             </div>
 
             {/* DRY MATTER COMPARATIVE SCIENTIFIC ANALYSIS CARD */}
-            <div className="rounded-3xl border border-white/10 bg-stone-900/60 p-5 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+            <div className="rounded-3xl border border-border bg-card/60 p-5  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gold flex items-center gap-2">
                   <span>Food Science Analysis: Wet vs Dry Matter Basis</span>
-                  <span className="text-[10px] font-normal text-stone-400 font-serif">(የእርጥብና ደረቅ ክብደት ንጽጽር)</span>
+                  <span className="text-[10px] font-normal text-muted-foreground font-serif">(የእርጥብና ደረቅ ክብደት ንጽጽር)</span>
                 </h3>
-                <span className="text-[10px] font-mono text-stone-400">FAO / INFOODS Standard</span>
+                <span className="text-[10px] font-mono text-muted-foreground">FAO / INFOODS Standard</span>
               </div>
 
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
-                <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                  <span className="text-[10px] text-stone-400 block uppercase">Total Fresh Weight</span>
-                  <span className="text-base font-bold text-white">{dryMatterAnalysis.freshWeightGrams} g</span>
+                <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                  <span className="text-[10px] text-muted-foreground block uppercase">Total Fresh Weight</span>
+                  <span className="text-base font-bold text-foreground">{dryMatterAnalysis.freshWeightGrams} g</span>
                 </div>
-                <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                  <span className="text-[10px] text-sky-400 block uppercase">Moisture Content</span>
-                  <span className="text-base font-bold text-sky-300">{dryMatterAnalysis.moisturePercent}% ({dryMatterAnalysis.moistureGrams}g)</span>
+                <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                  <span className="text-[10px] text-info block uppercase">Moisture Content</span>
+                  <span className="text-base font-bold text-info">{dryMatterAnalysis.moisturePercent}% ({dryMatterAnalysis.moistureGrams}g)</span>
                 </div>
-                <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                  <span className="text-[10px] text-amber-400 block uppercase">Dry Matter Solids</span>
-                  <span className="text-base font-bold text-amber-300">{dryMatterAnalysis.dryMatterPercent}% ({dryMatterAnalysis.dryMatterGrams}g)</span>
+                <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                  <span className="text-[10px] text-gold block uppercase">Dry Matter Solids</span>
+                  <span className="text-base font-bold text-gold">{dryMatterAnalysis.dryMatterPercent}% ({dryMatterAnalysis.dryMatterGrams}g)</span>
                 </div>
-                <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                  <span className="text-[10px] text-teal-400 block uppercase">DM Concentration Factor</span>
-                  <span className="text-base font-bold text-teal-300">{dryMatterAnalysis.concentrationFactor}×</span>
+                <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                  <span className="text-[10px] text-brand block uppercase">DM Concentration Factor</span>
+                  <span className="text-base font-bold text-brand">{dryMatterAnalysis.concentrationFactor}×</span>
                 </div>
               </div>
 
               <div className="mt-3 overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-white/10 text-[10px] text-stone-400 uppercase">
+                    <tr className="border-b border-border text-[10px] text-muted-foreground uppercase">
                       <th className="pb-1.5">Nutrient Metric</th>
-                      <th className="pb-1.5 text-right text-emerald-400">Wet Basis (Fresh Meal)</th>
-                      <th className="pb-1.5 text-right text-amber-300">Dry Matter Basis (per 100g DM)</th>
-                      <th className="pb-1.5 text-right text-stone-400">Concentration Effect</th>
+                      <th className="pb-1.5 text-right text-brand">Wet Basis (Fresh Meal)</th>
+                      <th className="pb-1.5 text-right text-gold">Dry Matter Basis (per 100g DM)</th>
+                      <th className="pb-1.5 text-right text-muted-foreground">Concentration Effect</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 text-[11px]">
+                  <tbody className="divide-y divide-border text-[11px]">
                     <tr>
-                      <td className="py-1.5 text-stone-300">Energy Density</td>
-                      <td className="py-1.5 text-right text-emerald-300">{dryMatterAnalysis.energyKcalPer100gWet} kcal/100g</td>
-                      <td className="py-1.5 text-right text-amber-300">{dryMatterAnalysis.energyKcalPer100gDry} kcal/100g DM</td>
-                      <td className="py-1.5 text-right text-stone-400">+{Math.round(((dryMatterAnalysis.energyKcalPer100gDry / Math.max(1, dryMatterAnalysis.energyKcalPer100gWet)) - 1) * 100)}%</td>
+                      <td className="py-1.5 text-soft">Energy Density</td>
+                      <td className="py-1.5 text-right text-brand">{dryMatterAnalysis.energyKcalPer100gWet} kcal/100g</td>
+                      <td className="py-1.5 text-right text-gold">{dryMatterAnalysis.energyKcalPer100gDry} kcal/100g DM</td>
+                      <td className="py-1.5 text-right text-muted-foreground">+{Math.round(((dryMatterAnalysis.energyKcalPer100gDry / Math.max(1, dryMatterAnalysis.energyKcalPer100gWet)) - 1) * 100)}%</td>
                     </tr>
                     <tr>
-                      <td className="py-1.5 text-stone-300">Protein Concentration</td>
-                      <td className="py-1.5 text-right text-emerald-300">{dryMatterAnalysis.proteinGramsPer100gWet} g/100g</td>
-                      <td className="py-1.5 text-right text-amber-300">{dryMatterAnalysis.proteinGramsPer100gDry} g/100g DM</td>
-                      <td className="py-1.5 text-right text-stone-400">+{Math.round(((dryMatterAnalysis.proteinGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.proteinGramsPer100gWet)) - 1) * 100)}%</td>
+                      <td className="py-1.5 text-soft">Protein Concentration</td>
+                      <td className="py-1.5 text-right text-brand">{dryMatterAnalysis.proteinGramsPer100gWet} g/100g</td>
+                      <td className="py-1.5 text-right text-gold">{dryMatterAnalysis.proteinGramsPer100gDry} g/100g DM</td>
+                      <td className="py-1.5 text-right text-muted-foreground">+{Math.round(((dryMatterAnalysis.proteinGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.proteinGramsPer100gWet)) - 1) * 100)}%</td>
                     </tr>
                     <tr>
-                      <td className="py-1.5 text-stone-300">Lipid Concentration</td>
-                      <td className="py-1.5 text-right text-emerald-300">{dryMatterAnalysis.fatGramsPer100gWet} g/100g</td>
-                      <td className="py-1.5 text-right text-amber-300">{dryMatterAnalysis.fatGramsPer100gDry} g/100g DM</td>
-                      <td className="py-1.5 text-right text-stone-400">+{Math.round(((dryMatterAnalysis.fatGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.fatGramsPer100gWet)) - 1) * 100)}%</td>
+                      <td className="py-1.5 text-soft">Lipid Concentration</td>
+                      <td className="py-1.5 text-right text-brand">{dryMatterAnalysis.fatGramsPer100gWet} g/100g</td>
+                      <td className="py-1.5 text-right text-gold">{dryMatterAnalysis.fatGramsPer100gDry} g/100g DM</td>
+                      <td className="py-1.5 text-right text-muted-foreground">+{Math.round(((dryMatterAnalysis.fatGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.fatGramsPer100gWet)) - 1) * 100)}%</td>
                     </tr>
                     <tr>
-                      <td className="py-1.5 text-stone-300">Dietary Fiber Concentration</td>
-                      <td className="py-1.5 text-right text-emerald-300">{dryMatterAnalysis.fiberGramsPer100gWet} g/100g</td>
-                      <td className="py-1.5 text-right text-amber-300">{dryMatterAnalysis.fiberGramsPer100gDry} g/100g DM</td>
-                      <td className="py-1.5 text-right text-stone-400">+{Math.round(((dryMatterAnalysis.fiberGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.fiberGramsPer100gWet)) - 1) * 100)}%</td>
+                      <td className="py-1.5 text-soft">Dietary Fiber Concentration</td>
+                      <td className="py-1.5 text-right text-brand">{dryMatterAnalysis.fiberGramsPer100gWet} g/100g</td>
+                      <td className="py-1.5 text-right text-gold">{dryMatterAnalysis.fiberGramsPer100gDry} g/100g DM</td>
+                      <td className="py-1.5 text-right text-muted-foreground">+{Math.round(((dryMatterAnalysis.fiberGramsPer100gDry / Math.max(0.1, dryMatterAnalysis.fiberGramsPer100gWet)) - 1) * 100)}%</td>
                     </tr>
                   </tbody>
                 </table>
@@ -996,20 +996,20 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* TOP MATCHED 100-DISH CATALOG RECOMMENDATIONS */}
-            <div className="rounded-3xl border border-white/10 bg-stone-900/60 p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="rounded-3xl border border-border bg-card/60 p-6  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-gold flex items-center gap-2">
                     <span>Top Matched Regional Dishes & Platters</span>
-                    <span className="text-[10px] font-normal text-stone-400 font-serif">(ከተመረጡ 100 የኢትዮጵያ ማዕዶች)</span>
+                    <span className="text-[10px] font-normal text-muted-foreground font-serif">(ከተመረጡ 100 የኢትዮጵያ ማዕዶች)</span>
                   </h3>
-                  <p className="text-[11px] text-stone-400 mt-0.5">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     Comparing your proximate targets & ingredients against all 100 dishes in the authentic catalog:
                   </p>
                 </div>
                 <Link
                   href="/foods/composite-formulator"
-                  className="text-[10px] font-bold text-amber-300 hover:text-amber-200 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20"
+                  className="text-[10px] font-bold text-gold-strong hover:text-gold-strong bg-gold/10 px-2.5 py-1 rounded-lg border border-gold/20"
                 >
                   View All 100 →
                 </Link>
@@ -1019,31 +1019,31 @@ export default function DynamicFormulatorPage() {
                 {matchedCatalogDishes.map((match) => (
                   <div
                     key={match.dish.id}
-                    className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 hover:border-amber-400/30 transition-all flex flex-col justify-between"
+                    className="rounded-2xl border border-border bg-foreground/[0.02] p-3.5 hover:border-gold/30 transition-all flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-400/15 text-amber-300 font-bold">
+                        <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-gold/15 text-gold-strong font-bold">
                           {match.matchScorePct}% Match
                         </span>
-                        <span className="text-[10px] font-mono text-stone-400">{match.dish.nutrients.proximate.energyKcal} kcal</span>
+                        <span className="text-[10px] font-mono text-muted-foreground">{match.dish.nutrients.proximate.energyKcal} kcal</span>
                       </div>
-                      <div className="font-bold text-xs text-white line-clamp-1">{match.dish.nameEn}</div>
-                      <div className="text-[10px] text-emerald-400 font-serif line-clamp-1">{match.dish.nameAmharic}</div>
-                      <div className="mt-2 text-[10px] text-stone-400 space-y-1">
+                      <div className="font-bold text-xs text-foreground line-clamp-1">{match.dish.nameEn}</div>
+                      <div className="text-[10px] text-brand font-serif line-clamp-1">{match.dish.nameAmharic}</div>
+                      <div className="mt-2 text-[10px] text-muted-foreground space-y-1">
                         {match.matchReasons.slice(0, 2).map((reason, idx) => (
                           <div key={idx} className="flex items-start gap-1">
-                            <span className="text-amber-400 shrink-0">✓</span>
+                            <span className="text-gold shrink-0">✓</span>
                             <span className="line-clamp-2">{reason}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-stone-400">
+                    <div className="mt-3 pt-2 border-t border-border flex items-center justify-between text-[10px] font-mono text-muted-foreground">
                       <span>{match.dish.nutrients.proximate.protein_g}g Prot</span>
                       <span>{match.dish.nutrients.proximate.dietaryFiber_g}g Fib</span>
-                      <span className="text-amber-300">~{match.dish.costEstimatesPerServingETB.standard} ETB</span>
+                      <span className="text-gold">~{match.dish.costEstimatesPerServingETB.standard} ETB</span>
                     </div>
                   </div>
                 ))}
@@ -1051,24 +1051,24 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* SYNTHESIZED RECIPE TABLE (PER SERVING / DAY / MONTH) */}
-            <div className="rounded-3xl border border-white/10 bg-stone-900/60 p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div className="rounded-3xl border border-border bg-card/60 p-6  shadow-panel">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
                     Synthesized Recipe & Procurement Breakdown
                   </h3>
-                  <p className="text-[11px] text-stone-400 mt-0.5">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     Proportioned to satisfy targeted proximate calories & protein
                   </p>
                 </div>
 
                 {/* Scale Tabs */}
-                <div className="flex rounded-xl bg-black/40 p-1 border border-white/10 text-xs">
+                <div className="flex rounded-xl bg-sunken/80 p-1 border border-border text-xs">
                   <button
                     type="button"
                     onClick={() => setRecipeTab("serving")}
                     className={`rounded-lg px-3 py-1 font-semibold transition-all ${
-                      recipeTab === "serving" ? "bg-emerald-500 text-black shadow" : "text-stone-400 hover:text-white"
+                      recipeTab === "serving" ? "bg-brand text-brand-foreground shadow" : "text-muted-foreground hover:text-brand-foreground"
                     }`}
                   >
                     Per Serving
@@ -1077,7 +1077,7 @@ export default function DynamicFormulatorPage() {
                     type="button"
                     onClick={() => setRecipeTab("day")}
                     className={`rounded-lg px-3 py-1 font-semibold transition-all ${
-                      recipeTab === "day" ? "bg-emerald-500 text-black shadow" : "text-stone-400 hover:text-white"
+                      recipeTab === "day" ? "bg-brand text-brand-foreground shadow" : "text-muted-foreground hover:text-brand-foreground"
                     }`}
                   >
                     Per Day ({servingsPerDay}×)
@@ -1086,7 +1086,7 @@ export default function DynamicFormulatorPage() {
                     type="button"
                     onClick={() => setRecipeTab("month")}
                     className={`rounded-lg px-3 py-1 font-semibold transition-all ${
-                      recipeTab === "month" ? "bg-emerald-500 text-black shadow" : "text-stone-400 hover:text-white"
+                      recipeTab === "month" ? "bg-brand text-brand-foreground shadow" : "text-muted-foreground hover:text-brand-foreground"
                     }`}
                   >
                     Per Month (30 Days)
@@ -1098,7 +1098,7 @@ export default function DynamicFormulatorPage() {
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-stone-400 font-mono">
+                    <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
                       <th className="pb-2">Ingredient</th>
                       <th className="pb-2">Culinary Role</th>
                       <th className="pb-2 text-right">Amount</th>
@@ -1106,7 +1106,7 @@ export default function DynamicFormulatorPage() {
                       <th className="pb-2 text-right">Cost (ETB)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border">
                     {recipeItems.map((item) => {
                       const amountFormatted =
                         recipeTab === "serving"
@@ -1125,24 +1125,24 @@ export default function DynamicFormulatorPage() {
                           : `${item.costETBPerMonth.toLocaleString()} ETB`;
 
                       return (
-                        <tr key={item.ingredient.id} className="hover:bg-white/[0.02]">
+                        <tr key={item.ingredient.id} className="hover:bg-foreground/[0.02]">
                           <td className="py-2.5 pr-2">
-                            <div className="font-semibold text-stone-200 flex items-center gap-1.5">
+                            <div className="font-semibold text-soft flex items-center gap-1.5">
                               <span>{item.ingredient.origin === "ethiopian" ? "🇪🇹" : "🌐"}</span>
                               <span>{item.ingredient.nameEn}</span>
                             </div>
-                            <div className="text-[10px] text-stone-400 font-serif">{item.ingredient.nameAmharic}</div>
+                            <div className="text-[10px] text-muted-foreground font-serif">{item.ingredient.nameAmharic}</div>
                           </td>
-                          <td className="py-2.5 px-2 text-stone-400 text-[11px] max-w-[180px] truncate">
+                          <td className="py-2.5 px-2 text-muted-foreground text-[11px] max-w-[180px] truncate">
                             {item.culinaryRole}
                           </td>
-                          <td className="py-2.5 px-2 text-right font-mono font-bold text-emerald-300">
+                          <td className="py-2.5 px-2 text-right font-mono font-bold text-brand">
                             {amountFormatted}
                           </td>
-                          <td className="py-2.5 px-2 text-right font-mono text-stone-400">
+                          <td className="py-2.5 px-2 text-right font-mono text-muted-foreground">
                             {item.contributionPct}%
                           </td>
-                          <td className="py-2.5 pl-2 text-right font-mono text-amber-300">
+                          <td className="py-2.5 pl-2 text-right font-mono text-gold">
                             {costFormatted}
                           </td>
                         </tr>
@@ -1150,18 +1150,18 @@ export default function DynamicFormulatorPage() {
                     })}
                   </tbody>
                   <tfoot>
-                    <tr className="border-t border-white/10 font-mono text-xs font-bold text-white">
+                    <tr className="border-t border-border font-mono text-xs font-bold text-foreground">
                       <td className="pt-3">Total Batch</td>
-                      <td className="pt-3 text-stone-400 text-[10px]">{recipeItems.length} ingredients</td>
-                      <td className="pt-3 text-right text-emerald-300">
+                      <td className="pt-3 text-muted-foreground text-[10px]">{recipeItems.length} ingredients</td>
+                      <td className="pt-3 text-right text-brand">
                         {recipeTab === "serving"
                           ? `${totalServingGrams} g`
                           : recipeTab === "day"
                           ? `${Math.round(totalServingGrams * servingsPerDay)} g`
                           : `${((totalServingGrams * servingsPerDay * 30) / 1000).toFixed(1)} kg`}
                       </td>
-                      <td className="pt-3 text-right text-stone-400">100%</td>
-                      <td className="pt-3 text-right text-amber-300">
+                      <td className="pt-3 text-right text-muted-foreground">100%</td>
+                      <td className="pt-3 text-right text-gold">
                         {recipeTab === "serving"
                           ? `${costs.perServingETB} ETB`
                           : recipeTab === "day"
@@ -1175,19 +1175,19 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* 5-TIER INTENSIVE NUTRIENT TABLES (WITH DUAL BASIS SUPPORT) */}
-            <div className="rounded-3xl border border-white/10 bg-stone-900/60 p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div className="rounded-3xl border border-border bg-card/60 p-6  shadow-panel">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-brand">
                     5-Tier Intensive Nutrient Profile
                   </h3>
-                  <p className="text-[11px] text-stone-400 mt-0.5">
-                    Mode: <strong className="text-white">{basisMode === "wet" ? "💧 As-Eaten Fresh Basis" : "🌾 100% Dry Matter Basis (per 100g DM)"}</strong>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Mode: <strong className="text-foreground">{basisMode === "wet" ? "💧 As-Eaten Fresh Basis" : "🌾 100% Dry Matter Basis (per 100g DM)"}</strong>
                   </p>
                 </div>
 
                 {/* Nutrient Tabs */}
-                <div className="flex flex-wrap rounded-xl bg-black/40 p-1 border border-white/10 text-xs">
+                <div className="flex flex-wrap rounded-xl bg-sunken/80 p-1 border border-border text-xs">
                   {[
                     { id: "proximate" as NutrientTableTab, label: "Proximate" },
                     { id: "aminoAcids" as NutrientTableTab, label: "18 Amino Acids & DIAAS" },
@@ -1200,7 +1200,7 @@ export default function DynamicFormulatorPage() {
                       type="button"
                       onClick={() => setNutrientTab(tab.id)}
                       className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
-                        nutrientTab === tab.id ? "bg-teal-500 text-black shadow" : "text-stone-400 hover:text-white"
+                        nutrientTab === tab.id ? "bg-brand text-brand-foreground shadow" : "text-muted-foreground hover:text-brand-foreground"
                       }`}
                     >
                       {tab.label}
@@ -1212,44 +1212,44 @@ export default function DynamicFormulatorPage() {
               {/* Tab 1: Proximate Table */}
               {nutrientTab === "proximate" && (
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 text-xs">
-                  <div className="rounded-2xl border border-white/5 bg-black/30 p-4 space-y-2.5 font-mono">
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Total Energy:</span>
-                      <span className="font-bold text-white">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2.5 font-mono">
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Total Energy:</span>
+                      <span className="font-bold text-foreground">
                         {activeNutrients.proximate.energyKcal} kcal ({Math.round(activeNutrients.proximate.energyKcal * 4.184)} kJ)
                       </span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Crude Protein:</span>
-                      <span className="font-bold text-emerald-300">{activeNutrients.proximate.protein_g} g</span>
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Crude Protein:</span>
+                      <span className="font-bold text-brand">{activeNutrients.proximate.protein_g} g</span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Total Lipids (Fat):</span>
-                      <span className="font-bold text-amber-300">{activeNutrients.proximate.fat_g} g</span>
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Total Lipids (Fat):</span>
+                      <span className="font-bold text-gold">{activeNutrients.proximate.fat_g} g</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Available Carbohydrates:</span>
-                      <span className="font-bold text-sky-300">{activeNutrients.proximate.carbohydrate_g} g</span>
+                      <span className="text-muted-foreground">Available Carbohydrates:</span>
+                      <span className="font-bold text-info">{activeNutrients.proximate.carbohydrate_g} g</span>
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-white/5 bg-black/30 p-4 space-y-2.5 font-mono">
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Dietary Fiber:</span>
-                      <span className="font-bold text-teal-300">{activeNutrients.proximate.dietaryFiber_g} g</span>
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2.5 font-mono">
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Dietary Fiber:</span>
+                      <span className="font-bold text-brand">{activeNutrients.proximate.dietaryFiber_g} g</span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Moisture Content:</span>
-                      <span className="font-bold text-stone-300">
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Moisture Content:</span>
+                      <span className="font-bold text-soft">
                         {basisMode === "wet" ? `${activeNutrients.proximate.moisture_g} g (${dryMatterAnalysis.moisturePercent}%)` : "0 g (100% DM Basis)"}
                       </span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-1">
-                      <span className="text-stone-400">Total Mineral Ash:</span>
-                      <span className="font-bold text-stone-300">{activeNutrients.proximate.ash_g} g</span>
+                    <div className="flex justify-between border-b border-border pb-1">
+                      <span className="text-muted-foreground">Total Mineral Ash:</span>
+                      <span className="font-bold text-soft">{activeNutrients.proximate.ash_g} g</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Protein Energy Ratio:</span>
-                      <span className="font-bold text-emerald-400">
+                      <span className="text-muted-foreground">Protein Energy Ratio:</span>
+                      <span className="font-bold text-brand">
                         {((activeNutrients.proximate.protein_g * 4 / Math.max(1, activeNutrients.proximate.energyKcal)) * 100).toFixed(1)}%
                       </span>
                     </div>
@@ -1260,12 +1260,12 @@ export default function DynamicFormulatorPage() {
               {/* Tab 2: 18 Amino Acids Table & DIAAS */}
               {nutrientTab === "aminoAcids" && (
                 <div className="mt-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-xs mb-3 font-mono">
-                    <span>PDCAAS: <strong className="text-emerald-300">{activeNutrients.aminoAcids.pdcaasEquivalentPct}%</strong></span>
-                    <span>DIAAS Equiv: <strong className="text-emerald-300">{activeExtended.diaasEquivalentPct}%</strong></span>
-                    <span>Total BCAA: <strong className="text-emerald-300">{activeExtended.bcaaTotal_mg} mg</strong></span>
-                    <span>Total EAA: <strong className="text-emerald-300">{activeNutrients.aminoAcids.totalEAA_mg} mg</strong></span>
-                    <span>Limiting: <strong className="text-amber-300">{activeNutrients.aminoAcids.limitingAmino}</strong></span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-brand-soft border border-brand/20 text-xs mb-3 font-mono">
+                    <span>PDCAAS: <strong className="text-brand">{activeNutrients.aminoAcids.pdcaasEquivalentPct}%</strong></span>
+                    <span>DIAAS Equiv: <strong className="text-brand">{activeExtended.diaasEquivalentPct}%</strong></span>
+                    <span>Total BCAA: <strong className="text-brand">{activeExtended.bcaaTotal_mg} mg</strong></span>
+                    <span>Total EAA: <strong className="text-brand">{activeNutrients.aminoAcids.totalEAA_mg} mg</strong></span>
+                    <span>Limiting: <strong className="text-gold">{activeNutrients.aminoAcids.limitingAmino}</strong></span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono">
@@ -1289,9 +1289,9 @@ export default function DynamicFormulatorPage() {
                       { name: "Serine", val: activeExtended.serine_mg },
                       { name: "Alanine", val: activeExtended.alanine_mg },
                     ].map((aa) => (
-                      <div key={aa.name} className="p-2.5 rounded-xl border border-white/5 bg-black/30 flex justify-between">
-                        <span className="text-stone-400 text-[11px] truncate">{aa.name}:</span>
-                        <span className="font-bold text-emerald-300 ml-1 shrink-0">{aa.val} mg</span>
+                      <div key={aa.name} className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                        <span className="text-muted-foreground text-[11px] truncate">{aa.name}:</span>
+                        <span className="font-bold text-brand ml-1 shrink-0">{aa.val} mg</span>
                       </div>
                     ))}
                   </div>
@@ -1302,48 +1302,48 @@ export default function DynamicFormulatorPage() {
               {nutrientTab === "fattyAcids" && (
                 <div className="mt-4 space-y-3 font-mono text-xs">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                      <span className="text-[10px] text-stone-400 block uppercase">Saturated</span>
-                      <span className="font-bold text-white text-base">{activeNutrients.fattyAcids.totalSaturated_g}g</span>
+                    <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                      <span className="text-[10px] text-muted-foreground block uppercase">Saturated</span>
+                      <span className="font-bold text-foreground text-base">{activeNutrients.fattyAcids.totalSaturated_g}g</span>
                     </div>
-                    <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                      <span className="text-[10px] text-stone-400 block uppercase">Monounsaturated (MUFA)</span>
-                      <span className="font-bold text-emerald-300 text-base">{activeNutrients.fattyAcids.totalMUFA_g}g</span>
+                    <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                      <span className="text-[10px] text-muted-foreground block uppercase">Monounsaturated (MUFA)</span>
+                      <span className="font-bold text-brand text-base">{activeNutrients.fattyAcids.totalMUFA_g}g</span>
                     </div>
-                    <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                      <span className="text-[10px] text-stone-400 block uppercase">Polyunsaturated (PUFA)</span>
-                      <span className="font-bold text-amber-300 text-base">{activeNutrients.fattyAcids.totalPUFA_g}g</span>
+                    <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                      <span className="text-[10px] text-muted-foreground block uppercase">Polyunsaturated (PUFA)</span>
+                      <span className="font-bold text-gold text-base">{activeNutrients.fattyAcids.totalPUFA_g}g</span>
                     </div>
-                    <div className="p-3 rounded-xl border border-white/5 bg-black/30">
-                      <span className="text-[10px] text-stone-400 block uppercase">Ω3 to Ω6 Ratio</span>
-                      <span className="font-bold text-teal-300 text-base">{activeNutrients.fattyAcids.omega3ToOmega6Ratio}</span>
+                    <div className="p-3 rounded-xl border border-border bg-sunken/50">
+                      <span className="text-[10px] text-muted-foreground block uppercase">Ω3 to Ω6 Ratio</span>
+                      <span className="font-bold text-brand text-base">{activeNutrients.fattyAcids.omega3ToOmega6Ratio}</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">Omega-3 ALA (Plant):</span>
-                      <span className="font-bold text-teal-300">{activeNutrients.fattyAcids.omega3_ALA_g}g</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">Omega-3 ALA (Plant):</span>
+                      <span className="font-bold text-brand">{activeNutrients.fattyAcids.omega3_ALA_g}g</span>
                     </div>
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">Omega-3 EPA (Marine):</span>
-                      <span className="font-bold text-teal-300">{activeExtended.eicosapentaenoic_EPA_g}g</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">Omega-3 EPA (Marine):</span>
+                      <span className="font-bold text-brand">{activeExtended.eicosapentaenoic_EPA_g}g</span>
                     </div>
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">Omega-3 DHA (Marine):</span>
-                      <span className="font-bold text-teal-300">{activeExtended.docosahexaenoic_DHA_g}g</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">Omega-3 DHA (Marine):</span>
+                      <span className="font-bold text-brand">{activeExtended.docosahexaenoic_DHA_g}g</span>
                     </div>
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">Oleic Acid (18:1 cis-9):</span>
-                      <span className="font-bold text-emerald-300">{activeExtended.oleicAcid_g}g</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">Oleic Acid (18:1 cis-9):</span>
+                      <span className="font-bold text-brand">{activeExtended.oleicAcid_g}g</span>
                     </div>
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">P:S Ratio:</span>
-                      <span className="font-bold text-amber-300">{activeExtended.polyunsaturatedToSaturatedRatio}</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">P:S Ratio:</span>
+                      <span className="font-bold text-gold">{activeExtended.polyunsaturatedToSaturatedRatio}</span>
                     </div>
-                    <div className="p-2.5 rounded-xl border border-white/5 bg-black/20 flex justify-between">
-                      <span className="text-stone-400">Cholesterol:</span>
-                      <span className="font-bold text-stone-300">{activeNutrients.fattyAcids.cholesterol_mg} mg</span>
+                    <div className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">Cholesterol:</span>
+                      <span className="font-bold text-soft">{activeNutrients.fattyAcids.cholesterol_mg} mg</span>
                     </div>
                   </div>
                 </div>
@@ -1352,10 +1352,10 @@ export default function DynamicFormulatorPage() {
               {/* Tab 4: Minerals Table & Electrolyte Ratios */}
               {nutrientTab === "minerals" && (
                 <div className="mt-4 space-y-3 font-mono text-xs">
-                  <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-amber-950/20 border border-amber-500/20">
-                    <span>K:Na Ratio: <strong className="text-amber-300">{activeExtended.potassiumToSodiumRatio} (DASH: {">"}3.0)</strong></span>
-                    <span>Ca:Mg Ratio: <strong className="text-amber-300">{activeExtended.calciumToMagnesiumRatio}</strong></span>
-                    <span>Ca:P Ratio: <strong className="text-amber-300">{activeExtended.calciumToPhosphorusRatio}</strong></span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-gold-soft border border-gold/20">
+                    <span>K:Na Ratio: <strong className="text-gold">{activeExtended.potassiumToSodiumRatio} (DASH: {">"}3.0)</strong></span>
+                    <span>Ca:Mg Ratio: <strong className="text-gold">{activeExtended.calciumToMagnesiumRatio}</strong></span>
+                    <span>Ca:P Ratio: <strong className="text-gold">{activeExtended.calciumToPhosphorusRatio}</strong></span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1372,12 +1372,12 @@ export default function DynamicFormulatorPage() {
                       { name: "Manganese (Mn)", val: `${activeExtended.manganese_mg} mg`, extra: "Mitochondrial SOD" },
                       { name: "Iodine (I)", val: `${activeExtended.iodine_mcg} mcg`, extra: "Thyroid T3/T4" },
                     ].map((min) => (
-                      <div key={min.name} className="p-2.5 rounded-xl border border-white/5 bg-black/30">
+                      <div key={min.name} className="p-2.5 rounded-xl border border-border bg-sunken/50">
                         <div className="flex justify-between">
-                          <span className="text-stone-400">{min.name}:</span>
-                          <span className="font-bold text-amber-300">{min.val}</span>
+                          <span className="text-muted-foreground">{min.name}:</span>
+                          <span className="font-bold text-gold">{min.val}</span>
                         </div>
-                        <div className="text-[10px] text-stone-500 mt-1">{min.extra}</div>
+                        <div className="text-[10px] text-subtle mt-1">{min.extra}</div>
                       </div>
                     ))}
                   </div>
@@ -1405,9 +1405,9 @@ export default function DynamicFormulatorPage() {
                     { name: "Vitamin B12", val: `${activeNutrients.vitamins.vitaminB12_mcg} mcg` },
                     { name: "Choline", val: `${activeExtended.choline_mg} mg` },
                   ].map((vit) => (
-                    <div key={vit.name} className="p-2.5 rounded-xl border border-white/5 bg-black/30 flex justify-between">
-                      <span className="text-stone-400">{vit.name}:</span>
-                      <span className="font-bold text-emerald-300">{vit.val}</span>
+                    <div key={vit.name} className="p-2.5 rounded-xl border border-border bg-sunken/50 flex justify-between">
+                      <span className="text-muted-foreground">{vit.name}:</span>
+                      <span className="font-bold text-brand">{vit.val}</span>
                     </div>
                   ))}
                 </div>
@@ -1415,13 +1415,13 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* DEFICIENCY CORRECTIONS & OPTIMIZATION ADVISORY */}
-            <div className="rounded-3xl border border-amber-500/20 bg-stone-900/60 p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+            <div className="rounded-3xl border border-gold/20 bg-card/60 p-6  shadow-panel">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gold flex items-center gap-2">
                   <span>Deficiency Corrections & Culinary Additions</span>
-                  <span className="text-[10px] font-normal text-stone-400 font-serif">(የጎደሉ ንጥረ-ምግቦች ማካካሻ)</span>
+                  <span className="text-[10px] font-normal text-muted-foreground font-serif">(የጎደሉ ንጥረ-ምግቦች ማካካሻ)</span>
                 </h3>
-                <span className="text-[10px] font-mono text-stone-400">RDI Benchmarks</span>
+                <span className="text-[10px] font-mono text-muted-foreground">RDI Benchmarks</span>
               </div>
 
               <div className="mt-4 space-y-3">
@@ -1430,26 +1430,26 @@ export default function DynamicFormulatorPage() {
                     key={idx}
                     className={`rounded-2xl border p-4 text-xs ${
                       adv.status === "deficit"
-                        ? "border-rose-500/30 bg-rose-950/20 text-stone-200"
+                        ? "border-danger/30 bg-danger-soft text-soft"
                         : adv.status === "mild_deficit"
-                        ? "border-amber-500/30 bg-amber-950/20 text-stone-200"
-                        : "border-emerald-500/30 bg-emerald-950/20 text-stone-200"
+                        ? "border-gold/30 bg-gold-soft text-soft"
+                        : "border-brand/30 bg-brand-soft text-soft"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-white">{adv.nutrientName}</span>
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-black/40">
+                      <span className="font-bold text-sm text-foreground">{adv.nutrientName}</span>
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-sunken/80">
                         Current: <strong>{adv.currentAmountFormatted}</strong> / Target: <strong>{adv.targetRdiFormatted}</strong>
                       </span>
                     </div>
-                    <p className="mt-1.5 text-stone-300 leading-relaxed text-xs">
+                    <p className="mt-1.5 text-soft leading-relaxed text-xs">
                       {adv.recommendationNote}
                     </p>
                     {adv.suggestedAdditions.length > 0 && (
                       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-bold text-stone-400 uppercase">Suggested Additions:</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Suggested Additions:</span>
                         {adv.suggestedAdditions.map((item, i) => (
-                          <span key={i} className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-amber-200 font-medium">
+                          <span key={i} className="rounded-full bg-foreground/10 px-2 py-0.5 text-[10px] text-gold-strong font-medium">
                             + {item}
                           </span>
                         ))}
@@ -1461,27 +1461,27 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* ENHANCED STEP-BY-STEP CULINARY PREPARATION & 4-PHASE MASTER ARCHITECTURE */}
-            <div className="rounded-3xl border border-white/10 bg-stone-900/70 p-6 backdrop-blur-xl shadow-2xl space-y-6">
+            <div className="rounded-3xl border border-border bg-card/70 p-6  shadow-raised space-y-6">
               {/* Header Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
                 <div>
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
                       Step-by-Step Culinary Preparation
                     </h3>
-                    <span className="text-xs font-serif text-emerald-400">
+                    <span className="text-xs font-serif text-brand">
                       (የምግብ አሠራር ቅደም-ተከተል እና የሙያ ዝግጅት)
                     </span>
-                    <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-300">
+                    <span className="rounded-full border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[10px] font-semibold text-gold-strong">
                       {preparation.difficultyLevel} · {preparation.difficultyAmharic}
                     </span>
                   </div>
-                  <p className="text-[11px] text-stone-400 mt-1 flex flex-wrap items-center gap-2">
-                    <span>⏱️ Total Active Cook Time: <strong className="text-white">{preparation.totalActiveCookMinutes} min</strong></span>
+                  <p className="text-[11px] text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
+                    <span>⏱️ Total Active Cook Time: <strong className="text-foreground">{preparation.totalActiveCookMinutes} min</strong></span>
                     <span>·</span>
-                    <span>Prep: <strong className="text-stone-300">{preparation.prepTimeMinutes} min</strong></span>
+                    <span>Prep: <strong className="text-soft">{preparation.prepTimeMinutes} min</strong></span>
                     <span>·</span>
-                    <span>Thermal Cook: <strong className="text-stone-300">{preparation.cookTimeMinutes} min</strong></span>
+                    <span>Thermal Cook: <strong className="text-soft">{preparation.cookTimeMinutes} min</strong></span>
                   </p>
                 </div>
 
@@ -1489,7 +1489,7 @@ export default function DynamicFormulatorPage() {
                   <button
                     type="button"
                     onClick={() => setShowAmharicSteps(!showAmharicSteps)}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 hover:bg-emerald-400/20 transition-all flex items-center gap-1.5 shadow-sm"
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-brand/30 bg-brand/10 text-brand-strong hover:bg-brand/20 transition-all flex items-center gap-1.5 shadow-sm"
                   >
                     <span>🌐</span>
                     <span>{showAmharicSteps ? "English View Only" : "አማርኛ ጨምር (Bilingual)"}</span>
@@ -1498,32 +1498,32 @@ export default function DynamicFormulatorPage() {
               </div>
 
               {/* Bioactive Enzyme Banner */}
-              <div className="rounded-2xl border border-teal-500/30 bg-gradient-to-r from-teal-950/40 to-emerald-950/20 p-4 text-xs text-teal-200 flex items-start gap-3 shadow-inner">
+              <div className="rounded-2xl border border-brand/30 bg-gradient-to-r from-brand-soft to-brand-soft p-4 text-xs text-brand-strong flex items-start gap-3 shadow-inner">
                 <span className="text-xl shrink-0 mt-0.5">🧬</span>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <strong className="text-teal-300 uppercase tracking-wider text-[11px] font-bold">
+                    <strong className="text-brand uppercase tracking-wider text-[11px] font-bold">
                       Bioactive Enzyme Activation Protocol:
                     </strong>
-                    <span className="text-[10px] text-teal-400/80 font-mono">
+                    <span className="text-[10px] text-brand font-mono">
                       {enzymeReaction.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <p className="text-stone-300 leading-relaxed text-[11.5px]">
+                  <p className="text-soft leading-relaxed text-[11.5px]">
                     {preparation.enzymeBioactiveTip}
                   </p>
                 </div>
               </div>
 
               {/* Culinary View Navigation Tabs */}
-              <div className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-3">
+              <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
                 <button
                   type="button"
                   onClick={() => setCulinaryViewTab("phases")}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     culinaryViewTab === "phases"
-                      ? "bg-emerald-500 text-stone-950 shadow-md shadow-emerald-500/20 font-bold"
-                      : "bg-white/5 text-stone-400 hover:bg-white/10 hover:text-stone-200"
+                      ? "bg-brand text-brand-foreground shadow-md font-bold"
+                      : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 hover:text-soft"
                   }`}
                 >
                   <span>🍳</span>
@@ -1535,8 +1535,8 @@ export default function DynamicFormulatorPage() {
                   onClick={() => setCulinaryViewTab("tools")}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     culinaryViewTab === "tools"
-                      ? "bg-emerald-500 text-stone-950 shadow-md shadow-emerald-500/20 font-bold"
-                      : "bg-white/5 text-stone-400 hover:bg-white/10 hover:text-stone-200"
+                      ? "bg-brand text-brand-foreground shadow-md font-bold"
+                      : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 hover:text-soft"
                   }`}
                 >
                   <span>🥘</span>
@@ -1548,8 +1548,8 @@ export default function DynamicFormulatorPage() {
                   onClick={() => setCulinaryViewTab("plating")}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     culinaryViewTab === "plating"
-                      ? "bg-emerald-500 text-stone-950 shadow-md shadow-emerald-500/20 font-bold"
-                      : "bg-white/5 text-stone-400 hover:bg-white/10 hover:text-stone-200"
+                      ? "bg-brand text-brand-foreground shadow-md font-bold"
+                      : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 hover:text-soft"
                   }`}
                 >
                   <span>🍽️</span>
@@ -1561,8 +1561,8 @@ export default function DynamicFormulatorPage() {
                   onClick={() => setCulinaryViewTab("preservation")}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     culinaryViewTab === "preservation"
-                      ? "bg-emerald-500 text-stone-950 shadow-md shadow-emerald-500/20 font-bold"
-                      : "bg-white/5 text-stone-400 hover:bg-white/10 hover:text-stone-200"
+                      ? "bg-brand text-brand-foreground shadow-md font-bold"
+                      : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 hover:text-soft"
                   }`}
                 >
                   <span>🧊</span>
@@ -1584,15 +1584,15 @@ export default function DynamicFormulatorPage() {
                           onClick={() => setActiveCulinaryPhase(phase.phaseNumber)}
                           className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden ${
                             isActive
-                              ? "border-emerald-500/60 bg-emerald-950/30 text-white shadow-lg shadow-emerald-950/50"
-                              : "border-white/5 bg-black/20 text-stone-400 hover:border-white/20 hover:bg-white/5 hover:text-stone-300"
+                              ? "border-brand/60 bg-brand-soft text-foreground shadow-panel"
+                              : "border-border bg-sunken/50 text-muted-foreground hover:border-border-strong hover:bg-foreground/5 hover:text-soft"
                           }`}
                         >
-                          <div className="flex items-center justify-between text-[10px] font-mono text-stone-400 mb-1">
-                            <span className={isActive ? "text-emerald-400 font-bold" : ""}>PHASE 0{phase.phaseNumber}</span>
+                          <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground mb-1">
+                            <span className={isActive ? "text-brand font-bold" : ""}>PHASE 0{phase.phaseNumber}</span>
                             <span>⏱️ {phase.durationMinutes}m</span>
                           </div>
-                          <div className="font-bold text-xs line-clamp-1 text-white">
+                          <div className="font-bold text-xs line-clamp-1 text-foreground">
                             {phase.phaseNumber === 1
                               ? "Mise en Place"
                               : phase.phaseNumber === 2
@@ -1601,11 +1601,11 @@ export default function DynamicFormulatorPage() {
                               ? "Plating Assembly"
                               : "Preservation"}
                           </div>
-                          <div className="text-[10px] font-serif text-stone-400 line-clamp-1 mt-0.5">
+                          <div className="text-[10px] font-serif text-muted-foreground line-clamp-1 mt-0.5">
                             {phase.phaseNameAmharic.replace(/^ምዕራፍ \d+፡ /, "")}
                           </div>
                           {isActive && (
-                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand to-brand" />
                           )}
                         </button>
                       );
@@ -1619,36 +1619,36 @@ export default function DynamicFormulatorPage() {
                       preparation.phases[0];
 
                     return (
-                      <div className="space-y-4 rounded-2xl border border-white/10 bg-black/30 p-5">
+                      <div className="space-y-4 rounded-2xl border border-border bg-sunken/50 p-5">
                         {/* Phase Header & Badges */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3.5">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3.5">
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-stone-950 text-[10px] font-bold">
+                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-brand-foreground text-[10px] font-bold">
                                 {currentPhase.phaseNumber}
                               </span>
-                              <h4 className="text-sm font-bold text-white">
+                              <h4 className="text-sm font-bold text-foreground">
                                 {currentPhase.phaseNameEn}
                               </h4>
                             </div>
                             {showAmharicSteps && (
-                              <p className="text-xs font-serif text-emerald-400 mt-0.5 ml-7">
+                              <p className="text-xs font-serif text-brand mt-0.5 ml-7">
                                 {currentPhase.phaseNameAmharic}
                               </p>
                             )}
-                            <p className="text-xs text-stone-300 mt-1 ml-7 leading-relaxed">
+                            <p className="text-xs text-soft mt-1 ml-7 leading-relaxed">
                               {currentPhase.phasePurpose}
                             </p>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-2.5 py-1 text-[11px] font-medium text-amber-300">
+                            <span className="rounded-xl border border-gold/30 bg-gold-soft px-2.5 py-1 text-[11px] font-medium text-gold-strong">
                               🔥 {currentPhase.heatLevel}
                             </span>
-                            <span className="rounded-xl border border-teal-500/30 bg-teal-950/20 px-2.5 py-1 text-[11px] font-medium text-teal-300">
+                            <span className="rounded-xl border border-brand/30 bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand-strong">
                               🥘 {currentPhase.vessel.split(" or ")[0]}
                             </span>
-                            <span className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-stone-300">
+                            <span className="rounded-xl border border-border bg-foreground/5 px-2.5 py-1 text-[11px] font-mono text-soft">
                               ⏱️ {currentPhase.durationMinutes} min
                             </span>
                           </div>
@@ -1656,13 +1656,13 @@ export default function DynamicFormulatorPage() {
 
                         {/* Biochemical mechanism callout */}
                         {currentPhase.biochemicalTip && (
-                          <div className="rounded-xl border border-teal-500/20 bg-teal-950/10 p-3 text-xs text-teal-200 flex items-start gap-2.5">
+                          <div className="rounded-xl border border-brand/20 bg-brand-soft/70 p-3 text-xs text-brand-strong flex items-start gap-2.5">
                             <span className="text-base shrink-0">🔬</span>
                             <div>
-                              <strong className="block text-[10px] uppercase tracking-wider text-teal-300">
+                              <strong className="block text-[10px] uppercase tracking-wider text-brand">
                                 Biochemical & Bioavailability Rationale:
                               </strong>
-                              <span className="text-[11.5px] text-stone-300 leading-relaxed">
+                              <span className="text-[11.5px] text-soft leading-relaxed">
                                 {currentPhase.biochemicalTip}
                               </span>
                             </div>
@@ -1670,14 +1670,14 @@ export default function DynamicFormulatorPage() {
                         )}
 
                         {/* Interactive Culinary Checklist */}
-                        <div className="rounded-xl border border-white/5 bg-stone-900/50 p-3.5 space-y-2">
+                        <div className="rounded-xl border border-border bg-card/50 p-3.5 space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-stone-300 flex items-center gap-1.5">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-soft flex items-center gap-1.5">
                               <span>✅</span>
                               <span>Chef Checklist & Safety Gates</span>
-                              <span className="text-[10px] text-stone-500 font-serif">(የደረጃው የቁጥጥር ዝርዝር)</span>
+                              <span className="text-[10px] text-subtle font-serif">(የደረጃው የቁጥጥር ዝርዝር)</span>
                             </span>
-                            <span className="text-[10px] font-mono text-stone-400">
+                            <span className="text-[10px] font-mono text-muted-foreground">
                               {currentPhase.checklistItems.filter((_, idx) => checkedChecklistItems[`${currentPhase.phaseNumber}_${idx}`]).length} / {currentPhase.checklistItems.length} Done
                             </span>
                           </div>
@@ -1694,16 +1694,16 @@ export default function DynamicFormulatorPage() {
                                   onClick={() => toggleChecklistItem(itemKey)}
                                   className={`w-full text-left p-2 rounded-xl text-xs flex items-start gap-2.5 transition-all ${
                                     isChecked
-                                      ? "bg-emerald-950/30 text-emerald-200 border border-emerald-500/30"
-                                      : "bg-black/20 text-stone-300 border border-white/5 hover:border-white/10"
+                                      ? "bg-brand-soft text-brand-strong border border-brand/30"
+                                      : "bg-sunken/50 text-soft border border-border hover:border-border"
                                   }`}
                                 >
                                   <span className={`flex h-4 w-4 shrink-0 mt-0.5 items-center justify-center rounded border ${
-                                    isChecked ? "bg-emerald-500 border-emerald-500 text-stone-950 text-[10px] font-bold" : "border-stone-500 bg-transparent"
+                                    isChecked ? "bg-brand border-brand text-brand-foreground text-[10px] font-bold" : "border-border-strong bg-transparent"
                                   }`}>
                                     {isChecked && "✓"}
                                   </span>
-                                  <span className={`text-[11.5px] leading-relaxed ${isChecked ? "line-through text-stone-400" : ""}`}>
+                                  <span className={`text-[11.5px] leading-relaxed ${isChecked ? "line-through text-muted-foreground" : ""}`}>
                                     {item}
                                   </span>
                                 </button>
@@ -1714,7 +1714,7 @@ export default function DynamicFormulatorPage() {
 
                         {/* Step-by-Step Instructions */}
                         <div className="space-y-3 pt-1">
-                          <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                          <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                             Detailed Phase Instructions ({currentPhase.stepsEn.length} Steps)
                           </h5>
 
@@ -1722,17 +1722,17 @@ export default function DynamicFormulatorPage() {
                             {currentPhase.stepsEn.map((stepEn, idx) => (
                               <li
                                 key={idx}
-                                className="rounded-2xl border border-white/5 bg-stone-900/40 p-3.5 flex items-start gap-3 hover:border-white/15 transition-all"
+                                className="rounded-2xl border border-border bg-card/40 p-3.5 flex items-start gap-3 hover:border-border transition-all"
                               >
-                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 font-mono text-xs font-bold text-emerald-300">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/20 font-mono text-xs font-bold text-brand-strong">
                                   {idx + 1}
                                 </span>
                                 <div className="space-y-1 flex-1">
-                                  <p className="text-stone-200 leading-relaxed text-xs">
+                                  <p className="text-soft leading-relaxed text-xs">
                                     {stepEn}
                                   </p>
                                   {showAmharicSteps && currentPhase.stepsAmharic[idx] && (
-                                    <p className="text-stone-400 font-serif leading-relaxed text-[11px] pt-0.5 border-t border-white/5">
+                                    <p className="text-muted-foreground font-serif leading-relaxed text-[11px] pt-0.5 border-t border-border">
                                       {currentPhase.stepsAmharic[idx]}
                                     </p>
                                   )}
@@ -1743,18 +1743,18 @@ export default function DynamicFormulatorPage() {
                         </div>
 
                         {/* Phase Navigation Buttons */}
-                        <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                        <div className="flex items-center justify-between pt-2 border-t border-border">
                           <button
                             type="button"
                             disabled={currentPhase.phaseNumber === 1}
                             onClick={() => setActiveCulinaryPhase((p) => Math.max(1, p - 1))}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 text-stone-300 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1.5"
+                            className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-border bg-foreground/5 text-soft hover:bg-foreground/10 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1.5"
                           >
                             <span>←</span>
                             <span>Previous Phase</span>
                           </button>
 
-                          <span className="text-[10px] font-mono text-stone-400">
+                          <span className="text-[10px] font-mono text-muted-foreground">
                             Phase {currentPhase.phaseNumber} of {preparation.phases.length}
                           </span>
 
@@ -1762,7 +1762,7 @@ export default function DynamicFormulatorPage() {
                             type="button"
                             disabled={currentPhase.phaseNumber === preparation.phases.length}
                             onClick={() => setActiveCulinaryPhase((p) => Math.min(preparation.phases.length, p + 1))}
-                            className="text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1.5 font-bold"
+                            className="text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-brand/30 bg-brand/20 text-brand-strong hover:bg-brand/30 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1.5 font-bold"
                           >
                             <span>Next Phase</span>
                             <span>→</span>
@@ -1778,43 +1778,43 @@ export default function DynamicFormulatorPage() {
               {culinaryViewTab === "tools" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Primary Cooking Vessel */}
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-emerald-400">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-brand">
                       <span className="text-lg">🥘</span>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Primary Cooking Vessel</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Primary Cooking Vessel</h4>
                     </div>
-                    <p className="text-xs font-semibold text-stone-200">{preparation.toolSet.vessel}</p>
+                    <p className="text-xs font-semibold text-soft">{preparation.toolSet.vessel}</p>
                     {showAmharicSteps && (
-                      <p className="text-xs font-serif text-stone-400">{preparation.toolSet.vesselAmharic}</p>
+                      <p className="text-xs font-serif text-muted-foreground">{preparation.toolSet.vesselAmharic}</p>
                     )}
                   </div>
 
                   {/* Heat Source */}
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-amber-400">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-gold">
                       <span className="text-lg">🔥</span>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Heat Source & Calibration</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Heat Source & Calibration</h4>
                     </div>
-                    <p className="text-xs font-semibold text-stone-200">{preparation.toolSet.heatSource}</p>
+                    <p className="text-xs font-semibold text-soft">{preparation.toolSet.heatSource}</p>
                     {showAmharicSteps && (
-                      <p className="text-xs font-serif text-stone-400">{preparation.toolSet.heatSourceAmharic}</p>
+                      <p className="text-xs font-serif text-muted-foreground">{preparation.toolSet.heatSourceAmharic}</p>
                     )}
                   </div>
 
                   {/* Utensils */}
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-teal-400">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-brand">
                       <span className="text-lg">🥄</span>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Essential Prep Utensils</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Essential Prep Utensils</h4>
                     </div>
-                    <ul className="space-y-1.5 text-xs text-stone-300">
+                    <ul className="space-y-1.5 text-xs text-soft">
                       {preparation.toolSet.utensils.map((u, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-teal-400">•</span>
+                          <span className="text-brand">•</span>
                           <div>
                             <span>{u}</span>
                             {showAmharicSteps && preparation.toolSet.utensilsAmharic[i] && (
-                              <span className="text-[11px] font-serif text-stone-400 block">
+                              <span className="text-[11px] font-serif text-muted-foreground block">
                                 {preparation.toolSet.utensilsAmharic[i]}
                               </span>
                             )}
@@ -1825,14 +1825,14 @@ export default function DynamicFormulatorPage() {
                   </div>
 
                   {/* Storage Vessel */}
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sky-400">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-info">
                       <span className="text-lg">🏺</span>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Optimal Storage Vessel</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Optimal Storage Vessel</h4>
                     </div>
-                    <p className="text-xs font-semibold text-stone-200">{preparation.toolSet.storageVessel}</p>
+                    <p className="text-xs font-semibold text-soft">{preparation.toolSet.storageVessel}</p>
                     {showAmharicSteps && (
-                      <p className="text-xs font-serif text-stone-400">{preparation.toolSet.storageVesselAmharic}</p>
+                      <p className="text-xs font-serif text-muted-foreground">{preparation.toolSet.storageVesselAmharic}</p>
                     )}
                   </div>
                 </div>
@@ -1841,24 +1841,24 @@ export default function DynamicFormulatorPage() {
               {/* TAB 3: PLATING ARCHITECTURE & CLOCK-FACE */}
               {culinaryViewTab === "plating" && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-5 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
                       <div>
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                           <span>🍽️</span>
                           <span>Plating Aesthetic & Presentation Geometry</span>
                         </h4>
-                        <p className="text-xs text-stone-300 mt-1">
+                        <p className="text-xs text-soft mt-1">
                           {preparation.platingArchitecture.layoutDescriptionEn}
                         </p>
                         {showAmharicSteps && (
-                          <p className="text-xs font-serif text-stone-400 mt-0.5">
+                          <p className="text-xs font-serif text-muted-foreground mt-0.5">
                             {preparation.platingArchitecture.layoutDescriptionAmharic}
                           </p>
                         )}
                       </div>
 
-                      <span className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3 py-1 text-xs font-mono text-emerald-300">
+                      <span className="rounded-xl border border-brand/30 bg-brand-soft px-3 py-1 text-xs font-mono text-brand-strong">
                         Serving Temp: {preparation.platingArchitecture.servingTemperature}
                       </span>
                     </div>
@@ -1866,45 +1866,45 @@ export default function DynamicFormulatorPage() {
                     {/* Centerpiece & Perimeter Layout */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Centerpiece Card */}
-                      <div className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                      <div className="rounded-xl border border-gold/30 bg-gold-soft/70 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-gold">
                           🎯 Visual & Flavor Centerpiece (የማዕዱ ማዕከል)
                         </div>
-                        <p className="text-xs font-bold text-white">
+                        <p className="text-xs font-bold text-foreground">
                           {preparation.platingArchitecture.centerpiece}
                         </p>
                         {showAmharicSteps && (
-                          <p className="text-xs font-serif text-amber-200/80">
+                          <p className="text-xs font-serif text-gold-strong">
                             {preparation.platingArchitecture.centerpieceAmharic}
                           </p>
                         )}
                       </div>
 
                       {/* Edible Utensil Card */}
-                      <div className="rounded-xl border border-teal-500/30 bg-teal-950/15 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
+                      <div className="rounded-xl border border-brand/30 bg-brand-soft/70 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-brand">
                           🥖 Probiotic Edible Utensil (የእንጀራ አጠቃቀም)
                         </div>
-                        <p className="text-xs text-stone-200 leading-relaxed">
+                        <p className="text-xs text-soft leading-relaxed">
                           {preparation.platingArchitecture.edibleUtensilNote}
                         </p>
                       </div>
                     </div>
 
                     {/* Perimeter Clock-Face Layout */}
-                    <div className="rounded-xl border border-white/5 bg-stone-900/50 p-4 space-y-2.5">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-stone-400 flex items-center justify-between">
+                    <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2.5">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
                         <span>🕒 Radial Clock-Face Arrangement</span>
-                        <span className="text-[9px] font-mono text-emerald-400">Harmonized Chromatic Contrast</span>
+                        <span className="text-[9px] font-mono text-brand">Harmonized Chromatic Contrast</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {preparation.platingArchitecture.perimeterArrangement.map((item, i) => (
                           <div
                             key={i}
-                            className="p-2.5 rounded-xl border border-white/5 bg-black/20 text-xs text-stone-300 flex items-center gap-2"
+                            className="p-2.5 rounded-xl border border-border bg-sunken/50 text-xs text-soft flex items-center gap-2"
                           >
-                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] font-mono font-bold text-emerald-300">
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20 text-[10px] font-mono font-bold text-brand-strong">
                               {i + 1}
                             </span>
                             <span className="leading-snug">{item}</span>
@@ -1915,20 +1915,20 @@ export default function DynamicFormulatorPage() {
 
                     {/* Cultural Etiquette & Color Harmony */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                      <div className="p-3 rounded-xl border border-white/5 bg-black/20 text-stone-300">
-                        <strong className="block text-[10px] uppercase tracking-wider text-emerald-400 mb-1">
+                      <div className="p-3 rounded-xl border border-border bg-sunken/50 text-soft">
+                        <strong className="block text-[10px] uppercase tracking-wider text-brand mb-1">
                           🎨 Color Harmony & Cephalic Activation:
                         </strong>
-                        <p className="text-[11.5px] leading-relaxed text-stone-300">
+                        <p className="text-[11.5px] leading-relaxed text-soft">
                           {preparation.platingArchitecture.colorHarmonyNote}
                         </p>
                       </div>
 
-                      <div className="p-3 rounded-xl border border-white/5 bg-black/20 text-stone-300">
-                        <strong className="block text-[10px] uppercase tracking-wider text-amber-400 mb-1">
+                      <div className="p-3 rounded-xl border border-border bg-sunken/50 text-soft">
+                        <strong className="block text-[10px] uppercase tracking-wider text-gold mb-1">
                           🤝 Cultural Ritual & Mindful Pacing:
                         </strong>
-                        <p className="text-[11.5px] leading-relaxed text-stone-300">
+                        <p className="text-[11.5px] leading-relaxed text-soft">
                           {preparation.platingArchitecture.culturalEtiquetteNote}
                         </p>
                       </div>
@@ -1937,13 +1937,13 @@ export default function DynamicFormulatorPage() {
                     {/* Garnishes */}
                     {preparation.platingArchitecture.garnishes.length > 0 && (
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                           Finishing Garnishes:
                         </span>
                         {preparation.platingArchitecture.garnishes.map((g, i) => (
                           <span
                             key={i}
-                            className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] text-stone-200"
+                            className="rounded-full border border-border bg-foreground/5 px-2.5 py-0.5 text-[11px] text-soft"
                           >
                             🌿 {g}
                           </span>
@@ -1957,19 +1957,19 @@ export default function DynamicFormulatorPage() {
               {/* TAB 4: PRESERVATION, REHEATING & BULK PREP */}
               {culinaryViewTab === "preservation" && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-5 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
                       <div>
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                           <span>🧊</span>
                           <span>Preservation, Reheating & Nutrient Retention Protocol</span>
                         </h4>
-                        <p className="text-xs text-stone-400 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           Safeguard heat-sensitive vitamins, prevent lipid rancidity, and ensure food safety
                         </p>
                       </div>
 
-                      <span className="rounded-xl border border-sky-500/30 bg-sky-950/20 px-3 py-1 text-xs font-bold text-sky-300">
+                      <span className="rounded-xl border border-info/30 bg-info-soft px-3 py-1 text-xs font-bold text-info-strong">
                         Refrigerate: Max {preparation.preservationGuide.maxRefrigeratedDays} Days
                       </span>
                     </div>
@@ -1977,32 +1977,32 @@ export default function DynamicFormulatorPage() {
                     {/* Refrigeration & Reheating Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Refrigeration */}
-                      <div className="rounded-xl border border-white/5 bg-stone-900/50 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-info flex items-center gap-1.5">
                           <span>❄️</span>
                           <span>Refrigeration Protocol (2–4°C)</span>
                         </div>
-                        <p className="text-xs text-stone-200 leading-relaxed">
+                        <p className="text-xs text-soft leading-relaxed">
                           {preparation.preservationGuide.refrigerationInstructions}
                         </p>
                         {showAmharicSteps && (
-                          <p className="text-xs font-serif text-stone-400 leading-relaxed border-t border-white/5 pt-1.5">
+                          <p className="text-xs font-serif text-muted-foreground leading-relaxed border-t border-border pt-1.5">
                             {preparation.preservationGuide.refrigerationInstructionsAmharic}
                           </p>
                         )}
                       </div>
 
                       {/* Reheating */}
-                      <div className="rounded-xl border border-white/5 bg-stone-900/50 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
                           <span>♨️</span>
                           <span>Gentle Reheating Method (Stovetop)</span>
                         </div>
-                        <p className="text-xs text-stone-200 leading-relaxed">
+                        <p className="text-xs text-soft leading-relaxed">
                           {preparation.preservationGuide.reheatingMethod}
                         </p>
                         {showAmharicSteps && (
-                          <p className="text-xs font-serif text-stone-400 leading-relaxed border-t border-white/5 pt-1.5">
+                          <p className="text-xs font-serif text-muted-foreground leading-relaxed border-t border-border pt-1.5">
                             {preparation.preservationGuide.reheatingMethodAmharic}
                           </p>
                         )}
@@ -2012,41 +2012,41 @@ export default function DynamicFormulatorPage() {
                     {/* Batch Cooking & Bulk Monthly Storage */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Batch Cooking */}
-                      <div className="rounded-xl border border-white/5 bg-stone-900/50 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-brand flex items-center gap-1.5">
                           <span>🍱</span>
                           <span>Batch Cooking & Freezing (30 Days)</span>
                         </div>
-                        <p className="text-xs text-stone-200 leading-relaxed">
+                        <p className="text-xs text-soft leading-relaxed">
                           {preparation.preservationGuide.batchCookingTip}
                         </p>
                         {showAmharicSteps && (
-                          <p className="text-xs font-serif text-stone-400 leading-relaxed border-t border-white/5 pt-1.5">
+                          <p className="text-xs font-serif text-muted-foreground leading-relaxed border-t border-border pt-1.5">
                             {preparation.preservationGuide.batchCookingTipAmharic}
                           </p>
                         )}
                       </div>
 
                       {/* Bulk Monthly Storage */}
-                      <div className="rounded-xl border border-white/5 bg-stone-900/50 p-4 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-brand flex items-center gap-1.5">
                           <span>🌾</span>
                           <span>Raw Grain & Dry Spice Monthly Storage</span>
                         </div>
-                        <p className="text-xs text-stone-200 leading-relaxed">
+                        <p className="text-xs text-soft leading-relaxed">
                           {preparation.preservationGuide.monthlyBulkStorageTip}
                         </p>
                       </div>
                     </div>
 
                     {/* Nutrient Retention Warning */}
-                    <div className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-3.5 text-xs text-rose-200 flex items-start gap-2.5">
+                    <div className="rounded-xl border border-danger/30 bg-danger-soft p-3.5 text-xs text-danger-strong flex items-start gap-2.5">
                       <span className="text-base shrink-0 mt-0.5">⚠️</span>
                       <div>
-                        <strong className="block text-rose-300 uppercase tracking-wider text-[10px] font-bold">
+                        <strong className="block text-danger uppercase tracking-wider text-[10px] font-bold">
                           Critical Nutrient Retention Advisory:
                         </strong>
-                        <span className="text-[11.5px] leading-relaxed text-stone-300">
+                        <span className="text-[11.5px] leading-relaxed text-soft">
                           {preparation.preservationGuide.nutrientRetentionWarning}
                         </span>
                       </div>
@@ -2057,18 +2057,18 @@ export default function DynamicFormulatorPage() {
             </div>
 
             {/* CLINICAL & METABOLIC RATIONALE */}
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-stone-900/80 via-emerald-950/20 to-stone-900/80 p-6 backdrop-blur-xl shadow-xl">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+            <div className="rounded-3xl border border-border bg-gradient-to-r from-card/80 via-brand-soft to-card/80 p-6  shadow-panel">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-brand mb-2">
                 Clinical Impact & Metabolic Synergy (የጤና ጠቀሜታ)
               </h3>
-              <h4 className="text-base font-bold text-white">{clinicalImpact.headline}</h4>
-              <p className="mt-2 text-xs text-stone-300 leading-relaxed">
+              <h4 className="text-base font-bold text-foreground">{clinicalImpact.headline}</h4>
+              <p className="mt-2 text-xs text-soft leading-relaxed">
                 {clinicalImpact.biochemicalMechanism}
               </p>
-              <div className="mt-3 p-3 rounded-2xl border border-white/5 bg-black/40 text-xs font-mono text-emerald-300">
+              <div className="mt-3 p-3 rounded-2xl border border-border bg-sunken/80 text-xs font-mono text-brand">
                 {clinicalImpact.metabolicEffect}
               </div>
-              <blockquote className="mt-3 text-xs italic text-amber-300 font-serif border-l-2 border-amber-400/50 pl-3 py-0.5">
+              <blockquote className="mt-3 text-xs italic text-gold font-serif border-l-2 border-gold/50 pl-3 py-0.5">
                 {clinicalImpact.culturalWisdom}
               </blockquote>
             </div>

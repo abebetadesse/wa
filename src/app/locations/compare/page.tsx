@@ -68,21 +68,21 @@ export default async function CompareLocationsPage({
   ] as const;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-10 text-white">
+    <main className="min-h-screen bg-background px-4 py-10 text-foreground">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-300">Location comparison</p>
-            <h1 className="mt-2 text-3xl font-semibold text-white">Selected Ethiopian locations</h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-brand">Location comparison</p>
+            <h1 className="mt-2 text-3xl font-semibold text-foreground">Selected Ethiopian locations</h1>
           </div>
           <div className="flex items-center gap-3">
             <a
               href={withBasePath(`/api/locations/export?ids=${encodeURIComponent(ids.join(","))}`)}
-              className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-emerald-200 transition hover:border-emerald-400 hover:bg-emerald-500/20"
+              className="rounded-full border border-brand/40 bg-brand/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-brand-strong transition hover:border-brand hover:bg-brand/20"
             >
               Export CSV
             </a>
-            <Link href="/locations" className="text-sm text-cyan-300 hover:text-cyan-200">
+            <Link href="/locations" className="text-sm text-info hover:text-info-strong">
               ← Back to registry
             </Link>
           </div>
@@ -95,32 +95,32 @@ export default async function CompareLocationsPage({
           <InsightCard label="Avg. data completeness" value={`${averageCompleteness}%`} note="Across selected locations" />
         </div>
 
-        <div className="mb-8 rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
+        <div className="mb-8 rounded-2xl border border-border bg-card/80 p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-white">Top differences</h2>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-slate-400">What stands out</span>
+            <h2 className="text-lg font-semibold text-foreground">Top differences</h2>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">What stands out</span>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             {topDifferences.map((item) => (
-              <div key={item.label} className="rounded-xl border border-slate-700 bg-slate-950/70 p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
-                <p className="mt-2 text-2xl font-bold text-white">{item.value}</p>
-                <p className="mt-1 text-xs text-slate-300">{item.note}</p>
+              <div key={item.label} className="rounded-xl border border-border bg-background/70 p-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{item.label}</p>
+                <p className="mt-2 text-2xl font-bold text-foreground">{item.value}</p>
+                <p className="mt-1 text-xs text-soft">{item.note}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mb-8 overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/80">
-          <table className="min-w-full border-collapse text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/80 text-xs uppercase tracking-[0.18em] text-slate-400">
+        <div className="mb-8 overflow-x-auto rounded-2xl border border-border bg-card/80">
+          <table className="min-w-full border-collapse text-left text-sm text-soft">
+            <thead className="bg-background/80 text-xs uppercase tracking-[0.18em] text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Location</th>
                 {selected.map((location) => (
                   <th key={location.id} className="px-4 py-3 whitespace-nowrap">
                     <div>
-                      <div className="font-semibold text-white">{location.name}</div>
-                      <div className="text-[10px] text-cyan-300">{location.region}</div>
+                      <div className="font-semibold text-foreground">{location.name}</div>
+                      <div className="text-[10px] text-info">{location.region}</div>
                     </div>
                   </th>
                 ))}
@@ -128,8 +128,8 @@ export default async function CompareLocationsPage({
             </thead>
             <tbody>
               {columns.map((column) => (
-                <tr key={column.key} className="border-t border-slate-800">
-                  <td className="px-4 py-3 font-medium text-white">{column.label}</td>
+                <tr key={column.key} className="border-t border-border">
+                  <td className="px-4 py-3 font-medium text-foreground">{column.label}</td>
                   {selected.map((location) => {
                     const value =
                       column.key === "region"
@@ -146,7 +146,7 @@ export default async function CompareLocationsPage({
                                   ? location.systemsProfile.foodAndNutrition.stapleFoods.join(", ")
                                   : location.systemsProfile.culturalAndHeritage.traditionalMedicines.join(", ");
 
-                    return <td key={`${location.id}-${column.key}`} className="px-4 py-3 align-top text-slate-300">{value}</td>;
+                    return <td key={`${location.id}-${column.key}`} className="px-4 py-3 align-top text-soft">{value}</td>;
                   })}
                 </tr>
               ))}
@@ -156,10 +156,10 @@ export default async function CompareLocationsPage({
 
         <div className="grid gap-4 md:grid-cols-3">
           {selected.map((location) => (
-            <div key={location.id} className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
-              <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">{location.region}</p>
-              <h2 className="mt-2 text-xl font-bold text-white">{location.name}</h2>
-              <div className="mt-4 space-y-2 text-sm text-slate-300">
+            <div key={location.id} className="rounded-2xl border border-border bg-card/80 p-5">
+              <p className="text-xs uppercase tracking-[0.18em] text-info">{location.region}</p>
+              <h2 className="mt-2 text-xl font-bold text-foreground">{location.name}</h2>
+              <div className="mt-4 space-y-2 text-sm text-soft">
                 <p>Altitude: {location.altitudeMeters} m</p>
                 <p>Population: {location.wellbeingProfile.demographics.estimatedPopulation.toLocaleString()}</p>
                 <p>Urban share: {location.wellbeingProfile.demographics.urbanPopulationPct}%</p>
@@ -167,7 +167,7 @@ export default async function CompareLocationsPage({
                 <p>Agro-zone: {location.agroZone}</p>
               </div>
               <div className="mt-4 flex gap-2">
-                <Link href={`/locations/${location.id}`} className="rounded-full border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-cyan-200">
+                <Link href={`/locations/${location.id}`} className="rounded-full border border-info/40 bg-info/10 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-info-strong">
                   Full profile
                 </Link>
               </div>
@@ -181,10 +181,10 @@ export default async function CompareLocationsPage({
 
 function InsightCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-white">{value}</p>
-      <p className="mt-1 text-xs text-slate-300">{note}</p>
+    <div className="rounded-2xl border border-border bg-card/80 p-4">
+      <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-foreground">{value}</p>
+      <p className="mt-1 text-xs text-soft">{note}</p>
     </div>
   );
 }

@@ -87,11 +87,11 @@ const TONGUE_ZONES = [
 ];
 
 const COAT_TYPES = [
-  { id: "thin-white", label: "Thin White", am: "ቀጭን ነጭ", note: "A visual description found in some traditional references; not a health baseline or diagnostic result.", color: "bg-stone-100/10 border-stone-400/40 text-stone-200" },
-  { id: "thick-white", label: "Thick White", am: "ወፍራም ነጭ", note: "Some traditions attach symbolism to this appearance. It cannot establish a digestive or other condition.", color: "bg-stone-300/10 border-stone-300/40 text-stone-200" },
-  { id: "yellow", label: "Yellow Coat", am: "ቢጫ ሽፋን", note: "A colour description only; it cannot show inflammation, infection, or organ function.", color: "bg-yellow-500/10 border-yellow-500/40 text-yellow-200" },
-  { id: "grey-black", label: "Grey / Black", am: "ግራጫ / ጥቁር", note: "A visible change with many possible causes. Seek a qualified clinician for persistent or concerning changes.", color: "bg-stone-700/30 border-stone-500/40 text-stone-300" },
-  { id: "none", label: "No Visible Coat", am: "ሽፋን የለም", note: "A visual description only; it cannot establish deficiency, dehydration, or chronic fatigue.", color: "bg-rose-500/5 border-rose-500/30 text-rose-200" },
+  { id: "thin-white", label: "Thin White", am: "ቀጭን ነጭ", note: "A visual description found in some traditional references; not a health baseline or diagnostic result.", color: "bg-foreground/10 border-border-strong text-soft" },
+  { id: "thick-white", label: "Thick White", am: "ወፍራም ነጭ", note: "Some traditions attach symbolism to this appearance. It cannot establish a digestive or other condition.", color: "bg-muted-foreground/10 border-border-strong text-soft" },
+  { id: "yellow", label: "Yellow Coat", am: "ቢጫ ሽፋን", note: "A colour description only; it cannot show inflammation, infection, or organ function.", color: "bg-gold/10 border-gold/40 text-gold-strong" },
+  { id: "grey-black", label: "Grey / Black", am: "ግራጫ / ጥቁር", note: "A visible change with many possible causes. Seek a qualified clinician for persistent or concerning changes.", color: "bg-sunken/30 border-border-strong text-soft" },
+  { id: "none", label: "No Visible Coat", am: "ሽፋን የለም", note: "A visual description only; it cannot establish deficiency, dehydration, or chronic fatigue.", color: "bg-danger/5 border-danger/30 text-danger-strong" },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -103,11 +103,11 @@ export default function TongueReadingPage() {
   const zone = TONGUE_ZONES.find((z) => z.id === activeZone) ?? TONGUE_ZONES[0];
 
   const colorMap: Record<string, { border: string; bg: string; text: string; badge: string }> = {
-    rose:    { border: "border-rose-500/40",    bg: "bg-rose-500/10",    text: "text-rose-200",    badge: "bg-rose-500/20 border-rose-400/40 text-rose-200" },
-    sky:     { border: "border-sky-500/40",     bg: "bg-sky-500/10",     text: "text-sky-200",     badge: "bg-sky-500/20 border-sky-400/40 text-sky-200" },
-    amber:   { border: "border-amber-500/40",   bg: "bg-amber-500/10",   text: "text-amber-200",   badge: "bg-amber-500/20 border-amber-400/40 text-amber-200" },
-    emerald: { border: "border-emerald-500/40", bg: "bg-emerald-500/10", text: "text-emerald-200", badge: "bg-emerald-500/20 border-emerald-400/40 text-emerald-200" },
-    indigo:  { border: "border-indigo-500/40",  bg: "bg-indigo-500/10",  text: "text-indigo-200",  badge: "bg-indigo-500/20 border-indigo-400/40 text-indigo-200" },
+    rose:    { border: "border-danger/40",    bg: "bg-danger/10",    text: "text-danger-strong",    badge: "bg-danger/20 border-danger/40 text-danger-strong" },
+    sky:     { border: "border-info/40",     bg: "bg-info/10",     text: "text-info-strong",     badge: "bg-info/20 border-info/40 text-info-strong" },
+    amber:   { border: "border-gold/40",   bg: "bg-gold/10",   text: "text-gold-strong",   badge: "bg-gold/20 border-gold/40 text-gold-strong" },
+    emerald: { border: "border-brand/40", bg: "bg-brand/10", text: "text-brand-strong", badge: "bg-brand/20 border-brand/40 text-brand-strong" },
+    indigo:  { border: "border-info/40",  bg: "bg-info/10",  text: "text-info-strong",  badge: "bg-info/20 border-info/40 text-info-strong" },
   };
   const c = colorMap[zone.color] ?? colorMap.amber;
 
@@ -116,33 +116,33 @@ export default function TongueReadingPage() {
 
       {/* ── Hero ──────────────────────────────────────────────────── */}
       <header>
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 mb-2">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold mb-2">
           <Sparkles className="size-3.5" aria-hidden="true" />
           <span>Body-Sign Reading · Tongue</span>
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
           Tongue Reading{" "}
-          <span lang="am" className="block text-2xl font-semibold text-amber-300 sm:inline sm:text-3xl">
+          <span lang="am" className="block text-2xl font-semibold text-gold sm:inline sm:text-3xl">
             የምላስ ንባብ
           </span>
         </h1>
-        <p className="mt-3 max-w-3xl text-sm text-stone-400 leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm text-muted-foreground leading-relaxed">
           This educational guide documents symbolic associations found in traditional body-sign systems.
           Tongue appearance does not reveal organ function, diagnose illness, or establish emotional traits.
           A practitioner may discuss an optional photo as cultural material only; no automated image analysis is performed.
         </p>
       </header>
 
-      <div role="note" className="flex items-start gap-3 rounded-2xl border border-amber-400/30 bg-amber-500/[0.08] p-4 text-sm leading-relaxed text-amber-100">
-        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-300" aria-hidden="true" />
+      <div role="note" className="flex items-start gap-3 rounded-2xl border border-gold/30 bg-gold/[0.08] p-4 text-sm leading-relaxed text-gold-strong">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-gold" aria-hidden="true" />
         <p><strong>Important:</strong> Zone-to-organ maps and sign meanings below are traditional symbolic claims, not scientifically validated health indicators. Photos are optional, private to a booked practitioner team, and never processed by an automated diagnostic model.</p>
       </div>
 
       {/* ── Live Camera Tongue Scanner ─────────────────────────── */}
       <section aria-labelledby="live-camera-scanner" className="space-y-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-amber-400" />
-          <h2 id="live-camera-scanner" className="text-xl font-bold text-white">
+          <Sparkles className="size-4 text-gold" />
+          <h2 id="live-camera-scanner" className="text-xl font-bold text-foreground">
             Interactive Camera Tongue Biometric Scanner
           </h2>
         </div>
@@ -232,7 +232,7 @@ export default function TongueReadingPage() {
               <text x="100" y="218" textAnchor="middle" fontSize="9" fill="#a5b4fc" className="pointer-events-none select-none">Root</text>
             </svg>
           </div>
-          <p className="text-[11px] text-stone-500 text-center max-w-[14rem]">
+          <p className="text-[11px] text-subtle text-center max-w-[14rem]">
             Tap or click any zone to explore its traditional body-sign significance.
           </p>
         </div>
@@ -241,8 +241,8 @@ export default function TongueReadingPage() {
         <div className={`rounded-3xl border ${c.border} ${c.bg} p-6 space-y-5`}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className={`text-[10px] font-mono uppercase tracking-widest ${c.text}`}>Zone</span>
-              <h2 className="text-2xl font-extrabold text-white mt-1">
+              <span className={`text-[10px] uppercase tracking-wider ${c.text}`}>Zone</span>
+              <h2 className="text-2xl font-extrabold text-foreground mt-1">
                 {zone.emoji} {zone.zone}
               </h2>
               <p lang="am" className={`text-sm font-semibold ${c.text}`}>{zone.am}</p>
@@ -253,7 +253,7 @@ export default function TongueReadingPage() {
             </div>
           </div>
 
-          <p className="text-sm text-stone-300 leading-relaxed">{zone.description}</p>
+          <p className="text-sm text-soft leading-relaxed">{zone.description}</p>
 
           <div className="space-y-2">
             <h3 className={`text-xs font-bold uppercase tracking-wider ${c.text}`}>Common Signs & Reflections</h3>
@@ -263,20 +263,20 @@ export default function TongueReadingPage() {
               return (
                 <div
                   key={key}
-                  className="rounded-2xl border border-stone-800 bg-stone-950/60"
+                  className="rounded-2xl border border-border bg-background/60"
                 >
                   <button
                     className="w-full flex items-center justify-between px-4 py-3 text-left"
                     onClick={() => setExpandedSign(open ? null : key)}
                   >
-                    <span className="text-sm font-semibold text-stone-200">{s.sign}</span>
-                    {open ? <ChevronUp className="size-4 text-stone-400 shrink-0" /> : <ChevronDown className="size-4 text-stone-400 shrink-0" />}
+                    <span className="text-sm font-semibold text-soft">{s.sign}</span>
+                    {open ? <ChevronUp className="size-4 text-muted-foreground shrink-0" /> : <ChevronDown className="size-4 text-muted-foreground shrink-0" />}
                   </button>
                   {open && (
                     <div className="px-4 pb-4 space-y-1">
-                      <p className="text-sm text-amber-200">{s.reading}</p>
-                      <p lang="am" className="text-xs text-stone-500">{s.am}</p>
-                      <p className="text-[11px] text-stone-600 italic mt-2">
+                      <p className="text-sm text-gold-strong">{s.reading}</p>
+                      <p lang="am" className="text-xs text-subtle">{s.am}</p>
+                      <p className="text-[11px] text-subtle italic mt-2">
                         This reading is reflective only. Consult a qualified practitioner for clinical assessment.
                       </p>
                     </div>
@@ -299,7 +299,7 @@ export default function TongueReadingPage() {
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all border ${
                 activeZone === z.id
                   ? `${zc.bg} ${zc.border} ${zc.text}`
-                  : "border-stone-800 bg-stone-900/60 text-stone-400 hover:border-stone-600"
+                  : "border-border bg-card/60 text-muted-foreground hover:border-border-strong"
               }`}
             >
               <span>{z.emoji}</span>
@@ -312,10 +312,10 @@ export default function TongueReadingPage() {
 
       {/* ── Coat Reference ────────────────────────────────────────── */}
       <section>
-        <h2 className="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
-          <BookOpen className="size-5 text-amber-400" aria-hidden="true" />
+        <h2 className="text-xl font-extrabold text-foreground mb-4 flex items-center gap-2">
+          <BookOpen className="size-5 text-gold" aria-hidden="true" />
           Tongue Coat Reference
-          <span lang="am" className="text-base font-semibold text-amber-300">— የምላስ ሽፋን ምልክቶች</span>
+          <span lang="am" className="text-base font-semibold text-gold">— የምላስ ሽፋን ምልክቶች</span>
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {COAT_TYPES.map((ct) => (
@@ -329,12 +329,12 @@ export default function TongueReadingPage() {
       </section>
 
       {/* ── Practitioner Note ─────────────────────────────────────── */}
-      <section className="rounded-3xl border border-stone-800 bg-stone-900/50 p-6 space-y-3">
-        <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
+      <section className="rounded-3xl border border-border bg-card/50 p-6 space-y-3">
+        <div className="flex items-center gap-2 text-gold font-bold text-sm">
           <Info className="size-4" aria-hidden="true" />
           Practitioner Notes
         </div>
-        <ul className="space-y-2 text-sm text-stone-300 list-none">
+        <ul className="space-y-2 text-sm text-soft list-none">
           {[
             "When discussing an optional image, use neutral light to describe what is visible; colour is not a health measurement.",
             "Ask permission before viewing or discussing an image, and let the client decline or stop at any time.",
@@ -343,7 +343,7 @@ export default function TongueReadingPage() {
             "Encourage the client to consult a qualified health professional about persistent, painful, or concerning changes.",
           ].map((note, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="text-amber-400 font-bold shrink-0">•</span>
+              <span className="text-gold font-bold shrink-0">•</span>
               <span>{note}</span>
             </li>
           ))}
@@ -351,15 +351,15 @@ export default function TongueReadingPage() {
       </section>
 
       {/* ── Disclaimer + Navigation ───────────────────────────────── */}
-      <footer className="flex flex-col gap-4 border-t border-stone-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex items-start gap-2 text-[11px] text-stone-500 max-w-xl">
-          <AlertTriangle className="size-3.5 shrink-0 text-amber-700 mt-0.5" aria-hidden="true" />
+      <footer className="flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 text-[11px] text-subtle max-w-xl">
+          <AlertTriangle className="size-3.5 shrink-0 text-gold-strong mt-0.5" aria-hidden="true" />
           Tongue reading is a reflective cultural tool. It does not constitute a diagnosis, prognosis, or prescription.
           Always direct urgent or safety-critical concerns to qualified medical professionals.
         </p>
         <Link
           href="/body-reading/palm"
-          className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-amber-400 transition-colors shrink-0"
+          className="inline-flex items-center gap-2 rounded-2xl bg-gold-fill px-5 py-2.5 text-sm font-bold text-gold-foreground hover:bg-gold-fill transition-colors shrink-0"
         >
           Palm Reading <ArrowRight className="size-4" />
         </Link>

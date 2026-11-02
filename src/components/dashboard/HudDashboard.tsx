@@ -23,7 +23,7 @@ import { useLanguage } from "@/lib/i18n/context";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
-  loading: () => <div className="h-[210px] animate-pulse rounded-lg bg-white/5" />,
+  loading: () => <div className="h-[210px] animate-pulse rounded-lg bg-foreground/5" />,
 });
 
 const metricCards = [
@@ -63,40 +63,40 @@ const quickActions = [
     amharic: "ጉዳይ ይጀምሩ",
     description: "Multi-domain Scientific & cultural evaluation",
     href: "/case",
-    icon: <ClipboardList size={20} className="text-cyan-400" />,
-    accent: "border-cyan-500/30 hover:border-cyan-400 hover:shadow-cyan-500/15",
+    icon: <ClipboardList size={20} className="text-info" />,
+    accent: "border-info/30 hover:border-info",
   },
   {
     title: "Personal Profile",
     amharic: "የግል መገለጫ",
     description: "Natal chart, gematria & baptismal patron",
     href: "/profile",
-    icon: <User size={20} className="text-amber-400" />,
-    accent: "border-amber-500/30 hover:border-amber-400 hover:shadow-amber-500/15",
+    icon: <User size={20} className="text-gold" />,
+    accent: "border-gold/30 hover:border-gold",
   },
   {
     title: "Safety Matrix",
     amharic: "የመድኃኒት ደኅንነት",
     description: "ETM-DB Herb-Drug interaction checks",
     href: "/safety",
-    icon: <ShieldCheck size={20} className="text-emerald-400" />,
-    accent: "border-emerald-500/30 hover:border-emerald-400 hover:shadow-emerald-500/15",
+    icon: <ShieldCheck size={20} className="text-brand" />,
+    accent: "border-brand/30 hover:border-brand",
   },
   {
     title: "Food Composition",
     amharic: "የምግብ ማውጫ (EFCT)",
     description: "726 Ethiopian foods & biochemical gaps",
     href: "/foods",
-    icon: <Utensils size={20} className="text-purple-400" />,
-    accent: "border-purple-500/30 hover:border-purple-400 hover:shadow-purple-500/15",
+    icon: <Utensils size={20} className="text-plum" />,
+    accent: "border-plum/30 hover:border-plum",
   },
   {
     title: "Audit Ledger",
     amharic: "የምርመራ መዝገብ",
     description: "Immutable compliance & event logs",
     href: "/audit",
-    icon: <FileText size={20} className="text-rose-400" />,
-    accent: "border-rose-500/30 hover:border-rose-400 hover:shadow-rose-500/15",
+    icon: <FileText size={20} className="text-danger" />,
+    accent: "border-danger/30 hover:border-danger",
   },
 ];
 
@@ -358,10 +358,10 @@ export default function HudDashboard() {
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200 backdrop-blur-md shadow-lg"
+          className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-xs text-gold-strong  shadow-panel"
         >
           <div className="flex items-center gap-2.5">
-            <Sparkles size={16} className="text-amber-400 shrink-0" />
+            <Sparkles size={16} className="text-gold shrink-0" />
             <span>
               {t.dashboard.ancestralNotice}
             </span>
@@ -369,7 +369,7 @@ export default function HudDashboard() {
           <button
             type="button"
             onClick={() => setShowNotice(false)}
-            className="text-amber-400/70 hover:text-amber-300 p-1 rounded transition"
+            className="text-gold hover:text-gold p-1 rounded transition"
             title={t.dashboard.dismissNotice}
           >
             <X size={14} />
@@ -426,8 +426,8 @@ export default function HudDashboard() {
 
       {/* 5 Quick Action Tiles */}
       <div className="mb-8">
-        <div className="text-xs font-mono uppercase tracking-wider text-stone-400 mb-3 flex items-center gap-2">
-          <Layers size={14} className="text-amber-400" />
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+          <Layers size={14} className="text-gold" />
           {t.dashboard.quickAccess}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -438,17 +438,17 @@ export default function HudDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: idx * 0.06 }}
                 whileHover={{ y: -4, scale: 1.02 }}
-                className={`flex flex-col justify-between rounded-xl border bg-stone-900/80 p-4 transition-all backdrop-blur-md hover:shadow-lg ${action.accent}`}
+                className={`flex flex-col justify-between rounded-xl border bg-card/80 p-4 transition-all  hover:shadow-panel ${action.accent}`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="rounded-lg bg-white/5 p-2">{action.icon}</div>
-                    <ArrowRight size={14} className="text-stone-500 opacity-60" />
+                    <div className="rounded-lg bg-foreground/5 p-2">{action.icon}</div>
+                    <ArrowRight size={14} className="text-subtle opacity-60" />
                   </div>
-                  <div className="text-sm font-bold text-white">{actionCopy[idx][0]}</div>
-                  <div className="text-[11px] font-mono text-amber-400/80">{action.amharic}</div>
+                  <div className="text-sm font-bold text-foreground">{actionCopy[idx][0]}</div>
+                  <div className="text-[11px] font-mono text-gold">{action.amharic}</div>
                 </div>
-                <div className="mt-3 text-[11px] text-stone-400 leading-tight">
+                <div className="mt-3 text-[11px] text-muted-foreground leading-tight">
                   {actionCopy[idx][1]}
                 </div>
               </motion.div>
@@ -555,48 +555,48 @@ export default function HudDashboard() {
           {/* Tab 2: Deep Analysis */}
           {activeSignalTab === "analysis" && (
             <div className="space-y-4 pt-2">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                  <Activity size={16} className="text-cyan-400" />
+              <div className="rounded-xl border border-border bg-foreground/5 p-4">
+                <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                  <Activity size={16} className="text-info" />
                   11 Knowledge Strands Calibration Matrix
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-stone-400">EFCT Food Composition:</span>
-                    <div className="mt-1 h-2 w-full rounded-full bg-stone-800 overflow-hidden">
-                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: "98%" }} />
+                    <span className="text-muted-foreground">EFCT Food Composition:</span>
+                    <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-brand rounded-full" style={{ width: "98%" }} />
                     </div>
                   </div>
                   <div>
-                    <span className="text-stone-400">ETM-DB Herb-Drug Matrix:</span>
-                    <div className="mt-1 h-2 w-full rounded-full bg-stone-800 overflow-hidden">
-                      <div className="h-full bg-amber-400 rounded-full" style={{ width: "94%" }} />
+                    <span className="text-muted-foreground">ETM-DB Herb-Drug Matrix:</span>
+                    <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-gold-fill rounded-full" style={{ width: "94%" }} />
                     </div>
                   </div>
                   <div>
-                    <span className="text-stone-400">Highland Altitude Calibration (2400m):</span>
-                    <div className="mt-1 h-2 w-full rounded-full bg-stone-800 overflow-hidden">
-                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: "100%" }} />
+                    <span className="text-muted-foreground">Highland Altitude Calibration (2400m):</span>
+                    <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-info rounded-full" style={{ width: "100%" }} />
                     </div>
                   </div>
                   <div>
-                    <span className="text-stone-400">Awde Negest Divination Rules:</span>
-                    <div className="mt-1 h-2 w-full rounded-full bg-stone-800 overflow-hidden">
-                      <div className="h-full bg-purple-400 rounded-full" style={{ width: "96%" }} />
+                    <span className="text-muted-foreground">Awde Negest Divination Rules:</span>
+                    <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-plum rounded-full" style={{ width: "96%" }} />
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs">
-                  <strong className="text-amber-300 font-semibold block mb-1">
+                <div className="rounded-xl border border-gold/20 bg-gold/5 p-4 text-xs">
+                  <strong className="text-gold font-semibold block mb-1">
                     Altitude Physiology Target:
                   </strong>
                   WHO highland baseline adjustment elevates adult hemoglobin target (+1.5 g/dL) and iron intake (+15%) to maintain cellular oxygenation in Addis Ababa.
                 </div>
-                <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-xs">
-                  <strong className="text-cyan-300 font-semibold block mb-1">
+                <div className="rounded-xl border border-info/20 bg-info/5 p-4 text-xs">
+                  <strong className="text-info font-semibold block mb-1">
                     Fermentation Bioavailability:
                   </strong>
                   Traditional 48-72h teff batter fermentation degrades phytate complexes, boosting iron and zinc bioavailability by up to 40%.
@@ -608,7 +608,7 @@ export default function HudDashboard() {
           {/* Tab 3: Case Archive */}
           {activeSignalTab === "archive" && (
             <div className="space-y-3 pt-2">
-              <div className="text-xs text-stone-400 mb-2">
+              <div className="text-xs text-muted-foreground mb-2">
                 Recent certified readings and evaluation logs:
               </div>
               {[
@@ -618,7 +618,7 @@ export default function HudDashboard() {
                   date: "Sep 11, 2026",
                   domain: "Spiritual",
                   badge: "Certified",
-                  color: "border-amber-500/30 text-amber-300",
+                  color: "border-gold/30 text-gold",
                 },
                 {
                   id: "ET-9390",
@@ -626,7 +626,7 @@ export default function HudDashboard() {
                   date: "Sep 09, 2026",
                   domain: "Scientific",
                   badge: "Gate Passed",
-                  color: "border-emerald-500/30 text-emerald-300",
+                  color: "border-brand/30 text-brand",
                 },
                 {
                   id: "ET-9351",
@@ -634,26 +634,26 @@ export default function HudDashboard() {
                   date: "Sep 04, 2026",
                   domain: "Career",
                   badge: "Archived",
-                  color: "border-cyan-500/30 text-cyan-300",
+                  color: "border-info/30 text-info",
                 },
               ].map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3.5 hover:bg-white/10 transition"
+                  className="flex items-center justify-between rounded-xl border border-border bg-foreground/5 p-3.5 hover:bg-foreground/10 transition"
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-white">{item.id}</span>
+                      <span className="text-xs font-mono font-bold text-foreground">{item.id}</span>
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono border ${item.color}`}>
                         {item.badge}
                       </span>
                     </div>
-                    <div className="text-sm font-semibold text-stone-200 mt-0.5">{item.title}</div>
-                    <div className="text-[11px] text-stone-500 font-mono">{item.domain} • {item.date}</div>
+                    <div className="text-sm font-semibold text-soft mt-0.5">{item.title}</div>
+                    <div className="text-[11px] text-subtle font-mono">{item.domain} • {item.date}</div>
                   </div>
                   <Link
                     href={`/case`}
-                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/10 hover:text-white"
+                    className="rounded-lg border border-border bg-foreground/5 px-3 py-1.5 text-xs font-medium text-soft hover:bg-foreground/10 hover:text-foreground"
                   >
                     View
                   </Link>
@@ -691,27 +691,27 @@ export default function HudDashboard() {
           </div>
 
           {/* Activity Feed */}
-          <div className="border-t border-white/10 pt-4">
-            <div className="text-xs font-mono uppercase tracking-wider text-stone-400 mb-3 flex items-center justify-between">
+          <div className="border-t border-border pt-4">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Clock size={13} className="text-amber-400" />
+                <Clock size={13} className="text-gold" />
                 RECENT ACTIVITY
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono">● {t.dashboard.live}</span>
+              <span className="text-[10px] text-brand font-mono">● {t.dashboard.live}</span>
             </div>
             <div className="space-y-2.5">
               {recentActivities.map((act) => (
-                <div key={act.id} className="rounded-lg border border-white/5 bg-white/5 p-2.5 text-xs">
-                  <div className="flex items-center justify-between text-stone-300 font-semibold mb-0.5">
+                <div key={act.id} className="rounded-lg border border-border bg-foreground/5 p-2.5 text-xs">
+                  <div className="flex items-center justify-between text-soft font-semibold mb-0.5">
                     <span className="flex items-center gap-1.5">
-                      {act.status === "success" && <CheckCircle2 size={12} className="text-emerald-400" />}
-                      {act.status === "warning" && <AlertTriangle size={12} className="text-amber-400" />}
-                      {act.status === "info" && <Sparkles size={12} className="text-cyan-400" />}
+                      {act.status === "success" && <CheckCircle2 size={12} className="text-brand" />}
+                      {act.status === "warning" && <AlertTriangle size={12} className="text-gold" />}
+                      {act.status === "info" && <Sparkles size={12} className="text-info" />}
                       {act.action}
                     </span>
-                    <span className="text-[10px] font-mono text-stone-500">{act.time}</span>
+                    <span className="text-[10px] font-mono text-subtle">{act.time}</span>
                   </div>
-                  <div className="text-[11px] text-stone-400 leading-tight">{act.detail}</div>
+                  <div className="text-[11px] text-muted-foreground leading-tight">{act.detail}</div>
                 </div>
               ))}
             </div>

@@ -20,11 +20,11 @@
 import { toEthiopianDate } from "@/lib/cosmic/skyDay";
 import { CONFIDENCE_MEANING, FACTOR_GUIDANCE } from "./analysisGuidance";
 import { FACTORS } from "./analysisLexicon";
-import { createTranslator, type ReportLanguage } from "./amharic";
+import { amharicFor, createTranslator, type ReportLanguage } from "./amharic";
 import { layoutSections } from "./reportLayout";
 import { emergencyStep, emergencyStepAmharic } from "@/lib/safety/emergencyContacts";
 import { REFERRALS } from "./support";
-import type { AnalysisConfidence, AnalysisSolution, CaseAnalysis, CaseLens, GroundedFinding, ReportSection } from "./types";
+import type { AnalysisCause, AnalysisConfidence, AnalysisSolution, CaseAnalysis, CaseLens, Citation, DecisionResource, GroundedFinding, ReportSection } from "./types";
 
 // Limits enforced when a draft is saved (schemas.ts).
 const MAX_BODY = 7800;
@@ -49,6 +49,28 @@ const HORIZON_ORDER: AnalysisSolution["horizon"][] = ["now", "this_week", "ongoi
 const PROFESSIONAL_STRANDS = new Set(["medication", "biochemical", "biological", "epidemiological", "addiction", "dietary"]);
 const DOMAIN_B_STRANDS = new Set(["cultural", "astrological"]);
 const FACTOR_BY_ID = new Map(FACTORS.map((factor) => [factor.id, factor]));
+const SYMPTOM_LABELS = FACTORS.filter((factor) => factor.system).map((factor) => `${factor.label}:`);
+const REFERENCES_PER_STRAND = 3;
+const MAX_REFERENCES = 12;
+const RESOURCE_KIND: Record<DecisionResource["type"], { en: string; am: string }> = {
+  clinical_guideline: { en: "national clinical guideline", am: "ብሔራዊ የክሊኒክ መመሪያ" },
+  nutrition_strategy: { en: "nutrition strategy", am: "የአመጋገብ ስልት" },
+  indigenous_remedy: { en: "traditional-medicine reference", am: "የባህላዊ መድኃኒት ማጣቀሻ" },
+  safety_alert: { en: "safety and protection service", am: "የደህንነትና የጥበቃ አገልግሎት" },
+  referral_directory: { en: "referral directory", am: "የሪፈራል ማውጫ" },
+};
+const EVIDENCE_GRADE: Record<string, { en: string; am: string }> = {
+  strong: { en: "strong evidence", am: "ጠንካራ ማስረጃ" },
+  moderate: { en: "moderate evidence", am: "መካከለኛ ማስረጃ" },
+  preliminary: { en: "preliminary evidence", am: "ቅድመ ማስረጃ" },
+  traditional: { en: "traditional knowledge", am: "ባህላዊ ዕውቀት" },
+  reflective_only: { en: "reflection only", am: "ለማሰላሰል ብቻ" },
+};
+
+/** Catalogue entries the person named, or that several of their statements support. */
+const specific = (finding: GroundedFinding) => finding.relevance >= 0.6 || finding.matchedOn.some((entry) => entry.startsWith("Mentioned:"));
+/** Rests on more than a symptom bringing it into view (analysis.ts keeps those for the reviewer's differential). */
+const saidDirectly = (finding: GroundedFinding) => finding.matchedOn.some((reason) => !SYMPTOM_LABELS.some((label) => reason.startsWith(label)));
 const RED_FLAG_QUESTION = "Have you noticed any of these: ";
 const ENGINE_LABEL_AM: Record<string, string> = {
   urgency_screening: "የአስቸኳይና ደህንነት ምርመራ",
@@ -256,15 +278,23 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
         const explanation = am && raised
           ? `በጥያቄው ውስጥ ${raised[2] ? `${raised[2]} ጊዜ` : "አንድ ጊዜ"} ተነስቷል። ከእርስዎ ጋር ሊረጋገጥ የሚገባ አስተዋጽኦ ያለው ምክንያት አድርገው ይዩት።`
           : t(cause.explanation);
-        const guidance = cause.decisionGuidance
+        const decision = cause.decisionGuidance;
+        const guidance = decision
           ? (am
-            ? (cause.decisionGuidance.immediateActionAmharic ? `የውሳኔ እርምጃ፦ ${cause.decisionGuidance.immediateActionAmharic}` : "")
-            : `Decision step: ${cause.decisionGuidance.immediateAction}`)
+            ? [
+              decision.immediateActionAmharic ? `የውሳኔ እርምጃ፦ ${amSentence(decision.immediateActionAmharic)}` : "",
+              decision.diagnosticCheckAmharic ? `ሊረዳ የሚችል ምርመራ፦ ${amSentence(decision.diagnosticCheckAmharic)}` : "",
+              decision.thresholdCriteriaAmharic ? `ሳይጠብቁ መታየት ያለበት መቼ ነው፦ ${amSentence(decision.thresholdCriteriaAmharic)}` : "",
+            ]
+            : [
+              `Decision step: ${sentence(decision.immediateAction)}`,
+              decision.diagnosticCheck ? `A check that can help: ${sentence(decision.diagnosticCheck)}` : "",
+              decision.thresholdCriteria ? `When not to wait: ${sentence(decision.thresholdCriteria)}` : "",
+            ]).filter(Boolean).join(" ")
           : "";
-        const resNote = cause.resources?.length
-          ? (am
-            ? (cause.resources[0].titleAmharic ? `ማጣቀሻ፦ ${cause.resources[0].titleAmharic}` : "")
-            : `Reference: ${cause.resources[0].title}`)
+        const resourceTitles = (cause.resources ?? []).map((resource) => (am ? resource.titleAmharic ?? "" : resource.title)).filter(Boolean);
+        const resNote = resourceTitles.length
+          ? (am ? `ማጣቀሻዎች፦ ${resourceTitles.join("፤ ")}።` : `Resources: ${resourceTitles.join("; ")}.`)
           : "";
         return [
           am ? `${t(cause.title)} (${CONFIDENCE_AM[cause.confidence]} እርግጠኝነት)፦ ${amSentence(explanation)}` : `${cause.title} (${cause.confidence} confidence): ${sentence(explanation)}`,
@@ -283,20 +313,15 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
       const primaryDec = am && df?.primaryDecisionAmharic ? df.primaryDecisionAmharic : (df?.primaryDecision ?? "Review identified root causes and follow guided threshold criteria.");
       const steps = (am && df?.actionableNextStepsAmharic?.length ? df.actionableNextStepsAmharic : (df?.actionableNextSteps ?? [])).map((step, idx) => `(${idx + 1}) ${step}`);
       const cautions = (am && df?.tradeOffsAndCautionsAmharic?.length ? df.tradeOffsAndCautionsAmharic : (df?.tradeOffsAndCautions ?? [])).map((c) => `${say("Caution:", "ማስጠንቀቂያ፦")} ${c}`);
-      const resourceItems = (df?.relevantResources ?? []).slice(0, 3).map((res) => {
-        const title = am && res.titleAmharic ? res.titleAmharic : res.title;
-        const desc = am && res.descriptionAmharic ? res.descriptionAmharic : res.description;
-        return `${title}: ${desc}${res.urlOrContact ? ` (${res.urlOrContact})` : ""}`;
-      });
 
       sections.push(section(
         "decision-roadmap",
-        say("Decision roadmap and curated resources", "የውሳኔ ፍኖተ-ካርታ እና የተመረጡ መርጃዎች"),
+        say("Decision roadmap", "የውሳኔ ፍኖተ-ካርታ"),
         say(
-          `Primary decision: ${primaryDec}\n\nThis framework synthesizes clinical, nutritional, and situational priorities into an actionable decision path.`,
-          `ዋና ውሳኔ፦ ${primaryDec}\n\nይህ ማዕቀፍ ክሊኒካዊ፣ አመጋገባዊ እና ተግባራዊ ቅድሚያዎችን ወደ ግልጽ የውሳኔ ጎዳና ያዋህዳል።`,
+          `Primary decision: ${primaryDec}\n\nThis framework synthesizes clinical, nutritional, and situational priorities into an actionable decision path. The guidelines, strategies and services behind it are listed, each with what it covers, under “Knowledge resources behind this report”.`,
+          `ዋና ውሳኔ፦ ${primaryDec}\n\nይህ ማዕቀፍ ክሊኒካዊ፣ አመጋገባዊ እና ተግባራዊ ቅድሚያዎችን ወደ ግልጽ የውሳኔ ጎዳና ያዋህዳል። ከጀርባው ያሉት መመሪያዎች፣ ስልቶችና አገልግሎቶች እያንዳንዳቸው ከሚሸፍኑት ጋር “ከዚህ ሪፖርት ጀርባ ያሉ የዕውቀት መርጃዎች” በሚለው ክፍል ተዘርዝረዋል።`,
         ),
-        [...steps, ...cautions, ...resourceItems],
+        [...steps, ...cautions],
       ));
     }
   }
@@ -330,9 +355,15 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
   }
 
   // ── 3c. Every strand's reading ─────────────────────────────────────────────
+  // Every person-facing reading of each strand, then the question that strand would ask.
   const angles = lenses
     .filter((lens) => lens.layer === "A")
-    .flatMap((lens) => lens.points.filter((point) => point.person).slice(0, 2).map((point) => `${strandName(lens.strand)}${colon}${t(point.person)}`));
+    .flatMap((lens) => [
+      ...lens.points.filter((point) => point.person).map((point) => `${strandName(lens.strand)}${colon}${t(point.person)}`),
+      ...(lens.points.some((point) => point.person)
+        ? lens.ask.filter((question) => !am || amharicFor(question)).map((question) => `${strandName(lens.strand)} — ${say("a question worth answering", "መመለስ የሚገባው ጥያቄ")}${colon}${t(question)}`)
+        : []),
+    ]);
   if (full && angles.length) {
     const read = lenses.filter((lens) => lens.points.some((point) => point.person)).length;
     sections.push(section(
@@ -454,25 +485,109 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
   // ── 7. Reference knowledge that applies ────────────────────────────────────
   // Only entries the person named, or that several of their statements support: the catalogues are
   // broad, and a loosely matched entry reads as noise (or as a claim) in a report.
+  // Each strand contributes its best-supported entries, numbered against their sources. Entries that only a
+  // symptom brings into view (a disease the person never named) stay with the reviewer.
   const references: GroundedFinding[] = analysis.strands
     .filter((strand) => strand.layer === "A")
-    .flatMap((strand) => strand.findings)
-    .filter((finding) => finding.relevance >= 0.6 || finding.matchedOn.some((entry) => entry.startsWith("Mentioned:")))
-    .sort((a, b) => b.relevance - a.relevance)
-    .slice(0, 4);
+    .flatMap((strand) => strand.findings
+      .filter(saidDirectly)
+      .sort((a, b) => Number(specific(b)) - Number(specific(a)) || b.relevance - a.relevance)
+      .slice(0, REFERENCES_PER_STRAND))
+    .slice(0, MAX_REFERENCES);
   if (full && references.length) {
     if (am) omit(`${references.length} reference knowledge entr${references.length === 1 ? "y" : "ies"} (catalogue text in English)`);
     else {
-      sections.push(section(
-        "knowledge",
-        "Reference knowledge behind this report",
-        `${analysis.strands.reduce((sum, strand) => sum + strand.considered, 0)} reference entries across ${analysis.strands.length} knowledge areas were checked against your request; the ${references.length === 1 ? "one" : references.length} below ${references.length === 1 ? "is" : "are"} the most closely supported by what you wrote. They are background reading: a heading is the name used by the reference source and does not mean the entry describes you.`,
-        references.map((finding) => {
-          const needsProfessional = PROFESSIONAL_STRANDS.has(finding.strand);
-          return `${finding.name} (${STRAND_LABEL[finding.strand] ?? finding.strand}): ${sentence(clip(finding.summary || "Reference entry", 260))} Included because of — ${reason(finding.matchedOn)}.${needsProfessional ? " Anything here that touches your health is for a qualified professional to confirm." : ""}${finding.source ? ` Source: ${finding.source}.` : ""}`;
-        }),
-      ));
+      const citations: Citation[] = [];
+      const cite = (citation: Citation | undefined) => {
+        if (!citation) return "";
+        const at = citations.findIndex((entry) => entry.id === citation.id);
+        return ` [${(at < 0 ? citations.push(citation) : at + 1)}]`;
+      };
+      const fromStrands = new Set(references.map((finding) => finding.strand)).size;
+      const items = references.map((finding) => {
+        const needsProfessional = PROFESSIONAL_STRANDS.has(finding.strand);
+        const close = specific(finding);
+        // General advice only from entries the person's words closely support.
+        const steps = close && !cautious && finding.steps.length ? ` What it suggests in general: ${finding.steps.slice(0, 3).map(sentence).join(" ")}` : "";
+        return `${finding.name} (${STRAND_LABEL[finding.strand] ?? finding.strand}; ${close ? "closely supported by what you wrote" : "loosely linked to what you wrote"})${cite(finding.citation)}: ${sentence(clip(finding.summary || "Reference entry", 320))}${steps} Included because of — ${reason(finding.matchedOn)}.${needsProfessional ? " Anything here that touches your health is for a qualified professional to confirm." : ""}${finding.source ? ` Source: ${finding.source}.` : ""}`;
+      });
+      sections.push({
+        ...section(
+          "knowledge",
+          "Reference knowledge behind this report",
+          `${analysis.strands.reduce((sum, strand) => sum + strand.considered, 0)} reference entries across ${analysis.strands.length} knowledge areas were checked against your request. The ${references.length === 1 ? "entry" : `${references.length} entries`} below, from ${fromStrands} area${fromStrands === 1 ? "" : "s"}, ${references.length === 1 ? "is" : "are"} the ones tied to what you wrote — up to ${REFERENCES_PER_STRAND} from each area, the most closely supported first. They are background reading: a heading is the name used by the reference source and does not mean the entry describes you. Numbers in brackets point to the sources listed with this section.`,
+          items,
+        ),
+        ...(citations.length ? { evidence: { citations: citations.slice(0, 40) } } : {}),
+      });
     }
+  }
+
+  // ── 7·. Knowledge resources: guidelines, strategies, services and libraries
+  const shownCauses = full ? analysis.causes.slice(0, 5) : [];
+  const resources = new Map<string, { resource: DecisionResource; causes: AnalysisCause[] }>();
+  for (const cause of shownCauses) {
+    for (const resource of cause.resources ?? []) {
+      const entry = resources.get(resource.title) ?? { resource, causes: [] };
+      entry.causes.push(cause);
+      resources.set(resource.title, entry);
+    }
+  }
+  for (const resource of full ? analysis.decisionFramework?.relevantResources ?? [] : []) {
+    if (!resources.has(resource.title)) resources.set(resource.title, { resource, causes: [] });
+  }
+  const causeName = (cause: AnalysisCause) => (am ? cause.titleAmharic ?? amharicFor(cause.title) ?? "" : cause.title);
+  const resourceItems = [...resources.values()].flatMap(({ resource, causes }) => {
+    const title = am ? resource.titleAmharic : resource.title;
+    const description = am ? resource.descriptionAmharic : resource.description;
+    if (!title || !description) {
+      omit(`Resource “${resource.title}” (no Amharic text yet)`);
+      return [];
+    }
+    const kind = RESOURCE_KIND[resource.type];
+    const grade = resource.evidenceGrade ? EVIDENCE_GRADE[String(resource.evidenceGrade)] : undefined;
+    const linked = causes.map(causeName).filter(Boolean);
+    // An English contact line (the emergency guidance, a hospital's name) stays out of an Amharic report.
+    const contact = resource.urlOrContact && !(am && /[A-Za-z]{3}/.test(resource.urlOrContact)) ? resource.urlOrContact : "";
+    return [[
+      `${title} (${[kind ? (am ? kind.am : kind.en) : "", grade ? (am ? grade.am : grade.en) : ""].filter(Boolean).join(am ? "፣ " : ", ")})${colon}${end(description)}`,
+      contact ? `${say("Contact:", "አድራሻ፦")} ${end(contact)}` : "",
+      linked.length
+        ? say(`It answers: ${linked.join("; ")}.`, `የሚመልሰው፦ ${linked.join("፤ ")}።`)
+        : say("It is the general reference for the steps in this report.", "በዚህ ሪፖርት ውስጥ ላሉት እርምጃዎች አጠቃላይ ማጣቀሻ ነው።"),
+      cautious && resource.type === "indigenous_remedy"
+        ? say("Because of what your wellbeing profile records, check any traditional remedy with your health provider first.", "በደህንነት መገለጫዎ በተመዘገበው ምክንያት ማንኛውንም ባህላዊ መድኃኒት በመጀመሪያ ከጤና ባለሙያዎ ጋር ያረጋግጡ።")
+        : "",
+    ].filter(Boolean).join(" ")];
+  });
+  const { meals = [], herbs = [] } = analysis.foodAndHerbs ?? {};
+  const [sharedMeals, sharedHerbs] = [meals.length > 0, herbs.length > 0];
+  const consideredTotal = analysis.strands.reduce((sum, strand) => sum + strand.considered, 0);
+  const keptTotal = analysis.strands.reduce((sum, strand) => sum + strand.kept, 0);
+  const libraries = [
+    ...(sharedMeals ? [say(
+      `Food composition table: ${meals.length} food${meals.length === 1 ? "" : "s"} you shared ${meals.length === 1 ? "was" : "were"} matched to it for fasting status, nutrients and blood-sugar effect.`,
+      `የምግብ ስብጥር ሰንጠረዥ፦ ያጋሯቸው ${meals.length} ምግቦች ለጾም ሁኔታ፣ ለንጥረ ነገሮችና ለደም ስኳር ተጽዕኖ ከእሱ ጋር ተዛምደዋል።`,
+    )] : []),
+    ...(sharedHerbs ? [say(
+      `Traditional-medicine reference and herb–medicine interaction table: ${herbs.length} plant${herbs.length === 1 ? "" : "s"} you shared ${herbs.length === 1 ? "was" : "were"} checked for known interactions with kinds of medicine.`,
+      `የባህላዊ መድኃኒት ማጣቀሻና የዕፅዋት–መድኃኒት መስተጋብር ሰንጠረዥ፦ ያጋሯቸው ${herbs.length} ተክሎች ከመድኃኒት አይነቶች ጋር ስለሚታወቅ መስተጋብር ተመርምረዋል።`,
+    )] : []),
+    say(
+      `Knowledge-strand libraries: ${consideredTotal} entries in ${analysis.strands.length} areas were compared with your words; ${keptTotal} were supported by them. Each area is accounted for under “Knowledge strands, reference libraries and engines reviewed”.`,
+      `የዕውቀት ዘርፍ ቤተ-መጻሕፍት፦ በ${analysis.strands.length} ዘርፎች ያሉ ${consideredTotal} ግቤቶች ከቃላትዎ ጋር ተነጻጽረዋል፤ ${keptTotal} በእነሱ ተደግፈዋል። እያንዳንዱ ዘርፍ “የተመረመሩ የዕውቀት ዘርፎች፣ ማጣቀሻ ቤተ-መጻሕፍትና ኤንጂኖች” በሚለው ክፍል ተዘርዝሯል።`,
+    ),
+  ];
+  if (full && resourceItems.length) {
+    sections.push(section(
+      "resources",
+      say("Knowledge resources behind this report", "ከዚህ ሪፖርት ጀርባ ያሉ የዕውቀት መርጃዎች"),
+      say(
+        `The steps in this report draw on ${resourceItems.length} curated resource${resourceItems.length === 1 ? "" : "s"} — national clinical guidelines, nutrition strategies, traditional-medicine references, safety services and referral directories — each chosen for a pattern found in your request, together with the reference libraries below. The evidence label says how firmly each one is established; none of them is a judgement about you, and a health worker remains the person to confirm what applies.`,
+        `በዚህ ሪፖርት ውስጥ ያሉት እርምጃዎች በ${resourceItems.length} የተመረጡ መርጃዎች ላይ ይመሠረታሉ — ብሔራዊ የክሊኒክ መመሪያዎች፣ የአመጋገብ ስልቶች፣ የባህላዊ መድኃኒት ማጣቀሻዎች፣ የደህንነት አገልግሎቶችና የሪፈራል ማውጫዎች — እያንዳንዳቸው በጥያቄዎ ውስጥ ለተገኘ ንድፍ የተመረጡ ናቸው፤ ከታች ካሉት የማጣቀሻ ቤተ-መጻሕፍት ጋር። የማስረጃ መለያው እያንዳንዱ ምን ያህል የተረጋገጠ እንደሆነ ይናገራል፤ አንዳቸውም ስለ እርስዎ የተሰጠ ፍርድ አይደሉም፤ የሚመለከትዎን የሚያረጋግጠው የጤና ባለሙያ ነው።`,
+      ),
+      [...resourceItems, ...libraries],
+    ));
   }
 
   // ── 7a. Trace each knowledge strand and analysis engine ────────────────────
@@ -488,11 +603,13 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
     const profileMatches = (data?.findings ?? []).filter((finding) =>
       finding.matchedOn.some((match) => match.startsWith("Profile: "))
     ).length;
-    const lensPoints = (lens?.points ?? []).flatMap((point) => point.person ? [t(point.person)] : []).slice(0, 2);
+    const lensPoints = (lens?.points ?? []).flatMap((point) => point.person ? [t(point.person)] : []);
+    // The patterns this strand supports, as titled in "Patterns to consider together".
+    const supports = shownCauses.filter((cause) => cause.strands.includes(strand)).map(causeName).filter(Boolean);
 
     if (am) {
       if (data?.findings.length) omit(`${data.findings.length} ${STRAND_LABEL[strand] ?? strand} library findings and sources (English catalogue text)`);
-      return `${label}፦ ${considered} የማጣቀሻ ግቤቶች ተመርምረዋል፤ ${kept} ከጉዳዩ መረጃ ጋር ተዛምደዋል፤ ${profileMatches} ከመገለጫ ሁኔታ ጋርም ተዛምደዋል።${lensPoints.length ? ` ${lensPoints.join(" ")}` : ""}${data?.layer === "B" && analysis.safety.domainBSuppressed ? " የደህንነት ጉዳይ በመገምገም ላይ ስለሆነ ይህ ክፍል ተወግዷል።" : ""}`;
+      return `${label}፦ ${considered} የማጣቀሻ ግቤቶች ተመርምረዋል፤ ${kept} ከጉዳዩ መረጃ ጋር ተዛምደዋል፤ ${profileMatches} ከመገለጫ ሁኔታ ጋርም ተዛምደዋል።${supports.length ? ` የሚደግፋቸው ንድፎች፦ ${supports.join("፤ ")}።` : ""}${lensPoints.length ? ` ${lensPoints.join(" ")}` : ""}${data?.layer === "B" && analysis.safety.domainBSuppressed ? " የደህንነት ጉዳይ በመገምገም ላይ ስለሆነ ይህ ክፍል ተወግዷል።" : ""}`;
     }
 
     if (data?.layer === "B" && analysis.safety.domainBSuppressed) {
@@ -501,17 +618,22 @@ export function buildEnhancedReport(analysis: CaseAnalysis, profileConsented: bo
 
     const sources = [...new Set((data?.findings ?? []).map((finding) => finding.source).filter((source): source is string => Boolean(source)))];
     const findingDetails = kept > 0
-      ? [`${kept} grounded reference ${kept === 1 ? "entry" : "entries"} were retained after comparing the case and available profile details.`,
+      ? [`${kept} grounded reference ${kept === 1 ? "entry was" : "entries were"} retained after comparing the case and available profile details.`,
         `${profileMatches} retained ${profileMatches === 1 ? "entry also reflects" : "entries also reflect"} the available profile context.`,
-        ...(sources.length ? [`Library/source: ${sources.join("; ")}`] : [])]
+        ...(sources.length ? [`Library/source: ${sources.join("; ")}.`] : [])]
       : [];
     const caseAngle = lensPoints.length ? `Case-specific reading: ${lensPoints.join(" ")}` : "";
+    const named = (data?.findings ?? []).filter(saidDirectly).map((finding) => finding.name);
+    const entries = named.length ? `Entries tied to your words: ${named.slice(0, 5).join("; ")}${named.length > 5 ? ` and ${named.length - 5} more` : ""}.` : "";
+    const supported = supports.length ? `Supports the pattern${supports.length === 1 ? "" : "s"}: ${supports.join("; ")}.` : "";
     const noMatch = kept === 0
       ? "No catalogue finding was retained as sufficiently connected to the submitted case and available profile; this does not establish that a factor is absent."
       : "";
     return [
       `${label}: ${considered} reference-library entries considered; ${kept} grounded to the submitted case.`,
       findingDetails.length ? findingDetails.join(" | ") : noMatch,
+      entries,
+      supported,
       caseAngle,
     ].filter(Boolean).join(" ");
   });

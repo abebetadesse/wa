@@ -75,12 +75,12 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
   return (
     <Link
       href={`/b/${business.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:border-input hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:border-input hover:shadow-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div
         className={cn(
           "relative h-28 bg-cover bg-center",
-          !business.coverUrl && (cultural ? "bg-gradient-to-br from-gold/40 via-amber-500/20 to-rose-500/20" : "bg-gradient-to-br from-brand/40 via-sky-500/20 to-emerald-500/20"),
+          !business.coverUrl && (cultural ? "bg-gradient-to-br from-gold/40 via-gold/20 to-danger/20" : "bg-gradient-to-br from-brand/40 via-info/20 to-brand/20"),
         )}
         style={business.coverUrl ? { backgroundImage: `url(${business.coverUrl})` } : undefined}
       >
@@ -100,7 +100,7 @@ export function BusinessCard({ business }: { business: BusinessSummary }) {
             <h3 className="flex items-center gap-1 font-display text-lg font-bold leading-tight text-foreground group-hover:text-brand-strong">
               <span className="truncate">{businessName}</span>
               {business.demoSample ? (
-                <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">{t.marketplace.sample}</span>
+                <span className="shrink-0 rounded bg-gold-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-gold-strong">{t.marketplace.sample}</span>
               ) : (
                 <BadgeCheck className="size-4 shrink-0 text-brand" aria-label={t.marketplace.verified} />
               )}

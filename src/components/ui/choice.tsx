@@ -41,7 +41,7 @@ export function ChoiceGroup({
               className={cn(
                 "flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-sm transition-colors",
                 "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
-                checked ? "border-brand bg-brand/10 text-foreground" : "border-border bg-card text-muted-foreground hover:border-input",
+                checked ? "border-brand bg-brand-soft text-foreground" : "border-border bg-card text-muted-foreground hover:border-input",
               )}
             >
               <input
@@ -51,7 +51,7 @@ export function ChoiceGroup({
                 checked={checked}
                 required={required}
                 onChange={() => onChange(option.value)}
-                className="mt-0.5 size-4 accent-[var(--brand-accent)]"
+                className="mt-0.5 size-4 accent-brand"
               />
               <span className="flex flex-col">
                 <span className={cn("font-medium", checked && "text-foreground")}>{option.label}</span>

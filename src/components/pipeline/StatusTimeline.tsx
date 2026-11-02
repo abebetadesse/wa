@@ -59,25 +59,25 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
   const currentIndex = statusRank[currentStatus] ?? 0;
 
   return (
-    <div className={`glass-panel p-5 rounded-2xl border border-white/10 ${className}`}>
+    <div className={`glass-panel p-5 rounded-2xl border border-border ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h4 className="text-xs font-semibold tracking-wider uppercase text-emerald-400/90 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <h4 className="text-xs font-semibold tracking-wider uppercase text-brand flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
           {locale === "am" ? "የጉዳይ ክትትል ሁኔታ" : "Case Lifecycle Timeline"}
         </h4>
         {currentStatus === CaseStatus.BLOCKED_BY_SAFETY_GATE ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-danger/20 text-danger-strong border border-danger/40 animate-pulse">
+            <ShieldAlert className="w-3.5 h-3.5 text-danger" />
             {locale === "am" ? "በደህንነት በር ታግዷል" : "Blocked by Safety Gate"}
           </span>
         ) : currentStatus === CaseStatus.PUBLISHED ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-brand/20 text-brand-strong border border-brand/40">
+            <CheckCircle className="w-3.5 h-3.5 text-brand" />
             {locale === "am" ? "ይፋ ተደርጓል" : "Published to Patient"}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40">
-            <Clock className="w-3.5 h-3.5 text-amber-400" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gold/20 text-gold-strong border border-gold/40">
+            <Clock className="w-3.5 h-3.5 text-gold" />
             {locale === "am" ? "በግምገማ ላይ" : "Under Active Review"}
           </span>
         )}
@@ -85,12 +85,12 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
 
       {/* Progress track */}
       <div className="relative flex items-center justify-between mt-2">
-        <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-1 bg-white/10 z-0 rounded-full" />
+        <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-1 bg-foreground/10 z-0 rounded-full" />
         <div
           className={`absolute top-1/2 left-0 -translate-y-1/2 h-1 rounded-full transition-all duration-700 z-0 ${
             currentStatus === CaseStatus.BLOCKED_BY_SAFETY_GATE
-              ? "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.5)]"
-              : "bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400"
+              ? "bg-danger"
+              : "bg-gradient-to-r from-brand via-brand to-gold-fill"
           }`}
           style={{ width: `${Math.min(100, Math.max(10, (currentIndex / 4) * 100))}%` }}
         />
@@ -100,13 +100,13 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
           const isCurrent = Math.floor(currentIndex) === idx;
           const Icon = step.icon;
 
-          let badgeColor = "bg-slate-900 border-white/20 text-slate-400";
+          let badgeColor = "bg-card border-border-strong text-muted-foreground";
           if (step.isBlocked) {
-            badgeColor = "bg-rose-950 border-rose-500 text-rose-300 ring-4 ring-rose-500/20";
+            badgeColor = "bg-danger-soft border-danger text-danger-strong ring-4 ring-danger/20";
           } else if (isCurrent) {
-            badgeColor = "bg-amber-950 border-amber-400 text-amber-300 ring-4 ring-amber-400/20 animate-pulse";
+            badgeColor = "bg-gold-soft border-gold text-gold-strong ring-4 ring-gold/20 animate-pulse";
           } else if (isDone) {
-            badgeColor = "bg-emerald-950 border-emerald-400 text-emerald-300";
+            badgeColor = "bg-brand-soft border-brand text-brand-strong";
           }
 
           return (
@@ -119,10 +119,10 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
               <span
                 className={`mt-2 text-[11px] text-center max-w-[90px] font-medium leading-tight ${
                   isCurrent
-                    ? "text-amber-200 font-semibold"
+                    ? "text-gold-strong font-semibold"
                     : isDone
-                    ? "text-slate-300"
-                    : "text-slate-500"
+                    ? "text-soft"
+                    : "text-subtle"
                 }`}
               >
                 {step.label}
@@ -133,8 +133,8 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
       </div>
 
       {hasOverride && (
-        <div className="mt-4 p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-xs text-emerald-300">
-          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
+        <div className="mt-4 p-2.5 rounded-lg bg-brand/10 border border-brand/20 flex items-center gap-2 text-xs text-brand-strong">
+          <CheckCircle className="w-4 h-4 shrink-0 text-brand" />
           <span>
             {locale === "am"
               ? "የደህንነት ደንብ ውሳኔ በክሊኒካል ባለሙያ ተሻሽሏል (Clinical Override Active)"

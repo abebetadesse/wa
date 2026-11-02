@@ -64,7 +64,7 @@ export default function BusinessHome() {
             const status = BUSINESS_STATUS[business.status] ?? { label: business.status, tone: "neutral" as const };
             return (
               <li key={business.id}>
-                <Link href={`/business/${business.id}`} className="group flex items-center gap-4 rounded-3xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-input hover:shadow-lg">
+                <Link href={`/business/${business.id}`} className="group flex items-center gap-4 rounded-3xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-input hover:shadow-panel">
                   {business.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={assetUrl(business.logoUrl)} alt="" className="size-14 rounded-2xl object-cover" />

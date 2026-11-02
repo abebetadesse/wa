@@ -31,16 +31,16 @@ import {
 import { assetUrl } from "@/lib/base-path";
 
 const PREPARATION_ICONS: Record<string, string> = {
-  decoction: "🍵",
-  infusion: "🫖",
-  powder: "🥣",
+  decoction: "��",
+  infusion: "��",
+  powder: "��",
   steam_inhalation: "♨️",
-  fumigation: "💨",
-  poultice: "🩹",
-  oil_ointment: "🧴",
-  electuary: "🍯",
-  mastication: "🌿",
-  fresh_juice: "🧪",
+  fumigation: "��",
+  poultice: "��",
+  oil_ointment: "��",
+  electuary: "��",
+  mastication: "��",
+  fresh_juice: "��",
 };
 
 function PlantPhoto({
@@ -51,7 +51,7 @@ function PlantPhoto({
   imageClassName: string;
 }) {
   return (
-    <figure className="mt-3 overflow-hidden rounded-2xl border border-stone-700 bg-stone-950/80">
+    <figure className="mt-3 overflow-hidden rounded-2xl border border-border bg-background/80">
       {item.imageUrl ? (
         <Image
           src={item.imageUrl}
@@ -64,7 +64,7 @@ function PlantPhoto({
         />
       ) : (
         <div
-          className={`${imageClassName} flex flex-col items-center justify-center gap-1 text-stone-500`}
+          className={`${imageClassName} flex flex-col items-center justify-center gap-1 text-subtle`}
           role="img"
           aria-label={`No photograph available for ${item.vernacularName}`}
         >
@@ -73,14 +73,14 @@ function PlantPhoto({
         </div>
       )}
       {(item.imageAttribution || item.imageLicenseUrl) && (
-        <figcaption className="flex flex-wrap items-center gap-x-1 px-2.5 py-1.5 text-[9px] leading-tight text-stone-400">
+        <figcaption className="flex flex-wrap items-center gap-x-1 px-2.5 py-1.5 text-[9px] leading-tight text-muted-foreground">
           {item.imageAttribution && (
-            <a href={assetUrl(item.imageSourceUrl)} target="_blank" rel="noreferrer" className="hover:text-stone-200">
+            <a href={assetUrl(item.imageSourceUrl)} target="_blank" rel="noreferrer" className="hover:text-soft">
               {item.imageAttribution}
             </a>
           )}
           {item.imageLicenseUrl && (
-            <a href={assetUrl(item.imageLicenseUrl)} target="_blank" rel="noreferrer" className="underline hover:text-stone-200">
+            <a href={assetUrl(item.imageLicenseUrl)} target="_blank" rel="noreferrer" className="underline hover:text-soft">
               License
             </a>
           )}
@@ -127,15 +127,15 @@ export default function MedicinalPlantsPage() {
   return (
     <main className="space-y-8 pb-16">
       {/* Hero Header */}
-      <header className="rounded-[28px] border border-emerald-500/20 bg-gradient-to-br from-emerald-950/40 via-stone-950 to-amber-950/30 p-8 shadow-[0_25px_80px_rgba(0,0,0,0.5)] md:p-10">
+      <header className="rounded-[28px] border border-brand/20 bg-gradient-to-br from-brand-soft via-background to-gold-soft p-8 shadow-[0_25px_80px_rgba(0,0,0,0.5)] md:p-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-emerald-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-strong">
             <Leaf size={14} />
             Materia Medica & Manuscript Herbal
           </div>
           <Link
             href="/safety"
-            className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-medium text-amber-300 transition hover:bg-amber-500/20"
+            className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-medium text-gold-strong transition hover:bg-gold/20"
           >
             <ShieldCheck size={14} />
             Check Herb-Drug Safety Matrix
@@ -144,58 +144,58 @@ export default function MedicinalPlantsPage() {
         </div>
 
         <div className="mt-5 max-w-4xl">
-          <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl font-serif">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-5xl font-serif">
             የኢትዮጵያ ባህላዊ መድኃኒቶች እና ዕፅዋት መዝገብ
           </h1>
-          <p className="mt-2 text-xl font-bold tracking-tight text-emerald-400">
+          <p className="mt-2 text-xl font-bold tracking-tight text-brand">
             Ethiopian Traditional Medicine & Pharmacopeia Atlas
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-stone-300 md:text-base">
+          <p className="mt-4 text-sm leading-relaxed text-soft md:text-base">
             An intensive knowledge repository synthesizing historical manuscript remedies from{" "}
-            <span className="font-semibold text-amber-300">መጽሐፈ ፈውስ (Metsehafe Fewus)</span>, authentic
-            preparation methods (<span className="font-semibold text-emerald-300">ገቢሮች</span>), and verified modern
+            <span className="font-semibold text-gold">መጽሐፈ ፈውስ (Metsehafe Fewus)</span>, authentic
+            preparation methods (<span className="font-semibold text-brand">ገቢሮች</span>), and verified modern
             ethnopharmacology monographs from the Ethiopian Public Health Institute (EPHI) and Addis Ababa University.
           </p>
         </div>
 
         {/* Quick Stats Bar */}
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-2xl border border-stone-800 bg-stone-900/80 p-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">Documented Remedies</div>
-            <div className="mt-1 text-2xl font-black text-white font-mono">{INTENSIVE_TRADITIONAL_MEDICINES.length}</div>
-            <div className="text-[11px] text-emerald-400">Highland & lowland flora</div>
+          <div className="rounded-2xl border border-border bg-card/80 p-4">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Documented Remedies</div>
+            <div className="mt-1 text-2xl font-bold text-foreground font-mono">{INTENSIVE_TRADITIONAL_MEDICINES.length}</div>
+            <div className="text-[11px] text-brand">Highland & lowland flora</div>
           </div>
-          <div className="rounded-2xl border border-stone-800 bg-stone-900/80 p-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">መጽሐፈ ፈውስ Citations</div>
-            <div className="mt-1 text-2xl font-black text-amber-300 font-mono">{manuscriptCount}</div>
-            <div className="text-[11px] text-amber-400/80">Cross-referenced chapters</div>
+          <div className="rounded-2xl border border-border bg-card/80 p-4">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">መጽሐፈ ፈውስ Citations</div>
+            <div className="mt-1 text-2xl font-bold text-gold font-mono">{manuscriptCount}</div>
+            <div className="text-[11px] text-gold">Cross-referenced chapters</div>
           </div>
-          <div className="rounded-2xl border border-stone-800 bg-stone-900/80 p-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">Therapeutic Categories</div>
-            <div className="mt-1 text-2xl font-black text-white font-mono">
+          <div className="rounded-2xl border border-border bg-card/80 p-4">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Therapeutic Categories</div>
+            <div className="mt-1 text-2xl font-bold text-foreground font-mono">
               {Object.keys(TRADITIONAL_MEDICINE_CATEGORIES).length}
             </div>
-            <div className="text-[11px] text-stone-400">From colic to bone-setting</div>
+            <div className="text-[11px] text-muted-foreground">From colic to bone-setting</div>
           </div>
-          <div className="rounded-2xl border border-stone-800 bg-stone-900/80 p-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">Culinary Safe Tonics</div>
-            <div className="mt-1 text-2xl font-black text-emerald-300 font-mono">{safeCount}</div>
-            <div className="text-[11px] text-emerald-400/80">Everyday teas & nutrition</div>
+          <div className="rounded-2xl border border-border bg-card/80 p-4">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Culinary Safe Tonics</div>
+            <div className="mt-1 text-2xl font-bold text-brand font-mono">{safeCount}</div>
+            <div className="text-[11px] text-brand">Everyday teas & nutrition</div>
           </div>
         </div>
       </header>
 
       {/* Filter & Search Bar */}
-      <section className="space-y-4 rounded-[28px] border border-stone-800 bg-stone-900/80 p-5 shadow-lg">
+      <section className="space-y-4 rounded-[28px] border border-border bg-card/80 p-5 shadow-panel">
         <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_auto]">
           {/* Text Search */}
-          <label className="flex items-center gap-3 rounded-2xl border border-stone-700 bg-stone-950/70 px-4 py-3 text-sm text-stone-300 focus-within:border-emerald-500">
-            <Search size={18} className="text-emerald-400 shrink-0" />
+          <label className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm text-soft focus-within:border-brand">
+            <Search size={18} className="text-brand shrink-0" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by Amharic name (ኮሶ, ጤና አዳም), English, Latin, or disease (ወፍ በሽታ, ሳል)..."
-              className="w-full bg-transparent text-white placeholder:text-stone-500 focus:outline-none"
+              className="w-full bg-transparent text-foreground placeholder:text-subtle focus:outline-none"
             />
           </label>
 
@@ -203,14 +203,14 @@ export default function MedicinalPlantsPage() {
           <select
             value={selectedSafety}
             onChange={(e) => setSelectedSafety(e.target.value)}
-            className="rounded-2xl border border-stone-700 bg-stone-950/70 px-4 py-3 text-sm text-stone-200 focus:outline-none focus:border-emerald-500"
+            className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm text-soft focus:outline-none focus:border-brand"
             aria-label="Filter by safety profile"
           >
-            <option value="all">🛡️ All Safety Classifications</option>
-            <option value="safe_culinary">🟢 Safe Culinary (ምግብነት ያለው)</option>
-            <option value="caution_moderate">🟡 Moderate Caution (ጥንቃቄ የሚሻ)</option>
-            <option value="high_risk_potent">🟠 High Potency Purgative (ኃይለኛ)</option>
-            <option value="toxic_internal_external_only">🔴 External / Topical Only (ውጫዊ ብቻ)</option>
+            <option value="all">��️ All Safety Classifications</option>
+            <option value="safe_culinary">�� Safe Culinary (ምግብነት ያለው)</option>
+            <option value="caution_moderate">�� Moderate Caution (ጥንቃቄ የሚሻ)</option>
+            <option value="high_risk_potent">�� High Potency Purgative (ኃይለኛ)</option>
+            <option value="toxic_internal_external_only">�� External / Topical Only (ውጫዊ ብቻ)</option>
             <option value="strictly_poisonous">⛔ Poisonous / Restricted (መርዛማ)</option>
           </select>
 
@@ -220,27 +220,27 @@ export default function MedicinalPlantsPage() {
             onClick={() => setManuscriptOnly((prev) => !prev)}
             className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
               manuscriptOnly
-                ? "border-amber-500 bg-amber-500/20 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                : "border-stone-700 bg-stone-950/70 text-stone-400 hover:text-stone-200"
+                ? "border-gold bg-gold/20 text-gold-strong"
+                : "border-border bg-background/70 text-muted-foreground hover:text-soft"
             }`}
           >
-            <BookOpen size={16} className={manuscriptOnly ? "text-amber-400" : "text-stone-500"} />
+            <BookOpen size={16} className={manuscriptOnly ? "text-gold" : "text-subtle"} />
             መጽሐፈ ፈውስ Citations Only
           </button>
         </div>
 
         {/* Traditional Therapeutic Category Pills */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-stone-800/80">
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
             className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
               selectedCategory === "all"
-                ? "bg-emerald-500 text-stone-950 font-bold shadow-md"
-                : "border border-stone-800 bg-stone-950/50 text-stone-400 hover:text-stone-200 hover:border-stone-700"
+                ? "bg-brand text-brand-foreground font-bold shadow-md"
+                : "border border-border bg-background/50 text-muted-foreground hover:text-soft hover:border-border"
             }`}
           >
-            🌿 All Categories ({INTENSIVE_TRADITIONAL_MEDICINES.length})
+            �� All Categories ({INTENSIVE_TRADITIONAL_MEDICINES.length})
           </button>
           {Object.values(TRADITIONAL_MEDICINE_CATEGORIES).map((cat) => {
             const count = INTENSIVE_TRADITIONAL_MEDICINES.filter(
@@ -254,8 +254,8 @@ export default function MedicinalPlantsPage() {
                 onClick={() => setSelectedCategory(cat.key)}
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition ${
                   isSelected
-                    ? "bg-emerald-600 text-white font-bold shadow-md"
-                    : "border border-stone-800 bg-stone-950/40 text-stone-400 hover:text-stone-200 hover:border-stone-700"
+                    ? "bg-brand text-brand-foreground font-bold shadow-md"
+                    : "border border-border bg-background/40 text-muted-foreground hover:text-soft hover:border-border"
                 }`}
               >
                 <span>{cat.icon}</span>
@@ -271,16 +271,16 @@ export default function MedicinalPlantsPage() {
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_420px]">
         {/* Left Column: Traditional Medicine Cards */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs text-stone-400 px-1">
+          <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
             <span>
-              Showing <span className="font-bold text-white">{filteredMedicines.length}</span> of{" "}
+              Showing <span className="font-bold text-foreground">{filteredMedicines.length}</span> of{" "}
               {INTENSIVE_TRADITIONAL_MEDICINES.length} remedies
             </span>
             {selectedCategory !== "all" && (
               <button
                 type="button"
                 onClick={() => setSelectedCategory("all")}
-                className="text-emerald-400 hover:underline"
+                className="text-brand hover:underline"
               >
                 Clear category filter
               </button>
@@ -290,7 +290,7 @@ export default function MedicinalPlantsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             {filteredMedicines.map((item) => {
               const isSelected = item.id === selectedPlantId;
-              const prepIcon = PREPARATION_ICONS[item.traditionalPreparation.method] ?? "🌿";
+              const prepIcon = PREPARATION_ICONS[item.traditionalPreparation.method] ?? "��";
 
               return (
                 <article
@@ -298,30 +298,30 @@ export default function MedicinalPlantsPage() {
                   onClick={() => setSelectedPlantId(item.id)}
                   className={`group relative cursor-pointer rounded-[24px] border p-5 transition duration-200 flex flex-col justify-between ${
                     isSelected
-                      ? "border-emerald-500 bg-gradient-to-br from-emerald-950/40 to-stone-900/90 shadow-[0_15px_40px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/40"
-                      : "border-stone-800 bg-stone-900/60 hover:border-emerald-500/50 hover:bg-stone-900/90"
+                      ? "border-brand bg-gradient-to-br from-brand-soft to-card/90 shadow-[0_15px_40px_rgba(16,185,129,0.15)] ring-1 ring-brand/40"
+                      : "border-border bg-card/60 hover:border-brand/50 hover:bg-card/90"
                   }`}
                 >
                   <div>
                     {/* Top Meta Badges */}
                     <div className="flex items-center justify-between gap-2 text-[10px] uppercase tracking-wider">
-                      <span className="rounded-full border border-stone-700 bg-stone-950/60 px-2.5 py-0.5 text-stone-400">
+                      <span className="rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-muted-foreground">
                         {item.growthForm} • {item.botanicalFamily}
                       </span>
                       {item.safetyClassification === "safe_culinary" && (
-                        <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-emerald-300 font-semibold flex items-center gap-1">
+                        <span className="rounded-full bg-brand/10 border border-brand/30 px-2 py-0.5 text-brand-strong font-semibold flex items-center gap-1">
                           <CheckCircle2 size={10} /> Safe Culinary
                         </span>
                       )}
                       {item.safetyClassification === "caution_moderate" && (
-                        <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-amber-300 font-semibold flex items-center gap-1">
+                        <span className="rounded-full bg-gold/10 border border-gold/30 px-2 py-0.5 text-gold-strong font-semibold flex items-center gap-1">
                           <AlertTriangle size={10} /> Caution
                         </span>
                       )}
                       {(item.safetyClassification === "high_risk_potent" ||
                         item.safetyClassification === "toxic_internal_external_only" ||
                         item.safetyClassification === "strictly_poisonous") && (
-                        <span className="rounded-full bg-red-500/10 border border-red-500/30 px-2 py-0.5 text-red-300 font-semibold flex items-center gap-1">
+                        <span className="rounded-full bg-danger/10 border border-danger/30 px-2 py-0.5 text-danger-strong font-semibold flex items-center gap-1">
                           <ShieldAlert size={10} /> Potent / External
                         </span>
                       )}
@@ -332,52 +332,52 @@ export default function MedicinalPlantsPage() {
                     {/* Plant Titles */}
                     <div className="mt-3">
                       <div className="flex items-baseline gap-2">
-                        <h2 className="text-2xl font-black text-white font-serif tracking-tight">
+                        <h2 className="text-2xl font-bold text-foreground font-serif tracking-tight">
                           {item.amharicName}
                         </h2>
                         {item.geezName && (
-                          <span className="text-xs text-amber-400/90 font-serif italic">
+                          <span className="text-xs text-gold font-serif italic">
                             ({item.geezName})
                           </span>
                         )}
                       </div>
-                      <div className="text-sm font-semibold text-emerald-400">
+                      <div className="text-sm font-semibold text-brand">
                         {item.vernacularName}
                       </div>
-                      <div className="text-xs italic text-stone-400 mt-0.5">
+                      <div className="text-xs italic text-muted-foreground mt-0.5">
                         {item.scientificName}
                       </div>
                     </div>
 
                     {/* Traditional Category & Preparation Mode */}
                     <div className="mt-3 flex flex-wrap gap-1.5 text-[11px]">
-                      <span className="inline-flex items-center gap-1 rounded-lg bg-stone-950 border border-stone-800 px-2.5 py-1 text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-background border border-border px-2.5 py-1 text-brand">
                         <span>{prepIcon}</span>
                         <span>{item.traditionalPreparation.methodAmharic}</span>
                       </span>
-                      <span className="rounded-lg bg-stone-950 border border-stone-800 px-2.5 py-1 text-stone-300">
+                      <span className="rounded-lg bg-background border border-border px-2.5 py-1 text-soft">
                         {item.categoryAmharic}
                       </span>
                     </div>
 
                     {/* Traditional Indication Preview */}
-                    <p className="mt-3 text-xs leading-relaxed text-stone-300 line-clamp-2">
+                    <p className="mt-3 text-xs leading-relaxed text-soft line-clamp-2">
                       {item.traditionalUse}
                     </p>
                   </div>
 
                   {/* Bottom Footer Info */}
-                  <div className="mt-4 pt-3 border-t border-stone-800/80 flex items-center justify-between text-[11px]">
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-[11px]">
                     {item.manuscriptReference ? (
-                      <span className="inline-flex items-center gap-1 text-amber-300 font-medium font-serif">
+                      <span className="inline-flex items-center gap-1 text-gold font-medium font-serif">
                         <BookOpen size={12} />
                         መጽሐፈ ፈውስ (ገጽ {item.manuscriptReference.pageNumber})
                       </span>
                     ) : (
-                      <span className="text-stone-500 text-[10px]">EPHI / Ethnobotanical Flora</span>
+                      <span className="text-subtle text-[10px]">EPHI / Ethnobotanical Flora</span>
                     )}
 
-                    <span className="text-emerald-400 group-hover:translate-x-0.5 transition font-semibold inline-flex items-center gap-0.5">
+                    <span className="text-brand group-hover:translate-x-0.5 transition font-semibold inline-flex items-center gap-0.5">
                       Monograph <ChevronRight size={12} />
                     </span>
                   </div>
@@ -387,10 +387,10 @@ export default function MedicinalPlantsPage() {
           </div>
 
           {filteredMedicines.length === 0 && (
-            <div className="rounded-[28px] border border-dashed border-stone-700 bg-stone-900/40 p-12 text-center text-stone-300">
-              <Leaf size={32} className="mx-auto text-stone-600 mb-3" />
-              <p className="text-base font-semibold text-white">No traditional medicines found</p>
-              <p className="text-xs text-stone-400 mt-1">
+            <div className="rounded-[28px] border border-dashed border-border bg-card/40 p-12 text-center text-soft">
+              <Leaf size={32} className="mx-auto text-subtle mb-3" />
+              <p className="text-base font-semibold text-foreground">No traditional medicines found</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Try changing your search terms, safety filter, or category pills.
               </p>
             </div>
@@ -398,15 +398,15 @@ export default function MedicinalPlantsPage() {
         </div>
 
         {/* Right Column: Deep Monograph Drawer / Panel */}
-        <aside className="sticky top-6 rounded-[28px] border border-emerald-500/30 bg-gradient-to-b from-stone-900 via-stone-950 to-black p-6 shadow-2xl space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
+        <aside className="sticky top-6 rounded-[28px] border border-brand/30 bg-gradient-to-b from-card via-background to-background p-6 shadow-raised space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
           {/* Monograph Top Identity */}
           <div>
-            <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-emerald-400">
+            <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-brand">
               <span className="flex items-center gap-1.5 font-bold">
                 <Leaf size={14} />
                 Monograph #{selectedItem.id.slice(0, 14)}
               </span>
-              <span className="rounded-full bg-stone-800 px-2 py-0.5 text-stone-300 font-mono">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-soft font-mono">
                 {selectedItem.growthForm}
               </span>
             </div>
@@ -414,37 +414,37 @@ export default function MedicinalPlantsPage() {
             <PlantPhoto item={selectedItem} imageClassName="h-40 w-full object-cover" />
 
             <div className="mt-3">
-              <h2 className="text-3xl font-black text-white font-serif tracking-tight">
+              <h2 className="text-3xl font-bold text-foreground font-serif tracking-tight">
                 {selectedItem.amharicName}
               </h2>
               {selectedItem.geezName && (
-                <div className="text-xs text-amber-400 font-serif mt-0.5">
+                <div className="text-xs text-gold font-serif mt-0.5">
                   ግእዝ፡ {selectedItem.geezName}
                 </div>
               )}
-              <div className="text-base font-bold text-emerald-300 mt-1">
+              <div className="text-base font-bold text-brand mt-1">
                 {selectedItem.vernacularName} ({selectedItem.englishName})
               </div>
-              <div className="text-xs italic text-stone-400 font-mono mt-0.5">
+              <div className="text-xs italic text-muted-foreground font-mono mt-0.5">
                 {selectedItem.scientificName} • {selectedItem.botanicalFamily}
               </div>
             </div>
           </div>
 
           {/* Quick Habitat & Distribution */}
-          <div className="rounded-2xl border border-stone-800 bg-stone-950/70 p-3.5 space-y-1.5 text-xs text-stone-300">
-            <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
-              <MapPin size={12} className="text-emerald-400" /> Habitat & Ethiopian Distribution
+          <div className="rounded-2xl border border-border bg-background/70 p-3.5 space-y-1.5 text-xs text-soft">
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+              <MapPin size={12} className="text-brand" /> Habitat & Ethiopian Distribution
             </div>
-            <p className="text-stone-200">{selectedItem.habitat}</p>
-            <p className="text-[11px] text-stone-400">
-              <span className="text-stone-500">Regions:</span> {selectedItem.location}
+            <p className="text-soft">{selectedItem.habitat}</p>
+            <p className="text-[11px] text-muted-foreground">
+              <span className="text-subtle">Regions:</span> {selectedItem.location}
             </p>
             <div className="pt-1 flex flex-wrap gap-1">
               {selectedItem.plantParts.map((p) => (
                 <span
                   key={p}
-                  className="rounded-md border border-stone-700 bg-stone-900 px-2 py-0.5 text-[10px] text-emerald-300"
+                  className="rounded-md border border-border bg-card px-2 py-0.5 text-[10px] text-brand"
                 >
                   {p}
                 </span>
@@ -453,46 +453,46 @@ export default function MedicinalPlantsPage() {
           </div>
 
           {/* Traditional Preparation & Geber (አዘገጃጀትና ገቢር) */}
-          <div className="rounded-2xl border border-emerald-500/25 bg-emerald-950/20 p-4 space-y-2">
-            <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-emerald-400 font-bold">
+          <div className="rounded-2xl border border-brand/25 bg-brand-soft p-4 space-y-2">
+            <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-brand font-bold">
               <span className="flex items-center gap-1.5">
                 <FlaskConical size={14} />
                 ባህላዊ አዘገጃጀት እና ገቢር (Preparation & Geber)
               </span>
-              <span className="text-stone-300 text-xs">
-                {PREPARATION_ICONS[selectedItem.traditionalPreparation.method] ?? "🌿"}
+              <span className="text-soft text-xs">
+                {PREPARATION_ICONS[selectedItem.traditionalPreparation.method] ?? "��"}
               </span>
             </div>
-            <div className="text-xs font-semibold text-emerald-200 font-serif">
+            <div className="text-xs font-semibold text-brand-strong font-serif">
               ዘዴ፡ {selectedItem.traditionalPreparation.methodAmharic}
             </div>
-            <p className="text-xs text-stone-200 leading-relaxed font-serif bg-stone-950/60 p-2.5 rounded-xl border border-emerald-500/15">
+            <p className="text-xs text-soft leading-relaxed font-serif bg-background/60 p-2.5 rounded-xl border border-brand/15">
               {selectedItem.traditionalPreparation.instructionsAmharic}
             </p>
-            <p className="text-[11px] text-stone-300 leading-relaxed italic">
+            <p className="text-[11px] text-soft leading-relaxed italic">
               {selectedItem.traditionalPreparation.instructionsEnglish}
             </p>
-            <div className="text-[11px] text-amber-300/90 pt-1">
-              <span className="font-semibold text-stone-400">ባህላዊ መጠን (Dosage):</span>{" "}
+            <div className="text-[11px] text-gold pt-1">
+              <span className="font-semibold text-muted-foreground">ባህላዊ መጠን (Dosage):</span>{" "}
               {selectedItem.traditionalPreparation.dosageTradition}
             </div>
           </div>
 
           {/* Manuscript Citation (መጽሐፈ ፈውስ) */}
           {selectedItem.manuscriptReference && (
-            <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 to-stone-950 p-4 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-300 font-bold">
+            <div className="rounded-2xl border border-gold/30 bg-gradient-to-br from-gold-soft to-background p-4 space-y-2">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-gold font-bold">
                 <BookOpen size={14} />
                 የመጽሐፍ ማጣቀሻ (Manuscript Citation)
               </div>
-              <div className="text-xs font-bold text-white font-serif">
+              <div className="text-xs font-bold text-foreground font-serif">
                 {selectedItem.manuscriptReference.bookTitle}
               </div>
-              <div className="text-xs text-amber-400 font-serif">
+              <div className="text-xs text-gold font-serif">
                 {selectedItem.manuscriptReference.chapterOrSection}
               </div>
               {selectedItem.manuscriptReference.notesAmharic && (
-                <p className="text-xs text-stone-200 font-serif leading-relaxed italic bg-black/40 p-2.5 rounded-xl border border-amber-500/20">
+                <p className="text-xs text-soft font-serif leading-relaxed italic bg-sunken/80 p-2.5 rounded-xl border border-gold/20">
                   «{selectedItem.manuscriptReference.notesAmharic}»
                 </p>
               )}
@@ -501,15 +501,15 @@ export default function MedicinalPlantsPage() {
 
           {/* Diseases & Indications */}
           <div className="space-y-2">
-            <div className="text-[10px] uppercase tracking-wider text-stone-400 font-semibold flex items-center gap-1.5">
-              <Stethoscope size={12} className="text-emerald-400" />
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Stethoscope size={12} className="text-brand" />
               የሚፈውሳቸው ህመሞች (Documented Indications)
             </div>
             <div className="flex flex-wrap gap-1.5">
               {selectedItem.diseasesTreated.map((disease) => (
                 <span
                   key={disease}
-                  className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-200"
+                  className="rounded-lg border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand-strong"
                 >
                   {disease}
                 </span>
@@ -518,21 +518,21 @@ export default function MedicinalPlantsPage() {
           </div>
 
           {/* Modern Biochemical & Active Ingredients */}
-          <div className="rounded-2xl border border-stone-800 bg-stone-950/70 p-4 space-y-2">
-            <div className="text-[10px] uppercase tracking-wider text-stone-400 font-semibold flex items-center gap-1.5">
-              <Sparkles size={12} className="text-amber-400" />
+          <div className="rounded-2xl border border-border bg-background/70 p-4 space-y-2">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Sparkles size={12} className="text-gold" />
               Active Constituents & Mechanisms
             </div>
-            <div className="text-xs text-stone-200">
-              <span className="text-stone-400 font-semibold">Active:</span>{" "}
+            <div className="text-xs text-soft">
+              <span className="text-muted-foreground font-semibold">Active:</span>{" "}
               {selectedItem.activeIngredients.join(", ")}
             </div>
-            <p className="text-[11px] text-stone-400 leading-relaxed">
-              <span className="text-stone-500">Phytochemical profile:</span>{" "}
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <span className="text-subtle">Phytochemical profile:</span>{" "}
               {selectedItem.biochemicalComposition.join(", ")}
             </p>
-            <div className="pt-1.5 border-t border-stone-800 text-[11px] text-emerald-300">
-              <span className="font-semibold text-stone-400">Actions:</span>{" "}
+            <div className="pt-1.5 border-t border-border text-[11px] text-brand">
+              <span className="font-semibold text-muted-foreground">Actions:</span>{" "}
               {selectedItem.pharmacologicalActions.join(" • ")}
             </div>
           </div>
@@ -541,10 +541,10 @@ export default function MedicinalPlantsPage() {
           <div
             className={`rounded-2xl border p-4 space-y-2 ${
               selectedItem.safetyClassification === "safe_culinary"
-                ? "border-emerald-500/30 bg-emerald-950/20"
+                ? "border-brand/30 bg-brand-soft"
                 : selectedItem.safetyClassification === "caution_moderate"
-                ? "border-amber-500/30 bg-amber-950/20"
-                : "border-red-500/30 bg-red-950/20"
+                ? "border-gold/30 bg-gold-soft"
+                : "border-danger/30 bg-danger-soft"
             }`}
           >
             <div className="flex items-center justify-between text-[11px] uppercase tracking-wider font-bold">
@@ -552,19 +552,19 @@ export default function MedicinalPlantsPage() {
                 <AlertTriangle size={14} />
                 Safety & Contraindications
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/40 font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-sunken/80 font-mono">
                 {selectedItem.safetyClassification}
               </span>
             </div>
 
-            <p className="text-xs leading-relaxed text-stone-200">{selectedItem.safetyNotes}</p>
+            <p className="text-xs leading-relaxed text-soft">{selectedItem.safetyNotes}</p>
 
             {selectedItem.contraindications.length > 0 && (
               <div className="pt-2 text-xs">
-                <div className="text-[10px] uppercase tracking-wider text-red-400 font-bold mb-1">
+                <div className="text-[10px] uppercase tracking-wider text-danger font-bold mb-1">
                   Contraindicated in:
                 </div>
-                <ul className="list-disc pl-4 space-y-0.5 text-red-200/90 text-[11px]">
+                <ul className="list-disc pl-4 space-y-0.5 text-danger-strong text-[11px]">
                   {selectedItem.contraindications.map((c) => (
                     <li key={c}>{c}</li>
                   ))}
@@ -573,13 +573,13 @@ export default function MedicinalPlantsPage() {
             )}
 
             {selectedItem.herbDrugInteractions.length > 0 && (
-              <div className="pt-2 border-t border-stone-800 text-xs">
-                <div className="text-[10px] uppercase tracking-wider text-amber-400 font-bold mb-1">
+              <div className="pt-2 border-t border-border text-xs">
+                <div className="text-[10px] uppercase tracking-wider text-gold font-bold mb-1">
                   Key Drug Interactions:
                 </div>
                 {selectedItem.herbDrugInteractions.map((inter) => (
-                  <div key={inter.drugClass} className="text-[11px] text-stone-300 py-1">
-                    <span className="font-bold text-amber-300">{inter.drugClass}:</span> {inter.effect}
+                  <div key={inter.drugClass} className="text-[11px] text-soft py-1">
+                    <span className="font-bold text-gold">{inter.drugClass}:</span> {inter.effect}
                   </div>
                 ))}
               </div>
@@ -590,7 +590,7 @@ export default function MedicinalPlantsPage() {
           <div className="pt-2">
             <Link
               href={`/safety`}
-              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 py-3 text-xs font-bold text-white transition shadow-lg"
+              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-brand hover:bg-brand py-3 text-xs font-bold text-brand-foreground transition shadow-panel"
             >
               <ShieldCheck size={16} />
               Cross-Check in Safety Matrix

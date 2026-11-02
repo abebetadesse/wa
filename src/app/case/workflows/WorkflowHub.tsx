@@ -26,12 +26,12 @@ const ICONS: Record<WorkflowDomain, typeof Briefcase> = {
 
 /** Each domain gets its own distinct accent so the grid is visually scannable. */
 const DOMAIN_COLORS: Record<WorkflowDomain, string> = {
-  career:       "text-amber-500",
-  legal:        "text-blue-500",
-  relationship: "text-rose-500",
-  social:       "text-emerald-500",
-  spiritual:    "text-violet-500",
-  biological:   "text-teal-500",
+  career:       "text-gold",
+  legal:        "text-info",
+  relationship: "text-danger",
+  social:       "text-brand",
+  spiritual:    "text-plum",
+  biological:   "text-brand",
 };
 
 export const STAGE_LABELS: Record<OwnerView["stage"], { label: string; tone: "neutral" | "brand" | "gold" | "success" | "warning" | "danger" }> = {

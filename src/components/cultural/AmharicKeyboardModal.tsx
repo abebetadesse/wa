@@ -60,17 +60,17 @@ export function AmharicKeyboardModal({
 
   const PRESETS = context === "career" ? PRESETS_CAREER : PRESETS_GENERAL;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-stone-900 border border-amber-500/40 rounded-3xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm animate-fade-in">
+      <div className="bg-card border border-gold/40 rounded-3xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-raised space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
-            <h3 className="text-lg font-bold text-amber-200">የግዕዝ / አማርኛ ኪቦርድ</h3>
-            <p className="text-xs text-stone-400">Click a base letter to open its 7 orders, or use a preset name</p>
+            <h3 className="text-lg font-bold text-gold-strong">የግዕዝ / አማርኛ ኪቦርድ</h3>
+            <p className="text-xs text-muted-foreground">Click a base letter to open its 7 orders, or use a preset name</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-sm"
+            className="p-2 rounded-xl bg-muted hover:bg-sunken text-soft text-sm"
           >
             ✕ Close
           </button>
@@ -78,7 +78,7 @@ export function AmharicKeyboardModal({
 
         {/* Quick Presets */}
         <div className="space-y-1">
-          <span className="text-xs text-stone-400">Quick Canonical Names:</span>
+          <span className="text-xs text-muted-foreground">Quick Canonical Names:</span>
           <div className="flex flex-wrap gap-2">
             {PRESETS.map((p) => (
               <button
@@ -88,7 +88,7 @@ export function AmharicKeyboardModal({
                   onInsert(p);
                   onClose();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 text-sm font-medium hover:bg-amber-900/80 transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-gold-soft border border-gold/30 text-gold-strong text-sm font-medium hover:bg-gold-soft transition-colors"
               >
                 {p}
               </button>
@@ -98,15 +98,15 @@ export function AmharicKeyboardModal({
 
         {/* Expanded 7 orders for active family */}
         {activeFamilyIdx !== null && (
-          <div className="p-3 rounded-2xl bg-black/60 border border-amber-500/40 space-y-2">
-            <span className="text-xs text-amber-400 font-mono">Select order:</span>
+          <div className="p-3 rounded-2xl bg-sunken/80 border border-gold/40 space-y-2">
+            <span className="text-xs text-gold font-mono">Select order:</span>
             <div className="flex flex-wrap gap-2">
               {FIDEL_FAMILIES[activeFamilyIdx].map((char) => (
                 <button
                   key={char}
                   type="button"
                   onClick={() => onInsert(char)}
-                  className="w-10 h-10 rounded-xl bg-stone-800 hover:bg-amber-600 text-white font-bold text-base border border-stone-700 transition-colors"
+                  className="w-10 h-10 rounded-xl bg-muted hover:bg-gold-fill text-foreground font-bold text-base border border-border transition-colors"
                 >
                   {char}
                 </button>
@@ -127,8 +127,8 @@ export function AmharicKeyboardModal({
               }}
               className={`p-2.5 rounded-xl font-bold text-base border transition-all ${
                 activeFamilyIdx === idx
-                  ? "bg-amber-600 border-amber-400 text-white"
-                  : "bg-stone-800/80 border-stone-700 text-stone-200 hover:bg-stone-700 hover:text-amber-200"
+                  ? "bg-gold-fill border-gold text-gold-foreground"
+                  : "bg-muted/80 border-border text-soft hover:bg-sunken hover:text-gold-strong"
               }`}
             >
               {fam[0]}
@@ -136,20 +136,20 @@ export function AmharicKeyboardModal({
           ))}
         </div>
 
-        <div className="flex justify-between items-center pt-2 border-t border-stone-800 text-xs text-stone-400">
+        <div className="flex justify-between items-center pt-2 border-t border-border text-xs text-muted-foreground">
           <span>Space and backspace:</span>
           <div className="space-x-2">
             <button
               type="button"
               onClick={() => onInsert(" ")}
-              className="px-4 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-white"
+              className="px-4 py-1 rounded-lg bg-muted hover:bg-sunken text-foreground"
             >
               Space
             </button>
             <button
               type="button"
               onClick={() => onInsert("__backspace__")}
-              className="px-4 py-1 rounded-lg bg-rose-900/60 border border-rose-600/40 hover:bg-rose-800 text-white"
+              className="px-4 py-1 rounded-lg bg-danger-soft border border-danger/40 hover:bg-danger-soft text-foreground"
             >
               ⌫ Backspace
             </button>

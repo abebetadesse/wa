@@ -145,8 +145,8 @@ export default function AdminCaseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 p-12 text-center text-sm">
-        <Clock className="w-8 h-8 animate-spin mx-auto mb-3 text-purple-400" />
+      <div className="min-h-screen bg-background text-foreground p-12 text-center text-sm">
+        <Clock className="w-8 h-8 animate-spin mx-auto mb-3 text-plum" />
         Loading administrative inspection console...
       </div>
     );
@@ -156,13 +156,13 @@ export default function AdminCaseDetailPage() {
   const publicationChecksComplete = Object.values(publicationChecks).every(Boolean);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Navigation & Action Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex items-center justify-between border-b border-border pb-4">
           <Link
             href="/admin/cases"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Admin Queue
@@ -171,7 +171,7 @@ export default function AdminCaseDetailPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowReturnModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-300 transition-all flex items-center gap-2"
+              className="px-3.5 py-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border text-xs font-medium text-soft transition-all flex items-center gap-2"
             >
               <RotateCcw className="w-4 h-4" />
               Return to Professional
@@ -181,13 +181,13 @@ export default function AdminCaseDetailPage() {
               <button
                 onClick={handlePublish}
                 disabled={!publicationChecksComplete}
-                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-950/40 transition-all flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-plum to-info hover:from-plum hover:to-info text-plum-foreground text-xs font-bold shadow-md transition-all flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 Approve & Publish to Patient
               </button>
             ) : (
-              <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5">
+              <span className="px-3.5 py-1.5 rounded-xl bg-brand/20 text-brand-strong border border-brand/40 text-xs font-bold flex items-center gap-1.5">
                 <CheckCircle className="w-4 h-4" />
                 Published
               </span>
@@ -197,8 +197,8 @@ export default function AdminCaseDetailPage() {
 
         {/* Action Feedback */}
         {actionError && (
-          <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-sm flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+          <div className="p-4 rounded-xl bg-danger/15 border border-danger/40 text-danger-strong text-sm flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-danger mt-0.5" />
             <div>
               <p className="font-semibold">Publication Failed</p>
               <p>{actionError}</p>
@@ -207,8 +207,8 @@ export default function AdminCaseDetailPage() {
         )}
 
         {actionSuccess && (
-          <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-sm flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
+          <div className="p-4 rounded-xl bg-brand/15 border border-brand/40 text-brand-strong text-sm flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 shrink-0 text-brand mt-0.5" />
             <div>
               <p className="font-semibold">Action Successful</p>
               <p>{actionSuccess}</p>
@@ -217,9 +217,9 @@ export default function AdminCaseDetailPage() {
         )}
 
         {!isPublished && (
-          <section className="glass-panel rounded-2xl border border-amber-400/30 p-5" aria-labelledby="publication-quality-heading">
-            <h3 id="publication-quality-heading" className="text-sm font-bold text-amber-200">Report quality checklist</h3>
-            <p className="mt-1 text-xs text-slate-400">Confirm each item before publishing. These acknowledgements are recorded in the case audit trail.</p>
+          <section className="glass-panel rounded-2xl border border-gold/30 p-5" aria-labelledby="publication-quality-heading">
+            <h3 id="publication-quality-heading" className="text-sm font-bold text-gold-strong">Report quality checklist</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Confirm each item before publishing. These acknowledgements are recorded in the case audit trail.</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {([
                 ["safetyReviewed", "I reviewed the safety gate, urgent guidance, and avoid/caution items."],
@@ -227,12 +227,12 @@ export default function AdminCaseDetailPage() {
                 ["languageReviewed", "I checked that the report is clear, respectful, and in a language the user can understand."],
                 ["evidenceReviewed", "I reviewed the supporting sources and noted any evidence limitations."],
               ] as const).map(([key, label]) => (
-                <label key={key} className="flex items-start gap-2 rounded-lg border border-white/10 bg-slate-900/60 p-3 text-sm text-slate-200">
+                <label key={key} className="flex items-start gap-2 rounded-lg border border-border bg-card/60 p-3 text-sm text-soft">
                   <input
                     type="checkbox"
                     checked={publicationChecks[key]}
                     onChange={(event) => setPublicationChecks((checks) => ({ ...checks, [key]: event.target.checked }))}
-                    className="mt-0.5 size-4 accent-amber-400"
+                    className="mt-0.5 size-4 accent-gold"
                   />
                   <span>{label}</span>
                 </label>
@@ -250,30 +250,30 @@ export default function AdminCaseDetailPage() {
         )}
 
         {/* AUDIT TRAIL VIEWER (§11, §15) */}
-        <div className="glass-panel p-6 rounded-2xl border border-purple-500/30 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-purple-300 flex items-center gap-2">
+        <div className="glass-panel p-6 rounded-2xl border border-plum/30 space-y-4 shadow-panel">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-plum flex items-center gap-2">
               <History className="w-4 h-4" />
               Immutable Case Lifecycle Audit Trail ({events.length} Events)
             </h3>
-            <span className="text-[11px] text-slate-400 font-mono">Append-Only Event Store</span>
+            <span className="text-[11px] text-muted-foreground font-mono">Append-Only Event Store</span>
           </div>
 
           <div className="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-2">
             {events.map((evt, idx) => (
               <div
                 key={idx}
-                className="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2"
+                className="p-3 rounded-xl bg-card border border-border text-xs flex flex-col md:flex-row md:items-center justify-between gap-2"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-purple-400 font-bold uppercase">{evt.type}</span>
-                    <span className="text-slate-500">•</span>
-                    <span className="text-slate-300 font-semibold">Actor: {evt.actorId} ({evt.actorRole})</span>
+                    <span className="text-plum font-bold uppercase">{evt.type}</span>
+                    <span className="text-subtle">•</span>
+                    <span className="text-soft font-semibold">Actor: {evt.actorId} ({evt.actorRole})</span>
                   </div>
-                  <p className="text-slate-300 text-[11px]">{evt.note || "No custom note provided."}</p>
+                  <p className="text-soft text-[11px]">{evt.note || "No custom note provided."}</p>
                 </div>
-                <span className="text-[10px] text-slate-500 font-mono shrink-0">
+                <span className="text-[10px] text-subtle font-mono shrink-0">
                   {new Date(evt.at).toLocaleString()}
                 </span>
               </div>
@@ -284,12 +284,12 @@ export default function AdminCaseDetailPage() {
         {/* Dual Report Preview Inspection */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
           {/* Professional View */}
-          <div className="glass-panel p-5 rounded-2xl border border-white/10 space-y-3">
-            <h4 className="font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="glass-panel p-5 rounded-2xl border border-border space-y-3">
+            <h4 className="font-bold text-gold uppercase tracking-wider flex items-center gap-1.5">
               <Eye className="w-4 h-4" />
               Professional Report Payload
             </h4>
-            <div className="p-3 rounded-xl bg-slate-900 border border-white/10 space-y-2 text-slate-300">
+            <div className="p-3 rounded-xl bg-card border border-border space-y-2 text-soft">
               <p><strong>Illness Model:</strong> {proReport?.culturalAnalysis?.illnessModel}</p>
               <p><strong>Differential:</strong> {proReport?.differentialConsiderations?.map((d: any) => d.condition).join(", ")}</p>
               <p><strong>CYP Pathways:</strong> {proReport?.pharmacology?.cypPathways?.join(", ") || "None"}</p>
@@ -298,12 +298,12 @@ export default function AdminCaseDetailPage() {
           </div>
 
           {/* User Report View */}
-          <div className="glass-panel p-5 rounded-2xl border border-white/10 space-y-3">
-            <h4 className="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="glass-panel p-5 rounded-2xl border border-border space-y-3">
+            <h4 className="font-bold text-brand uppercase tracking-wider flex items-center gap-1.5">
               <CheckCircle className="w-4 h-4" />
               User-Facing Report Payload (Published or Pending)
             </h4>
-            <div className="p-3 rounded-xl bg-slate-900 border border-white/10 space-y-2 text-slate-300">
+            <div className="p-3 rounded-xl bg-card border border-border space-y-2 text-soft">
               <p><strong>Headline:</strong> {userReport?.headline}</p>
               <p><strong>Plain Language:</strong> {userReport?.whatMayBeHappening?.plainLanguage}</p>
               <p><strong>Emphasized Foods:</strong> {userReport?.foodAndNutrition?.localFoodsToEmphasize?.join(", ")}</p>
@@ -314,27 +314,27 @@ export default function AdminCaseDetailPage() {
 
         {/* RETURN MODAL */}
         {showReturnModal && (
-          <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-            <div className="glass-panel p-6 rounded-2xl border border-white/20 max-w-lg w-full space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <RotateCcw className="w-5 h-5 text-purple-400" />
+          <div className="fixed inset-0 z-50 bg-overlay flex items-center justify-center p-4">
+            <div className="glass-panel p-6 rounded-2xl border border-border-strong max-w-lg w-full space-y-4">
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <RotateCcw className="w-5 h-5 text-plum" />
                 Return Case to Professional for Revision
               </h3>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-soft">
                 Specify what changes, clarifications, or risk reassessments are required before publication can be approved.
               </p>
 
               {caseRecord?.emergencyDetected && (
-                <section className="space-y-3 rounded-lg border border-rose-500/40 bg-rose-950/20 p-4" aria-labelledby="emergency-return-heading">
-                  <h4 id="emergency-return-heading" className="text-sm font-semibold text-rose-100">Emergency follow-up required</h4>
-                  <p className="text-xs leading-relaxed text-rose-100/80">
+                <section className="space-y-3 rounded-lg border border-danger/40 bg-danger-soft p-4" aria-labelledby="emergency-return-heading">
+                  <h4 id="emergency-return-heading" className="text-sm font-semibold text-danger-strong">Emergency follow-up required</h4>
+                  <p className="text-xs leading-relaxed text-danger-strong">
                     Signals recorded: {(caseRecord.emergencySignals || []).join(", ") || "Emergency signal"}. Record how the user was notified and the emergency resources shared before returning this case.
                   </p>
-                  <label className="block space-y-1 text-xs text-slate-200">
+                  <label className="block space-y-1 text-xs text-soft">
                     User notified at
                     <input type="datetime-local" value={userNotifiedAt} onChange={(event) => setUserNotifiedAt(event.target.value)} className="input-warm w-full" />
                   </label>
-                  <label className="block space-y-1 text-xs text-slate-200">
+                  <label className="block space-y-1 text-xs text-soft">
                     Notification method
                     <select value={notificationMethod} onChange={(event) => setNotificationMethod(event.target.value as typeof notificationMethod)} className="input-warm w-full">
                       <option value="in-app">In-app</option>
@@ -343,11 +343,11 @@ export default function AdminCaseDetailPage() {
                       <option value="phone">Phone</option>
                     </select>
                   </label>
-                  <label className="block space-y-1 text-xs text-slate-200">
+                  <label className="block space-y-1 text-xs text-soft">
                     Emergency resources shared (comma-separated)
                     <input value={resourcesShared} onChange={(event) => setResourcesShared(event.target.value)} className="input-warm w-full" />
                   </label>
-                  <label className="flex items-start gap-2 text-xs text-rose-100">
+                  <label className="flex items-start gap-2 text-xs text-danger-strong">
                     <input type="checkbox" checked={emergencyAcknowledged} onChange={(event) => setEmergencyAcknowledged(event.target.checked)} className="mt-0.5" />
                     I confirm the user was notified and the resources above were shared.
                   </label>
@@ -355,7 +355,7 @@ export default function AdminCaseDetailPage() {
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-soft mb-1">
                   Revision Directive (min 5 characters) *
                 </label>
                 <textarea
@@ -363,21 +363,21 @@ export default function AdminCaseDetailPage() {
                   value={returnNote}
                   onChange={(e) => setReturnNote(e.target.value)}
                   placeholder="e.g. Please clarify if the dietary recommendations account for local fasting seasonality..."
-                  className="w-full bg-slate-900 border border-white/15 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-card border border-border rounded-xl p-3 text-xs text-soft focus:outline-none focus:border-plum"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   onClick={() => setShowReturnModal(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-xs font-medium text-soft"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleReturnToPro}
                   disabled={returnNote.trim().length < 5 || (Boolean(caseRecord?.emergencyDetected) && (!emergencyAcknowledged || !resourcesShared.trim()))}
-                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-plum hover:bg-plum text-plum-foreground text-xs font-bold disabled:opacity-50"
                 >
                   Confirm Return
                 </button>

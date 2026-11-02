@@ -51,52 +51,52 @@ export default function AuditLogPage() {
   }
 
   const actionColors: Record<string, string> = {
-    user_login: "text-emerald-400 bg-emerald-950/60 border-emerald-500/30",
-    user_registered: "text-sky-400 bg-sky-950/60 border-sky-500/30",
-    user_created: "text-indigo-400 bg-indigo-950/60 border-indigo-500/30",
-    user_updated: "text-amber-400 bg-amber-950/60 border-amber-500/30",
-    user_deleted: "text-rose-400 bg-rose-950/60 border-rose-500/30",
-    user_status_suspended: "text-rose-400 bg-rose-950/60 border-rose-500/30",
-    user_impersonated: "text-purple-400 bg-purple-950/60 border-purple-500/30",
-    role_created: "text-emerald-400 bg-emerald-950/60 border-emerald-500/30",
-    role_permissions_updated: "text-amber-400 bg-amber-950/60 border-amber-500/30",
-    password_reset_completed: "text-sky-400 bg-sky-950/60 border-sky-500/30",
+    user_login: "text-brand-strong bg-brand-soft border-brand/30",
+    user_registered: "text-info-strong bg-info-soft border-info/30",
+    user_created: "text-info-strong bg-info-soft border-info/30",
+    user_updated: "text-gold-strong bg-gold-soft border-gold/30",
+    user_deleted: "text-danger-strong bg-danger-soft border-danger/30",
+    user_status_suspended: "text-danger-strong bg-danger-soft border-danger/30",
+    user_impersonated: "text-plum-strong bg-plum-soft border-plum/30",
+    role_created: "text-brand-strong bg-brand-soft border-brand/30",
+    role_permissions_updated: "text-gold-strong bg-gold-soft border-gold/30",
+    password_reset_completed: "text-info-strong bg-info-soft border-info/30",
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Audit Trail & Compliance Log</h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Audit Trail & Compliance Log</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
             Immutable trace of administrative interventions, scientific evaluations, and authorization events.
           </p>
         </div>
 
         <button
           onClick={fetchAuditLogs}
-          className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-colors"
+          className="px-3.5 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border text-xs font-medium text-soft transition-colors"
         >
           Refresh Log
         </button>
       </div>
 
       {/* Filter and Search */}
-      <div className="glass-panel p-4 rounded-2xl border border-white/10 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-border flex flex-col md:flex-row items-center justify-between gap-3">
         <form onSubmit={handleSearch} className="w-full md:w-80 relative">
-          <Search size={15} className="absolute left-3 top-3 text-slate-400" />
+          <Search size={15} className="absolute left-3 top-3 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search action, IP, or resource..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:outline-none focus:border-emerald-500 placeholder-slate-500"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-sunken/80 border border-border text-foreground text-xs focus:outline-none focus:border-brand placeholder:text-subtle"
           />
         </form>
 
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Filter size={13} />
             <span>Action Type:</span>
           </div>
@@ -106,7 +106,7 @@ export default function AuditLogPage() {
               setActionFilter(e.target.value);
               setPage(1);
             }}
-            className="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500"
+            className="px-2.5 py-1.5 rounded-lg bg-sunken/80 border border-border text-xs text-foreground focus:outline-none focus:border-brand"
           >
             <option value="all">All Events</option>
             <option value="user_login">User Login</option>
@@ -124,10 +124,10 @@ export default function AuditLogPage() {
       </div>
 
       {/* Audit Log Table */}
-      <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+      <div className="glass-panel rounded-2xl border border-border overflow-hidden shadow-panel">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-black/40 border-b border-white/10 text-[11px] uppercase tracking-wider text-slate-400">
+          <table className="w-full text-left text-xs text-soft">
+            <thead className="bg-sunken/80 border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>
                 <th className="py-3 px-4">Action Event</th>
@@ -137,26 +137,26 @@ export default function AuditLogPage() {
                 <th className="py-3 px-4 text-right">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+            <tbody className="divide-y divide-border font-mono text-[11px]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-slate-400">
+                  <td colSpan={6} className="py-10 text-center text-muted-foreground">
                     Loading audit records...
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-slate-400">
+                  <td colSpan={6} className="py-10 text-center text-muted-foreground">
                     No matching audit entries found.
                   </td>
                 </tr>
               ) : (
                 logs.map((log) => {
                   const eventName = log.action || log.eventType || "system_event";
-                  const colorClass = actionColors[eventName] || "text-slate-300 bg-white/5 border-white/10";
+                  const colorClass = actionColors[eventName] || "text-soft bg-foreground/5 border-border";
                   return (
-                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                    <tr key={log.id} className="hover:bg-foreground/[0.02] transition-colors">
+                      <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">
                         {new Date(log.createdAt).toLocaleString()}
                       </td>
                       <td className="py-3 px-4">
@@ -164,27 +164,27 @@ export default function AuditLogPage() {
                           {eventName}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-200">
+                      <td className="py-3 px-4 text-soft">
                         {log.userName ? (
                           <div>
-                            <span className="font-semibold text-white">{log.userName}</span>
-                            <span className="text-[10px] text-slate-500 block">{log.userEmail}</span>
+                            <span className="font-semibold text-foreground">{log.userName}</span>
+                            <span className="text-[10px] text-subtle block">{log.userEmail}</span>
                           </div>
                         ) : log.userEmail ? (
                           log.userEmail
                         ) : (
-                          <span className="text-slate-500">System Root</span>
+                          <span className="text-subtle">System Root</span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-slate-300">
+                      <td className="py-3 px-4 text-soft">
                         {log.resourceType || "platform"}
-                        {log.resourceId && <span className="text-slate-500 block text-[10px]">{log.resourceId}</span>}
+                        {log.resourceId && <span className="text-subtle block text-[10px]">{log.resourceId}</span>}
                       </td>
-                      <td className="py-3 px-4 text-slate-400">{log.ipAddress || "127.0.0.1"}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{log.ipAddress || "127.0.0.1"}</td>
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => setInspectEvent(log)}
-                          className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-slate-300 hover:text-white flex items-center gap-1 ml-auto transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border text-[11px] text-soft hover:text-foreground flex items-center gap-1 ml-auto transition-colors"
                         >
                           <Eye size={12} />
                           <span>Payload</span>
@@ -199,27 +199,27 @@ export default function AuditLogPage() {
         </div>
 
         {/* Pagination */}
-        <div className="p-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
           <div>
-            Showing <span className="text-white font-mono">{logs.length}</span> of{" "}
-            <span className="text-white font-mono">{total}</span> audit records
+            Showing <span className="text-foreground font-mono">{logs.length}</span> of{" "}
+            <span className="text-foreground font-mono">{total}</span> audit records
           </div>
 
           <div className="flex items-center gap-2">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 disabled:opacity-40 disabled:pointer-events-none text-slate-300"
+              className="px-3 py-1 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border disabled:opacity-40 disabled:pointer-events-none text-soft"
             >
               Previous
             </button>
-            <span className="font-mono text-slate-300">
+            <span className="font-mono text-soft">
               Page {page} of {totalPages}
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 disabled:opacity-40 disabled:pointer-events-none text-slate-300"
+              className="px-3 py-1 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border disabled:opacity-40 disabled:pointer-events-none text-soft"
             >
               Next
             </button>
@@ -229,54 +229,54 @@ export default function AuditLogPage() {
 
       {/* PAYLOAD INSPECTOR MODAL */}
       {inspectEvent && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-xl glass-panel p-6 rounded-2xl border border-white/10 shadow-2xl relative text-xs">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <div className="fixed inset-0 z-50 bg-overlay backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-xl glass-panel p-6 rounded-2xl border border-border shadow-raised relative text-xs">
+            <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <Terminal size={16} className="text-emerald-400" />
-                <h2 className="text-sm font-bold text-white font-mono">
+                <Terminal size={16} className="text-brand" />
+                <h2 className="text-sm font-bold text-foreground font-mono">
                   Event: {inspectEvent.action || inspectEvent.eventType}
                 </h2>
               </div>
-              <button onClick={() => setInspectEvent(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setInspectEvent(null)} className="text-muted-foreground hover:text-foreground">
                 <X size={16} />
               </button>
             </div>
 
             <div className="space-y-3 font-mono">
-              <div className="grid grid-cols-2 gap-2 text-[11px] p-3 rounded-xl bg-black/40 border border-white/5">
+              <div className="grid grid-cols-2 gap-2 text-[11px] p-3 rounded-xl bg-sunken/80 border border-border">
                 <div>
-                  <span className="text-slate-500 block">ID</span>
-                  <span className="text-slate-200">{inspectEvent.id}</span>
+                  <span className="text-subtle block">ID</span>
+                  <span className="text-soft">{inspectEvent.id}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">Timestamp</span>
-                  <span className="text-slate-200">{new Date(inspectEvent.createdAt).toISOString()}</span>
+                  <span className="text-subtle block">Timestamp</span>
+                  <span className="text-soft">{new Date(inspectEvent.createdAt).toISOString()}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">User Email</span>
-                  <span className="text-slate-200">{inspectEvent.userEmail || "System"}</span>
+                  <span className="text-subtle block">User Email</span>
+                  <span className="text-soft">{inspectEvent.userEmail || "System"}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">IP / User Agent</span>
-                  <span className="text-slate-200 truncate block">{inspectEvent.ipAddress}</span>
+                  <span className="text-subtle block">IP / User Agent</span>
+                  <span className="text-soft truncate block">{inspectEvent.ipAddress}</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-slate-400 block mb-1 font-sans text-xs font-semibold">
+                <span className="text-muted-foreground block mb-1 font-sans text-xs font-semibold">
                   Payload & Telemetry JSON:
                 </span>
-                <pre className="p-3.5 rounded-xl bg-black/70 border border-white/10 text-emerald-400 text-[11px] overflow-x-auto max-h-60">
+                <pre className="p-3.5 rounded-xl bg-sunken/80 border border-border text-brand text-[11px] overflow-x-auto max-h-60">
                   {JSON.stringify(inspectEvent.details || inspectEvent.payload || {}, null, 2)}
                 </pre>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10 text-right">
+            <div className="mt-4 pt-3 border-t border-border text-right">
               <button
                 onClick={() => setInspectEvent(null)}
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-medium"
+                className="px-4 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-soft font-medium"
               >
                 Close Inspector
               </button>

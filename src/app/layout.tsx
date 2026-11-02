@@ -6,9 +6,7 @@ import ClientProviders from "../components/shell/ClientProviders";
 import PwaRegister from "../components/shell/PwaRegister";
 import AuthGate from "../components/shell/AuthGate";
 import { ToolUsageTracker } from "@/features/toolkit/ToolUsageTracker";
-import GlobalLayers from "../components/layout/GlobalLayers";
 import "../styles/globals.css";
-import "../styles/hud-effects.css";
 import { withBasePath } from "@/lib/base-path";
 
 export const metadata: Metadata = {
@@ -57,8 +55,14 @@ export const metadata: Metadata = {
   },
 };
 
+/** Mirrors ThemeContext: the stored choice, else the system preference. */
+const THEME_SCRIPT = `try{var t=localStorage.getItem("Debtera-theme"),c=localStorage.getItem("Debtera-contrast")==="true",d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches,e=document.documentElement;e.classList.toggle("dark",d);e.classList.toggle("contrast-mode",c)}catch(_){}`;
+
 export const viewport = {
-  themeColor: "#059669",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbf7ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#16110c" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -70,12 +74,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Applies the saved theme before first paint, so a dark or high-contrast page never flashes light. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body
         className="antialiased min-h-screen flex flex-col justify-between"
         translate="yes"
         suppressHydrationWarning
       >
-        <GlobalLayers />
         <ClientProviders>
           <PwaRegister />
           <Navbar />
@@ -84,7 +91,7 @@ export default function RootLayout({
             <Suspense
               fallback={
                 <div className="min-h-[60vh] flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500" />
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-border border-t-brand" />
                 </div>
               }
             >

@@ -238,8 +238,8 @@ function Catalogue({ toolkit, onClose, onAdd }: { toolkit: Toolkit; onClose: () 
   const tools = toolkit.catalogue.filter((tool) => !q || `${tool.name} ${tool.description}`.toLowerCase().includes(q));
   const groups = [...new Set(tools.map((tool) => tool.group))];
   return (
-    <div role="dialog" aria-modal="true" aria-label="All tools" className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center" onClick={onClose}>
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <div role="dialog" aria-modal="true" aria-label="All tools" className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-4 sm:items-center" onClick={onClose}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-raised" onClick={(event) => event.stopPropagation()}>
         <div className="flex items-center gap-3 border-b border-border p-4">
           <Input autoFocus placeholder="Search tools…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search tools" />
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close"><X className="size-5" aria-hidden="true" /></Button>

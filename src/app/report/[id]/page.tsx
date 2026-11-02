@@ -99,24 +99,24 @@ export default async function ReportPage({ params }: ReportPageProps) {
     <div className="py-10">
       <div className="app-container">
         {/* Top Audit Banner */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl bg-black/40 border border-white/10 mb-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl bg-sunken/80 border border-border mb-8">
           <div className="flex items-center gap-3">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="w-3 h-3 rounded-full bg-brand animate-pulse"></span>
             <div>
-              <div className="text-xs text-slate-400">REPORT STATUS: AUDITED &amp; CERTIFIED</div>
-              <div className="text-sm font-semibold text-white">
-                Report ID: <span className="font-mono text-emerald-400">{report.id.slice(0, 16)}...</span>
+              <div className="text-xs text-muted-foreground">REPORT STATUS: AUDITED &amp; CERTIFIED</div>
+              <div className="text-sm font-semibold text-foreground">
+                Report ID: <span className="font-mono text-brand">{report.id.slice(0, 16)}...</span>
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 text-xs">
-            <div className="text-slate-400">
-              Engine Version: <span className="font-mono text-slate-200">{report.modelVersion}</span>
+            <div className="text-muted-foreground">
+              Engine Version: <span className="font-mono text-soft">{report.modelVersion}</span>
             </div>
-            <div className="text-slate-400">
+            <div className="text-muted-foreground">
               Generated:{" "}
-              <span className="text-slate-200">
+              <span className="text-soft">
                 {new Date(report.generatedAt).toLocaleDateString()} at{" "}
                 {new Date(report.generatedAt).toLocaleTimeString()}
               </span>
@@ -128,28 +128,28 @@ export default async function ReportPage({ params }: ReportPageProps) {
         </div>
 
         {/* Executive Header */}
-        <div className="glass-panel p-8 mb-8 border-l-4 border-l-emerald-500">
+        <div className="glass-panel p-8 mb-8 border-l-4 border-l-brand">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="badge badge-safe">Domain A Scientific Evaluation</span>
-                <span className="text-xs text-slate-400 font-mono">EFCT 2025 Standard</span>
+                <span className="text-xs text-muted-foreground font-mono">EFCT 2025 Standard</span>
               </div>
-              <h1 className="text-3xl font-extrabold text-white">
+              <h1 className="text-3xl font-extrabold text-foreground">
                 Biochemical Wellbeing Gap &amp; Safety Report
               </h1>
-              <p className="text-sm text-slate-300 mt-1">
-                Evaluated for <strong className="text-white">{user?.name || "Client"}</strong> ({profile?.age} yo {profile?.gender}, {profile?.region} &bull; {profile?.altitudeMeters}m altitude calibration)
+              <p className="text-sm text-soft mt-1">
+                Evaluated for <strong className="text-foreground">{user?.name || "Client"}</strong> ({profile?.age} yo {profile?.gender}, {profile?.region} &bull; {profile?.altitudeMeters}m altitude calibration)
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-3">
               {/* Zero Interaction Guarantee Seal */}
-              <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-center">
-                <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5">
+              <div className="p-3.5 rounded-xl bg-brand-soft border border-brand/40 text-center">
+                <div className="text-[11px] font-bold text-brand uppercase tracking-wider mb-0.5">
                   Zero-Interaction Guarantee
                 </div>
-                <div className="text-xs font-black text-white">Safety Gate Active</div>
+                <div className="text-xs font-bold text-foreground">Safety Gate Active</div>
               </div>
 
               {/* Scientific Export Encounter Modal */}
@@ -169,7 +169,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
           {/* Scientific Explanatory Narrative Box */}
           {report.summaryNarrative && (
-            <div className="p-5 rounded-xl bg-black/40 border border-white/10 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+            <div className="p-5 rounded-xl bg-sunken/80 border border-border text-sm text-soft leading-relaxed whitespace-pre-line">
               {report.summaryNarrative}
             </div>
           )}
@@ -190,11 +190,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                 <span>1. Identified Nutritional Gaps</span>
                 <span className="badge badge-high text-xs">{gapsWithDetails.length} Flagged</span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Calculated actual intake (applying fermentation bioavailability factors) vs altitude-adjusted targets
               </p>
             </div>
@@ -225,13 +225,13 @@ export default async function ReportPage({ params }: ReportPageProps) {
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                           {gap.nutrientName}
                           {gap.nutrientSymbol && (
-                            <span className="text-xs font-mono text-slate-400">({gap.nutrientSymbol})</span>
+                            <span className="text-xs font-mono text-muted-foreground">({gap.nutrientSymbol})</span>
                           )}
                         </h3>
-                        <span className="text-xs text-slate-400 capitalize">{gap.gapType} Pattern</span>
+                        <span className="text-xs text-muted-foreground capitalize">{gap.gapType} Pattern</span>
                       </div>
                       <span className={`badge ${gap.severity === "high" ? "badge-high" : gap.severity === "moderate" ? "badge-moderate" : "badge-low"}`}>
                         {gap.severity} severity
@@ -240,9 +240,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
                     {/* Progress & Target Stats */}
                     <div className="mb-4">
-                      <div className="flex justify-between text-xs text-slate-300 mb-1">
+                      <div className="flex justify-between text-xs text-soft mb-1">
                         <span>Estimated Daily Intake:</span>
-                        <span className="font-semibold text-white">
+                        <span className="font-semibold text-foreground">
                           {gap.calculatedDailyIntake} {gap.nutrientUnit} / target {gap.targetRda} {gap.nutrientUnit}
                         </span>
                       </div>
@@ -252,52 +252,52 @@ export default async function ReportPage({ params }: ReportPageProps) {
                           style={{ width: `${Math.min(intakePct, 100)}%` }}
                         ></div>
                       </div>
-                      <div className="text-right text-xs font-mono text-amber-400">
+                      <div className="text-right text-xs font-mono text-gold">
                         {intakePct}% of altitude-adjusted target
                       </div>
                     </div>
 
                     {/* Transparent reasoning trace */}
-                    <div className="mb-4 p-4 rounded-xl bg-sky-950/20 border border-sky-500/20">
+                    <div className="mb-4 p-4 rounded-xl bg-info-soft border border-info/20">
                       <div className="flex items-center justify-between gap-3 mb-2">
-                        <h4 className="text-xs font-bold text-sky-300 uppercase tracking-wider">
+                        <h4 className="text-xs font-bold text-info uppercase tracking-wider">
                           Why this was flagged
                         </h4>
-                        <span className="text-[10px] text-sky-200/70">Deterministic trace</span>
+                        <span className="text-[10px] text-info-strong">Deterministic trace</span>
                       </div>
-                      <p className="text-xs text-slate-300 leading-relaxed mb-3">{explanation.summary}</p>
+                      <p className="text-xs text-soft leading-relaxed mb-3">{explanation.summary}</p>
                       <ol className="space-y-2">
                         {explanation.steps.map((step, index) => (
                           <li key={`${step.label}-${index}`} className="flex gap-2 text-xs">
-                            <span className="flex-none w-5 h-5 rounded-full bg-sky-400/15 text-sky-300 flex items-center justify-center font-mono text-[10px]">
+                            <span className="flex-none w-5 h-5 rounded-full bg-info/15 text-info-strong flex items-center justify-center font-mono text-[10px]">
                               {index + 1}
                             </span>
-                            <span className="text-slate-300 leading-relaxed">
-                              <strong className="text-white">{step.label}:</strong> {step.detail}
+                            <span className="text-soft leading-relaxed">
+                              <strong className="text-foreground">{step.label}:</strong> {step.detail}
                               {step.sourceRef && (
-                                <span className="block text-[10px] font-mono text-sky-200/60 mt-0.5">Source: {step.sourceRef}</span>
+                                <span className="block text-[10px] font-mono text-info-strong mt-0.5">Source: {step.sourceRef}</span>
                               )}
                             </span>
                           </li>
                         ))}
                       </ol>
-                      <p className="text-[10px] text-slate-500 mt-3 pt-2 border-t border-white/10">{explanation.disclaimer}</p>
+                      <p className="text-[10px] text-subtle mt-3 pt-2 border-t border-border">{explanation.disclaimer}</p>
                     </div>
 
                     {/* Causal Attributions for this Gap */}
-                    <div className="mb-4 pt-3 border-t border-white/10">
-                      <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                    <div className="mb-4 pt-3 border-t border-border">
+                      <h4 className="text-xs font-bold text-soft uppercase tracking-wider mb-2">
                         Identified Causal Drivers:
                       </h4>
                       <div className="space-y-2">
                         {gap.causes.map((cause) => (
-                          <div key={cause.id} className="p-3 rounded-lg bg-black/30 border border-white/5 text-xs">
+                          <div key={cause.id} className="p-3 rounded-lg bg-sunken/50 border border-border text-xs">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-semibold text-white">{cause.title}</span>
-                              <span className="text-[10px] font-mono text-emerald-400">{cause.evidenceStrength}</span>
+                              <span className="font-semibold text-foreground">{cause.title}</span>
+                              <span className="text-[10px] font-mono text-brand">{cause.evidenceStrength}</span>
                             </div>
-                            <p className="text-slate-400 leading-relaxed">{cause.description}</p>
-                            <div className="text-[10px] font-mono text-slate-500 mt-1.5">
+                            <p className="text-muted-foreground leading-relaxed">{cause.description}</p>
+                            <div className="text-[10px] font-mono text-subtle mt-1.5">
                               Lineage Citation: {cause.sourceRef}
                             </div>
                           </div>
@@ -307,8 +307,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
                   </div>
 
                   {/* Evidence-Ranked Solutions for this Gap */}
-                  <div className="pt-3 border-t border-white/10">
-                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  <div className="pt-3 border-t border-border">
+                    <h4 className="text-xs font-bold text-soft uppercase tracking-wider mb-2">
                       Ranked &amp; Verified Solutions:
                     </h4>
                     <div className="space-y-2">
@@ -316,23 +316,23 @@ export default async function ReportPage({ params }: ReportPageProps) {
                         <div
                           key={sol.id}
                           className={`p-3 rounded-lg text-xs border ${sol.solutionType === "traditional_remedy"
-                            ? "bg-emerald-950/20 border-emerald-500/30"
+                            ? "bg-brand-soft border-brand/30"
                             : sol.solutionType === "referral"
-                              ? "bg-rose-950/20 border-rose-500/30"
-                              : "bg-white/[0.03] border-white/5"
+                              ? "bg-danger-soft border-danger/30"
+                              : "bg-foreground/[0.03] border-border"
                             }`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold text-white">{sol.title}</span>
+                            <span className="font-semibold text-foreground">{sol.title}</span>
                             <div className="flex items-center gap-1.5">
                               {sol.solutionType === "traditional_remedy" && (
                                 <span className="badge badge-safe text-[9px]">Safety Gate Passed</span>
                               )}
-                              <span className="text-[10px] font-mono text-amber-400">Score {sol.rankScore}</span>
+                              <span className="text-[10px] font-mono text-gold">Score {sol.rankScore}</span>
                             </div>
                           </div>
-                          <p className="text-slate-300 leading-relaxed">{sol.description}</p>
-                          <div className="text-[10px] font-mono text-slate-500 mt-1">
+                          <p className="text-soft leading-relaxed">{sol.description}</p>
+                          <div className="text-[10px] font-mono text-subtle mt-1">
                             Citation: {sol.sourceRef}
                           </div>
                         </div>
@@ -351,24 +351,24 @@ export default async function ReportPage({ params }: ReportPageProps) {
         </div>
 
         {/* Section 2: Active Prescription Safety Intercept Log */}
-        <div className="glass-panel p-6 mb-12 border-l-4 border-l-amber-500">
+        <div className="glass-panel p-6 mb-12 border-l-4 border-l-gold">
           <div className="flex items-center gap-2 mb-2">
             <span className="badge badge-moderate">Safety Gate Intercept Trail</span>
-            <span className="text-xs text-slate-400 font-mono">ETM-DB Safety Matrix</span>
+            <span className="text-xs text-muted-foreground font-mono">ETM-DB Safety Matrix</span>
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">
+          <h3 className="text-lg font-bold text-foreground mb-2">
             Transparent Safety Interception Audit
           </h3>
-          <p className="text-xs text-slate-300 leading-relaxed mb-4">
+          <p className="text-xs text-soft leading-relaxed mb-4">
             In accordance with medical safety regulations, the evaluation engine screened candidate traditional remedies against your active medications (such as Metformin and Aspirin). Traditional herbs containing furanocoumarins or kosotoxins (e.g. <em>Ruta chalepensis</em> / Tena Adam, <em>Hagenia abyssinica</em> / Kosso) that exacerbate bleeding or provoke hypoglycemia were <strong>strictly blocked</strong> and excluded from your recommended solutions.
           </p>
-          <div className="p-3 rounded-lg bg-black/40 border border-white/10 text-xs font-mono text-emerald-400">
+          <div className="p-3 rounded-lg bg-sunken/80 border border-border text-xs font-mono text-brand">
             Safety Gate Log: Zero interacting remedies surfaced &bull; All traditional recommendations certified compatible.
           </div>
         </div>
 
         {/* Return & Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-white/10">
+        <div className="flex items-center justify-between pt-6 border-t border-border">
           <Link href="/intake" className="btn-secondary text-sm">
             &larr; New Assessment
           </Link>

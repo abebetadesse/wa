@@ -51,7 +51,7 @@ export function Toaster({ children }: { children: ReactNode }) {
             <div
               key={toast.id}
               style={{ animation: "slideUp 200ms ease-out" }}
-              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-border bg-card p-4 text-sm shadow-xl backdrop-blur-xl"
+              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-border bg-card p-4 text-sm shadow-panel "
             >
               {toast.href ? (
                 <Link href={toast.href} className="flex min-w-0 flex-1 items-start gap-3" onClick={() => dismiss(toast.id)}>

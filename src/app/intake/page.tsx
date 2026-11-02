@@ -217,7 +217,7 @@ export default function IntakePage() {
       <div className="app-container max-w-4xl">
         {/* Progress Bar & Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-2">
+          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium mb-2">
             <span>{t.intake.stepOf.replace("{step}", String(step))}</span>
             <span>
               {step === 1 && t.intake.step1}
@@ -227,16 +227,16 @@ export default function IntakePage() {
               {step === 5 && t.intake.step5}
             </span>
           </div>
-          <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-foreground/5 h-2 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-300 rounded-full"
+              className="h-full bg-gradient-to-r from-brand to-gold-fill transition-all duration-300 rounded-full"
               style={{ width: `${(step / 5) * 100}%` }}
             ></div>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-sm">
+          <div className="mb-6 p-4 rounded-xl bg-danger-soft border border-danger/40 text-danger-strong text-sm">
             {errorMsg}
           </div>
         )}
@@ -245,46 +245,46 @@ export default function IntakePage() {
         {step === 1 && (
           <div className="glass-panel p-8">
             <div className="badge badge-safe mb-3">{t.intake.normalization}</div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.title}</h2>
-            <p className="text-sm text-slate-400 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t.intake.title}</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               {t.intake.altitudePhysiology}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.fullName}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.fullName}</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.emailAddress}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.emailAddress}</label>
                 <input
                   type="email"
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.age}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.age}</label>
                 <input
                   type="number"
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.age}
                   onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.biologicalSex}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.biologicalSex}</label>
                 <select
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.gender}
                   onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
                 >
@@ -303,26 +303,26 @@ export default function IntakePage() {
               />
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">
                   {t.intake.altitudeMeters}
                 </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
-                    className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                    className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                     value={formData.altitudeMeters}
                     onChange={(e) => setFormData({ ...formData, altitudeMeters: Number(e.target.value) })}
                   />
-                  <span className="text-xs text-emerald-400 font-mono whitespace-nowrap">
+                  <span className="text-xs text-brand font-mono whitespace-nowrap">
                     {formData.altitudeMeters >= 2000 ? t.intake.ironTarget : t.intake.standardTarget}
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.physicalActivity}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.physicalActivity}</label>
                 <select
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.activityLevel}
                   onChange={(e) => setFormData({ ...formData, activityLevel: e.target.value as any })}
                 >
@@ -334,9 +334,9 @@ export default function IntakePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">{t.intake.reproductiveStage}</label>
+                <label className="block text-xs font-semibold text-soft uppercase mb-2">{t.intake.reproductiveStage}</label>
                 <select
-                  className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-brand outline-none"
                   value={formData.pregnancyOrLactation}
                   onChange={(e) => setFormData({ ...formData, pregnancyOrLactation: e.target.value as any })}
                 >
@@ -361,14 +361,14 @@ export default function IntakePage() {
         {step === 2 && (
           <div className="glass-panel p-8">
             <div className="badge badge-safe mb-3">{t.intake.gapDetection}</div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.dailyDiet}</h2>
-            <p className="text-sm text-slate-400 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t.intake.dailyDiet}</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               Select your typical daily staple foods and consumption habits. The engine adjusts for traditional food preparation methods (such as Ersho yeast fermentation).
             </p>
 
             {/* Food Selector Cards */}
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">{t.intake.stapleFoods}</h3>
+              <h3 className="text-sm font-semibold text-soft uppercase tracking-wider mb-4">{t.intake.stapleFoods}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SAMPLE_FOODS.map((food) => {
                   const selected = formData.selectedFoods.find((f) => f.foodName === food.name);
@@ -376,23 +376,23 @@ export default function IntakePage() {
                     <div
                       key={food.id}
                       className={`p-4 rounded-xl border transition-all cursor-pointer ${selected
-                        ? "bg-emerald-950/30 border-emerald-500/50 shadow-md shadow-emerald-950/20"
-                        : "bg-black/30 border-white/5 hover:border-white/20"
+                        ? "bg-brand-soft border-brand/50 shadow-md"
+                        : "bg-sunken/50 border-border hover:border-border-strong"
                         }`}
                       onClick={() => toggleFood(food.name, food.defaultGrams)}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-white text-sm">{food.name}</span>
-                        <span className="text-xs text-amber-400 font-medium">{food.nameAmh}</span>
+                        <span className="font-semibold text-foreground text-sm">{food.name}</span>
+                        <span className="text-xs text-gold font-medium">{food.nameAmh}</span>
                       </div>
-                      <div className="text-xs text-slate-400 mb-3">{food.category}</div>
+                      <div className="text-xs text-muted-foreground mb-3">{food.category}</div>
 
                       {selected && (
-                        <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
-                          <span className="text-xs text-slate-300">{t.intake.portionGrams}</span>
+                        <div className="flex items-center justify-between gap-3 pt-2 border-t border-border" onClick={(e) => e.stopPropagation()}>
+                          <span className="text-xs text-soft">{t.intake.portionGrams}</span>
                           <input
                             type="number"
-                            className="w-24 px-2 py-1 rounded bg-black/60 border border-white/20 text-white text-xs text-right"
+                            className="w-24 px-2 py-1 rounded bg-sunken/80 border border-border-strong text-foreground text-xs text-right"
                             value={selected.gramsConsumed}
                             onChange={(e) => updateFoodGrams(food.name, Number(e.target.value))}
                           />
@@ -405,8 +405,8 @@ export default function IntakePage() {
             </div>
 
             {/* Lifestyle & Habit Factors */}
-            <div className="p-5 rounded-xl bg-black/40 border border-white/10 mb-8">
-              <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-3">
+            <div className="p-5 rounded-xl bg-sunken/80 border border-border mb-8">
+              <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-3">
                 Nutrient Absorption Lifestyle Inhibitors
               </h3>
               <div className="space-y-4 text-xs">
@@ -418,8 +418,8 @@ export default function IntakePage() {
                     onChange={(e) => setFormData({ ...formData, coffeeRitualTwiceDaily: e.target.checked })}
                   />
                   <div>
-                    <span className="font-medium text-white block">Traditional Ethiopian Coffee Ceremony (Bunna 2+ times daily)</span>
-                    <span className="text-slate-400">Regular consumption of freshly roasted bunna rich in polyphenols and chlorogenic acids.</span>
+                    <span className="font-medium text-foreground block">Traditional Ethiopian Coffee Ceremony (Bunna 2+ times daily)</span>
+                    <span className="text-muted-foreground">Regular consumption of freshly roasted bunna rich in polyphenols and chlorogenic acids.</span>
                   </div>
                 </label>
 
@@ -431,9 +431,9 @@ export default function IntakePage() {
                     onChange={(e) => setFormData({ ...formData, teaWithMeals: e.target.checked })}
                   />
                   <div>
-                    <span className="font-medium text-white block">Spiced Tea or Coffee immediately alongside or after meals (&lt;45 min)</span>
-                    <span className="text-rose-400/90 font-medium">Important:</span>{" "}
-                    <span className="text-slate-400">Tannins directly chelate non-heme iron and zinc, inhibiting mineral absorption by up to 70%.</span>
+                    <span className="font-medium text-foreground block">Spiced Tea or Coffee immediately alongside or after meals (&lt;45 min)</span>
+                    <span className="text-danger font-medium">Important:</span>{" "}
+                    <span className="text-muted-foreground">Tannins directly chelate non-heme iron and zinc, inhibiting mineral absorption by up to 70%.</span>
                   </div>
                 </label>
 
@@ -445,8 +445,8 @@ export default function IntakePage() {
                     onChange={(e) => setFormData({ ...formData, unfermentedGrainsHabit: e.target.checked })}
                   />
                   <div>
-                    <span className="font-medium text-white block">Frequent unfermented grain consumption (unfermented porridge / bread)</span>
-                    <span className="text-slate-400">Higher intact phytic acid content binding dietary calcium and iron.</span>
+                    <span className="font-medium text-foreground block">Frequent unfermented grain consumption (unfermented porridge / bread)</span>
+                    <span className="text-muted-foreground">Higher intact phytic acid content binding dietary calcium and iron.</span>
                   </div>
                 </label>
               </div>
@@ -467,13 +467,13 @@ export default function IntakePage() {
         {step === 3 && (
           <div className="glass-panel p-8">
             <div className="badge badge-flagged mb-3">{t.intake.safetyAudit}</div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.activeMedications}</h2>
-            <p className="text-sm text-slate-400 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t.intake.activeMedications}</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               Certain prescription medications deplete specific nutrients (e.g. Metformin depletes B12) or produce severe adverse reactions when combined with traditional Ethiopian herbs (e.g. Warfarin + Tena Adam).
             </p>
 
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-semibold text-soft uppercase tracking-wider mb-4">
                 Select Active Prescription Medications
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -484,23 +484,23 @@ export default function IntakePage() {
                       key={med.name}
                       onClick={() => toggleMed(med.name, med.drugClass)}
                       className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected
-                        ? "bg-rose-950/30 border-rose-500/50 shadow-md shadow-rose-950/20"
-                        : "bg-black/30 border-white/5 hover:border-white/20"
+                        ? "bg-danger-soft border-danger/50 shadow-md"
+                        : "bg-sunken/50 border-border hover:border-border-strong"
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-white text-sm">{med.name}</span>
+                        <span className="font-bold text-foreground text-sm">{med.name}</span>
                         <span className="badge badge-high text-[10px]">{med.drugClass}</span>
                       </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">{med.note}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{med.note}</p>
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs text-slate-300 mb-8">
-              <strong className="text-emerald-400">{t.intake.zeroInteraction}</strong> The platform will verify every traditional remedy candidate against your selections. Any herb presenting bleeding risks, hypoglycemia amplification, or additive hypotension will be systematically blocked from your recommendations.
+            <div className="p-4 rounded-xl bg-sunken/80 border border-border text-xs text-soft mb-8">
+              <strong className="text-brand">{t.intake.zeroInteraction}</strong> The platform will verify every traditional remedy candidate against your selections. Any herb presenting bleeding risks, hypoglycemia amplification, or additive hypotension will be systematically blocked from your recommendations.
             </div>
 
             <div className="flex justify-between mt-8">
@@ -517,13 +517,13 @@ export default function IntakePage() {
         {/* Step 4: Domain B Cultural Personalization */}
         {step === 4 && (
           <div className="glass-panel p-8 glass-panel-gold">
-            <div className="badge bg-amber-500/20 text-amber-300 border border-amber-500/40 mb-3">
+            <div className="badge bg-gold/20 text-gold-strong border border-gold/40 mb-3">
               Domain B: Structurally Firewalled
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.culturalPersonalization}</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t.intake.culturalPersonalization}</h2>
 
             {/* Architectural Firewall Alert */}
-            <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed mb-6">
+            <div className="p-4 rounded-xl bg-gold-soft border border-gold/30 text-xs text-gold-strong leading-relaxed mb-6">
               <strong>Architectural Firewall Notice:</strong> Domain B data (astrology, traditional naming numerology, Ge&apos;ez calendar) is strictly stored in a separate table and excluded from evaluation query pipelines. Cultural reflections are provided solely for personal holistic enrichment and never influence scientific gap calculations.
             </div>
 
@@ -534,18 +534,18 @@ export default function IntakePage() {
                   checked={formData.includeCultural}
                   onChange={(e) => setFormData({ ...formData, includeCultural: e.target.checked })}
                 />
-                <span className="text-sm font-semibold text-white">
+                <span className="text-sm font-semibold text-foreground">
                   Enable Ge&apos;ez Calendar and Cultural Heritage Reflection
                 </span>
               </label>
 
               {formData.includeCultural && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Full Traditional Name</label>
+                    <label className="block text-xs font-semibold text-soft uppercase mb-2">Full Traditional Name</label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-amber-500 outline-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold outline-none"
                       value={formData.cultural.fullName}
                       onChange={(e) =>
                         setFormData({
@@ -557,10 +557,10 @@ export default function IntakePage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Date of Birth</label>
+                    <label className="block text-xs font-semibold text-soft uppercase mb-2">Date of Birth</label>
                     <input
                       type="date"
-                      className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-amber-500 outline-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold outline-none"
                       value={formData.cultural.birthDate}
                       onChange={(e) =>
                         setFormData({
@@ -572,9 +572,9 @@ export default function IntakePage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Calendar Preference</label>
+                    <label className="block text-xs font-semibold text-soft uppercase mb-2">Calendar Preference</label>
                     <select
-                      className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-amber-500 outline-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold outline-none"
                       value={formData.cultural.culturalCalendarPreference}
                       onChange={(e) =>
                         setFormData({
@@ -589,10 +589,10 @@ export default function IntakePage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-2">Ge&apos;ez Season / Astrological Alignment</label>
+                    <label className="block text-xs font-semibold text-soft uppercase mb-2">Ge&apos;ez Season / Astrological Alignment</label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-amber-500 outline-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-sunken/80 border border-border text-foreground text-sm focus:border-gold outline-none"
                       value={formData.cultural.geezZodiacSign}
                       onChange={(e) =>
                         setFormData({
@@ -621,43 +621,43 @@ export default function IntakePage() {
         {step === 5 && (
           <div className="glass-panel p-8">
             <div className="badge badge-safe mb-3">{t.intake.preflightAudit}</div>
-            <h2 className="text-2xl font-bold text-white mb-2">{t.intake.assessmentReview}</h2>
-            <p className="text-sm text-slate-400 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t.intake.assessmentReview}</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               Review your demographic profile, active medications, and food log before the deterministic evaluation engine executes.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs">
-                <span className="text-slate-400 font-semibold block mb-1">PROFILE &amp; ELEVATION</span>
-                <p className="text-white font-medium">{formData.name} ({formData.age} yo, {formData.gender})</p>
-                <p className="text-emerald-400">{formData.region} &bull; {formData.altitudeMeters}m elevation</p>
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border text-xs">
+                <span className="text-muted-foreground font-semibold block mb-1">PROFILE &amp; ELEVATION</span>
+                <p className="text-foreground font-medium">{formData.name} ({formData.age} yo, {formData.gender})</p>
+                <p className="text-brand">{formData.region} &bull; {formData.altitudeMeters}m elevation</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs">
-                <span className="text-slate-400 font-semibold block mb-1">REPORTED DIET LOG</span>
-                <p className="text-white font-medium">{formData.selectedFoods.length} staple foods logged</p>
-                <p className="text-slate-400">{formData.selectedFoods.map((f) => f.foodName).join(", ")}</p>
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border text-xs">
+                <span className="text-muted-foreground font-semibold block mb-1">REPORTED DIET LOG</span>
+                <p className="text-foreground font-medium">{formData.selectedFoods.length} staple foods logged</p>
+                <p className="text-muted-foreground">{formData.selectedFoods.map((f) => f.foodName).join(", ")}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs">
-                <span className="text-slate-400 font-semibold block mb-1">ACTIVE PHARMACEUTICALS</span>
-                <p className="text-rose-300 font-medium">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border text-xs">
+                <span className="text-muted-foreground font-semibold block mb-1">ACTIVE PHARMACEUTICALS</span>
+                <p className="text-danger font-medium">
                   {formData.selectedMeds.length > 0
                     ? formData.selectedMeds.map((m) => m.name).join(", ")
                     : "None reported"}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/40 border border-white/10 text-xs">
-                <span className="text-slate-400 font-semibold block mb-1">DOMAIN B CULTURAL LAYER</span>
-                <p className="text-amber-300 font-medium">
+              <div className="p-4 rounded-xl bg-sunken/80 border border-border text-xs">
+                <span className="text-muted-foreground font-semibold block mb-1">DOMAIN B CULTURAL LAYER</span>
+                <p className="text-gold font-medium">
                   {formData.includeCultural ? "Firewalled Cultural Reflection Active" : "Opted Out"}
                 </p>
               </div>
             </div>
 
             {/* Mandatory Regulatory Acknowledgment */}
-            <div className="p-4 rounded-xl bg-black/60 border border-white/15 mb-8">
+            <div className="p-4 rounded-xl bg-sunken/80 border border-border mb-8">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -665,7 +665,7 @@ export default function IntakePage() {
                   checked={formData.disclaimerAccepted}
                   onChange={(e) => setFormData({ ...formData, disclaimerAccepted: e.target.checked })}
                 />
-                <div className="text-xs text-slate-300 leading-relaxed">
+                <div className="text-xs text-soft leading-relaxed">
                   <strong>Mandatory scientific &amp; Privacy Consent:</strong> I understand that this evaluation engine outputs biochemical dietary patterns based on the Ethiopian Food Composition Table (EFCT 2025) and screens traditional remedies via ETM-DB. It does not provide medical diagnoses. All personal wellbeing data is processed in compliance with Ethiopian Data Protection Proclamations.
                 </div>
               </label>
@@ -673,10 +673,10 @@ export default function IntakePage() {
 
             {/* Live Progress Stage Tracker when Submitting */}
             {submitting && (
-              <div className="p-6 rounded-2xl bg-black/60 border border-emerald-500/40 mb-8 space-y-4">
-                <div className="flex items-center justify-between text-xs font-semibold text-emerald-400">
+              <div className="p-6 rounded-2xl bg-sunken/80 border border-brand/40 mb-8 space-y-4">
+                <div className="flex items-center justify-between text-xs font-semibold text-brand">
                   <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand animate-ping"></span>
                     Evaluation Engine Active (Inngest Worker Pipeline)
                   </span>
                   <span>{Math.round(((progressStageIdx + 1) / PROGRESS_STEPS.length) * 100)}%</span>
@@ -689,7 +689,7 @@ export default function IntakePage() {
                   ></div>
                 </div>
 
-                <div className="text-xs font-mono text-slate-300 bg-white/[0.02] p-3 rounded border border-white/5">
+                <div className="text-xs font-mono text-soft bg-foreground/[0.02] p-3 rounded border border-border">
                   &gt; {PROGRESS_STEPS[progressStageIdx]}
                 </div>
               </div>
@@ -702,7 +702,7 @@ export default function IntakePage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="btn-primary text-base py-3 px-8 shadow-xl"
+                className="btn-primary text-base py-3 px-8 shadow-panel"
               >
                 {submitting ? "Processing Pipeline..." : "Generate Wellbeing Gap Report"}
               </button>

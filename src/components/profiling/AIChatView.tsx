@@ -198,41 +198,41 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
   };
 
   if (!ctx) {
-    return <div className="p-4 text-sm text-slate-400">Loading your profile context...</div>;
+    return <div className="p-4 text-sm text-muted-foreground">Loading your profile context...</div>;
   }
 
   return (
     <div className="space-y-6">
       {error && (
-        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-950/40 p-3 text-xs text-red-200">
+        <div role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-3 text-xs text-danger-strong">
           {error}
         </div>
       )}
 
       {/* Top Context Grounding Badge */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-md">
+      <div className="bg-card/90 border border-border rounded-2xl p-4 shadow-panel ">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-lg">🧠</span>
             <div>
-              <span className="font-bold text-slate-100 block">Context-Aware AI Astrologer & Cultural Advisor</span>
-              <span className="text-slate-400">
+              <span className="font-bold text-foreground block">Context-Aware AI Astrologer & Cultural Advisor</span>
+              <span className="text-muted-foreground">
                 Grounded in {ctx.fullName}'s exact calculations (not generic sun-sign forecasts)
               </span>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-brand-soft border border-brand/30 text-brand-strong font-medium">
               {ctx.sunSign} Sun • {ctx.moonSign} Moon
             </span>
-            <span className="px-2.5 py-1 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-info-soft border border-info/30 text-info-strong font-medium">
               Life Path {ctx.danMillmanLifePath}
             </span>
-            <span className="px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-gold-soft border border-gold/30 text-gold-strong font-medium">
               Awude Circle #{ctx.awudeCircleNumber}
             </span>
-            <span className="px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-500/30 text-sky-300 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-info-soft border border-info/30 text-info-strong font-medium">
               Personal Day {ctx.personalDay}
             </span>
           </div>
@@ -240,30 +240,30 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       </div>
 
       {/* Main Chat Dialogue Container */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden flex flex-col h-[560px]">
+      <div className="bg-card/90 border border-border rounded-2xl shadow-raised  overflow-hidden flex flex-col h-[560px]">
         {/* Chat Messages Stream */}
         <div className="flex-1 p-5 overflow-y-auto space-y-4">
-          {isStarting && <div className="text-center text-xs text-slate-400">Preparing your profile-aware assistant...</div>}
+          {isStarting && <div className="text-center text-xs text-muted-foreground">Preparing your profile-aware assistant...</div>}
 
           {messages.map((msg, i) => (
             <div key={msg.id || i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-lg ${msg.role === "user"
-                    ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-br-none"
-                    : "bg-slate-950/80 border border-slate-800 text-slate-200 rounded-bl-none"
+                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-panel ${msg.role === "user"
+                    ? "bg-gradient-to-r from-brand to-brand text-brand-foreground rounded-br-none"
+                    : "bg-background/80 border border-border text-soft rounded-bl-none"
                   }`}
               >
                 {msg.role === "assistant" && msg.contextBadges && (
                   <div className="flex flex-wrap gap-1 mb-1">
                     {msg.contextBadges.map((badge, bIdx) => (
-                      <span key={bIdx} className="px-1.5 py-0.5 rounded text-[9px] bg-slate-900 border border-slate-700 text-slate-400">
+                      <span key={bIdx} className="px-1.5 py-0.5 rounded text-[9px] bg-card border border-border text-muted-foreground">
                         {badge}
                       </span>
                     ))}
                   </div>
                 )}
                 <div className="whitespace-pre-line font-normal">{msg.content}</div>
-                <div className={`text-[10px] ${msg.role === "user" ? "text-emerald-200" : "text-slate-500"} text-right`}>
+                <div className={`text-[10px] ${msg.role === "user" ? "text-brand-strong" : "text-subtle"} text-right`}>
                   {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
@@ -272,8 +272,8 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
 
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-slate-950/80 border border-slate-800 rounded-2xl rounded-bl-none p-3.5 text-xs text-slate-400 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="bg-background/80 border border-border rounded-2xl rounded-bl-none p-3.5 text-xs text-muted-foreground flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
                 <span>Consulting your natal geometry and AwudeNegest circles...</span>
               </div>
             </div>
@@ -281,14 +281,14 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
         </div>
 
         {/* Suggested Query Chips */}
-        <div className="p-3 bg-slate-950/40 border-t border-slate-800/80 overflow-x-auto">
+        <div className="p-3 bg-background/40 border-t border-border overflow-x-auto">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-[11px] font-bold text-slate-400 shrink-0">Quick Queries:</span>
+            <span className="text-[11px] font-bold text-muted-foreground shrink-0">Quick Queries:</span>
             {SUGGESTED_QUESTIONS.map((q, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSendMessage(q)}
-                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-[11px] whitespace-nowrap transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-card hover:bg-muted border border-border text-soft text-[11px] whitespace-nowrap transition-colors"
               >
                 {q}
               </button>
@@ -297,19 +297,19 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-slate-950/80 border-t border-slate-800 flex items-center gap-3">
+        <div className="p-4 bg-background/80 border-t border-border flex items-center gap-3">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Ask anything about your natal chart, life purpose, AwudeNegest, or transits..."
-            className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="flex-1 bg-card border border-border rounded-xl px-4 py-2.5 text-xs text-soft focus:outline-none focus:border-brand"
           />
           <button
             onClick={() => handleSendMessage()}
             disabled={!inputValue.trim() || isLoading}
-            className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/60 hover:from-emerald-500 hover:to-emerald-400 disabled:opacity-50 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-brand to-brand text-brand-foreground text-xs font-bold rounded-xl shadow-panel hover:from-brand hover:to-brand disabled:opacity-50 transition-all"
           >
             Send
           </button>
@@ -317,29 +317,29 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       </div>
 
       {/* Generate Personalized In-Depth Reading (Co-Star Hybrid Style) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-md space-y-4">
+      <div className="bg-card/90 border border-border rounded-2xl p-6 shadow-panel  space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h4 className="text-base font-bold text-slate-100">Generate In-Depth Reading (Co-Star Hybrid Style)</h4>
-            <p className="text-xs text-slate-400">Synthesizes NASA coordinates, Dan Millman paths, and Ethiopian heritage</p>
+            <h4 className="text-base font-bold text-foreground">Generate In-Depth Reading (Co-Star Hybrid Style)</h4>
+            <p className="text-xs text-muted-foreground">Synthesizes NASA coordinates, Dan Millman paths, and Ethiopian heritage</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleGenerateReading("annual")}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-muted text-soft border border-border hover:bg-sunken"
             >
               Annual Overview
             </button>
             <button
               onClick={() => handleGenerateReading("somatic")}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-muted text-soft border border-border hover:bg-sunken"
             >
               Somatic Vitality
             </button>
             <button
               onClick={() => handleGenerateReading("spiritual")}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-muted text-soft border border-border hover:bg-sunken"
             >
               Spiritual Lineage
             </button>
@@ -347,15 +347,15 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
         </div>
 
         {personalizedReading && (
-          <div className="p-5 bg-slate-950/80 rounded-xl border border-emerald-500/30 space-y-3 text-xs leading-relaxed animate-in fade-in">
-            <div className="border-b border-slate-800 pb-2">
-              <h5 className="text-sm font-bold text-emerald-400">{personalizedReading.title}</h5>
-              <p className="text-[11px] text-slate-400">{personalizedReading.subtitle}</p>
+          <div className="p-5 bg-background/80 rounded-xl border border-brand/30 space-y-3 text-xs leading-relaxed animate-in fade-in">
+            <div className="border-b border-border pb-2">
+              <h5 className="text-sm font-bold text-brand">{personalizedReading.title}</h5>
+              <p className="text-[11px] text-muted-foreground">{personalizedReading.subtitle}</p>
             </div>
-            <p className="text-slate-200 whitespace-pre-line">{personalizedReading.content}</p>
-            <div className="pt-2 border-t border-slate-800/80 space-y-1">
-              <span className="font-bold text-amber-300 block">Core Synthesis Takeaways:</span>
-              <ul className="list-disc list-inside text-slate-300 space-y-0.5">
+            <p className="text-soft whitespace-pre-line">{personalizedReading.content}</p>
+            <div className="pt-2 border-t border-border space-y-1">
+              <span className="font-bold text-gold block">Core Synthesis Takeaways:</span>
+              <ul className="list-disc list-inside text-soft space-y-0.5">
                 {personalizedReading.keyInsights.map((insight: string, idx: number) => (
                   <li key={idx}>{insight}</li>
                 ))}
@@ -366,7 +366,7 @@ export default function AIChatView({ userId = "user_default", userContext }: AIC
       </div>
 
       {/* Compliance Disclaimer Footer */}
-      <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-500 leading-relaxed">
+      <div className="p-3.5 bg-background/60 rounded-xl border border-border text-[11px] text-subtle leading-relaxed">
         <strong>Compliance Notice:</strong> {PLATFORM_DISCLAIMERS.aiChat} {PLATFORM_DISCLAIMERS.wellbeing}
       </div>
     </div>

@@ -44,7 +44,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
   return (
     <div className="pb-20">
       <div
-        className={`relative h-48 bg-cover bg-center sm:h-64 ${business.coverUrl ? "" : cultural ? "bg-gradient-to-br from-gold/50 via-amber-500/25 to-rose-500/25" : "bg-gradient-to-br from-brand/50 via-sky-500/25 to-emerald-500/25"}`}
+        className={`relative h-48 bg-cover bg-center sm:h-64 ${business.coverUrl ? "" : cultural ? "bg-gradient-to-br from-gold/50 via-gold/25 to-danger/25" : "bg-gradient-to-br from-brand/50 via-info/25 to-brand/25"}`}
         style={business.coverUrl ? { backgroundImage: `url(${assetUrl(business.coverUrl)})` } : undefined}
       >
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
@@ -62,12 +62,12 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
           </Alert>
         )}
 
-        <div className="relative flex flex-col gap-5 rounded-3xl border border-border bg-card p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-end sm:p-8">
+        <div className="relative flex flex-col gap-5 rounded-3xl border border-border bg-card p-6 shadow-panel  sm:flex-row sm:items-end sm:p-8">
           {business.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={assetUrl(business.logoUrl)} alt="" className="size-24 rounded-3xl border-4 border-card object-cover shadow-lg" />
+            <img src={assetUrl(business.logoUrl)} alt="" className="size-24 rounded-3xl border-4 border-card object-cover shadow-panel" />
           ) : (
-            <Monogram name={business.name} className="size-24 border-4 border-card text-4xl shadow-lg" />
+            <Monogram name={business.name} className="size-24 border-4 border-card text-4xl shadow-panel" />
           )}
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">

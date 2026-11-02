@@ -36,7 +36,7 @@ interface Dashboard {
 function Kpi({ icon: Icon, label, value, hint, href, tone = "brand" }: { icon: typeof Clock; label: string; value: string | number; hint?: string; href?: string; tone?: "brand" | "gold" | "warning" | "danger" }) {
   const body = (
     <div className="flex h-full flex-col gap-3 rounded-3xl border border-border bg-card p-5 transition-colors hover:border-input">
-      <span className={cn("grid size-10 place-items-center rounded-2xl", { brand: "bg-brand/10 text-brand", gold: "bg-gold/15 text-gold", warning: "bg-warning/10 text-warning", danger: "bg-danger/10 text-danger" }[tone])}>
+      <span className={cn("grid size-10 place-items-center rounded-2xl", { brand: "bg-brand/10 text-brand-strong", gold: "bg-gold/15 text-gold-strong", warning: "bg-warning/10 text-warning-strong", danger: "bg-danger/10 text-danger-strong" }[tone])}>
         <Icon className="size-5" aria-hidden="true" />
       </span>
       <span className="font-display text-3xl font-extrabold tracking-tight text-foreground">{value}</span>
@@ -55,7 +55,7 @@ function RevenueChart({ series }: { series: { day: string; totalEtb: number }[] 
         {series.map((point) => (
           <div key={point.day} className="group relative flex-1">
             <div
-              className={cn("w-full rounded-t-md transition-colors", point.totalEtb > 0 ? "bg-gradient-to-t from-brand to-sky-400 group-hover:from-gold group-hover:to-amber-400" : "bg-border")}
+              className={cn("w-full rounded-t-md transition-colors", point.totalEtb > 0 ? "bg-gradient-to-t from-brand to-info group-hover:from-gold group-hover:to-gold-fill" : "bg-border")}
               style={{ height: `${Math.max(4, (point.totalEtb / max) * 136)}px` }}
             />
             <span className="pointer-events-none absolute -top-9 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-inverse px-2 py-1 text-[11px] font-semibold text-inverse-foreground group-hover:block">

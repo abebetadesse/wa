@@ -283,7 +283,7 @@ export function CarePathway({ stage }: { stage: OwnerView["stage"] }) {
                 </span>
               </div>
               {(active || done) && (
-                <p className={cn("mt-2 text-xs leading-relaxed", done ? "text-muted-foreground" : "text-foreground/80")}>
+                <p className={cn("mt-2 text-xs leading-relaxed", done ? "text-muted-foreground" : "text-foreground")}>
                   {step.description}
                 </p>
               )}
@@ -355,7 +355,7 @@ export function WhatHappensNext({ stage }: { stage: OwnerView["stage"] }) {
   return (
     <div className={cn("rounded-2xl border p-4", content.tone)}>
       <div className="flex items-start gap-3">
-        <Icon className="mt-0.5 size-5 shrink-0 text-foreground/70" aria-hidden="true" />
+        <Icon className="mt-0.5 size-5 shrink-0 text-foreground" aria-hidden="true" />
         <div>
           <p className="font-semibold text-foreground">{content.title}</p>
           <p className="mt-1 text-sm text-muted-foreground">{content.body}</p>
@@ -547,7 +547,7 @@ export function CareActionPlan({ domain }: { domain: string }) {
             <li key={action.label} className={cn("rounded-2xl border p-4 flex flex-col justify-between", action.tone)}>
               <div>
                 <div className="flex items-center gap-2">
-                  <Icon className="size-4 text-foreground/70" aria-hidden="true" />
+                  <Icon className="size-4 text-foreground" aria-hidden="true" />
                   <Badge tone={action.badgeTone}>{action.label}</Badge>
                 </div>
                 <p className="mt-2 font-semibold text-foreground text-sm">{action.title}</p>

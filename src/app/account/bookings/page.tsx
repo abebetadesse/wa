@@ -78,7 +78,7 @@ export default function MyBookingsPage() {
           {bookings.map((booking) => (
             <li key={booking.id}>
               <Link href={`/account/bookings/${booking.id}`} className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-input">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand/10 text-brand">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand/10 text-brand-strong">
                   <CalendarCheck className="size-6" aria-hidden="true" />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">

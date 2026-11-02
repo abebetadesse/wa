@@ -116,7 +116,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "✨ Star Tetrahedron / Merkaba",
     archetypeTitle: "The Transcendent Sovereign",
     accentRgb: "147, 112, 219",
-    badgeBg: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    badgeBg: "bg-plum/15 text-plum-strong border-plum/30",
     cardGradient: "linear-gradient(135deg, rgba(88,28,135,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Frankincense / Lubanj", localName: "ዕጣን (Itan)", prep: "Aromatic Resin Fumigation", safety: "Safe" },
   },
@@ -135,7 +135,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "🔺 Sacred Tetrahedron",
     archetypeTitle: "The Sovereign Lion of Judah",
     accentRgb: "255, 99, 71",
-    badgeBg: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    badgeBg: "bg-danger/15 text-danger-strong border-danger/30",
     cardGradient: "linear-gradient(135deg, rgba(159,18,57,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Kosso / Hagenia", localName: "ኮሶ (Kosso)", prep: "Traditional Infusion (Reflective)", safety: "Caution" },
   },
@@ -154,7 +154,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "💧 Icosahedron of Flow",
     archetypeTitle: "The Compassionate Guardian",
     accentRgb: "65, 105, 225",
-    badgeBg: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+    badgeBg: "bg-info/15 text-info-strong border-info/30",
     cardGradient: "linear-gradient(135deg, rgba(30,58,138,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Tenadam / Rue", localName: "ጤና አዳም (Tena Adam)", prep: "Fresh Leaf with Coffee / Tea", safety: "Safe" },
   },
@@ -173,7 +173,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "⚖️ Octahedron of Equilibrium",
     archetypeTitle: "The Serene Peacemaker",
     accentRgb: "218, 165, 32",
-    badgeBg: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    badgeBg: "bg-gold/15 text-gold-strong border-gold/30",
     cardGradient: "linear-gradient(135deg, rgba(146,64,14,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Myrrh / Karbe", localName: "ከርቤ (Karbe)", prep: "Purifying Tincture & Inhalation", safety: "Safe" },
   },
@@ -192,7 +192,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "🌀 Dodecahedron of Life",
     archetypeTitle: "The Generative Weaver",
     accentRgb: "50, 205, 50",
-    badgeBg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    badgeBg: "bg-brand/15 text-brand-strong border-brand/30",
     cardGradient: "linear-gradient(135deg, rgba(6,95,70,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Damakese / Ocimum", localName: "ደማከሴ (Damakese)", prep: "Crushed Foliage Inhalation", safety: "Safe" },
   },
@@ -211,7 +211,7 @@ const CORE_METADATA: Record<string, CoreVisualMeta> = {
     platonicSymbol: "🧊 Crystalline Cube of Truth",
     archetypeTitle: "The Cosmic Architect",
     accentRgb: "0, 206, 209",
-    badgeBg: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+    badgeBg: "bg-info/15 text-info-strong border-info/30",
     cardGradient: "linear-gradient(135deg, rgba(21,94,117,0.4) 0%, rgba(15,23,42,0.85) 100%)",
     botanicalPreview: { name: "Gesho / Rhamnus", localName: "ጌሾ (Gesho)", prep: "Fermentation Catalyst & Decoction", safety: "Safe" },
   },
@@ -634,7 +634,7 @@ export default function HexacoreOrrery() {
       `}</style>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-4">
         {[
           { id: "orrery", label: "Grand Orrery", icon: Sparkles },
           { id: "layers", label: "14-Layer Matrix", icon: Layers },
@@ -649,8 +649,8 @@ export default function HexacoreOrrery() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${isActive
-                  ? "bg-gradient-to-r from-indigo-500/25 to-purple-500/25 text-indigo-200 border border-indigo-500/40 shadow-lg shadow-indigo-950/40 scale-[1.02]"
-                  : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white border border-white/5"
+                  ? "bg-gradient-to-r from-info/25 to-plum/25 text-info-strong border border-info/40 shadow-panel scale-[1.02]"
+                  : "bg-foreground/[0.03] text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground border border-border"
                 }`}
             >
               <Icon className="h-4 w-4" />
@@ -660,7 +660,7 @@ export default function HexacoreOrrery() {
         })}
       </div>
       {audioUnavailable && (
-        <p role="status" className="text-xs text-amber-200">
+        <p role="status" className="text-xs text-gold-strong">
           Audio playback is unavailable or was blocked by your browser. Try enabling audio for this page and selecting a tone again.
         </p>
       )}
@@ -671,7 +671,7 @@ export default function HexacoreOrrery() {
           <div className="space-y-6">
             {/* Main Interactive Cosmic Arena */}
             <div
-              className={`relative overflow-hidden rounded-3xl border border-indigo-400/20 bg-[#060614] p-4 md:p-6 shadow-2xl shadow-indigo-950/40 transition-all duration-700 ${
+              className={`theme-dark relative overflow-hidden rounded-3xl border border-border bg-background p-4 md:p-6 shadow-raised transition-all duration-700 ${
                 isFocusMode
                   ? "fixed inset-3 z-[60] overflow-y-auto md:inset-6 lg:inset-10"
                   : ""
@@ -679,7 +679,7 @@ export default function HexacoreOrrery() {
             >
               {isFocusMode && (
                 <div
-                  className="pointer-events-none fixed inset-0 -z-10 bg-slate-950/80 backdrop-blur-md"
+                  className="pointer-events-none fixed inset-0 -z-10 bg-background/80 backdrop-blur"
                   aria-hidden="true"
                 />
               )}
@@ -712,31 +712,31 @@ export default function HexacoreOrrery() {
               </div>
 
               {/* Header Bar with View Mode Toggle & Audio Trigger */}
-              <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-2 pb-4">
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border px-2 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-indigo-300/90">
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-info">
                       14-Layer Cosmic Orrery
                     </span>
-                    <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[9px] font-mono text-indigo-200">
+                    <span className="rounded-full border border-info/30 bg-info/10 px-2 py-0.5 text-[9px] font-mono text-info-strong">
                       {selectedMeta.runeSigil} · Core {selectedCore.number}
                     </span>
                   </div>
-                  <h2 className="mt-0.5 text-xl md:text-2xl font-black text-white tracking-tight">
+                  <h2 className="mt-0.5 text-xl md:text-2xl font-bold text-foreground tracking-tight">
                     {selectedCore.name} · {selectedMeta.amharicPronounce}
                   </h2>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {/* View Mode Switcher */}
-                  <div className="flex rounded-xl border border-white/10 bg-black/40 p-1">
+                  <div className="flex rounded-xl border border-border bg-sunken/80 p-1">
                     <button
                       type="button"
                       onClick={() => setOrreryViewMode("system")}
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                         orreryViewMode === "system"
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/40"
-                          : "text-slate-400 hover:text-white"
+                          ? "bg-info text-info-foreground shadow-md"
+                          : "text-muted-foreground hover:text-info-foreground"
                       }`}
                     >
                       <Orbit className="h-3.5 w-3.5" />
@@ -747,8 +747,8 @@ export default function HexacoreOrrery() {
                       onClick={() => setOrreryViewMode("theatrical")}
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                         orreryViewMode === "theatrical"
-                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-950/40"
-                          : "text-slate-400 hover:text-white"
+                          ? "bg-gradient-to-r from-plum to-info text-plum-foreground shadow-md"
+                          : "text-muted-foreground hover:text-plum-foreground"
                       }`}
                     >
                       <Sparkles className="h-3.5 w-3.5" />
@@ -759,7 +759,7 @@ export default function HexacoreOrrery() {
                   {playingFreq ? (
                     <button
                       onClick={() => handlePlaySound(playingFreq)}
-                      className="flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3 py-1.5 text-xs text-rose-200 animate-pulse transition-all shadow-lg shadow-rose-950/30"
+                      className="flex items-center gap-1.5 rounded-xl border border-danger/40 bg-danger/20 px-3 py-1.5 text-xs text-danger-strong animate-pulse transition-all shadow-panel"
                     >
                       <VolumeX className="h-3.5 w-3.5" />
                       <span>Stop {playingFreq} Hz</span>
@@ -767,7 +767,7 @@ export default function HexacoreOrrery() {
                   ) : (
                     <button
                       onClick={() => handlePlaySound(selectedCore.soundHz)}
-                      className="flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/20 transition-all"
+                      className="flex items-center gap-1.5 rounded-xl border border-info/30 bg-info/10 px-3 py-1.5 text-xs text-info-strong hover:bg-info/20 transition-all"
                     >
                       <Volume2 className="h-3.5 w-3.5" />
                       <span>{selectedCore.soundHz} Hz</span>
@@ -780,8 +780,8 @@ export default function HexacoreOrrery() {
                     aria-label={isFocusMode ? "Exit Hexacore focus mode" : "Enter Hexacore focus mode"}
                     className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
                       isFocusMode
-                        ? "border-amber-300/50 bg-amber-300/15 text-amber-100 shadow-lg shadow-amber-950/30"
-                        : "border-white/10 bg-black/30 text-slate-300 hover:border-indigo-400/40 hover:text-white"
+                        ? "border-gold/50 bg-gold/15 text-gold-strong shadow-panel"
+                        : "border-border bg-sunken/50 text-soft hover:border-info/40 hover:text-foreground"
                     }`}
                   >
                     {isFocusMode ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
@@ -994,7 +994,7 @@ export default function HexacoreOrrery() {
               {orreryViewMode === "theatrical" && (
                 <div className="relative z-10 pt-4 space-y-6 animate-fade-in">
                   <div
-                    className="relative overflow-hidden rounded-2xl border border-white/10 p-6 md:p-8"
+                    className="relative overflow-hidden rounded-2xl border border-border p-6 md:p-8"
                     style={{ background: selectedMeta.texture }}
                   >
                     {/* Rotating Astrolabe Rings & Central Cosmic Sigil */}
@@ -1018,7 +1018,7 @@ export default function HexacoreOrrery() {
                         />
                         {/* Inner Halo Ring */}
                         <div
-                          className="absolute inset-8 rounded-full border border-white/20"
+                          className="absolute inset-8 rounded-full border border-border-strong"
                           style={{
                             boxShadow: `0 0 45px ${selectedMeta.glow}`,
                           }}
@@ -1026,45 +1026,45 @@ export default function HexacoreOrrery() {
 
                         {/* Central Luminous Core Orb */}
                         <div
-                          className="relative flex h-36 w-36 md:h-40 md:w-40 flex-col items-center justify-center rounded-full border-2 border-white/90 shadow-2xl transition-all duration-700"
+                          className="relative flex h-36 w-36 md:h-40 md:w-40 flex-col items-center justify-center rounded-full border-2 border-border-strong shadow-raised transition-all duration-700"
                           style={{
                             background: `radial-gradient(circle at 30% 30%, ${CORE_COLORS[selectedCoreId]}, #050510)`,
                             boxShadow: `0 0 50px ${selectedMeta.glow}`,
                           }}
                         >
-                          <span className="text-3xl md:text-4xl drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">
+                          <span className="text-3xl md:text-4xl">
                             {selectedMeta.emojis[0]}
                           </span>
-                          <span className="mt-1 text-base font-black tracking-widest text-white">
+                          <span className="mt-1 text-base font-bold tracking-widest text-foreground">
                             {selectedCore.name.toUpperCase()}
                           </span>
-                          <span className="text-xs font-bold text-amber-200">
+                          <span className="text-xs font-bold text-gold-strong">
                             {selectedCore.amharic}
                           </span>
-                          <span className="mt-0.5 font-mono text-[10px] text-white/80">
+                          <span className="mt-0.5 font-mono text-[10px] text-soft">
                             {selectedCore.soundHz} Hz
                           </span>
                         </div>
                       </div>
 
                       <div className="mt-5 max-w-lg">
-                        <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                        <span className="rounded-full border border-border-strong bg-foreground/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-foreground ">
                           {selectedMeta.archetypeTitle}
                         </span>
-                        <h3 className="mt-2 text-2xl font-black text-white">
+                        <h3 className="mt-2 text-2xl font-bold text-foreground">
                           {selectedMeta.themeTitle}
                         </h3>
-                        <p className="mt-2 text-xs leading-relaxed text-slate-200">
+                        <p className="mt-2 text-xs leading-relaxed text-soft">
                           {selectedCore.essence}
                         </p>
                       </div>
 
                       {/* Live Harmonic Soundwave Visualizer */}
-                      <div className="mt-6 flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-black/50 px-6 py-3.5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-xs text-slate-300">
-                          <Radio className="h-4 w-4 text-indigo-400" />
+                      <div className="mt-6 flex flex-col items-center gap-2 rounded-2xl border border-border bg-card/80 px-6 py-3.5">
+                        <div className="flex items-center gap-2 text-xs text-soft">
+                          <Radio className="h-4 w-4 text-info" />
                           <span className="font-semibold">Harmonic Oscillation Analyzer:</span>
-                          <span className="font-mono text-amber-300">{selectedCore.soundHz} Hz</span>
+                          <span className="font-mono text-gold">{selectedCore.soundHz} Hz</span>
                         </div>
                         <div className="flex items-end gap-1.5 h-8 px-2">
                           {Array.from({ length: 18 }).map((_, barIdx) => (
@@ -1083,15 +1083,15 @@ export default function HexacoreOrrery() {
                         </div>
                         <button
                           onClick={() => handlePlaySound(selectedCore.soundHz)}
-                          className="mt-1 flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-all"
+                          className="mt-1 flex items-center gap-1.5 rounded-xl border border-border bg-foreground/10 px-4 py-1.5 text-xs font-semibold text-foreground hover:bg-foreground/20 transition-all"
                         >
                           {playingFreq === selectedCore.soundHz ? (
                             <>
-                              <VolumeX className="h-3.5 w-3.5 text-rose-300" /> Stop Soundwave
+                              <VolumeX className="h-3.5 w-3.5 text-danger" /> Stop Soundwave
                             </>
                           ) : (
                             <>
-                              <Volume2 className="h-3.5 w-3.5 text-emerald-300" /> Resonate {selectedCore.soundHz} Hz Solfeggio
+                              <Volume2 className="h-3.5 w-3.5 text-brand" /> Resonate {selectedCore.soundHz} Hz Solfeggio
                             </>
                           )}
                         </button>
@@ -1100,69 +1100,69 @@ export default function HexacoreOrrery() {
 
                     {/* Quad-Pillar Alchemical Cards */}
                     <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                      <div className="rounded-xl border border-border bg-card/80 p-3.5">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-muted-foreground">
                           <span>{selectedMeta.elementIcon}</span>
                           <span>Elemental Realm</span>
                         </div>
-                        <p className="mt-1.5 font-bold text-white text-sm">{selectedMeta.element}</p>
-                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.direction} · {selectedCore.season}</p>
+                        <p className="mt-1.5 font-bold text-foreground text-sm">{selectedMeta.element}</p>
+                        <p className="mt-0.5 text-[10px] text-muted-foreground">{selectedCore.direction} · {selectedCore.season}</p>
                       </div>
 
-                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                      <div className="rounded-xl border border-border bg-card/80 p-3.5">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-muted-foreground">
                           <span>🌿</span>
                           <span>Botanical Ally</span>
                         </div>
-                        <p className="mt-1.5 font-bold text-amber-200 text-sm">{selectedMeta.botanicalPreview.name}</p>
-                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedMeta.botanicalPreview.localName}</p>
+                        <p className="mt-1.5 font-bold text-gold-strong text-sm">{selectedMeta.botanicalPreview.name}</p>
+                        <p className="mt-0.5 text-[10px] text-muted-foreground">{selectedMeta.botanicalPreview.localName}</p>
                         <HerbSafetyBadge label={`${selectedMeta.botanicalPreview.name} / ${selectedMeta.botanicalPreview.localName}`} className="mt-2" />
                       </div>
 
-                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                      <div className="rounded-xl border border-border bg-card/80 p-3.5">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-muted-foreground">
                           <span>📐</span>
                           <span>Sacred Geometry</span>
                         </div>
-                        <p className="mt-1.5 font-bold text-cyan-200 text-sm">{selectedCore.geometry}</p>
-                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.platonicSolid}</p>
+                        <p className="mt-1.5 font-bold text-info-strong text-sm">{selectedCore.geometry}</p>
+                        <p className="mt-0.5 text-[10px] text-muted-foreground">{selectedCore.platonicSolid}</p>
                       </div>
 
-                      <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                      <div className="rounded-xl border border-border bg-card/80 p-3.5">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-muted-foreground">
                           <span>☀️</span>
                           <span>Creation Day</span>
                         </div>
-                        <p className="mt-1.5 font-bold text-emerald-200 text-sm">{selectedCore.creationDay}</p>
-                        <p className="mt-0.5 text-[10px] text-slate-400">{selectedCore.planet} · {selectedCore.metal}</p>
+                        <p className="mt-1.5 font-bold text-brand-strong text-sm">{selectedCore.creationDay}</p>
+                        <p className="mt-0.5 text-[10px] text-muted-foreground">{selectedCore.planet} · {selectedCore.metal}</p>
                       </div>
                     </div>
 
                     {/* Virtue ↔ Shadow Transmutation Bridge */}
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4 backdrop-blur-md">
-                      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                    <div className="mt-4 rounded-2xl border border-border bg-card/80 p-4">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
                         <span>Alchemical Transmutation Path</span>
-                        <span className="text-amber-300">Ge'ez Core {selectedMeta.runeSigil}</span>
+                        <span className="text-gold">Ge'ez Core {selectedMeta.runeSigil}</span>
                       </div>
                       <div className="mt-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                        <div className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3.5 py-2 text-rose-300">
+                        <div className="flex items-center gap-2 rounded-xl border border-danger/20 bg-danger/10 px-3.5 py-2 text-danger-strong">
                           <span className="text-base">🔴</span>
                           <div>
-                            <span className="block text-[9px] uppercase tracking-wider text-rose-400/80">Wounded Shadow</span>
+                            <span className="block text-[9px] uppercase tracking-wider text-danger">Wounded Shadow</span>
                             <span className="font-bold">{selectedCore.shadow}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold">
-                          <ArrowRight className="h-4 w-4 text-amber-400" />
+                        <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-semibold">
+                          <ArrowRight className="h-4 w-4 text-gold" />
                           <span>Spiritual Transmutation</span>
-                          <ArrowRight className="h-4 w-4 text-amber-400" />
+                          <ArrowRight className="h-4 w-4 text-gold" />
                         </div>
 
-                        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-2 text-emerald-300">
+                        <div className="flex items-center gap-2 rounded-xl border border-brand/20 bg-brand/10 px-3.5 py-2 text-brand-strong">
                           <span className="text-base">🟢</span>
                           <div>
-                            <span className="block text-[9px] uppercase tracking-wider text-emerald-400/80">Empowered Gift</span>
+                            <span className="block text-[9px] uppercase tracking-wider text-brand">Empowered Gift</span>
                             <span className="font-bold">{selectedCore.gift}</span>
                           </div>
                         </div>
@@ -1170,8 +1170,8 @@ export default function HexacoreOrrery() {
                     </div>
 
                     {/* Quick-Switch Orbital Dock */}
-                    <div className="mt-6 pt-4 border-t border-white/10">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 text-center">
+                    <div className="mt-6 pt-4 border-t border-border">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3 text-center">
                         Select Core Focus Chamber
                       </p>
                       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -1185,8 +1185,8 @@ export default function HexacoreOrrery() {
                               onClick={() => setSelectedCoreId(core.id)}
                               className={`flex flex-col items-center justify-center rounded-xl p-2.5 transition-all ${
                                 isCur
-                                  ? "border-2 border-white bg-white/15 shadow-lg scale-105"
-                                  : "border border-white/5 bg-black/40 hover:bg-white/5 hover:border-white/20"
+                                  ? "border-2 border-border-strong bg-foreground/15 shadow-panel scale-105"
+                                  : "border border-border bg-sunken/80 hover:bg-foreground/5 hover:border-border-strong"
                               }`}
                               style={{
                                 borderColor: isCur ? CORE_COLORS[core.id] : undefined,
@@ -1194,8 +1194,8 @@ export default function HexacoreOrrery() {
                               }}
                             >
                               <span className="text-xl">{m.emojis[0]}</span>
-                              <span className="mt-1 text-xs font-bold text-white">{core.name}</span>
-                              <span className="text-[10px] text-slate-400">{core.soundHz} Hz</span>
+                              <span className="mt-1 text-xs font-bold text-foreground">{core.name}</span>
+                              <span className="text-[10px] text-muted-foreground">{core.soundHz} Hz</span>
                             </button>
                           );
                         })}
@@ -1209,17 +1209,17 @@ export default function HexacoreOrrery() {
             {/* ILLUSTRATION PANELS & COSMIC STATE MATRIX */}
             <div className="space-y-6">
               {/* Dynamic 4-Metric Zoom Cascade */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+              <div className="rounded-3xl border border-border bg-foreground/[0.03] p-5 ">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.28em] text-indigo-300 font-bold">
+                    <p className="text-[10px] uppercase tracking-[0.28em] text-info font-bold">
                       Harmonic Resonance Cascade
                     </p>
-                    <h3 className="mt-0.5 text-lg font-bold text-white">
+                    <h3 className="mt-0.5 text-lg font-bold text-foreground">
                       {selectedCore.name} · Multidimensional Signals
                     </h3>
                   </div>
-                  <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-indigo-200">
+                  <span className="rounded-full border border-info/30 bg-info/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-info-strong">
                     {selectedMeta.runeSigil} Active Field
                   </span>
                 </div>
@@ -1228,35 +1228,35 @@ export default function HexacoreOrrery() {
                   {cinematicMetrics.map((item) => (
                     <div
                       key={item.label}
-                      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-3.5 shadow-lg shadow-indigo-950/20 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/40"
+                      className="group relative overflow-hidden rounded-2xl border border-border bg-background/80 p-3.5 shadow-panel transition-all duration-300 hover:-translate-y-1 hover:border-info/40"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-2xl drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+                        <span className="text-2xl">
                           {item.icon}
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] uppercase tracking-[0.2em] text-slate-300">
+                        <span className="rounded-full border border-border bg-foreground/5 px-2 py-0.5 text-[9px] uppercase tracking-[0.2em] text-soft">
                           {item.label}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
-                      <p className="mt-0.5 text-[10px] text-slate-400">{item.hint}</p>
+                      <p className="mt-2 text-sm font-bold text-foreground">{item.value}</p>
+                      <p className="mt-0.5 text-[10px] text-muted-foreground">{item.hint}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* SECTION: HEXACORE ARCHETYPAL PANTHEON (6 LARGE ILLUSTRATIVE PANELS) */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
+              <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 ">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-amber-300">
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">
                       Iconographic Pantheon
                     </span>
-                    <h3 className="text-xl font-black text-white mt-0.5">
+                    <h3 className="text-xl font-bold text-foreground mt-0.5">
                       The Six Fundamental Cores of Creation
                     </h3>
                   </div>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     Click any archetype card to activate its cosmic field
                   </span>
                 </div>
@@ -1276,8 +1276,8 @@ export default function HexacoreOrrery() {
                         }}
                         className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 cursor-pointer ${
                           isSelected
-                            ? "border-white/40 bg-white/[0.08] shadow-2xl scale-[1.02]"
-                            : "border-white/10 bg-black/40 hover:border-white/20 hover:bg-white/[0.04]"
+                            ? "border-border-strong bg-foreground/[0.08] shadow-raised scale-[1.02]"
+                            : "border-border bg-sunken/80 hover:border-border-strong hover:bg-foreground/[0.04]"
                         }`}
                         style={{
                           boxShadow: isSelected ? `0 0 30px ${meta.glow}` : undefined,
@@ -1291,43 +1291,43 @@ export default function HexacoreOrrery() {
                         <div className="relative z-10 flex items-start justify-between">
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-mono font-bold text-white">
+                              <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[9px] font-mono font-bold text-foreground">
                                 {meta.runeSigil}
                               </span>
-                              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                                 Core {core.number}
                               </span>
                             </div>
-                            <h4 className="text-lg font-black text-white mt-1">{core.name}</h4>
-                            <p className="text-xs font-semibold text-amber-300">{core.amharic}</p>
+                            <h4 className="text-lg font-bold text-foreground mt-1">{core.name}</h4>
+                            <p className="text-xs font-semibold text-gold">{core.amharic}</p>
                           </div>
 
                           {/* Large Emoji Crest */}
                           <div className="flex flex-col items-end">
-                            <span className="text-3xl transition-transform duration-300 group-hover:scale-125 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">
+                            <span className="text-3xl transition-transform duration-300 group-hover:scale-125">
                               {meta.emojis[0]}
                             </span>
-                            <span className="mt-1 text-[10px] font-mono text-indigo-300">
+                            <span className="mt-1 text-[10px] font-mono text-info">
                               {core.soundHz} Hz
                             </span>
                           </div>
                         </div>
 
-                        <p className="relative z-10 mt-3 text-xs leading-relaxed text-slate-300 line-clamp-2">
+                        <p className="relative z-10 mt-3 text-xs leading-relaxed text-soft line-clamp-2">
                           {core.essence}
                         </p>
 
                         <div className="relative z-10 mt-3 flex flex-wrap items-center gap-1.5 text-[10px]">
-                          <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-semibold text-emerald-300">
+                          <span className="rounded bg-brand/15 border border-brand/30 px-2 py-0.5 font-semibold text-brand-strong">
                             Gift: {core.gift}
                           </span>
-                          <span className="rounded bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 font-semibold text-rose-300">
+                          <span className="rounded bg-danger/15 border border-danger/30 px-2 py-0.5 font-semibold text-danger-strong">
                             Shadow: {core.shadow}
                           </span>
                         </div>
 
-                        <div className="relative z-10 mt-4 flex items-center justify-between pt-3 border-t border-white/10 text-xs">
-                          <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <div className="relative z-10 mt-4 flex items-center justify-between pt-3 border-t border-border text-xs">
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                             <span>🌿</span> {meta.botanicalPreview.name.split("/")[0].trim()}
                           </span>
                           <button
@@ -1336,9 +1336,9 @@ export default function HexacoreOrrery() {
                               e.stopPropagation();
                               handlePlaySound(core.soundHz);
                             }}
-                            className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] text-white hover:bg-white/20 transition-colors"
+                            className="flex items-center gap-1 rounded-lg border border-border bg-foreground/10 px-2.5 py-1 text-[11px] text-foreground hover:bg-foreground/20 transition-colors"
                           >
-                            <Volume2 className="h-3 w-3 text-amber-300" />
+                            <Volume2 className="h-3 w-3 text-gold" />
                             <span>{core.soundHz}Hz</span>
                           </button>
                         </div>
@@ -1349,18 +1349,18 @@ export default function HexacoreOrrery() {
               </div>
 
               {/* SECTION: VIBRATIONAL OCTAVE LADDER */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
+              <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 ">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-cyan-300">
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-info">
                       Energetic Frequency Ladder
                     </span>
-                    <h3 className="text-xl font-black text-white mt-0.5">
+                    <h3 className="text-xl font-bold text-foreground mt-0.5">
                       Six Stages of Vibrational Manifestation
                     </h3>
                   </div>
-                  <span className="text-xs text-slate-400">
-                    Active Core: <strong className="text-white">{selectedCore.name}</strong> ({selectedCore.soundHz} Hz)
+                  <span className="text-xs text-muted-foreground">
+                    Active Core: <strong className="text-foreground">{selectedCore.name}</strong> ({selectedCore.soundHz} Hz)
                   </span>
                 </div>
 
@@ -1375,13 +1375,13 @@ export default function HexacoreOrrery() {
                         onClick={() => setActiveOctave(oct.state)}
                         className={`flex flex-col items-center justify-center rounded-2xl p-3 text-center transition-all ${
                           isCur
-                            ? "border-2 border-indigo-400 bg-indigo-600/30 text-white shadow-lg shadow-indigo-950/40 scale-105"
-                            : "border border-white/10 bg-black/40 text-slate-400 hover:text-white hover:bg-white/5"
+                            ? "border-2 border-info bg-info/30 text-foreground shadow-panel scale-105"
+                            : "border border-border bg-sunken/80 text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                         }`}
                       >
                         <span className="text-2xl">{oct.emoji}</span>
                         <span className="mt-1 text-xs font-bold">{oct.state}</span>
-                        <span className="text-[9px] uppercase tracking-wider text-slate-400">
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
                           {oct.title}
                         </span>
                       </button>
@@ -1390,28 +1390,28 @@ export default function HexacoreOrrery() {
                 </div>
 
                 {/* Selected Octave Details & Instant Audition */}
-                <div className="mt-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.06] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="mt-4 rounded-2xl border border-info/20 bg-info/[0.06] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{selectedOctaveMeta.emoji}</span>
-                      <h4 className="text-sm font-bold text-white">
+                      <h4 className="text-sm font-bold text-foreground">
                         {selectedOctaveMeta.state} Octave: {selectedOctaveMeta.title}
                       </h4>
-                      <span className="rounded-full border border-indigo-400/30 bg-indigo-400/10 px-2 py-0.5 text-[10px] font-mono text-indigo-300">
+                      <span className="rounded-full border border-info/30 bg-info/10 px-2 py-0.5 text-[10px] font-mono text-info-strong">
                         {calculatedOctaveHz} Hz
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-300 max-w-xl">
+                    <p className="mt-1 text-xs text-soft max-w-xl">
                       {selectedOctaveMeta.desc} In {selectedCore.name}, this represents the transition from{" "}
-                      <span className="text-rose-300">{selectedCore.shadow}</span> to{" "}
-                      <span className="text-emerald-300">{selectedCore.gift}</span>.
+                      <span className="text-danger">{selectedCore.shadow}</span> to{" "}
+                      <span className="text-brand">{selectedCore.gift}</span>.
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handlePlaySound(calculatedOctaveHz)}
-                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:from-indigo-500 hover:to-purple-500 transition-all"
+                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-info to-plum px-4 py-2 text-xs font-bold text-info-foreground shadow-md hover:from-info hover:to-plum transition-all"
                   >
                     <Volume2 className="h-3.5 w-3.5" />
                     <span>Audition {calculatedOctaveHz} Hz</span>
@@ -1424,7 +1424,7 @@ export default function HexacoreOrrery() {
           {/* Core Deep-Dive Panel (Aside) */}
           <aside className="space-y-4">
             <div
-              className="relative isolate overflow-hidden rounded-3xl border p-5 shadow-2xl backdrop-blur-xl transition-all duration-700"
+              className="relative isolate overflow-hidden rounded-3xl border p-5 shadow-raised  transition-all duration-700"
               style={{
                 borderColor: `${selectedMeta.orbit}66`,
                 background: `linear-gradient(145deg, rgba(${selectedMeta.accentRgb}, 0.22), rgba(2, 6, 23, 0.92) 68%)`,
@@ -1448,10 +1448,10 @@ export default function HexacoreOrrery() {
               />
               <div className="relative flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-white/50">Core spotlight</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-muted-foreground">Core spotlight</p>
                   <div className="mt-2 flex items-center gap-3">
                     <span
-                      className="flex h-14 w-14 items-center justify-center rounded-2xl border text-3xl shadow-lg"
+                      className="flex h-14 w-14 items-center justify-center rounded-2xl border text-3xl shadow-panel"
                       style={{
                         color: selectedMeta.orbit,
                         borderColor: `${selectedMeta.orbit}88`,
@@ -1462,12 +1462,12 @@ export default function HexacoreOrrery() {
                       {selectedMeta.glyph}
                     </span>
                     <div>
-                      <p className="text-2xl font-black text-white">{selectedCore.name}</p>
-                      <p className="text-xs text-white/60">{selectedMeta.themeTitle}</p>
+                      <p className="text-2xl font-bold text-foreground">{selectedCore.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedMeta.themeTitle}</p>
                     </div>
                   </div>
                 </div>
-                <span className="rounded-full border border-white/15 bg-black/20 px-2.5 py-1 text-[9px] uppercase tracking-[0.2em] text-white/60">
+                <span className="rounded-full border border-border bg-sunken/50 px-2.5 py-1 text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
                   Focused
                 </span>
               </div>
@@ -1480,21 +1480,21 @@ export default function HexacoreOrrery() {
                 ].map((metric, index) => (
                   <div
                     key={metric.label}
-                    className="rounded-xl border border-white/10 bg-black/20 p-2.5"
+                    className="rounded-xl border border-border bg-sunken/50 p-2.5"
                     style={{ animation: `telemetryRise 500ms ease-out ${index * 90}ms both` }}
                   >
-                    <p className="text-[9px] uppercase tracking-[0.18em] text-white/45">{metric.label}</p>
-                    <p className="mt-1 truncate text-sm font-bold text-white">{metric.value}</p>
+                    <p className="text-[9px] uppercase tracking-[0.18em] text-subtle">{metric.label}</p>
+                    <p className="mt-1 truncate text-sm font-bold text-foreground">{metric.value}</p>
                   </div>
                 ))}
               </div>
 
               <div className="relative mt-4">
-                <div className="mb-1 flex items-center justify-between text-[9px] uppercase tracking-[0.18em] text-white/45">
+                <div className="mb-1 flex items-center justify-between text-[9px] uppercase tracking-[0.18em] text-subtle">
                   <span>Signal coherence</span>
                   <span>{Math.round(selectedOctaveMeta.octaveHzMult * 50)}%</span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div className="h-1.5 overflow-hidden rounded-full bg-foreground/10">
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
@@ -1506,7 +1506,7 @@ export default function HexacoreOrrery() {
                 </div>
               </div>
 
-              <div className="relative mt-4 flex items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+              <div className="relative mt-4 flex items-center gap-2 overflow-hidden rounded-xl border border-border bg-sunken/50 px-3 py-2">
                 <span
                   className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm"
                   style={{ borderColor: `${selectedMeta.orbit}88`, color: selectedMeta.orbit }}
@@ -1518,14 +1518,14 @@ export default function HexacoreOrrery() {
                   />
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-[9px] uppercase tracking-[0.2em] text-white/45">Current transmission</p>
-                  <p className="truncate text-xs font-semibold text-white">{selectedMeta.detail}</p>
+                  <p className="truncate text-[9px] uppercase tracking-[0.2em] text-subtle">Current transmission</p>
+                  <p className="truncate text-xs font-semibold text-foreground">{selectedMeta.detail}</p>
                 </div>
                 <span className="ml-auto flex gap-0.5" aria-label="Signal activity">
                   {[0, 1, 2, 3, 4].map((bar) => (
                     <span
                       key={bar}
-                      className="w-1 rounded-full bg-white/60"
+                      className="w-1 rounded-full bg-foreground/60"
                       style={{
                         height: `${8 + ((bar + selectedCore.number) % 4) * 4}px`,
                         animation: `soundwaveAnim ${900 + bar * 120}ms ease-in-out infinite`,
@@ -1537,7 +1537,7 @@ export default function HexacoreOrrery() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md">
+            <div className="rounded-3xl border border-border bg-foreground/[0.04] p-6 ">
               <div className="flex items-center justify-between">
                 <span
                   className="rounded-full px-3 py-1 text-[11px] font-bold tracking-widest uppercase border"
@@ -1549,98 +1549,98 @@ export default function HexacoreOrrery() {
                 >
                   Core {selectedCore.number} · {selectedCore.creationDay}
                 </span>
-                <span className="text-xs text-slate-400">{selectedCore.geometry} ({selectedCore.platonicSolid})</span>
+                <span className="text-xs text-muted-foreground">{selectedCore.geometry} ({selectedCore.platonicSolid})</span>
               </div>
 
               <div className="mt-3">
                 <div className="flex items-baseline gap-3">
-                  <h2 className="text-3xl font-black text-white">{selectedCore.name}</h2>
-                  <span className="text-lg font-semibold text-amber-300 font-serif">{selectedCore.amharic}</span>
+                  <h2 className="text-3xl font-bold text-foreground">{selectedCore.name}</h2>
+                  <span className="text-lg font-semibold text-gold font-serif">{selectedCore.amharic}</span>
                 </div>
-                <p className="mt-2 text-xs text-indigo-300/90 font-mono italic">
+                <p className="mt-2 text-xs text-info font-mono italic">
                   Sanskrit: {selectedCore.sanskrit} · Hebrew: {selectedCore.hebrew} · Arabic: {selectedCore.arabic} · Greek: {selectedCore.greek}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-300">{selectedCore.essence}</p>
+                <p className="mt-3 text-sm leading-relaxed text-soft">{selectedCore.essence}</p>
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Virtue</span>
-                  <span className="text-emerald-300 font-semibold">{selectedCore.virtue}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Virtue</span>
+                  <span className="text-brand font-semibold">{selectedCore.virtue}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Gift</span>
-                  <span className="text-indigo-300 font-semibold">{selectedCore.gift}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Gift</span>
+                  <span className="text-info font-semibold">{selectedCore.gift}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Shadow</span>
-                  <span className="text-rose-300 font-semibold">{selectedCore.shadow}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Shadow</span>
+                  <span className="text-danger font-semibold">{selectedCore.shadow}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Polarity</span>
-                  <span className="text-amber-200 font-semibold">{selectedCore.polarity}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Polarity</span>
+                  <span className="text-gold-strong font-semibold">{selectedCore.polarity}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Chakra / Center</span>
-                  <span className="text-sky-300 font-semibold">{selectedCore.chakra}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Chakra / Center</span>
+                  <span className="text-info font-semibold">{selectedCore.chakra}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Meridian</span>
-                  <span className="text-sky-300 font-semibold">{selectedCore.meridian}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Meridian</span>
+                  <span className="text-info font-semibold">{selectedCore.meridian}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Plant / Herb</span>
-                  <span className="text-amber-300 font-semibold">{selectedCore.plant}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Plant / Herb</span>
+                  <span className="text-gold font-semibold">{selectedCore.plant}</span>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
-                  <span className="text-slate-500 block text-[10px] uppercase">Planet / Metal</span>
-                  <span className="text-slate-200 font-semibold">{selectedCore.planet} · {selectedCore.metal}</span>
+                <div className="rounded-xl border border-border bg-foreground/[0.02] p-2.5">
+                  <span className="text-subtle block text-[10px] uppercase">Planet / Metal</span>
+                  <span className="text-soft font-semibold">{selectedCore.planet} · {selectedCore.metal}</span>
                 </div>
               </div>
             </div>
 
             {dayMapping && (
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-500/[0.05] p-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-300">Creation-Day Relational Meaning</p>
-                <p className="mt-2 text-xs leading-relaxed text-slate-200">{dayMapping.relationalMeaning}</p>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-amber-200/80 pt-2 border-t border-amber-500/10">
+              <div className="rounded-2xl border border-gold/20 bg-gold/[0.05] p-5">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gold">Creation-Day Relational Meaning</p>
+                <p className="mt-2 text-xs leading-relaxed text-soft">{dayMapping.relationalMeaning}</p>
+                <div className="mt-3 flex items-center justify-between text-[11px] text-gold-strong pt-2 border-t border-gold/10">
                   <span>Practice: {dayMapping.practice}</span>
                   <span className="font-mono">{dayMapping.soundHz} Hz</span>
                 </div>
               </div>
             )}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Six Aspects of {selectedCore.name}</p>
+            <div className="rounded-2xl border border-border bg-foreground/[0.04] p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Six Aspects of {selectedCore.name}</p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {selectedAspects.map((aspect) => (
-                  <div key={aspect.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-2 text-xs">
+                  <div key={aspect.id} className="rounded-xl border border-border bg-foreground/[0.02] p-2 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">{aspect.name}</span>
-                      <span className="text-[10px] font-mono text-indigo-300">{aspect.baseFrequencyHz} Hz</span>
+                      <span className="font-bold text-foreground">{aspect.name}</span>
+                      <span className="text-[10px] font-mono text-info">{aspect.baseFrequencyHz} Hz</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">{aspect.expression}</p>
+                    <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{aspect.expression}</p>
                     <div className="mt-1 flex items-center gap-1 text-[9px]">
-                      <span className="text-rose-400/80">{aspect.shadow}</span>
-                      <span className="text-slate-600">→</span>
-                      <span className="text-emerald-400/80">{aspect.gift}</span>
+                      <span className="text-danger">{aspect.shadow}</span>
+                      <span className="text-subtle">→</span>
+                      <span className="text-brand">{aspect.gift}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Dynamic Relationships (15 Pairs)</p>
+            <div className="rounded-2xl border border-border bg-foreground/[0.04] p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dynamic Relationships (15 Pairs)</p>
               <div className="mt-3 space-y-2">
                 {pairs.slice(0, 4).map((pair) => (
-                  <div key={pair.id} className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5 text-xs flex items-center justify-between">
+                  <div key={pair.id} className="rounded-lg border border-border bg-foreground/[0.02] p-2.5 text-xs flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-white">{pair.name}</span>
-                      <span className="text-[10px] text-slate-400 ml-2">({pair.left} + {pair.right})</span>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{pair.dynamic}</p>
+                      <span className="font-bold text-foreground">{pair.name}</span>
+                      <span className="text-[10px] text-muted-foreground ml-2">({pair.left} + {pair.right})</span>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{pair.dynamic}</p>
                     </div>
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="text-[10px] font-semibold text-brand-strong bg-brand/10 px-2 py-0.5 rounded border border-brand/20">
                       {pair.gift}
                     </span>
                   </div>
@@ -1675,8 +1675,8 @@ export default function HexacoreOrrery() {
                 key={layer.num}
                 onClick={() => setActiveLayer(layer.num)}
                 className={`rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${activeLayer === layer.num
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/50"
-                    : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white border border-white/5"
+                    ? "bg-info text-info-foreground shadow-panel"
+                    : "bg-foreground/[0.03] text-muted-foreground hover:bg-foreground/[0.08] hover:text-info-foreground border border-border"
                   }`}
               >
                 L{layer.num}: {layer.name}
@@ -1684,8 +1684,8 @@ export default function HexacoreOrrery() {
             ))}
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Explore every layer by core</p>
+          <div className="rounded-2xl border border-border bg-foreground/[0.03] p-4">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Explore every layer by core</p>
             <div className="flex flex-wrap gap-2">
               {HEXACORE_CORES.map((core) => (
                 <button
@@ -1695,8 +1695,8 @@ export default function HexacoreOrrery() {
                   aria-pressed={selectedCoreId === core.id}
                   className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                     selectedCoreId === core.id
-                      ? "border-indigo-400/60 bg-indigo-500/20 text-white"
-                      : "border-white/10 bg-black/20 text-slate-400 hover:text-white"
+                      ? "border-info/60 bg-info/20 text-foreground"
+                      : "border-border bg-sunken/50 text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {core.name}
@@ -1707,13 +1707,13 @@ export default function HexacoreOrrery() {
 
           {/* Layer 1: Cores */}
           {activeLayer === 1 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 1: The Six Expanded Cores</h3>
-              <p className="text-sm text-slate-300">The 6 primordial archetypal pillars of the universe across ancient traditions.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 1: The Six Expanded Cores</h3>
+              <p className="text-sm text-soft">The 6 primordial archetypal pillars of the universe across ancient traditions.</p>
               <div className="overflow-x-auto mt-4">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-white/10 text-slate-400">
+                    <tr className="border-b border-border text-muted-foreground">
                       <th className="p-3">Core</th>
                       <th className="p-3">Ge'ez / Amharic</th>
                       <th className="p-3">Sanskrit</th>
@@ -1725,19 +1725,19 @@ export default function HexacoreOrrery() {
                       <th className="p-3">Shadow → Gift</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 text-slate-200">
+                  <tbody className="divide-y divide-border text-soft">
                     {HEXACORE_CORES.map((c) => (
-                      <tr key={c.id} className="hover:bg-white/[0.02]">
-                        <td className="p-3 font-bold text-white">{c.name}</td>
-                        <td className="p-3 text-amber-300 font-medium">{c.amharic}</td>
+                      <tr key={c.id} className="hover:bg-foreground/[0.02]">
+                        <td className="p-3 font-bold text-foreground">{c.name}</td>
+                        <td className="p-3 text-gold font-medium">{c.amharic}</td>
                         <td className="p-3">{c.sanskrit}</td>
                         <td className="p-3">{c.hebrew}</td>
                         <td className="p-3">{c.arabic}</td>
-                        <td className="p-3 font-mono text-indigo-300">{c.soundHz} Hz</td>
+                        <td className="p-3 font-mono text-info">{c.soundHz} Hz</td>
                         <td className="p-3">{c.geometry}</td>
-                        <td className="p-3 text-emerald-300">{c.virtue}</td>
+                        <td className="p-3 text-brand">{c.virtue}</td>
                         <td className="p-3">
-                          <span className="text-rose-300">{c.shadow}</span> → <span className="text-indigo-300">{c.gift}</span>
+                          <span className="text-danger">{c.shadow}</span> → <span className="text-info">{c.gift}</span>
                         </td>
                       </tr>
                     ))}
@@ -1749,23 +1749,23 @@ export default function HexacoreOrrery() {
 
           {/* Layer 2: Aspects */}
           {activeLayer === 2 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 2: The 36 Aspects (6 per Core)</h3>
-              <p className="text-sm text-slate-300">Each Core branches into 6 distinct psychological and spiritual modes of manifestation.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 2: The 36 Aspects (6 per Core)</h3>
+              <p className="text-sm text-soft">Each Core branches into 6 distinct psychological and spiritual modes of manifestation.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {selectedAspects.map((a) => (
-                  <div key={a.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
+                  <div key={a.id} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-white">{a.id}: {a.name}</span>
-                      <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 text-[10px] text-indigo-300 font-mono">
+                      <span className="font-bold text-sm text-foreground">{a.id}: {a.name}</span>
+                      <span className="rounded-full bg-info/10 border border-info/20 px-2.5 py-0.5 text-[10px] text-info-strong font-mono">
                         {a.baseFrequencyHz} Hz
                       </span>
                     </div>
-                    <p className="text-slate-300">{a.expression}</p>
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400">Zone: <strong className="text-slate-200">{a.bodyZone}</strong></span>
+                    <p className="text-soft">{a.expression}</p>
+                    <div className="pt-2 border-t border-border flex items-center justify-between text-[11px]">
+                      <span className="text-muted-foreground">Zone: <strong className="text-soft">{a.bodyZone}</strong></span>
                       <div>
-                        <span className="text-rose-300">{a.shadow}</span> / <span className="text-emerald-300">{a.gift}</span>
+                        <span className="text-danger">{a.shadow}</span> / <span className="text-brand">{a.gift}</span>
                       </div>
                     </div>
                   </div>
@@ -1776,49 +1776,49 @@ export default function HexacoreOrrery() {
 
           {/* Layer 3: Frequencies */}
           {activeLayer === 3 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 3: {selectedCore.name} Frequencies</h3>
-              <p className="text-sm text-slate-300">
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 3: {selectedCore.name} Frequencies</h3>
+              <p className="text-sm text-soft">
                 Every aspect spans 6 vibrational stages: <strong>Dormant → Awakening → Active → Radiant → Transcendent → Eternal</strong>.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                 {selectedFrequencies.map((f) => (
-                  <div key={f.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs flex items-center justify-between">
+                  <div key={f.id} className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-white">{f.name}</span>
-                      <span className="text-[10px] text-indigo-300 ml-2">({f.state})</span>
-                      <p className="text-[11px] text-slate-400">{f.sign}</p>
+                      <span className="font-bold text-foreground">{f.name}</span>
+                      <span className="text-[10px] text-info ml-2">({f.state})</span>
+                      <p className="text-[11px] text-muted-foreground">{f.sign}</p>
                     </div>
                     <button
                       onClick={() => handlePlaySound(f.soundHz)}
-                      className="flex items-center gap-1 rounded bg-indigo-500/20 px-2 py-1 text-[10px] text-indigo-200 hover:bg-indigo-500/30"
+                      className="flex items-center gap-1 rounded bg-info/20 px-2 py-1 text-[10px] text-info-strong hover:bg-info/30"
                     >
                       <Volume2 className="h-3 w-3" /> {f.soundHz} Hz
                     </button>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-slate-500 text-center pt-2">Showing all {selectedFrequencies.length} frequency states for {selectedCore.name}.</p>
+              <p className="text-xs text-subtle text-center pt-2">Showing all {selectedFrequencies.length} frequency states for {selectedCore.name}.</p>
             </div>
           )}
 
           {/* Layer 4: Archetypes */}
           {activeLayer === 4 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 4: {selectedCore.name} Archetypes</h3>
-              <p className="text-sm text-slate-300">Personified energetic patterns acting through personal and collective psyches.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 4: {selectedCore.name} Archetypes</h3>
+              <p className="text-sm text-soft">Personified energetic patterns acting through personal and collective psyches.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                 {selectedArchetypes.map((arch) => (
-                  <div key={arch.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs space-y-1">
+                  <div key={arch.id} className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">{arch.name}</span>
-                      <span className="text-[10px] text-slate-400">{arch.coreName}</span>
+                      <span className="font-bold text-foreground">{arch.name}</span>
+                      <span className="text-[10px] text-muted-foreground">{arch.coreName}</span>
                     </div>
-                    <p className="text-[11px] text-slate-300">{arch.role}</p>
+                    <p className="text-[11px] text-soft">{arch.role}</p>
                     <div className="flex items-center gap-2 text-[10px] pt-1">
-                      <span className="text-rose-300">Shadow: {arch.shadow}</span>
-                      <span className="text-slate-600">|</span>
-                      <span className="text-emerald-300">Gift: {arch.gift}</span>
+                      <span className="text-danger">Shadow: {arch.shadow}</span>
+                      <span className="text-subtle">|</span>
+                      <span className="text-brand">Gift: {arch.gift}</span>
                     </div>
                   </div>
                 ))}
@@ -1828,22 +1828,22 @@ export default function HexacoreOrrery() {
 
           {/* Layer 7: Correspondences */}
           {activeLayer === 7 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 7: {selectedCore.name} Correspondences ({selectedCorrespondences.length})</h3>
-              <p className="text-sm text-slate-300">
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 7: {selectedCore.name} Correspondences ({selectedCorrespondences.length})</h3>
+              <p className="text-sm text-soft">
                 Cross-domain multidimensional mapping tying each archetype to a Planet, Herb, Sound Frequency, Sacred Geometry, Body Sign, and Creation Day.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {selectedCorrespondences.map((c) => (
-                  <div key={c.archetypeId} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
-                    <span className="font-bold text-white text-sm block">{c.archetypeName}</span>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-                      <div><span className="text-slate-500">Planet:</span> {c.planet}</div>
-                      <div><span className="text-slate-500">Herb:</span> {c.herb}</div>
-                      <div><span className="text-slate-500">Sound:</span> {c.soundHz} Hz</div>
-                      <div><span className="text-slate-500">Geometry:</span> {c.geometry}</div>
-                      <div><span className="text-slate-500">Body Sign:</span> {c.bodySign}</div>
-                      <div><span className="text-slate-500">Creation Day:</span> {c.creationDay}</div>
+                  <div key={c.archetypeId} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
+                    <span className="font-bold text-foreground text-sm block">{c.archetypeName}</span>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-soft">
+                      <div><span className="text-subtle">Planet:</span> {c.planet}</div>
+                      <div><span className="text-subtle">Herb:</span> {c.herb}</div>
+                      <div><span className="text-subtle">Sound:</span> {c.soundHz} Hz</div>
+                      <div><span className="text-subtle">Geometry:</span> {c.geometry}</div>
+                      <div><span className="text-subtle">Body Sign:</span> {c.bodySign}</div>
+                      <div><span className="text-subtle">Creation Day:</span> {c.creationDay}</div>
                     </div>
                   </div>
                 ))}
@@ -1853,18 +1853,18 @@ export default function HexacoreOrrery() {
 
           {/* Layer 8: Temporal Cycles */}
           {activeLayer === 8 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 8: Temporal Cycles (6 Scales × 6 Phases)</h3>
-              <p className="text-sm text-slate-300">Time mapping from the daily circadian rhythm to cosmic ages and creation days.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 8: Temporal Cycles (6 Scales × 6 Phases)</h3>
+              <p className="text-sm text-soft">Time mapping from the daily circadian rhythm to cosmic ages and creation days.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                 {TEMPORAL_CYCLES.filter((cycle) => cycle.core === selectedCore.name).map((tc, idx) => (
-                  <div key={idx} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs space-y-1">
+                  <div key={idx} className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-amber-300">{tc.phase}</span>
-                      <span className="text-[10px] text-indigo-300 font-mono">{tc.core} · {tc.scale}</span>
+                      <span className="font-bold text-gold">{tc.phase}</span>
+                      <span className="text-[10px] text-info font-mono">{tc.core} · {tc.scale}</span>
                     </div>
-                    <p className="text-slate-300 text-[11px]">{tc.themeOrPractice}</p>
-                    <p className="text-slate-500 text-[10px]">{tc.detail}</p>
+                    <p className="text-soft text-[11px]">{tc.themeOrPractice}</p>
+                    <p className="text-subtle text-[10px]">{tc.detail}</p>
                   </div>
                 ))}
               </div>
@@ -1873,18 +1873,18 @@ export default function HexacoreOrrery() {
 
           {/* Layer 9: Energetic Bodies */}
           {activeLayer === 9 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 9: Energetic Bodies & Subtle Anatomy</h3>
-              <p className="text-sm text-slate-300">The 6 subtle sheaths, chakric centers, and meridian circuits.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 9: Energetic Bodies & Subtle Anatomy</h3>
+              <p className="text-sm text-soft">The 6 subtle sheaths, chakric centers, and meridian circuits.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {ENERGETIC_BODIES.filter((body) => body.core === selectedCore.name).map((eb) => (
-                  <div key={eb.name} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
-                    <span className="font-bold text-white text-sm block">{eb.name}</span>
-                    <p className="text-slate-300 text-[11px]">{eb.function}</p>
-                    <div className="pt-2 border-t border-white/5 space-y-1 text-[11px] text-slate-300">
-                      <div><span className="text-slate-500">Center:</span> {eb.centerName} ({eb.chakraLocation})</div>
-                      <div><span className="text-slate-500">Meridian:</span> {eb.meridian} ({eb.emotion})</div>
-                      <div><span className="text-slate-500">Core:</span> {eb.core} · {eb.soundHz} Hz</div>
+                  <div key={eb.name} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
+                    <span className="font-bold text-foreground text-sm block">{eb.name}</span>
+                    <p className="text-soft text-[11px]">{eb.function}</p>
+                    <div className="pt-2 border-t border-border space-y-1 text-[11px] text-soft">
+                      <div><span className="text-subtle">Center:</span> {eb.centerName} ({eb.chakraLocation})</div>
+                      <div><span className="text-subtle">Meridian:</span> {eb.meridian} ({eb.emotion})</div>
+                      <div><span className="text-subtle">Core:</span> {eb.core} · {eb.soundHz} Hz</div>
                     </div>
                   </div>
                 ))}
@@ -1894,20 +1894,20 @@ export default function HexacoreOrrery() {
 
           {/* Layer 11: Initiation Gates */}
           {activeLayer === 11 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 11: Initiation Gates (6 Gates × 6 Trials)</h3>
-              <p className="text-sm text-slate-300">Spiritual progression and ethical challenges for personal maturation.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 11: Initiation Gates (6 Gates × 6 Trials)</h3>
+              <p className="text-sm text-soft">Spiritual progression and ethical challenges for personal maturation.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {INITIATION_GATES.filter((gate) => gate.core === selectedCore.name).map((gate) => (
-                  <div key={gate.gate} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
+                  <div key={gate.gate} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-amber-300 text-sm">{gate.gate}</span>
-                      <span className="text-indigo-300 text-[10px]">{gate.core}</span>
+                      <span className="font-bold text-gold text-sm">{gate.gate}</span>
+                      <span className="text-info text-[10px]">{gate.core}</span>
                     </div>
-                    <p className="text-slate-300 text-[11px]">Trial: {gate.trialSummary} → Reward: <strong className="text-emerald-300">{gate.reward}</strong></p>
-                    <div className="pt-2 border-t border-white/5">
-                      <span className="text-[10px] text-slate-500 uppercase font-semibold block mb-1">Six Trials</span>
-                      <ol className="list-decimal list-inside space-y-0.5 text-[10.5px] text-slate-300">
+                    <p className="text-soft text-[11px]">Trial: {gate.trialSummary} → Reward: <strong className="text-brand">{gate.reward}</strong></p>
+                    <div className="pt-2 border-t border-border">
+                      <span className="text-[10px] text-subtle uppercase font-semibold block mb-1">Six Trials</span>
+                      <ol className="list-decimal list-inside space-y-0.5 text-[10.5px] text-soft">
                         {gate.trials.map((t, idx) => (
                           <li key={idx}>{t}</li>
                         ))}
@@ -1921,21 +1921,21 @@ export default function HexacoreOrrery() {
 
           {/* Layer 13: Creation Days */}
           {activeLayer === 13 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 13: The Six Creation Days</h3>
-              <p className="text-sm text-slate-300">Temporal-spiritual relational map connecting Sunday through Friday to specific spiritual acts and practices.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 13: The Six Creation Days</h3>
+              <p className="text-sm text-soft">Temporal-spiritual relational map connecting Sunday through Friday to specific spiritual acts and practices.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {CREATION_DAY_MAPPINGS.filter((day) => day.primaryCore === selectedCore.name || day.secondaryCore === selectedCore.name).map((cd) => (
-                  <div key={cd.day} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
+                  <div key={cd.day} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-amber-300 text-base">{cd.day}</span>
-                      <span className="rounded bg-indigo-500/20 px-2 py-0.5 text-[10px] text-indigo-200">
+                      <span className="font-bold text-gold text-base">{cd.day}</span>
+                      <span className="rounded bg-info/20 px-2 py-0.5 text-[10px] text-info-strong">
                         {cd.primaryCore} + {cd.secondaryCore}
                       </span>
                     </div>
-                    <p className="text-slate-300 font-semibold">{cd.creationAct}</p>
-                    <p className="text-[11px] text-slate-400 italic">{cd.relationalMeaning}</p>
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-300">
+                    <p className="text-soft font-semibold">{cd.creationAct}</p>
+                    <p className="text-[11px] text-muted-foreground italic">{cd.relationalMeaning}</p>
+                    <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-soft">
                       <span>Practice: {cd.practice}</span>
                       <span>Herb: {cd.herb} · {cd.soundHz} Hz</span>
                     </div>
@@ -1948,13 +1948,13 @@ export default function HexacoreOrrery() {
           {/* Layer 14: Cross-System Bridges & Ethiopian Herbs */}
           {activeLayer === 14 && (
             <div className="space-y-6">
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-                <h3 className="text-xl font-bold text-white">Layer 14: Cross-System Bridges (6 Traditions)</h3>
-                <p className="text-sm text-slate-300">Synthesis across TCM, Ayurveda, Unani, Ethiopian (Awde Negest), Latin American, and Western frameworks.</p>
+              <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+                <h3 className="text-xl font-bold text-foreground">Layer 14: Cross-System Bridges (6 Traditions)</h3>
+                <p className="text-sm text-soft">Synthesis across TCM, Ayurveda, Unani, Ethiopian (Awde Negest), Latin American, and Western frameworks.</p>
                 <div className="overflow-x-auto mt-4">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-white/10 text-slate-400">
+                      <tr className="border-b border-border text-muted-foreground">
                         <th className="p-3">Core</th>
                         <th className="p-3">TCM</th>
                         <th className="p-3">Ayurveda</th>
@@ -1964,16 +1964,16 @@ export default function HexacoreOrrery() {
                         <th className="p-3">Western</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5 text-slate-200">
+                    <tbody className="divide-y divide-border text-soft">
                       {[selectedCore.name].map((core) => {
                         const tr = CROSS_SYSTEM_TRADITIONS[core];
                         return (
-                          <tr key={core} className="hover:bg-white/[0.02]">
-                            <td className="p-3 font-bold text-white">{core}</td>
+                          <tr key={core} className="hover:bg-foreground/[0.02]">
+                            <td className="p-3 font-bold text-foreground">{core}</td>
                             <td className="p-3">{tr.tcm}</td>
                             <td className="p-3">{tr.ayurveda}</td>
                             <td className="p-3">{tr.unani}</td>
-                            <td className="p-3 text-amber-300 font-semibold">{tr.ethiopian}</td>
+                            <td className="p-3 text-gold font-semibold">{tr.ethiopian}</td>
                             <td className="p-3">{tr.latinAmerican}</td>
                             <td className="p-3">{tr.western}</td>
                           </tr>
@@ -1984,28 +1984,28 @@ export default function HexacoreOrrery() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-amber-400/20 bg-amber-500/[0.04] p-6 space-y-4">
-                <div className="flex items-center gap-2 text-amber-300">
+              <div className="rounded-3xl border border-gold/20 bg-gold/[0.04] p-6 space-y-4">
+                <div className="flex items-center gap-2 text-gold">
                   <AlertTriangle className="h-5 w-5" />
                   <h4 className="font-bold text-base">Ethiopian Herbal Integration & Scientific Safety Profile</h4>
                 </div>
-                <p className="text-xs text-amber-200/80">
+                <p className="text-xs text-gold-strong">
                   Traditional botanical correspondences are documented for cultural inquiry only. Each plant&apos;s status comes live from the medicine &amp; remedy safety matrix; select it to check against medicines.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                   {ETHIOPIAN_HERBAL_INTEGRATION.filter((herb) => herb.core === selectedCore.name).map((herb) => (
-                    <div key={herb.scientificName} className="rounded-2xl border border-white/10 bg-[#0c0c1a] p-4 text-xs space-y-2">
+                    <div key={herb.scientificName} className="rounded-2xl border border-border bg-card p-4 text-xs space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-white text-sm">{herb.herb}</span>
+                        <span className="font-bold text-foreground text-sm">{herb.herb}</span>
                         {/* Live status from the safety matrix instead of a fixed rating. */}
                         <HerbSafetyBadge label={`${herb.herb} / ${herb.scientificName}`} />
                       </div>
-                      <p className="text-[11px] text-slate-400 italic">{herb.scientificName}</p>
-                      <div className="text-[11px] space-y-1 text-slate-300">
-                        <div><span className="text-slate-500">Core:</span> {herb.core} ({herb.creationDay})</div>
-                        <div><span className="text-slate-500">Preparation:</span> {herb.preparation}</div>
-                        <div><span className="text-slate-500">Active:</span> {herb.activeIngredient}</div>
-                        <div className="text-rose-300"><span className="text-slate-500">Precaution:</span> {herb.sideEffect}</div>
+                      <p className="text-[11px] text-muted-foreground italic">{herb.scientificName}</p>
+                      <div className="text-[11px] space-y-1 text-soft">
+                        <div><span className="text-subtle">Core:</span> {herb.core} ({herb.creationDay})</div>
+                        <div><span className="text-subtle">Preparation:</span> {herb.preparation}</div>
+                        <div><span className="text-subtle">Active:</span> {herb.activeIngredient}</div>
+                        <div className="text-danger"><span className="text-subtle">Precaution:</span> {herb.sideEffect}</div>
                       </div>
                     </div>
                   ))}
@@ -2015,17 +2015,17 @@ export default function HexacoreOrrery() {
           )}
 
           {activeLayer === 5 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 5: {selectedCore.name} Shadows</h3>
-              <p className="text-sm text-slate-300">Explore the shadow and reflective balancing practice for every archetype in this core.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 5: {selectedCore.name} Shadows</h3>
+              <p className="text-sm text-soft">Explore the shadow and reflective balancing practice for every archetype in this core.</p>
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {selectedArchetypes.map((archetype) => (
-                  <article key={archetype.id} className="rounded-2xl border border-rose-400/15 bg-rose-500/[0.03] p-4">
-                    <p className="text-[10px] font-mono text-slate-500">{archetype.id} · {archetype.aspectName}</p>
-                    <h4 className="mt-1 font-bold text-white">{archetype.name}</h4>
-                    <p className="mt-3 text-xs text-rose-200"><strong>Shadow:</strong> {archetype.shadow}</p>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300"><strong className="text-emerald-300">Reflective practice:</strong> {archetype.remedy}</p>
-                    <p className="mt-2 text-[11px] text-slate-400">Body-sign symbolism: {archetype.bodySign}</p>
+                  <article key={archetype.id} className="rounded-2xl border border-danger/15 bg-danger/[0.03] p-4">
+                    <p className="text-[10px] font-mono text-subtle">{archetype.id} · {archetype.aspectName}</p>
+                    <h4 className="mt-1 font-bold text-foreground">{archetype.name}</h4>
+                    <p className="mt-3 text-xs text-danger-strong"><strong>Shadow:</strong> {archetype.shadow}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-soft"><strong className="text-brand">Reflective practice:</strong> {archetype.remedy}</p>
+                    <p className="mt-2 text-[11px] text-muted-foreground">Body-sign symbolism: {archetype.bodySign}</p>
                   </article>
                 ))}
               </div>
@@ -2033,17 +2033,17 @@ export default function HexacoreOrrery() {
           )}
 
           {activeLayer === 6 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 6: {selectedCore.name} Gifts</h3>
-              <p className="text-sm text-slate-300">See how the strengths of each archetype may be expressed in everyday life.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 6: {selectedCore.name} Gifts</h3>
+              <p className="text-sm text-soft">See how the strengths of each archetype may be expressed in everyday life.</p>
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {selectedArchetypes.map((archetype) => (
-                  <article key={archetype.id} className="rounded-2xl border border-emerald-400/15 bg-emerald-500/[0.03] p-4">
-                    <p className="text-[10px] font-mono text-slate-500">{archetype.id} · {archetype.aspectName}</p>
-                    <h4 className="mt-1 font-bold text-white">{archetype.name}</h4>
-                    <p className="mt-3 text-sm text-emerald-200">{archetype.gift}</p>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">{archetype.role}</p>
-                    <p className="mt-2 text-[11px] text-slate-400">Balanced expression: {archetype.remedy}</p>
+                  <article key={archetype.id} className="rounded-2xl border border-brand/15 bg-brand/[0.03] p-4">
+                    <p className="text-[10px] font-mono text-subtle">{archetype.id} · {archetype.aspectName}</p>
+                    <h4 className="mt-1 font-bold text-foreground">{archetype.name}</h4>
+                    <p className="mt-3 text-sm text-brand-strong">{archetype.gift}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-soft">{archetype.role}</p>
+                    <p className="mt-2 text-[11px] text-muted-foreground">Balanced expression: {archetype.remedy}</p>
                   </article>
                 ))}
               </div>
@@ -2052,47 +2052,47 @@ export default function HexacoreOrrery() {
 
           {activeLayer === 10 && (
             <div className="space-y-6">
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                <h3 className="text-xl font-bold text-white">Layer 10: Collective Fields · {selectedCore.name}</h3>
-                <p className="mt-2 text-sm text-slate-300">Group roles, relationship pairs, and collective patterns connected to the selected core.</p>
-                <h4 className="mt-5 text-sm font-bold text-indigo-200">Group sizes and dynamics</h4>
+              <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6">
+                <h3 className="text-xl font-bold text-foreground">Layer 10: Collective Fields · {selectedCore.name}</h3>
+                <p className="mt-2 text-sm text-soft">Group roles, relationship pairs, and collective patterns connected to the selected core.</p>
+                <h4 className="mt-5 text-sm font-bold text-info-strong">Group sizes and dynamics</h4>
                 <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {COLLECTIVE_DYNAMICS.groupSizes.filter((item) => item.core === selectedCore.name).map((item) => (
-                    <article key={item.size} className="rounded-xl border border-white/10 bg-black/20 p-4 text-xs">
-                      <h5 className="font-bold text-white">Group of {item.size} · {item.dynamic}</h5>
-                      <p className="mt-2 text-slate-400">{item.example}</p>
-                      <p className="mt-2 text-emerald-300">Practice: {item.practice}</p>
+                    <article key={item.size} className="rounded-xl border border-border bg-sunken/50 p-4 text-xs">
+                      <h5 className="font-bold text-foreground">Group of {item.size} · {item.dynamic}</h5>
+                      <p className="mt-2 text-muted-foreground">{item.example}</p>
+                      <p className="mt-2 text-brand">Practice: {item.practice}</p>
                     </article>
                   ))}
                 </div>
-                <h4 className="mt-6 text-sm font-bold text-indigo-200">Core pairings</h4>
+                <h4 className="mt-6 text-sm font-bold text-info-strong">Core pairings</h4>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {pairs.map((pair) => (
-                    <article key={pair.id} className="rounded-xl border border-white/10 bg-black/20 p-4 text-xs">
-                      <h5 className="font-bold text-white">{pair.name} · {pair.left} + {pair.right}</h5>
-                      <p className="mt-2 text-slate-300">{pair.dynamic}</p>
-                      <p className="mt-2 text-rose-300">Tension: {pair.shadow}</p>
-                      <p className="mt-1 text-emerald-300">Gift: {pair.gift}</p>
+                    <article key={pair.id} className="rounded-xl border border-border bg-sunken/50 p-4 text-xs">
+                      <h5 className="font-bold text-foreground">{pair.name} · {pair.left} + {pair.right}</h5>
+                      <p className="mt-2 text-soft">{pair.dynamic}</p>
+                      <p className="mt-2 text-danger">Tension: {pair.shadow}</p>
+                      <p className="mt-1 text-brand">Gift: {pair.gift}</p>
                     </article>
                   ))}
                 </div>
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <div>
-                    <h4 className="text-sm font-bold text-rose-200">Collective shadows</h4>
+                    <h4 className="text-sm font-bold text-danger-strong">Collective shadows</h4>
                     <div className="mt-2 space-y-2">
                       {COLLECTIVE_DYNAMICS.collectiveShadows.filter((item) => item.core === selectedCore.name).map((item) => (
-                        <p key={item.shadow} className="rounded-lg bg-rose-500/[0.06] p-3 text-xs text-slate-300">
-                          <strong className="text-rose-200">{item.shadow}:</strong> {item.expression} · Balance through {item.remedy}.
+                        <p key={item.shadow} className="rounded-lg bg-danger/[0.06] p-3 text-xs text-soft">
+                          <strong className="text-danger-strong">{item.shadow}:</strong> {item.expression} · Balance through {item.remedy}.
                         </p>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-emerald-200">Collective gifts</h4>
+                    <h4 className="text-sm font-bold text-brand-strong">Collective gifts</h4>
                     <div className="mt-2 space-y-2">
                       {COLLECTIVE_DYNAMICS.collectiveGifts.filter((item) => item.core === selectedCore.name).map((item) => (
-                        <p key={item.gift} className="rounded-lg bg-emerald-500/[0.06] p-3 text-xs text-slate-300">
-                          <strong className="text-emerald-200">{item.gift}:</strong> {item.expression} · Practice: {item.practice}.
+                        <p key={item.gift} className="rounded-lg bg-brand/[0.06] p-3 text-xs text-soft">
+                          <strong className="text-brand-strong">{item.gift}:</strong> {item.expression} · Practice: {item.practice}.
                         </p>
                       ))}
                     </div>
@@ -2103,24 +2103,24 @@ export default function HexacoreOrrery() {
           )}
 
           {activeLayer === 12 && (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Layer 12: Cosmological Realms · {selectedCore.name}</h3>
-              <p className="text-sm text-slate-300">Explore the selected core's symbolic realm and all of its sub-realms.</p>
+            <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-foreground">Layer 12: Cosmological Realms · {selectedCore.name}</h3>
+              <p className="text-sm text-soft">Explore the selected core's symbolic realm and all of its sub-realms.</p>
               {COSMOLOGICAL_REALMS.filter((realm) => realm.core === selectedCore.name).map((realm) => (
-                <article key={realm.realm} className="rounded-2xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
+                <article key={realm.realm} className="rounded-2xl border border-info/20 bg-info/[0.04] p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h4 className="text-lg font-bold text-white">{realm.realm}</h4>
-                      <p className="mt-1 text-sm text-slate-300">{realm.description}</p>
+                      <h4 className="text-lg font-bold text-foreground">{realm.realm}</h4>
+                      <p className="mt-1 text-sm text-soft">{realm.description}</p>
                     </div>
-                    <span className="rounded-full border border-indigo-400/20 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-200">Ruler: {realm.ruler}</span>
+                    <span className="rounded-full border border-info/20 bg-info/10 px-3 py-1 text-xs text-info-strong">Ruler: {realm.ruler}</span>
                   </div>
-                  <p className="mt-3 text-xs text-slate-400">Gateway: {realm.gateway}</p>
+                  <p className="mt-3 text-xs text-muted-foreground">Gateway: {realm.gateway}</p>
                   <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {realm.subRealms.map((subRealm) => (
-                      <div key={subRealm.name} className="rounded-xl border border-white/10 bg-black/20 p-3">
-                        <h5 className="text-sm font-semibold text-amber-200">{subRealm.name}</h5>
-                        <p className="mt-1 text-xs text-slate-400">{subRealm.meaning}</p>
+                      <div key={subRealm.name} className="rounded-xl border border-border bg-sunken/50 p-3">
+                        <h5 className="text-sm font-semibold text-gold-strong">{subRealm.name}</h5>
+                        <p className="mt-1 text-xs text-muted-foreground">{subRealm.meaning}</p>
                       </div>
                     ))}
                   </div>
@@ -2135,8 +2135,8 @@ export default function HexacoreOrrery() {
       {activeTab === "journal" && (
         <section className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)] items-start">
           {/* Day Navigation */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">30-Day Arcana Journey</h3>
+          <div className="rounded-3xl border border-border bg-foreground/[0.03] p-4 space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">30-Day Arcana Journey</h3>
             <div className="grid grid-cols-5 gap-1.5 max-h-[500px] overflow-y-auto pr-1">
               {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => {
                 const isCurrent = activeDay === d;
@@ -2149,17 +2149,17 @@ export default function HexacoreOrrery() {
                       setJournalText(savedEntries[d] || "");
                     }}
                     className={`h-11 rounded-xl font-mono text-xs font-bold transition-all relative flex flex-col items-center justify-center ${isCurrent
-                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/50"
-                        : "bg-white/[0.03] text-slate-300 hover:bg-white/[0.08]"
+                        ? "bg-info text-info-foreground shadow-md"
+                        : "bg-foreground/[0.03] text-soft hover:bg-foreground/[0.08]"
                       }`}
                   >
                     <span>D{d}</span>
-                    {hasEntry && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-emerald-400" />}
+                    {hasEntry && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-brand" />}
                   </button>
                 );
               })}
             </div>
-            <div className="pt-3 border-t border-white/5 text-[11px] text-slate-400 space-y-1">
+            <div className="pt-3 border-t border-border text-[11px] text-muted-foreground space-y-1">
               <div>W1: Power (Days 1–7)</div>
               <div>W2: Humanity (Days 8–14)</div>
               <div>W3: Creation (Days 15–21)</div>
@@ -2169,23 +2169,23 @@ export default function HexacoreOrrery() {
           </div>
 
           {/* Daily Prompt & Reflection Sheet */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="rounded-3xl border border-border bg-foreground/[0.04] p-6 space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-indigo-300">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-info">
                   Day {activeDay} · {currentJournalPrompt.core} · {currentJournalPrompt.aspect}
                 </span>
-                <h2 className="text-2xl font-black text-white mt-1">{currentJournalPrompt.aspect} Activation</h2>
+                <h2 className="text-2xl font-bold text-foreground mt-1">{currentJournalPrompt.aspect} Activation</h2>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handlePlaySound(currentJournalPrompt.soundHz)}
-                  className="flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/20"
+                  className="flex items-center gap-1.5 rounded-full border border-info/30 bg-info/10 px-3 py-1.5 text-xs text-info-strong hover:bg-info/20"
                 >
                   <Volume2 className="h-3.5 w-3.5" />
                   <span>{currentJournalPrompt.soundHz} Hz</span>
                 </button>
-                <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs text-amber-200">
+                <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold-strong">
                   {currentJournalPrompt.herb}
                 </span>
               </div>
@@ -2193,32 +2193,32 @@ export default function HexacoreOrrery() {
 
             {/* Practices Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-xs space-y-2">
-                <span className="text-[10px] uppercase tracking-wider text-amber-300 font-bold block">Morning Practice</span>
-                <p className="text-slate-300 leading-relaxed">{currentJournalPrompt.morningPractice}</p>
+              <div className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
+                <span className="text-[10px] uppercase tracking-wider text-gold font-bold block">Morning Practice</span>
+                <p className="text-soft leading-relaxed">{currentJournalPrompt.morningPractice}</p>
               </div>
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-xs space-y-2">
-                <span className="text-[10px] uppercase tracking-wider text-sky-300 font-bold block">Midday Reflection</span>
-                <p className="text-slate-300 leading-relaxed">{currentJournalPrompt.middayReflection}</p>
+              <div className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
+                <span className="text-[10px] uppercase tracking-wider text-info font-bold block">Midday Reflection</span>
+                <p className="text-soft leading-relaxed">{currentJournalPrompt.middayReflection}</p>
               </div>
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-xs space-y-2">
-                <span className="text-[10px] uppercase tracking-wider text-purple-300 font-bold block">Evening Practice</span>
-                <p className="text-slate-300 leading-relaxed">{currentJournalPrompt.eveningPractice}</p>
+              <div className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
+                <span className="text-[10px] uppercase tracking-wider text-plum font-bold block">Evening Practice</span>
+                <p className="text-soft leading-relaxed">{currentJournalPrompt.eveningPractice}</p>
               </div>
             </div>
 
             {/* Affirmation & Shadow Work */}
-            <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.05] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="rounded-2xl border border-info/20 bg-info/[0.05] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] uppercase font-bold text-indigo-300">Daily Affirmation</span>
-                <p className="text-sm font-semibold text-white mt-0.5">"{currentJournalPrompt.affirmation}"</p>
+                <span className="text-[10px] uppercase font-bold text-info">Daily Affirmation</span>
+                <p className="text-sm font-semibold text-foreground mt-0.5">"{currentJournalPrompt.affirmation}"</p>
               </div>
               <div className="text-xs text-right md:text-left">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Shadow Transmutation</span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground">Shadow Transmutation</span>
                 <p className="text-xs mt-0.5">
-                  <span className="text-rose-400">{currentJournalPrompt.shadow}</span>
-                  <span className="text-slate-500 mx-1">→</span>
-                  <span className="text-emerald-400">{currentJournalPrompt.gift}</span>
+                  <span className="text-danger">{currentJournalPrompt.shadow}</span>
+                  <span className="text-subtle mx-1">→</span>
+                  <span className="text-brand">{currentJournalPrompt.gift}</span>
                 </p>
               </div>
             </div>
@@ -2226,15 +2226,15 @@ export default function HexacoreOrrery() {
             {/* Interactive Reflection Note */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <label className="text-xs font-semibold text-slate-300">Personal Journal Reflection</label>
+                <label className="text-xs font-semibold text-soft">Personal Journal Reflection</label>
                 <span className={`text-[11px] ${
                   journalStatus === "error"
-                    ? "text-rose-300"
+                    ? "text-danger"
                     : journalStatus === "local"
-                      ? "text-amber-300"
+                      ? "text-gold"
                       : journalStatus === "saving" || journalStatus === "loading"
-                        ? "text-slate-400"
-                        : "text-emerald-300"
+                        ? "text-muted-foreground"
+                        : "text-brand"
                 }`}>
                   {journalStatus === "loading" && "Loading saved entries…"}
                   {journalStatus === "saving" && "Saving securely…"}
@@ -2249,13 +2249,13 @@ export default function HexacoreOrrery() {
                 onChange={(e) => setJournalText(e.target.value)}
                 placeholder="Record your observations, emotional currents, and bodily sensations during today's practice..."
                 rows={4}
-                className="w-full rounded-2xl border border-white/10 bg-black/40 p-4 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded-2xl border border-border bg-sunken/80 p-4 text-xs text-foreground placeholder:text-subtle focus:border-info focus:outline-none"
               />
               <div className="flex justify-end">
                 <button
                   onClick={handleSaveJournal}
                   disabled={journalStatus === "saving"}
-                  className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl bg-info px-4 py-2 text-xs font-semibold text-info-foreground transition-colors hover:bg-info disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {journalStatus === "saving" ? "Saving…" : `Save Day ${activeDay} Entry`}
                 </button>
@@ -2268,20 +2268,20 @@ export default function HexacoreOrrery() {
       {/* TAB 4: BODY SIGN READING */}
       {activeTab === "bodysigns" && (
         <section className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
+          <div className="rounded-3xl border border-border bg-foreground/[0.03] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold text-white">Body Sign Reading Layer</h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <h3 className="text-xl font-bold text-foreground">Body Sign Reading Layer</h3>
+                <p className="text-xs text-muted-foreground mt-1">
                   Observational somatic reflection across Tongue zones, Palm lines, and Facial morphology.
                 </p>
               </div>
-              <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
+              <div className="flex rounded-xl bg-foreground/5 p-1 border border-border">
                 {(["tongue", "palm", "face"] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setBodySignTab(t)}
-                    className={`rounded-lg px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${bodySignTab === t ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                    className={`rounded-lg px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${bodySignTab === t ? "bg-info text-info-foreground" : "text-muted-foreground hover:text-info-foreground"
                       }`}
                   >
                     {t}
@@ -2292,25 +2292,25 @@ export default function HexacoreOrrery() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {BODY_SIGN_ZONES[bodySignTab].map((z) => (
-                <div key={z.zone} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs space-y-2">
+                <div key={z.zone} className="rounded-2xl border border-border bg-foreground/[0.02] p-4 text-xs space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-sm">{z.zone}</span>
-                    <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 text-[10px] text-indigo-300">
+                    <span className="font-bold text-foreground text-sm">{z.zone}</span>
+                    <span className="rounded-full bg-info/10 border border-info/20 px-2 py-0.5 text-[10px] text-info-strong">
                       {z.core} Core
                     </span>
                   </div>
-                  <div className="text-slate-300 space-y-1 text-[11px]">
-                    <div><span className="text-slate-500">Sign:</span> <strong className="text-amber-200">{z.sign}</strong></div>
-                    <div><span className="text-slate-500">Traditional Meaning:</span> {z.meaning}</div>
-                    <div className="pt-2 border-t border-white/5 text-emerald-300">
-                      <span className="text-slate-500">Holistic Remedy:</span> {z.remedy}
+                  <div className="text-soft space-y-1 text-[11px]">
+                    <div><span className="text-subtle">Sign:</span> <strong className="text-gold-strong">{z.sign}</strong></div>
+                    <div><span className="text-subtle">Traditional Meaning:</span> {z.meaning}</div>
+                    <div className="pt-2 border-t border-border text-brand">
+                      <span className="text-subtle">Holistic Remedy:</span> {z.remedy}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/[0.05] p-4 text-xs text-amber-200/80 leading-relaxed">
+            <div className="rounded-2xl border border-gold/20 bg-gold/[0.05] p-4 text-xs text-gold-strong leading-relaxed">
               <strong>Reflective Safety Notice:</strong> Body sign readings are symbolic expressions grounded in traditional holistic systems. They are strictly observational guides for introspection and lifestyle balance, NOT medical diagnoses or pathology assessments.
             </div>
           </div>
@@ -2320,17 +2320,17 @@ export default function HexacoreOrrery() {
       {/* TAB 5: PROFILE & NUMEROLOGY CALCULATOR */}
       {activeTab === "calculator" && (
         <section className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 space-y-6">
+          <div className="rounded-3xl border border-border bg-foreground/[0.04] p-6 space-y-6">
             <div>
-              <h3 className="text-xl font-bold text-white">Hexacore 14-Layer Profile & 6-Based Numerology Calculator</h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <h3 className="text-xl font-bold text-foreground">Hexacore 14-Layer Profile & 6-Based Numerology Calculator</h3>
+              <p className="text-xs text-muted-foreground mt-1">
                 Enter your details to generate your comprehensive 14-layer personal chart and master numbers.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="hexacore-profile-name" className="text-xs text-slate-400 block mb-1">Full Name (optional)</label>
+                <label htmlFor="hexacore-profile-name" className="text-xs text-muted-foreground block mb-1">Full Name (optional)</label>
                 <input
                   id="hexacore-profile-name"
                   type="text"
@@ -2338,11 +2338,11 @@ export default function HexacoreOrrery() {
                   onChange={(e) => setCalcName(e.target.value)}
                   autoComplete="name"
                   maxLength={120}
-                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-sunken/80 px-3.5 py-2.5 text-xs text-foreground focus:border-info focus:outline-none"
                 />
               </div>
               <div>
-                <label htmlFor="hexacore-profile-birth-date" className="text-xs text-slate-400 block mb-1">Date of Birth</label>
+                <label htmlFor="hexacore-profile-birth-date" className="text-xs text-muted-foreground block mb-1">Date of Birth</label>
                 <input
                   id="hexacore-profile-birth-date"
                   type="date"
@@ -2350,28 +2350,28 @@ export default function HexacoreOrrery() {
                   onChange={(e) => setCalcDate(e.target.value)}
                   max={new Date().toISOString().slice(0, 10)}
                   required
-                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-sunken/80 px-3.5 py-2.5 text-xs text-foreground focus:border-info focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 pt-2">
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-soft cursor-pointer">
                 <input
                   type="checkbox"
                   checked={calcConsent}
                   onChange={(e) => setCalcConsent(e.target.checked)}
-                  className="rounded border-white/20 bg-black/40 text-indigo-600 focus:ring-0"
+                  className="rounded border-border-strong bg-sunken/80 text-info focus:ring-0"
                 />
                 <span>I consent to reflective cultural exploration</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-soft cursor-pointer">
                 <input
                   type="checkbox"
                   checked={calcAge}
                   onChange={(e) => setCalcAge(e.target.checked)}
-                  className="rounded border-white/20 bg-black/40 text-indigo-600 focus:ring-0"
+                  className="rounded border-border-strong bg-sunken/80 text-info focus:ring-0"
                 />
                 <span>I am 18 years of age or older (Adult age gate)</span>
               </label>
@@ -2380,7 +2380,7 @@ export default function HexacoreOrrery() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={handleCalculateProfile}
-                className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-500 hover:to-purple-500 transition-all"
+                className="rounded-xl bg-gradient-to-r from-info to-plum px-6 py-2.5 text-xs font-bold text-info-foreground shadow-panel hover:from-info hover:to-plum transition-all"
               >
                 Calculate Complete 14-Layer Profile
               </button>
@@ -2393,95 +2393,95 @@ export default function HexacoreOrrery() {
                   setCalcAge(true);
                   calculateProfile(sample.name, sample.date, true, true);
                 }}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-white/10"
+                className="rounded-xl border border-border bg-foreground/5 px-4 py-2.5 text-xs font-semibold text-soft hover:bg-foreground/10"
               >
                 Load Sample Profile
               </button>
             </div>
 
             {calcError && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
+              <div className="rounded-xl border border-danger/30 bg-danger/10 p-4 text-xs text-danger-strong">
                 {calcError}
               </div>
             )}
 
             {/* Generated Profile Display */}
             {calculatedProfile && calculatedNumerology && (
-              <div className="space-y-6 pt-6 border-t border-white/10 animate-fade-in">
+              <div className="space-y-6 pt-6 border-t border-border animate-fade-in">
                 {/* Numerology Summary Cards */}
                 <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-indigo-300">6-Based Numerology Analysis</h4>
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-info">6-Based Numerology Analysis</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-3">
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Core Number</span>
-                      <span className="text-xl font-black text-amber-300">{calculatedNumerology.coreNumber}</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Core Number</span>
+                      <span className="text-xl font-bold text-gold">{calculatedNumerology.coreNumber}</span>
                       {calculatedNumerology.isMaster && (
-                        <span className="text-[10px] text-purple-300 block font-semibold">{calculatedNumerology.masterTitle}</span>
+                        <span className="text-[10px] text-plum block font-semibold">{calculatedNumerology.masterTitle}</span>
                       )}
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Destiny Number</span>
-                      <span className="text-xl font-black text-white">{calculatedNumerology.destinyNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Life purpose</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Destiny Number</span>
+                      <span className="text-xl font-bold text-foreground">{calculatedNumerology.destinyNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Life purpose</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Soul Number</span>
-                      <span className="text-xl font-black text-white">{calculatedNumerology.soulNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Heart desire</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Soul Number</span>
+                      <span className="text-xl font-bold text-foreground">{calculatedNumerology.soulNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Heart desire</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Personality Number</span>
-                      <span className="text-xl font-black text-white">{calculatedNumerology.personalityNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Outer expression</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Personality Number</span>
+                      <span className="text-xl font-bold text-foreground">{calculatedNumerology.personalityNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Outer expression</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Maturity Number</span>
-                      <span className="text-xl font-black text-white">{calculatedNumerology.maturityNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Who you become</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Maturity Number</span>
+                      <span className="text-xl font-bold text-foreground">{calculatedNumerology.maturityNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Who you become</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Challenge Number</span>
-                      <span className="text-xl font-black text-rose-300">{calculatedNumerology.challengeNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Growth edge</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Challenge Number</span>
+                      <span className="text-xl font-bold text-danger">{calculatedNumerology.challengeNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Growth edge</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Creation Day Number</span>
-                      <span className="text-xl font-black text-emerald-300">{calculatedNumerology.creationDayNumber}</span>
-                      <span className="text-[10px] text-slate-400 block">Day coordinate</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Creation Day Number</span>
+                      <span className="text-xl font-bold text-brand">{calculatedNumerology.creationDayNumber}</span>
+                      <span className="text-[10px] text-muted-foreground block">Day coordinate</span>
                     </div>
-                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                      <span className="text-slate-500 text-[10px] block uppercase">Creation Day</span>
-                      <span className="text-xl font-black text-indigo-300">{calculatedProfile.creationDay}</span>
-                      <span className="text-[10px] text-slate-400 block">Day of power</span>
+                    <div className="rounded-xl border border-border bg-foreground/[0.02] p-3 text-xs">
+                      <span className="text-subtle text-[10px] block uppercase">Creation Day</span>
+                      <span className="text-xl font-bold text-info">{calculatedProfile.creationDay}</span>
+                      <span className="text-[10px] text-muted-foreground block">Day of power</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 14-Layer Profile Breakdown */}
-                <div className="rounded-2xl border border-white/10 bg-black/40 p-5 space-y-4">
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-indigo-300">14-Layer Chart Architecture</h4>
+                <div className="rounded-2xl border border-border bg-sunken/80 p-5 space-y-4">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-info">14-Layer Chart Architecture</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                     <div className="space-y-1.5">
-                      <div><strong className="text-slate-400">Dominant Core:</strong> <span className="text-amber-300 font-bold">{calculatedProfile.dominantCore}</span></div>
-                      <div><strong className="text-slate-400">Secondary Core:</strong> <span className="text-indigo-300 font-bold">{calculatedProfile.secondaryCore}</span></div>
-                      <div><strong className="text-slate-400">Tertiary Core:</strong> <span className="text-white">{calculatedProfile.tertiaryCore}</span></div>
-                      <div><strong className="text-slate-400">Dormant Core:</strong> <span className="text-slate-400">{calculatedProfile.dormantCore}</span></div>
-                      <div><strong className="text-slate-400">Primary Archetype:</strong> <span className="text-emerald-300 font-bold">{calculatedProfile.archetype}</span></div>
-                      <div><strong className="text-slate-400">Shadow:</strong> <span className="text-rose-300">{calculatedProfile.shadow}</span></div>
-                      <div><strong className="text-slate-400">Gift:</strong> <span className="text-emerald-300">{calculatedProfile.gift}</span></div>
+                      <div><strong className="text-muted-foreground">Dominant Core:</strong> <span className="text-gold font-bold">{calculatedProfile.dominantCore}</span></div>
+                      <div><strong className="text-muted-foreground">Secondary Core:</strong> <span className="text-info font-bold">{calculatedProfile.secondaryCore}</span></div>
+                      <div><strong className="text-muted-foreground">Tertiary Core:</strong> <span className="text-foreground">{calculatedProfile.tertiaryCore}</span></div>
+                      <div><strong className="text-muted-foreground">Dormant Core:</strong> <span className="text-muted-foreground">{calculatedProfile.dormantCore}</span></div>
+                      <div><strong className="text-muted-foreground">Primary Archetype:</strong> <span className="text-brand font-bold">{calculatedProfile.archetype}</span></div>
+                      <div><strong className="text-muted-foreground">Shadow:</strong> <span className="text-danger">{calculatedProfile.shadow}</span></div>
+                      <div><strong className="text-muted-foreground">Gift:</strong> <span className="text-brand">{calculatedProfile.gift}</span></div>
                     </div>
                     <div className="space-y-1.5">
-                      <div><strong className="text-slate-400">Creation Day:</strong> {calculatedProfile.creationDay}</div>
-                      <div><strong className="text-slate-400">Solfeggio Sound:</strong> {calculatedProfile.correspondences.soundHz} Hz</div>
-                      <div><strong className="text-slate-400">Planet / Metal:</strong> {calculatedProfile.correspondences.planet} · {calculatedProfile.correspondences.metal}</div>
-                      <div><strong className="text-slate-400">Sacred Geometry:</strong> {calculatedProfile.correspondences.geometry}</div>
-                      <div><strong className="text-slate-400">Botanical Ally:</strong> {calculatedProfile.correspondences.plant}</div>
-                      <div><strong className="text-slate-400">Cross-System TCM:</strong> {calculatedProfile.layerSummary?.layer14CrossSystem.tcm}</div>
-                      <div><strong className="text-slate-400">Cross-System Ethiopian:</strong> {calculatedProfile.layerSummary?.layer14CrossSystem.ethiopian}</div>
+                      <div><strong className="text-muted-foreground">Creation Day:</strong> {calculatedProfile.creationDay}</div>
+                      <div><strong className="text-muted-foreground">Solfeggio Sound:</strong> {calculatedProfile.correspondences.soundHz} Hz</div>
+                      <div><strong className="text-muted-foreground">Planet / Metal:</strong> {calculatedProfile.correspondences.planet} · {calculatedProfile.correspondences.metal}</div>
+                      <div><strong className="text-muted-foreground">Sacred Geometry:</strong> {calculatedProfile.correspondences.geometry}</div>
+                      <div><strong className="text-muted-foreground">Botanical Ally:</strong> {calculatedProfile.correspondences.plant}</div>
+                      <div><strong className="text-muted-foreground">Cross-System TCM:</strong> {calculatedProfile.layerSummary?.layer14CrossSystem.tcm}</div>
+                      <div><strong className="text-muted-foreground">Cross-System Ethiopian:</strong> {calculatedProfile.layerSummary?.layer14CrossSystem.ethiopian}</div>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-white/5 text-[11px] text-slate-300 italic">
+                  <div className="pt-3 border-t border-border text-[11px] text-soft italic">
                     {calculatedProfile.creationDayMapping.relationalMeaning}
                   </div>
                 </div>

@@ -15,27 +15,27 @@ import { generateCarePlan } from "@/lib/wellbeing/carePlanEngine";
 type ViewMode = "quiz" | "constitution" | "careplan";
 
 const DOSHA_COLORS: Record<string, { gradient: string; accent: string; text: string }> = {
-  Vata: { gradient: "from-violet-900/60 to-indigo-900/40", accent: "border-violet-500", text: "text-violet-300" },
-  Pitta: { gradient: "from-red-900/60 to-amber-900/40", accent: "border-red-500", text: "text-red-300" },
-  Kapha: { gradient: "from-emerald-900/60 to-teal-900/40", accent: "border-emerald-500", text: "text-emerald-300" },
-  "Vata-Pitta": { gradient: "from-violet-900/40 to-amber-900/40", accent: "border-violet-400", text: "text-violet-300" },
-  "Pitta-Kapha": { gradient: "from-red-900/40 to-emerald-900/40", accent: "border-red-400", text: "text-red-300" },
-  "Vata-Kapha": { gradient: "from-violet-900/40 to-teal-900/40", accent: "border-violet-400", text: "text-violet-300" },
-  Tridosha: { gradient: "from-amber-900/40 to-emerald-900/40", accent: "border-amber-500", text: "text-amber-300" },
+  Vata: { gradient: "from-plum-soft to-info-soft", accent: "border-plum", text: "text-plum" },
+  Pitta: { gradient: "from-danger-soft to-gold-soft", accent: "border-danger", text: "text-danger" },
+  Kapha: { gradient: "from-brand-soft to-brand-soft", accent: "border-brand", text: "text-brand" },
+  "Vata-Pitta": { gradient: "from-plum-soft to-gold-soft", accent: "border-plum", text: "text-plum" },
+  "Pitta-Kapha": { gradient: "from-danger-soft to-brand-soft", accent: "border-danger", text: "text-danger" },
+  "Vata-Kapha": { gradient: "from-plum-soft to-brand-soft", accent: "border-plum", text: "text-plum" },
+  Tridosha: { gradient: "from-gold-soft to-brand-soft", accent: "border-gold", text: "text-gold" },
 };
 
 const HUMOR_LABELS: Record<string, { name: string; geez: string; element: string; color: string }> = {
-  esat: { name: "Esat (Fire)", geez: "እሳት", element: "🔥", color: "text-red-400" },
-  afere: { name: "Afere (Earth)", geez: "አፈር", element: "🌍", color: "text-amber-400" },
-  nifas: { name: "Nifas (Air)", geez: "ንፋስ", element: "💨", color: "text-sky-400" },
-  may: { name: "May (Water)", geez: "ማይ", element: "💧", color: "text-blue-400" },
+  esat: { name: "Esat (Fire)", geez: "እሳት", element: "🔥", color: "text-danger" },
+  afere: { name: "Afere (Earth)", geez: "አፈር", element: "🌍", color: "text-gold" },
+  nifas: { name: "Nifas (Air)", geez: "ንፋስ", element: "💨", color: "text-info" },
+  may: { name: "May (Water)", geez: "ማይ", element: "💧", color: "text-info" },
 };
 
 const PHASE_COLORS = {
-  foundation: "text-amber-400 border-amber-500/40 bg-amber-950/20",
-  restore: "text-emerald-400 border-emerald-500/40 bg-emerald-950/20",
-  optimize: "text-violet-400 border-violet-500/40 bg-violet-950/20",
-  maintain: "text-sky-400 border-sky-500/40 bg-sky-950/20",
+  foundation: "text-gold-strong border-gold/40 bg-gold-soft",
+  restore: "text-brand-strong border-brand/40 bg-brand-soft",
+  optimize: "text-plum-strong border-plum/40 bg-plum-soft",
+  maintain: "text-info-strong border-info/40 bg-info-soft",
 };
 
 export default function ConstitutionCarePlanView() {
@@ -103,8 +103,8 @@ export default function ConstitutionCarePlanView() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="badge badge-safe mb-2">AyurAI · NaraCare.AI Integration</div>
-          <h2 className="text-xl font-bold text-white">Constitution & Personalized Care Plan</h2>
-          <p className="text-xs text-slate-400 mt-1">Dosha × Ethiopian Humoral × TCM — Integrated constitutional analysis with personalized wellness journey.</p>
+          <h2 className="text-xl font-bold text-foreground">Constitution & Personalized Care Plan</h2>
+          <p className="text-xs text-muted-foreground mt-1">Dosha × Ethiopian Humoral × TCM — Integrated constitutional analysis with personalized wellness journey.</p>
         </div>
         <div className="flex gap-2">
           {(["quiz", "constitution", "careplan"] as ViewMode[]).map((mode) => (
@@ -113,7 +113,7 @@ export default function ConstitutionCarePlanView() {
               onClick={() => { if (mode === "careplan" && !carePlan) return; if (mode === "constitution" && !constitution) return; setViewMode(mode); }}
               disabled={mode === "constitution" && !constitution || mode === "careplan" && !carePlan}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all capitalize
-                ${viewMode === mode ? "bg-emerald-600 text-white" : "bg-white/5 text-slate-400 hover:bg-white/10"}
+                ${viewMode === mode ? "bg-brand text-brand-foreground" : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10"}
                 ${(mode === "constitution" && !constitution) || (mode === "careplan" && !carePlan) ? "opacity-30 cursor-not-allowed" : ""}`}
             >
               {mode === "quiz" ? "📋 Quiz" : mode === "constitution" ? "🔮 Profile" : "🗓️ Care Plan"}
@@ -128,11 +128,11 @@ export default function ConstitutionCarePlanView() {
           {/* Progress */}
           <div className="glass-panel p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400">Constitutional Assessment Progress</span>
-              <span className="text-xs font-bold text-emerald-400">{answeredCount}/{totalQuestions}</span>
+              <span className="text-xs text-muted-foreground">Constitutional Assessment Progress</span>
+              <span className="text-xs font-bold text-brand">{answeredCount}/{totalQuestions}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all" style={{ width: `${progress}%` }} />
+            <div className="h-1.5 rounded-full bg-foreground/5 overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-gold-fill to-brand transition-all" style={{ width: `${progress}%` }} />
             </div>
           </div>
 
@@ -143,9 +143,9 @@ export default function ConstitutionCarePlanView() {
                 key={question.id}
                 onClick={() => setCurrentQuestion(i)}
                 className={`w-7 h-7 rounded text-[10px] font-bold transition-all
-                  ${i === currentQuestion ? "bg-emerald-600 text-white" :
-                    answers[question.id] !== undefined ? "bg-emerald-950/60 text-emerald-400 border border-emerald-500/30" :
-                      "bg-white/5 text-slate-500"}`}
+                  ${i === currentQuestion ? "bg-brand text-brand-foreground" :
+                    answers[question.id] !== undefined ? "bg-brand-soft text-brand-strong border border-brand/30" :
+                      "bg-foreground/5 text-subtle"}`}
               >
                 {i + 1}
               </button>
@@ -154,11 +154,11 @@ export default function ConstitutionCarePlanView() {
 
           {/* Current Question */}
           <div className="glass-panel p-8">
-            <div className="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">
+            <div className="text-xs text-gold font-semibold uppercase tracking-wider mb-2">
               Question {currentQuestion + 1} of {totalQuestions} · {q.category}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">{q.text}</h3>
-            {q.amharicText && <p className="text-sm text-amber-300/70 mb-6">{q.amharicText}</p>}
+            <h3 className="text-lg font-bold text-foreground mb-1">{q.text}</h3>
+            {q.amharicText && <p className="text-sm text-gold mb-6">{q.amharicText}</p>}
 
             <div className="space-y-3">
               {q.options.map((option, i) => (
@@ -167,8 +167,8 @@ export default function ConstitutionCarePlanView() {
                   onClick={() => handleAnswer(i)}
                   className={`w-full p-4 rounded-xl text-left transition-all border text-sm
                     ${answers[q.id] === i
-                      ? "border-emerald-500 bg-emerald-950/30 text-white"
-                      : "border-white/10 bg-white/[0.02] text-slate-300 hover:border-emerald-500/40 hover:bg-emerald-950/10"}`}
+                      ? "border-brand bg-brand-soft text-foreground"
+                      : "border-border bg-foreground/[0.02] text-soft hover:border-brand/40 hover:bg-brand-soft/70"}`}
                 >
                   <span className="w-6 h-6 rounded-full border border-current inline-flex items-center justify-center text-xs font-bold mr-3">
                     {String.fromCharCode(65 + i)}
@@ -210,18 +210,18 @@ export default function ConstitutionCarePlanView() {
           <div className={`glass-panel p-8 bg-gradient-to-br ${doshaColors.gradient} border-l-4 ${doshaColors.accent}`}>
             <div className="flex flex-col md:flex-row md:items-start gap-6">
               <div className="flex-1">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Your Constitutional Type</div>
-                <h3 className={`text-3xl font-black ${doshaColors.text} mb-1`}>{constitution.dosha.primaryDosha}</h3>
+                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Your Constitutional Type</div>
+                <h3 className={`text-3xl font-bold ${doshaColors.text} mb-1`}>{constitution.dosha.primaryDosha}</h3>
                 <div className={`text-lg font-semibold ${HUMOR_LABELS[constitution.humor.dominantHumor]?.color}`}>
                   {HUMOR_LABELS[constitution.humor.dominantHumor]?.element}{" "}
                   {HUMOR_LABELS[constitution.humor.dominantHumor]?.name}
                   {constitution.humor.secondaryHumor && (
-                    <span className="text-slate-400 text-sm ml-2">
+                    <span className="text-muted-foreground text-sm ml-2">
                       + {HUMOR_LABELS[constitution.humor.secondaryHumor]?.name}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-slate-300 leading-relaxed mt-4">{constitution.overallConstitutionNarrative}</p>
+                <p className="text-sm text-soft leading-relaxed mt-4">{constitution.overallConstitutionNarrative}</p>
               </div>
 
               {/* Dosha wheel */}
@@ -244,15 +244,15 @@ export default function ConstitutionCarePlanView() {
                     })()}
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white text-center leading-tight">
+                    <span className="text-xs font-bold text-foreground text-center leading-tight">
                       {constitution.dosha.primaryDosha}
                     </span>
                   </div>
                 </div>
                 <div className="flex gap-3 text-[10px]">
-                  <span className="text-violet-400">V: {constitution.dosha.vata}%</span>
-                  <span className="text-red-400">P: {constitution.dosha.pitta}%</span>
-                  <span className="text-emerald-400">K: {constitution.dosha.kapha}%</span>
+                  <span className="text-plum">V: {constitution.dosha.vata}%</span>
+                  <span className="text-danger">P: {constitution.dosha.pitta}%</span>
+                  <span className="text-brand">K: {constitution.dosha.kapha}%</span>
                 </div>
               </div>
             </div>
@@ -261,21 +261,21 @@ export default function ConstitutionCarePlanView() {
           {/* Strengths & Vulnerabilities */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="glass-panel p-5">
-              <h4 className="font-bold text-emerald-400 mb-3">✓ Strengths</h4>
+              <h4 className="font-bold text-brand mb-3">✓ Strengths</h4>
               <ul className="space-y-1.5">
                 {[...constitution.strengthsAndVulnerabilities.physicalStrengths, ...constitution.strengthsAndVulnerabilities.mentalStrengths].map((s) => (
-                  <li key={s} className="text-xs text-slate-300 flex items-start gap-2">
-                    <span className="text-emerald-500 shrink-0">→</span>{s}
+                  <li key={s} className="text-xs text-soft flex items-start gap-2">
+                    <span className="text-brand shrink-0">→</span>{s}
                   </li>
                 ))}
               </ul>
             </div>
             <div className="glass-panel p-5">
-              <h4 className="font-bold text-amber-400 mb-3">⚠ Watch Points</h4>
+              <h4 className="font-bold text-gold mb-3">⚠ Watch Points</h4>
               <ul className="space-y-1.5">
                 {[...constitution.strengthsAndVulnerabilities.physicalVulnerabilities, ...constitution.strengthsAndVulnerabilities.mentalVulnerabilities].map((v) => (
-                  <li key={v} className="text-xs text-slate-300 flex items-start gap-2">
-                    <span className="text-amber-500 shrink-0">!</span>{v}
+                  <li key={v} className="text-xs text-soft flex items-start gap-2">
+                    <span className="text-gold shrink-0">!</span>{v}
                   </li>
                 ))}
               </ul>
@@ -284,43 +284,43 @@ export default function ConstitutionCarePlanView() {
 
           {/* Dietary Protocol */}
           <div className="glass-panel p-5">
-            <h4 className="font-bold text-white mb-4">Dietary Protocol for Your Constitution</h4>
+            <h4 className="font-bold text-foreground mb-4">Dietary Protocol for Your Constitution</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">✓ Favored Foods</div>
-                <ul className="space-y-1">{constitution.dietaryProtocol.favored.map((f) => <li key={f} className="text-xs text-slate-300">• {f}</li>)}</ul>
+                <div className="text-xs font-bold text-brand uppercase tracking-wider mb-2">✓ Favored Foods</div>
+                <ul className="space-y-1">{constitution.dietaryProtocol.favored.map((f) => <li key={f} className="text-xs text-soft">• {f}</li>)}</ul>
               </div>
               <div>
-                <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">~ Reduce</div>
-                <ul className="space-y-1">{constitution.dietaryProtocol.reduce.map((f) => <li key={f} className="text-xs text-slate-300">• {f}</li>)}</ul>
+                <div className="text-xs font-bold text-gold uppercase tracking-wider mb-2">~ Reduce</div>
+                <ul className="space-y-1">{constitution.dietaryProtocol.reduce.map((f) => <li key={f} className="text-xs text-soft">• {f}</li>)}</ul>
               </div>
               <div>
-                <div className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2">✗ Avoid</div>
-                <ul className="space-y-1">{constitution.dietaryProtocol.avoid.map((f) => <li key={f} className="text-xs text-slate-300">• {f}</li>)}</ul>
+                <div className="text-xs font-bold text-danger uppercase tracking-wider mb-2">✗ Avoid</div>
+                <ul className="space-y-1">{constitution.dietaryProtocol.avoid.map((f) => <li key={f} className="text-xs text-soft">• {f}</li>)}</ul>
               </div>
             </div>
           </div>
 
           {/* Generate Care Plan */}
-          <div className="glass-panel p-6 border border-emerald-500/20 bg-emerald-950/10">
-            <h4 className="font-bold text-white mb-4">Generate Your Personalized Care Plan</h4>
+          <div className="glass-panel p-6 border border-brand/20 bg-brand-soft/70">
+            <h4 className="font-bold text-foreground mb-4">Generate Your Personalized Care Plan</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Your Name</label>
+                <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider block mb-2">Your Name</label>
                 <input
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Enter your name"
-                  className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm outline-none focus:border-brand"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Plan Duration</label>
+                <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider block mb-2">Plan Duration</label>
                 <select
                   value={selectedDuration}
                   onChange={(e) => setSelectedDuration(e.target.value as PersonalizedCarePlan["duration"])}
-                  className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm outline-none focus:border-brand"
                 >
                   <option value="4-weeks">4 Weeks — Foundation</option>
                   <option value="8-weeks">8 Weeks — Restore</option>
@@ -331,7 +331,7 @@ export default function ConstitutionCarePlanView() {
             </div>
 
             <div className="mb-4">
-              <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Wellbeing Goals (select up to 3)</label>
+              <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider block mb-2">Wellbeing Goals (select up to 3)</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   "Improve energy and vitality", "Optimize digestion", "Reduce stress and anxiety",
@@ -344,7 +344,7 @@ export default function ConstitutionCarePlanView() {
                       prev.includes(goal) ? prev.filter((g) => g !== goal) :
                         prev.length < 3 ? [...prev, goal] : prev
                     )}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${selectedGoals.includes(goal) ? "bg-emerald-600/30 border-emerald-500 text-white" : "border-white/10 text-slate-400 hover:border-emerald-500/30"}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${selectedGoals.includes(goal) ? "bg-brand/30 border-brand text-foreground" : "border-border text-muted-foreground hover:border-brand/30"}`}
                   >
                     {goal}
                   </button>
@@ -366,31 +366,31 @@ export default function ConstitutionCarePlanView() {
           <div className="glass-panel p-6">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               <div className="flex-1">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Personalized Care Plan</div>
-                <h3 className="text-2xl font-bold text-white">{carePlan.clientName}&apos;s {carePlan.duration} Journey</h3>
-                <p className="text-sm text-slate-400 mt-1">
+                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Personalized Care Plan</div>
+                <h3 className="text-2xl font-bold text-foreground">{carePlan.clientName}&apos;s {carePlan.duration} Journey</h3>
+                <p className="text-sm text-muted-foreground mt-1">
                   {carePlan.constitution.dosha.primaryDosha} constitution ·{" "}
                   {HUMOR_LABELS[carePlan.constitution.humor.dominantHumor]?.name}
                 </p>
               </div>
               <div className="text-center">
-                <div className="text-xs text-slate-400 mb-1">Progress</div>
-                <div className="text-4xl font-black text-emerald-400">{carePlan.overallProgress}%</div>
-                <div className="text-xs text-slate-500">Week {carePlan.currentWeek}</div>
+                <div className="text-xs text-muted-foreground mb-1">Progress</div>
+                <div className="text-4xl font-bold text-brand">{carePlan.overallProgress}%</div>
+                <div className="text-xs text-subtle">Week {carePlan.currentWeek}</div>
               </div>
             </div>
 
-            <div className="mt-4 p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/20">
-              <div className="text-xs font-bold text-emerald-400 mb-1">AI Insight</div>
-              <p className="text-sm text-slate-300 leading-relaxed">{carePlan.aiInsight}</p>
+            <div className="mt-4 p-4 rounded-xl bg-brand-soft border border-brand/20">
+              <div className="text-xs font-bold text-brand mb-1">AI Insight</div>
+              <p className="text-sm text-soft leading-relaxed">{carePlan.aiInsight}</p>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 p-1 bg-black/30 rounded-xl border border-white/5 w-fit">
+          <div className="flex gap-1 p-1 bg-sunken/50 rounded-xl border border-border w-fit">
             {(["overview", "week", "herbs"] as const).map((tab) => (
               <button key={tab} onClick={() => setActiveCarePlanTab(tab)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeCarePlanTab === tab ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"}`}>
+                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeCarePlanTab === tab ? "bg-brand text-brand-foreground" : "text-muted-foreground hover:text-brand-foreground"}`}>
                 {tab === "overview" ? "📊 Overview" : tab === "week" ? "📅 Weekly Plan" : "🌿 Herbs & Supplements"}
               </button>
             ))}
@@ -404,11 +404,11 @@ export default function ConstitutionCarePlanView() {
                     <span className="text-xs font-bold uppercase tracking-wider">Week {week.weekNumber}</span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${PHASE_COLORS[week.phase]}`}>{week.phase}</span>
                   </div>
-                  <h4 className="font-bold text-white text-sm mb-2">{week.focus}</h4>
+                  <h4 className="font-bold text-foreground text-sm mb-2">{week.focus}</h4>
                   <ul className="space-y-1">
                     {week.goals.slice(0, 2).map((goal) => (
-                      <li key={goal} className="text-xs text-slate-400 flex items-start gap-1.5">
-                        <span className="text-emerald-500 shrink-0 mt-0.5">✓</span>{goal}
+                      <li key={goal} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                        <span className="text-brand shrink-0 mt-0.5">✓</span>{goal}
                       </li>
                     ))}
                   </ul>
@@ -424,7 +424,7 @@ export default function ConstitutionCarePlanView() {
                 {carePlan.weeklyPlans.map((w) => (
                   <button key={w.weekNumber} onClick={() => setSelectedWeek(w.weekNumber)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border
-                      ${selectedWeek === w.weekNumber ? "border-emerald-500 bg-emerald-950/30 text-white" : "border-white/10 text-slate-400 hover:border-emerald-500/30"}`}>
+                      ${selectedWeek === w.weekNumber ? "border-brand bg-brand-soft text-foreground" : "border-border text-muted-foreground hover:border-brand/30"}`}>
                     W{w.weekNumber}
                   </button>
                 ))}
@@ -437,7 +437,7 @@ export default function ConstitutionCarePlanView() {
                   <div className="space-y-4">
                     <div className={`glass-panel p-4 border ${PHASE_COLORS[week.phase]}`}>
                       <div className="text-xs uppercase tracking-wider font-bold mb-1 opacity-70">Week {week.weekNumber} · {week.phase}</div>
-                      <h4 className="font-bold text-white text-lg">{week.focus}</h4>
+                      <h4 className="font-bold text-foreground text-lg">{week.focus}</h4>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -445,14 +445,14 @@ export default function ConstitutionCarePlanView() {
                         const periodIcons = { morning: "🌅", afternoon: "☀️", evening: "🌙", night: "💤" };
                         return (
                           <div key={period} className="glass-panel p-4">
-                            <h5 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <h5 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                               <span>{periodIcons[period]}</span>
                               <span className="capitalize">{period}</span>
                             </h5>
                             <ul className="space-y-2">
                               {week.dailySchedule[period].map((item, i) => (
-                                <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
-                                  <span className="text-emerald-500 shrink-0 mt-0.5">→</span>{item}
+                                <li key={i} className="text-xs text-soft flex items-start gap-2">
+                                  <span className="text-brand shrink-0 mt-0.5">→</span>{item}
                                 </li>
                               ))}
                             </ul>
@@ -462,12 +462,12 @@ export default function ConstitutionCarePlanView() {
                     </div>
 
                     {/* Check-in prompts */}
-                    <div className="glass-panel p-4 border border-violet-500/20 bg-violet-950/10">
-                      <h5 className="text-sm font-bold text-violet-400 mb-3">📝 Weekly Check-In Prompts</h5>
+                    <div className="glass-panel p-4 border border-plum/20 bg-plum-soft/70">
+                      <h5 className="text-sm font-bold text-plum mb-3">📝 Weekly Check-In Prompts</h5>
                       <ul className="space-y-2">
                         {week.checkInPrompts.map((prompt, i) => (
-                          <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
-                            <span className="text-violet-500 shrink-0 font-bold">{i + 1}.</span>{prompt}
+                          <li key={i} className="text-xs text-soft flex items-start gap-2">
+                            <span className="text-plum shrink-0 font-bold">{i + 1}.</span>{prompt}
                           </li>
                         ))}
                       </ul>
@@ -481,25 +481,25 @@ export default function ConstitutionCarePlanView() {
           {activeCarePlanTab === "herbs" && (
             <div className="space-y-3">
               {carePlan.constitution.ayurvedicHerbsForBalance.map((herb, i) => (
-                <div key={i} className="glass-panel p-5 border-l-4 border-l-emerald-500/40">
+                <div key={i} className="glass-panel p-5 border-l-4 border-l-brand/40">
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <div>
-                      <h5 className="font-bold text-white">{herb.herb}</h5>
-                      <p className="text-xs text-slate-400 italic">{herb.sanskritName}</p>
+                      <h5 className="font-bold text-foreground">{herb.herb}</h5>
+                      <p className="text-xs text-muted-foreground italic">{herb.sanskritName}</p>
                       {herb.ethiopianEquivalent && (
-                        <span className="text-xs text-amber-400 mt-0.5 block">≈ Ethiopian: {herb.ethiopianEquivalent}</span>
+                        <span className="text-xs text-gold mt-0.5 block">≈ Ethiopian: {herb.ethiopianEquivalent}</span>
                       )}
                     </div>
-                    <span className="text-[10px] font-mono text-slate-500 shrink-0">{herb.dosage}</span>
+                    <span className="text-[10px] font-mono text-subtle shrink-0">{herb.dosage}</span>
                   </div>
-                  <p className="text-xs text-slate-300 mb-2">{herb.purpose}</p>
-                  <div className="p-2 rounded bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200/70">
+                  <p className="text-xs text-soft mb-2">{herb.purpose}</p>
+                  <div className="p-2 rounded bg-gold-soft border border-gold/20 text-xs text-gold-strong">
                     ⚠ {herb.caution}
                   </div>
                 </div>
               ))}
-              <div className="p-4 rounded-xl bg-black/30 border border-white/10">
-                <p className="text-xs text-slate-400 leading-relaxed">{carePlan.disclaimer}</p>
+              <div className="p-4 rounded-xl bg-sunken/50 border border-border">
+                <p className="text-xs text-muted-foreground leading-relaxed">{carePlan.disclaimer}</p>
               </div>
             </div>
           )}

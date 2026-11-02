@@ -12,10 +12,10 @@ interface AtlasClientProps {
 }
 
 const RISK_CONFIG = {
-  "very-high": { fill: "fill-rose-600/70", stroke: "stroke-rose-400", label: "Very High Risk", badge: "bg-rose-950/60 border-rose-500/40 text-rose-300" },
-  high: { fill: "fill-orange-500/60", stroke: "stroke-orange-400", label: "High Risk", badge: "bg-orange-950/60 border-orange-500/40 text-orange-300" },
-  moderate: { fill: "fill-amber-500/50", stroke: "stroke-amber-400", label: "Moderate Risk", badge: "bg-amber-950/60 border-amber-500/40 text-amber-300" },
-  low: { fill: "fill-emerald-600/50", stroke: "stroke-emerald-400", label: "Low Risk", badge: "bg-emerald-950/60 border-emerald-500/40 text-emerald-300" },
+  "very-high": { fill: "fill-danger/70", stroke: "stroke-danger", label: "Very High Risk", badge: "bg-danger-soft border-danger/40 text-danger-strong" },
+  high: { fill: "fill-warning/60", stroke: "stroke-warning", label: "High Risk", badge: "bg-warning-soft border-warning/40 text-warning-strong" },
+  moderate: { fill: "fill-gold-fill/50", stroke: "stroke-gold-fill", label: "Moderate Risk", badge: "bg-gold-soft border-gold/40 text-gold-strong" },
+  low: { fill: "fill-brand/50", stroke: "stroke-brand", label: "Low Risk", badge: "bg-brand-soft border-brand/40 text-brand-strong" },
 };
 
 const formatDiseaseRate = (measure: string, value: number) => {
@@ -126,12 +126,12 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
       <div className="app-container">
         {/* Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-950/60 border border-teal-500/30 text-teal-400 text-xs font-semibold mb-3">
-            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-soft border border-brand/30 text-brand-strong text-xs font-semibold mb-3">
+            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
             EPHI DHS 2019 · MiNDO Survey · WHO SEARO
           </div>
-          <h1 className="text-3xl font-extrabold text-white mb-2">{t.atlas.title}</h1>
-          <p className="text-slate-400 text-sm max-w-2xl">
+          <h1 className="text-3xl font-extrabold text-foreground mb-2">{t.atlas.title}</h1>
+          <p className="text-muted-foreground text-sm max-w-2xl">
             {t.atlas.subtitle}
           </p>
         </div>
@@ -146,8 +146,8 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
                   key={f}
                   onClick={() => setActiveFilter(f)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${activeFilter === f
-                    ? "bg-teal-600 border-teal-500 text-white"
-                    : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                    ? "bg-brand border-brand text-brand-foreground"
+                    : "bg-foreground/5 border-border text-muted-foreground hover:text-brand-foreground"
                     }`}
                 >
                   {filterLabel.replace(filterLabel, { anemia: "Child Anaemia", stunting: "Stunting", iron: "Iron Deficiency", vitaminA: "Vitamin A Deficiency" }[f])}
@@ -225,7 +225,7 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
               {/* Legend */}
               <div className="absolute bottom-2 left-2 flex flex-col gap-1">
                 {Object.entries(RISK_CONFIG).map(([key, cfg]) => (
-                  <div key={key} className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                  <div key={key} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                     <div className={`w-3 h-3 rounded-sm ${cfg.fill} border ${cfg.stroke}`} />
                     {cfg.label}
                   </div>
@@ -234,9 +234,9 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
             </div>
 
             {/* National average */}
-            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-              <span className="text-xs text-slate-500">National Average · {filterLabel}</span>
-              <span className="text-sm font-bold text-white">{nationalAvg}%</span>
+            <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+              <span className="text-xs text-subtle">National Average · {filterLabel}</span>
+              <span className="text-sm font-bold text-foreground">{nationalAvg}%</span>
             </div>
           </div>
 
@@ -272,19 +272,19 @@ export default function AtlasClient({ regions, administrativeRegions }: AtlasCli
         {/* Summary Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {[
-            { label: "Regions Tracked", value: regions.length.toString(), color: "text-teal-400" },
-            { label: "Avg Child Anaemia", value: `${Math.round(regions.reduce((s, r) => s + r.anemiaChildrenPct, 0) / Math.max(regions.length, 1))}%`, color: "text-rose-400" },
-            { label: "Avg Iron Deficiency", value: `${Math.round(regions.reduce((s, r) => s + r.ironDeficiencyPct, 0) / Math.max(regions.length, 1))}%`, color: "text-amber-400" },
-            { label: "Avg Trad. Med Usage", value: `${Math.round(regions.reduce((s, r) => s + r.traditionalMedicineUsagePct, 0) / Math.max(regions.length, 1))}%`, color: "text-violet-400" },
+            { label: "Regions Tracked", value: regions.length.toString(), color: "text-brand" },
+            { label: "Avg Child Anaemia", value: `${Math.round(regions.reduce((s, r) => s + r.anemiaChildrenPct, 0) / Math.max(regions.length, 1))}%`, color: "text-danger" },
+            { label: "Avg Iron Deficiency", value: `${Math.round(regions.reduce((s, r) => s + r.ironDeficiencyPct, 0) / Math.max(regions.length, 1))}%`, color: "text-gold" },
+            { label: "Avg Trad. Med Usage", value: `${Math.round(regions.reduce((s, r) => s + r.traditionalMedicineUsagePct, 0) / Math.max(regions.length, 1))}%`, color: "text-plum" },
           ].map((stat) => (
             <div key={stat.label} className="glass-panel p-4 text-center">
               <div className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</div>
-              <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
+              <div className="text-xs text-subtle mt-1">{stat.label}</div>
             </div>
           ))}
         </div>
 
-        <p className="mt-4 text-xs text-slate-600 text-center">
+        <p className="mt-4 text-xs text-subtle text-center">
           Data: EPHI DHS 2019 / MiNDO National Micronutrient Survey / WHO SEARO. Population-level estimates — individual scientific assessments require the full evaluation pipeline.
         </p>
       </div>
@@ -327,13 +327,13 @@ function RegionDetailPanel({
           <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${risk.badge} mb-1`}>
             {risk.label}
           </span>
-          <h2 className="text-lg font-bold text-white">{region.name}</h2>
-          <p className="text-xs text-slate-500">{region.nameAmharic} · {region.nameOromo}</p>
-          <p className="text-xs text-slate-600 mt-0.5">Capital: {region.capital} · Alt: {region.altitudeRange}</p>
+          <h2 className="text-lg font-bold text-foreground">{region.name}</h2>
+          <p className="text-xs text-subtle">{region.nameAmharic} · {region.nameOromo}</p>
+          <p className="text-xs text-subtle mt-0.5">Capital: {region.capital} · Alt: {region.altitudeRange}</p>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-600 hover:text-white transition-colors text-xs mt-1"
+          className="text-subtle hover:text-foreground transition-colors text-xs mt-1"
         >
           ✕ Close
         </button>
@@ -342,7 +342,7 @@ function RegionDetailPanel({
       {administrativeRegion ? (
         <AdministrativeExplorer region={administrativeRegion} />
       ) : (
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[10px] leading-relaxed text-amber-200/80">
+        <div className="rounded-lg border border-gold/20 bg-gold/[0.04] p-3 text-[10px] leading-relaxed text-gold-strong">
           The supplied administrative index does not contain a matching hierarchy for this statistical grouping.
           Its health and nutrition figures below remain at the displayed region-wide scope.
         </div>
@@ -351,24 +351,24 @@ function RegionDetailPanel({
       {/* Key stats */}
       <div className="grid grid-cols-2 gap-2">
         {[
-          { label: "Child Anaemia", value: `${region.anemiaChildrenPct}%`, color: "text-rose-400" },
-          { label: "Women Anaemia", value: `${region.anemiaWomenPct}%`, color: "text-rose-300" },
-          { label: "Stunting", value: `${region.stuntingPct}%`, color: "text-orange-400" },
-          { label: "Iron Deficiency", value: `${region.ironDeficiencyPct}%`, color: "text-amber-400" },
-          { label: "Vitamin A Def.", value: `${region.vitaminADeficiencyPct}%`, color: "text-yellow-400" },
-          { label: "Trad. Medicine", value: `${region.traditionalMedicineUsagePct}%`, color: "text-violet-400" },
+          { label: "Child Anaemia", value: `${region.anemiaChildrenPct}%`, color: "text-danger" },
+          { label: "Women Anaemia", value: `${region.anemiaWomenPct}%`, color: "text-danger" },
+          { label: "Stunting", value: `${region.stuntingPct}%`, color: "text-warning" },
+          { label: "Iron Deficiency", value: `${region.ironDeficiencyPct}%`, color: "text-gold" },
+          { label: "Vitamin A Def.", value: `${region.vitaminADeficiencyPct}%`, color: "text-gold" },
+          { label: "Trad. Medicine", value: `${region.traditionalMedicineUsagePct}%`, color: "text-plum" },
         ].map((s) => (
-          <div key={s.label} className="bg-white/[0.03] rounded-lg p-2.5 border border-white/5">
+          <div key={s.label} className="bg-foreground/[0.03] rounded-lg p-2.5 border border-border">
             <div className={`text-base font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-[10px] text-slate-500 mt-0.5">{s.label}</div>
+            <div className="text-[10px] text-subtle mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       <nav aria-label={`${region.name} atlas topics`}>
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Location HUD · Explore an aspect</h3>
-          <span className="text-[9px] text-slate-600">{aspects.length} topics</span>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">Location HUD · Explore an aspect</h3>
+          <span className="text-[9px] text-subtle">{aspects.length} topics</span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {aspects.map((aspect, index) => (
@@ -379,11 +379,11 @@ function RegionDetailPanel({
               aria-current={activeAspect === aspect.id ? "location" : undefined}
               className={`rounded-lg border px-2 py-2 text-left text-[10px] transition-colors ${
                 activeAspect === aspect.id
-                  ? "border-teal-400/50 bg-teal-500/10 text-teal-200"
-                  : "border-white/5 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-white"
+                  ? "border-brand/50 bg-brand/10 text-brand-strong"
+                  : "border-border bg-foreground/[0.02] text-muted-foreground hover:border-border-strong hover:text-foreground"
               }`}
             >
-              <span className="mr-1.5 font-mono text-[9px] text-slate-600">{String(index + 1).padStart(2, "0")}</span>
+              <span className="mr-1.5 font-mono text-[9px] text-subtle">{String(index + 1).padStart(2, "0")}</span>
               {aspect.label}
             </a>
           ))}
@@ -398,18 +398,18 @@ function RegionDetailPanel({
       >
         <div className="space-y-3">
           <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Common deficiencies</div>
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Common deficiencies</div>
             <div className="flex flex-wrap gap-1.5">
               {region.commonDeficiencies.map((d) => (
-                <span key={d} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-950/50 border border-amber-500/30 text-amber-300">{d}</span>
+                <span key={d} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gold-soft border border-gold/30 text-gold-strong">{d}</span>
               ))}
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Staple foods</div>
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Staple foods</div>
             <div className="flex flex-wrap gap-1.5">
               {region.stapleFoods.map((food) => (
-                <span key={food} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950/50 border border-emerald-500/30 text-emerald-300">{food}</span>
+                <span key={food} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-brand-soft border border-brand/30 text-brand-strong">{food}</span>
               ))}
             </div>
           </div>
@@ -424,15 +424,15 @@ function RegionDetailPanel({
             active={activeAspect === "ecology"}
             onToggle={() => setActiveAspect(activeAspect === "ecology" ? "" : "ecology")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
+            <div className="space-y-1.5 text-[11px] text-soft">
               <p>{region.locationSystemsProfile.ecology.ecosystem}</p>
-              <p className="text-slate-400">{region.locationSystemsProfile.ecology.geography}</p>
+              <p className="text-muted-foreground">{region.locationSystemsProfile.ecology.geography}</p>
               <div className="grid grid-cols-2 gap-2">
                 <span>Rain: {region.locationSystemsProfile.ecology.annualPrecipitationMm.join("–")} mm</span>
                 <span>Temperature: {region.locationSystemsProfile.ecology.temperatureRangeC.join("–")}°C</span>
               </div>
-              <p className="text-cyan-300">Water: {region.locationSystemsProfile.ecology.riversAndWaterBodies.join(", ")}</p>
-              <p className="text-slate-400">Soils: {region.locationSystemsProfile.ecology.soilTypes.join(", ")}</p>
+              <p className="text-info">Water: {region.locationSystemsProfile.ecology.riversAndWaterBodies.join(", ")}</p>
+              <p className="text-muted-foreground">Soils: {region.locationSystemsProfile.ecology.soilTypes.join(", ")}</p>
             </div>
           </AspectSection>
           <AspectSection
@@ -441,11 +441,11 @@ function RegionDetailPanel({
             active={activeAspect === "agriculture"}
             onToggle={() => setActiveAspect(activeAspect === "agriculture" ? "" : "agriculture")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
-              <p><span className="text-emerald-300">Crops:</span> {region.locationSystemsProfile.agriculture.crops.join(", ")}</p>
-              <p><span className="text-amber-300">Livestock:</span> {region.locationSystemsProfile.agriculture.livestock.join(", ")}</p>
-              <p><span className="text-cyan-300">Fisheries:</span> {region.locationSystemsProfile.agriculture.fisheries.join(", ")}</p>
-              <p><span className="text-slate-400">Forest products:</span> {region.locationSystemsProfile.agriculture.forestProducts.join(", ")}</p>
+            <div className="space-y-1.5 text-[11px] text-soft">
+              <p><span className="text-brand">Crops:</span> {region.locationSystemsProfile.agriculture.crops.join(", ")}</p>
+              <p><span className="text-gold">Livestock:</span> {region.locationSystemsProfile.agriculture.livestock.join(", ")}</p>
+              <p><span className="text-info">Fisheries:</span> {region.locationSystemsProfile.agriculture.fisheries.join(", ")}</p>
+              <p><span className="text-muted-foreground">Forest products:</span> {region.locationSystemsProfile.agriculture.forestProducts.join(", ")}</p>
             </div>
           </AspectSection>
           <AspectSection
@@ -454,12 +454,12 @@ function RegionDetailPanel({
             active={activeAspect === "food-systems"}
             onToggle={() => setActiveAspect(activeAspect === "food-systems" ? "" : "food-systems")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
-              <p>Urbanization: <span className="text-violet-300">{region.locationSystemsProfile.industryAndUrbanization.urbanizationLevel}</span> · Built-up area: {region.locationSystemsProfile.industryAndUrbanization.builtUpAreaPct}%</p>
-              <p><span className="text-violet-300">Industries:</span> {region.locationSystemsProfile.industryAndUrbanization.leadingIndustries.join(", ")}</p>
-              <p><span className="text-emerald-300">Fermented:</span> {region.locationSystemsProfile.foodAndNutrition.fermentedFoodsAndDrinks.join(", ")}</p>
-              <p><span className="text-amber-300">Preparation:</span> {region.locationSystemsProfile.foodAndNutrition.preparationMethods.join(", ")}</p>
-              <p><span className="text-slate-400">Preservation:</span> {region.locationSystemsProfile.foodAndNutrition.preservationMethods.join(", ")}</p>
+            <div className="space-y-1.5 text-[11px] text-soft">
+              <p>Urbanization: <span className="text-plum">{region.locationSystemsProfile.industryAndUrbanization.urbanizationLevel}</span> · Built-up area: {region.locationSystemsProfile.industryAndUrbanization.builtUpAreaPct}%</p>
+              <p><span className="text-plum">Industries:</span> {region.locationSystemsProfile.industryAndUrbanization.leadingIndustries.join(", ")}</p>
+              <p><span className="text-brand">Fermented:</span> {region.locationSystemsProfile.foodAndNutrition.fermentedFoodsAndDrinks.join(", ")}</p>
+              <p><span className="text-gold">Preparation:</span> {region.locationSystemsProfile.foodAndNutrition.preparationMethods.join(", ")}</p>
+              <p><span className="text-muted-foreground">Preservation:</span> {region.locationSystemsProfile.foodAndNutrition.preservationMethods.join(", ")}</p>
             </div>
           </AspectSection>
           <AspectSection
@@ -468,10 +468,10 @@ function RegionDetailPanel({
             active={activeAspect === "heritage"}
             onToggle={() => setActiveAspect(activeAspect === "heritage" ? "" : "heritage")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
-              <p><span className="text-amber-300">Common names:</span> {region.locationSystemsProfile.culturalAndHeritage.commonNames.join(", ")}</p>
-              <p><span className="text-emerald-300">Practices:</span> {region.locationSystemsProfile.culturalAndHeritage.culturalPractices.join(", ")}</p>
-              <p><span className="text-violet-300">Traditional medicines:</span> {region.locationSystemsProfile.culturalAndHeritage.traditionalMedicines.join(", ")}</p>
+            <div className="space-y-1.5 text-[11px] text-soft">
+              <p><span className="text-gold">Common names:</span> {region.locationSystemsProfile.culturalAndHeritage.commonNames.join(", ")}</p>
+              <p><span className="text-brand">Practices:</span> {region.locationSystemsProfile.culturalAndHeritage.culturalPractices.join(", ")}</p>
+              <p><span className="text-plum">Traditional medicines:</span> {region.locationSystemsProfile.culturalAndHeritage.traditionalMedicines.join(", ")}</p>
             </div>
           </AspectSection>
           <AspectSection
@@ -480,12 +480,12 @@ function RegionDetailPanel({
             active={activeAspect === "sacred-places"}
             onToggle={() => setActiveAspect(activeAspect === "sacred-places" ? "" : "sacred-places")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
-              <p><span className="text-slate-200">Churches/monasteries:</span> {region.locationSystemsProfile.culturalAndHeritage.churchesAndMonasteries.join(", ")}</p>
-              <p><span className="text-slate-200">Mosques:</span> {region.locationSystemsProfile.culturalAndHeritage.mosques.join(", ")}</p>
-              <p><span className="text-cyan-300">Mountains:</span> {region.locationSystemsProfile.culturalAndHeritage.mountains.join(", ")}</p>
-              <p><span className="text-cyan-300">Rivers:</span> {region.locationSystemsProfile.culturalAndHeritage.rivers.join(", ")}</p>
-              <p><span className="text-cyan-300">Lakes:</span> {region.locationSystemsProfile.culturalAndHeritage.lakes.join(", ")}</p>
+            <div className="space-y-1.5 text-[11px] text-soft">
+              <p><span className="text-soft">Churches/monasteries:</span> {region.locationSystemsProfile.culturalAndHeritage.churchesAndMonasteries.join(", ")}</p>
+              <p><span className="text-soft">Mosques:</span> {region.locationSystemsProfile.culturalAndHeritage.mosques.join(", ")}</p>
+              <p><span className="text-info">Mountains:</span> {region.locationSystemsProfile.culturalAndHeritage.mountains.join(", ")}</p>
+              <p><span className="text-info">Rivers:</span> {region.locationSystemsProfile.culturalAndHeritage.rivers.join(", ")}</p>
+              <p><span className="text-info">Lakes:</span> {region.locationSystemsProfile.culturalAndHeritage.lakes.join(", ")}</p>
             </div>
           </AspectSection>
           <AspectSection
@@ -494,20 +494,20 @@ function RegionDetailPanel({
             active={activeAspect === "location-foods"}
             onToggle={() => setActiveAspect(activeAspect === "location-foods" ? "" : "location-foods")}
           >
-            <div className="space-y-2 text-[11px] text-slate-300">
+            <div className="space-y-2 text-[11px] text-soft">
               {region.locationSystemsProfile.foodSystem.locationFoods.map((food) => (
-                <div key={food.food} className="rounded-lg border border-white/5 bg-white/[0.03] p-2">
+                <div key={food.food} className="rounded-lg border border-border bg-foreground/[0.03] p-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-emerald-300">{food.food}</span>
-                    <span className="text-[10px] uppercase text-slate-500">{food.foodGroup}</span>
+                    <span className="font-semibold text-brand">{food.food}</span>
+                    <span className="text-[10px] uppercase text-subtle">{food.foodGroup}</span>
                   </div>
-                  <p className="mt-1 text-slate-400">{food.ingredients.join(", ")}</p>
+                  <p className="mt-1 text-muted-foreground">{food.ingredients.join(", ")}</p>
                   <p className="mt-1">Processing: {food.processingMethods.join(", ")}</p>
-                  <p className="mt-1 text-cyan-300">
+                  <p className="mt-1 text-info">
                     Composition source: {food.compositionSource.name} · {food.compositionSource.intendedUse.replace("_", " ")}
                   </p>
                   {food.proximateComposition && (
-                    <p className="mt-1 text-amber-300">
+                    <p className="mt-1 text-gold">
                       Proximate: {food.proximateComposition.crudeProteinPct ?? "—"}% protein · {food.proximateComposition.crudeFiberPct ?? "—"}% fibre · {food.proximateComposition.ashPct ?? "—"}% ash ({food.proximateComposition.basis.replace("_", " ")})
                     </p>
                   )}
@@ -521,10 +521,10 @@ function RegionDetailPanel({
             active={activeAspect === "food-safety"}
             onToggle={() => setActiveAspect(activeAspect === "food-safety" ? "" : "food-safety")}
           >
-            <div className="space-y-1.5 text-[11px] text-slate-300">
+            <div className="space-y-1.5 text-[11px] text-soft">
               <p>Pesticides: {region.locationSystemsProfile.foodSystem.pesticideUse.map((record) => record.activeIngredient).join(", ")}</p>
               <p>Insecticides: {region.locationSystemsProfile.foodSystem.insecticideUse.map((record) => record.activeIngredient).join(", ")}</p>
-              <p className="text-rose-300">Product, residue, application-rate, and pre-harvest records require local verification.</p>
+              <p className="text-danger">Product, residue, application-rate, and pre-harvest records require local verification.</p>
             </div>
           </AspectSection>
         </>
@@ -538,7 +538,7 @@ function RegionDetailPanel({
             active={activeAspect === "demographics"}
             onToggle={() => setActiveAspect(activeAspect === "demographics" ? "" : "demographics")}
           >
-            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-soft">
               <span>Urban: {region.locationWellbeingProfile.demographics.urbanPopulationPct}%</span>
               <span>Median age: {region.locationWellbeingProfile.demographics.medianAgeYears}</span>
               <span>Under five: {region.locationWellbeingProfile.demographics.underFivePopulationPct}%</span>
@@ -553,7 +553,7 @@ function RegionDetailPanel({
             active={activeAspect === "anthropometrics"}
             onToggle={() => setActiveAspect(activeAspect === "anthropometrics" ? "" : "anthropometrics")}
           >
-            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-soft">
               <span>Average BMI: {region.locationWellbeingProfile.demographics.anthropometrics.averageBmi}</span>
               <span>Fertility: {region.locationWellbeingProfile.totalFertilityRate}</span>
               <span>Height F/M: {region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.female}/{region.locationWellbeingProfile.demographics.anthropometrics.averageHeightCm.male} cm</span>
@@ -566,15 +566,15 @@ function RegionDetailPanel({
             active={activeAspect === "family-birth"}
             onToggle={() => setActiveAspect(activeAspect === "family-birth" ? "" : "family-birth")}
           >
-            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-soft">
               <span>Polygamous unions: {region.locationWellbeingProfile.marriageAndInheritance.polygamousUnionPct}%</span>
               <span>Scope: married unions</span>
             </div>
             <div className="mt-2 space-y-1.5">
               {region.locationWellbeingProfile.marriageAndInheritance.birthDefects.map((indicator) => (
                 <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-slate-300">{indicator.condition}</span>
-                  <span className="text-violet-300">{indicator.value}/10k births</span>
+                  <span className="text-soft">{indicator.condition}</span>
+                  <span className="text-plum">{indicator.value}/10k births</span>
                 </div>
               ))}
             </div>
@@ -588,8 +588,8 @@ function RegionDetailPanel({
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.marriageAndInheritance.geneticDisorders.map((indicator) => (
                 <div key={indicator.condition} className="flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-slate-300">{indicator.condition}</span>
-                  <span className="text-cyan-300">
+                  <span className="text-soft">{indicator.condition}</span>
+                  <span className="text-info">
                     {indicator.value}{indicator.measure === "carrier_frequency_pct" ? "%" : "/10k"}
                   </span>
                 </div>
@@ -605,8 +605,8 @@ function RegionDetailPanel({
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.communicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-slate-300">{rate.condition}</span>
-                  <span className="text-rose-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
+                  <span className="text-soft">{rate.condition}</span>
+                  <span className="text-danger">{formatDiseaseRate(rate.measure, rate.value)}</span>
                 </div>
               ))}
             </div>
@@ -620,8 +620,8 @@ function RegionDetailPanel({
             <div className="space-y-1.5">
               {region.locationWellbeingProfile.nonCommunicableDiseaseRates.map((rate) => (
                 <div key={rate.condition} className="flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-slate-300">{rate.condition}</span>
-                  <span className="text-amber-300">{formatDiseaseRate(rate.measure, rate.value)}</span>
+                  <span className="text-soft">{rate.condition}</span>
+                  <span className="text-gold">{formatDiseaseRate(rate.measure, rate.value)}</span>
                 </div>
               ))}
             </div>
@@ -629,11 +629,11 @@ function RegionDetailPanel({
         </>
       )}
 
-      <div className="pt-2 border-t border-white/10">
-        <p className="text-[10px] text-slate-600">
+      <div className="pt-2 border-t border-border">
+        <p className="text-[10px] text-subtle">
           Population: ~{(region.population / 1_000_000).toFixed(1)}M · Nutrition source: EPHI DHS 2019
         </p>
-        {region.locationWellbeingProfile && <p className="mt-1 text-[10px] text-slate-600">{region.locationWellbeingProfile.sourceNote}</p>}
+        {region.locationWellbeingProfile && <p className="mt-1 text-[10px] text-subtle">{region.locationWellbeingProfile.sourceNote}</p>}
       </div>
     </div>
   );
@@ -653,17 +653,17 @@ function AspectSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
+    <section id={id} className="scroll-mt-4 rounded-lg border border-border bg-foreground/[0.02]">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={active}
         className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
       >
-        <span className="text-[11px] font-semibold text-slate-200">{title}</span>
-        <span className="font-mono text-xs text-teal-300" aria-hidden="true">{active ? "−" : "+"}</span>
+        <span className="text-[11px] font-semibold text-soft">{title}</span>
+        <span className="font-mono text-xs text-brand" aria-hidden="true">{active ? "−" : "+"}</span>
       </button>
-      {active && <div className="border-t border-white/5 px-3 py-3">{children}</div>}
+      {active && <div className="border-t border-border px-3 py-3">{children}</div>}
     </section>
   );
 }
@@ -679,16 +679,16 @@ function AdministrativeRegionPanel({
     <div className="glass-panel max-h-[80vh] space-y-4 overflow-y-auto p-5 animate-fade-in">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Administrative location explorer</span>
-          <h2 className="mt-1 text-lg font-bold text-white">{region.name}</h2>
-          <p className="mt-1 text-[10px] text-slate-500">
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">Administrative location explorer</span>
+          <h2 className="mt-1 text-lg font-bold text-foreground">{region.name}</h2>
+          <p className="mt-1 text-[10px] text-subtle">
             {region.zones.length} zones · {region.townCount} towns / districts in the supplied index
           </p>
         </div>
-        <button onClick={onClose} className="text-xs text-slate-500 hover:text-white">✕ Close</button>
+        <button onClick={onClose} className="text-xs text-subtle hover:text-foreground">✕ Close</button>
       </div>
       <AdministrativeExplorer region={region} />
-      <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3 text-[10px] leading-relaxed text-amber-100/80">
+      <div className="rounded-lg border border-gold/20 bg-gold/[0.04] p-3 text-[10px] leading-relaxed text-gold-strong">
         This administrative record provides names and parent relationships only. No matching regional nutrition,
         health, ecology, food-system, or coordinate profile is linked to this entry yet; the atlas does not infer
         town-level measurements from a neighboring region.
@@ -715,8 +715,8 @@ function RegionListPanel({
   return (
     <div className="glass-panel max-h-[80vh] space-y-4 overflow-y-auto p-4">
       <div>
-        <h3 className="text-sm font-bold text-white">Region → Zone → Town</h3>
-        <p className="mt-1 text-[10px] text-slate-500">Choose a location to open its zone index and town list.</p>
+        <h3 className="text-sm font-bold text-foreground">Region → Zone → Town</h3>
+        <p className="mt-1 text-[10px] text-subtle">Choose a location to open its zone index and town list.</p>
       </div>
       <div className="space-y-1.5">
         {administrativeRegions
@@ -726,15 +726,15 @@ function RegionListPanel({
               <button
                 key={region.name}
                 onClick={() => onSelectAdministrativeRegion(region)}
-                className="w-full rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2.5 text-left transition-all hover:border-teal-400/30 hover:bg-white/[0.06]"
+                className="w-full rounded-lg border border-border bg-foreground/[0.03] px-3 py-2.5 text-left transition-all hover:border-brand/30 hover:bg-foreground/[0.06]"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-slate-200">{region.name}</span>
-                  <span className={`text-[10px] ${dataRegion ? "text-teal-300" : "text-slate-500"}`}>
+                  <span className="text-sm font-medium text-soft">{region.name}</span>
+                  <span className={`text-[10px] ${dataRegion ? "text-brand" : "text-subtle"}`}>
                     {dataRegion ? `${dataRegion.anemiaChildrenPct}% child anaemia*` : "location index"}
                   </span>
                 </div>
-                <div className="mt-1 text-[10px] text-slate-600">
+                <div className="mt-1 text-[10px] text-subtle">
                   {region.zones.length} zones · {region.townCount} towns / districts
                 </div>
               </button>
@@ -742,27 +742,27 @@ function RegionListPanel({
           })}
       </div>
       {unmatchedDataRegions.length > 0 && (
-        <div className="border-t border-white/10 pt-3">
-          <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-300">Legacy statistical groupings</h4>
+        <div className="border-t border-border pt-3">
+          <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-gold">Legacy statistical groupings</h4>
           {unmatchedDataRegions.map((region) => {
             const risk = RISK_CONFIG[region.riskLevel];
             return (
               <button
                 key={region.id}
                 onClick={() => onSelectRegion(region)}
-                className="w-full rounded-lg border border-amber-500/10 bg-amber-500/[0.03] px-3 py-2 text-left hover:border-amber-400/30"
+                className="w-full rounded-lg border border-gold/10 bg-gold/[0.03] px-3 py-2 text-left hover:border-gold/30"
               >
-                <span className="text-sm text-slate-200">{region.name}</span>
+                <span className="text-sm text-soft">{region.name}</span>
                 <span className={`float-right text-xs font-semibold ${risk.badge.split(" ").find((item) => item.startsWith("text-"))}`}>
                   {region.anemiaChildrenPct}% child anaemia*
                 </span>
-                <span className="mt-1 block text-[10px] text-slate-600">Nutrition data only · no matching hierarchy row</span>
+                <span className="mt-1 block text-[10px] text-subtle">Nutrition data only · no matching hierarchy row</span>
               </button>
             );
           })}
         </div>
       )}
-      <p className="text-[9px] leading-relaxed text-slate-600">
+      <p className="text-[9px] leading-relaxed text-subtle">
         *Regional statistical estimates only. Administrative names are taken from the supplied Region, Zone, Town list.
       </p>
     </div>

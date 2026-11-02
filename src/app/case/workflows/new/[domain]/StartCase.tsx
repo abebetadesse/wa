@@ -449,7 +449,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border p-5 text-center transition-colors hover:border-brand/50">
                   {!mediaPreview && !answers.mediaId ? (
                     <div className="flex flex-col items-center gap-2">
-                      <div className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                      <div className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand-strong">
                         <UploadCloud className="size-6" aria-hidden="true" />
                       </div>
                       <p className="text-sm font-semibold text-foreground">Attach an image, audio note, or video</p>
@@ -599,12 +599,12 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
               </div>
 
               {Boolean(answers.mediaId) && (answers.mediaKind === "image" || answers.mediaKind === "video") && (
-                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-500/30 bg-violet-950/10 p-4">
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-plum/30 bg-plum-soft/70 p-4">
                   <input
                     type="checkbox"
                     checked={consent.aiMediaAnalysis ?? false}
                     onChange={(event) => setConsent((current) => ({ ...current, aiMediaAnalysis: event.target.checked }))}
-                    className="mt-1 size-4 accent-violet-500"
+                    className="mt-1 size-4 accent-plum"
                   />
                   <span className="flex-1">
                     <span className="block text-sm font-semibold text-foreground">Optional AI analysis of this image/video</span>

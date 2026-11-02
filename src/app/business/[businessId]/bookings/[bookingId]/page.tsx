@@ -265,7 +265,7 @@ function IntakePanel({ review }: { review: Review }) {
                   </a>
                 )}
                 {a.kind === "audio" && <audio controls preload="metadata" src={assetUrl(a.url)} className="w-full" />}
-                {a.kind === "video" && <video controls preload="metadata" src={assetUrl(a.url)} className="max-h-72 w-full bg-black" />}
+                {a.kind === "video" && <video controls preload="metadata" src={assetUrl(a.url)} className="max-h-72 w-full bg-sunken/80" />}
                 <figcaption className="px-3 py-1.5 text-xs text-muted-foreground">{a.kind === "audio" ? "Voice note" : a.originalName ?? a.kind}</figcaption>
               </figure>
             ))}

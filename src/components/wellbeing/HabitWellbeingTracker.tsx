@@ -25,20 +25,20 @@ const SYMPTOM_OPTIONS = ["Headache", "Bloating", "Back pain", "Fatigue", "Nausea
 const CONTEXT_OPTIONS = ["Fasting day", "After coffee ceremony", "After exercise", "Work stress", "Family gathering", "Holiday", "Poor sleep", "Excellent sleep"];
 
 const COLOR_MAP: Record<string, string> = {
-  amber: "border-amber-500/40 text-amber-400 bg-amber-950/20",
-  emerald: "border-emerald-500/40 text-emerald-400 bg-emerald-950/20",
-  sky: "border-sky-500/40 text-sky-400 bg-sky-950/20",
-  green: "border-green-500/40 text-green-400 bg-green-950/20",
-  violet: "border-violet-500/40 text-violet-400 bg-violet-950/20",
-  blue: "border-blue-500/40 text-blue-400 bg-blue-950/20",
-  indigo: "border-indigo-500/40 text-indigo-400 bg-indigo-950/20",
+  amber: "border-gold/40 text-gold-strong bg-gold-soft",
+  emerald: "border-brand/40 text-brand-strong bg-brand-soft",
+  sky: "border-info/40 text-info-strong bg-info-soft",
+  green: "border-brand/40 text-brand-strong bg-brand-soft",
+  violet: "border-plum/40 text-plum-strong bg-plum-soft",
+  blue: "border-info/40 text-info-strong bg-info-soft",
+  indigo: "border-info/40 text-info-strong bg-info-soft",
 };
 
 function StreakBadge({ streak }: { streak: number }) {
   if (streak === 0) return null;
   const fire = streak >= 21 ? "🔥🔥🔥" : streak >= 7 ? "🔥🔥" : streak >= 3 ? "🔥" : "⚡";
   return (
-    <span className="text-xs font-bold text-amber-400 flex items-center gap-0.5">
+    <span className="text-xs font-bold text-gold flex items-center gap-0.5">
       {fire} {streak}d
     </span>
   );
@@ -113,34 +113,34 @@ export default function HabitWellbeingTracker() {
       {/* Header */}
       <div>
         <div className="badge badge-safe mb-2">Thryval · Habit & Wellbeing Tracker</div>
-        <h2 className="text-xl font-bold text-white">Daily Habits & Wellbeing Journal</h2>
-        <p className="text-xs text-slate-400 mt-1">Track habits aligned with your constitutional type, log your daily mood, and receive weekly wellness insights.</p>
+        <h2 className="text-xl font-bold text-foreground">Daily Habits & Wellbeing Journal</h2>
+        <p className="text-xs text-muted-foreground mt-1">Track habits aligned with your constitutional type, log your daily mood, and receive weekly wellness insights.</p>
       </div>
 
       {/* Quick stats bar */}
       <div className="grid grid-cols-3 gap-3">
         <div className="glass-panel p-4 text-center">
-          <div className="text-2xl font-black text-emerald-400">{completedToday}/{totalHabits}</div>
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Today&apos;s Habits</div>
-          <div className="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
-            <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${completionRate}%` }} />
+          <div className="text-2xl font-bold text-brand">{completedToday}/{totalHabits}</div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Today&apos;s Habits</div>
+          <div className="h-1 rounded-full bg-foreground/5 mt-2 overflow-hidden">
+            <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
         <div className="glass-panel p-4 text-center">
-          <div className="text-2xl font-black text-amber-400">🔥 {avgStreak}</div>
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Avg Streak (days)</div>
+          <div className="text-2xl font-bold text-gold">🔥 {avgStreak}</div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Avg Streak (days)</div>
         </div>
         <div className="glass-panel p-4 text-center">
-          <div className="text-2xl font-black text-violet-400">{moodLogs.length > 0 ? MOOD_LABELS[Math.min(9, moodLogs[0].overallMood - 1)] : "—"}</div>
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Last Mood Log</div>
+          <div className="text-2xl font-bold text-plum">{moodLogs.length > 0 ? MOOD_LABELS[Math.min(9, moodLogs[0].overallMood - 1)] : "—"}</div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Last Mood Log</div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-black/30 rounded-xl border border-white/5 w-fit">
+      <div className="flex gap-1 p-1 bg-sunken/50 rounded-xl border border-border w-fit">
         {(["habits", "mood", "insights"] as const).map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === tab ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"}`}>
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === tab ? "bg-brand text-brand-foreground" : "text-muted-foreground hover:text-brand-foreground"}`}>
             {tab === "habits" ? "✓ Habits" : tab === "mood" ? "💭 Mood Log" : "📊 Insights"}
           </button>
         ))}
@@ -158,22 +158,22 @@ export default function HabitWellbeingTracker() {
               <div
                 key={habit.id}
                 onClick={() => toggleHabit(habit.id)}
-                className={`glass-panel p-4 cursor-pointer transition-all border ${done ? "border-emerald-500/50 bg-emerald-950/10" : ""} hover:border-white/20`}
+                className={`glass-panel p-4 cursor-pointer transition-all border ${done ? "border-brand/50 bg-brand-soft/70" : ""} hover:border-border-strong`}
               >
                 <div className="flex items-center gap-4">
                   {/* Checkbox */}
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? "border-emerald-500 bg-emerald-600" : "border-white/20"}`}>
-                    {done && <span className="text-white text-sm">✓</span>}
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? "border-brand bg-brand" : "border-border-strong"}`}>
+                    {done && <span className="text-foreground text-sm">✓</span>}
                   </div>
 
                   <div className="text-2xl">{habit.icon}</div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-0.5">
-                      <span className={`font-semibold text-sm ${done ? "text-white" : "text-slate-300"}`}>{habit.name}</span>
-                      {habit.nameAmharic && <span className="text-xs text-amber-400/70">{habit.nameAmharic}</span>}
+                      <span className={`font-semibold text-sm ${done ? "text-foreground" : "text-soft"}`}>{habit.name}</span>
+                      {habit.nameAmharic && <span className="text-xs text-gold">{habit.nameAmharic}</span>}
                     </div>
-                    <p className="text-xs text-slate-500">{habit.description}</p>
+                    <p className="text-xs text-subtle">{habit.description}</p>
                   </div>
 
                   <div className="flex flex-col items-end gap-1 shrink-0">
@@ -188,10 +188,10 @@ export default function HabitWellbeingTracker() {
           })}
 
           {completedToday === totalHabits && (
-            <div className="glass-panel p-6 text-center border border-emerald-500/40 bg-emerald-950/20">
+            <div className="glass-panel p-6 text-center border border-brand/40 bg-brand-soft">
               <div className="text-4xl mb-3">🌟</div>
-              <h3 className="font-bold text-white text-lg">Perfect Day!</h3>
-              <p className="text-sm text-emerald-300 mt-1">All {totalHabits} habits completed today. Exceptional alignment!</p>
+              <h3 className="font-bold text-foreground text-lg">Perfect Day!</h3>
+              <p className="text-sm text-brand mt-1">All {totalHabits} habits completed today. Exceptional alignment!</p>
             </div>
           )}
         </div>
@@ -202,7 +202,7 @@ export default function HabitWellbeingTracker() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Log Form */}
           <div className="glass-panel p-6 space-y-5">
-            <h3 className="font-bold text-white">How are you feeling right now?</h3>
+            <h3 className="font-bold text-foreground">How are you feeling right now?</h3>
 
             {[
               { key: "overallMood", label: "Overall Mood", emoji: MOOD_LABELS },
@@ -213,7 +213,7 @@ export default function HabitWellbeingTracker() {
             ].map((field) => (
               <div key={field.key}>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{field.label}</label>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{field.label}</label>
                   <span className="text-lg">
                     {field.emoji ? field.emoji[Math.min(9, moodDraft[field.key as keyof typeof moodDraft] as number - 1)] : `${moodDraft[field.key as keyof typeof moodDraft]}/10`}
                   </span>
@@ -222,17 +222,17 @@ export default function HabitWellbeingTracker() {
                   type="range" min={1} max={10}
                   value={moodDraft[field.key as keyof typeof moodDraft] as number}
                   onChange={(e) => setMoodDraft((prev) => ({ ...prev, [field.key]: Number(e.target.value) }))}
-                  className="w-full accent-emerald-500"
+                  className="w-full accent-brand"
                 />
               </div>
             ))}
 
             <div>
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Emotions Today</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">Emotions Today</label>
               <div className="flex flex-wrap gap-1.5">
                 {EMOTION_OPTIONS.map((em) => (
                   <button key={em} onClick={() => setMoodDraft((p) => ({ ...p, emotions: toggleMultiSelect(p.emotions, em) }))}
-                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.emotions.includes(em) ? "border-violet-500 bg-violet-950/30 text-white" : "border-white/10 text-slate-400 hover:border-violet-500/30"}`}>
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.emotions.includes(em) ? "border-plum bg-plum-soft text-foreground" : "border-border text-muted-foreground hover:border-plum/30"}`}>
                     {em}
                   </button>
                 ))}
@@ -240,11 +240,11 @@ export default function HabitWellbeingTracker() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Physical Symptoms</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">Physical Symptoms</label>
               <div className="flex flex-wrap gap-1.5">
                 {SYMPTOM_OPTIONS.map((sym) => (
                   <button key={sym} onClick={() => setMoodDraft((p) => ({ ...p, symptoms: toggleMultiSelect(p.symptoms, sym) }))}
-                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.symptoms.includes(sym) ? "border-rose-500 bg-rose-950/30 text-white" : "border-white/10 text-slate-400 hover:border-rose-500/30"}`}>
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.symptoms.includes(sym) ? "border-danger bg-danger-soft text-foreground" : "border-border text-muted-foreground hover:border-danger/30"}`}>
                     {sym}
                   </button>
                 ))}
@@ -252,11 +252,11 @@ export default function HabitWellbeingTracker() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Context Tags</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">Context Tags</label>
               <div className="flex flex-wrap gap-1.5">
                 {CONTEXT_OPTIONS.map((ctx) => (
                   <button key={ctx} onClick={() => setMoodDraft((p) => ({ ...p, contexts: toggleMultiSelect(p.contexts, ctx) }))}
-                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.contexts.includes(ctx) ? "border-amber-500 bg-amber-950/30 text-white" : "border-white/10 text-slate-400 hover:border-amber-500/30"}`}>
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${moodDraft.contexts.includes(ctx) ? "border-gold bg-gold-soft text-foreground" : "border-border text-muted-foreground hover:border-gold/30"}`}>
                     {ctx}
                   </button>
                 ))}
@@ -268,7 +268,7 @@ export default function HabitWellbeingTracker() {
               onChange={(e) => setMoodDraft((p) => ({ ...p, notes: e.target.value }))}
               placeholder="Any additional notes for today..."
               rows={3}
-              className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-emerald-500 resize-none"
+              className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm outline-none focus:border-brand resize-none"
             />
 
             <button onClick={logMood} className="w-full btn-primary py-3 font-bold text-sm">
@@ -278,11 +278,11 @@ export default function HabitWellbeingTracker() {
 
           {/* Mood History */}
           <div className="space-y-3">
-            <h3 className="font-bold text-white">Recent Mood History</h3>
+            <h3 className="font-bold text-foreground">Recent Mood History</h3>
             {moodLogs.length === 0 ? (
               <div className="glass-panel p-10 text-center">
                 <div className="text-4xl mb-3">💭</div>
-                <p className="text-slate-400 text-sm">No mood entries yet. Log your first check-in.</p>
+                <p className="text-muted-foreground text-sm">No mood entries yet. Log your first check-in.</p>
               </div>
             ) : (
               moodLogs.slice(0, 7).map((entry) => (
@@ -291,14 +291,14 @@ export default function HabitWellbeingTracker() {
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{MOOD_LABELS[Math.min(9, entry.overallMood - 1)]}</span>
                       <div>
-                        <div className="text-xs font-bold text-white">Mood {entry.overallMood}/10 · Energy {entry.energy}/10</div>
-                        <div className="text-[10px] text-slate-500">{new Date(entry.timestamp).toLocaleString()}</div>
+                        <div className="text-xs font-bold text-foreground">Mood {entry.overallMood}/10 · Energy {entry.energy}/10</div>
+                        <div className="text-[10px] text-subtle">{new Date(entry.timestamp).toLocaleString()}</div>
                       </div>
                     </div>
                     {entry.contextTags.length > 0 && (
                       <div className="flex gap-1 flex-wrap justify-end">
                         {entry.contextTags.map((tag) => (
-                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/30 text-amber-400 border border-amber-500/20">{tag}</span>
+                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-gold-soft text-gold-strong border border-gold/20">{tag}</span>
                         ))}
                       </div>
                     )}
@@ -306,11 +306,11 @@ export default function HabitWellbeingTracker() {
                   {entry.emotions.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {entry.emotions.map((em) => (
-                        <span key={em} className="text-[10px] px-1.5 py-0.5 rounded bg-violet-950/30 text-violet-400">{em}</span>
+                        <span key={em} className="text-[10px] px-1.5 py-0.5 rounded bg-plum-soft text-plum-strong">{em}</span>
                       ))}
                     </div>
                   )}
-                  {entry.notes && <p className="text-xs text-slate-400 mt-2 italic">{entry.notes}</p>}
+                  {entry.notes && <p className="text-xs text-muted-foreground mt-2 italic">{entry.notes}</p>}
                 </div>
               ))
             )}
@@ -323,7 +323,7 @@ export default function HabitWellbeingTracker() {
         <div className="space-y-4">
           {/* Habit completion heatmap */}
           <div className="glass-panel p-5">
-            <h4 className="font-bold text-white mb-4">Habit Consistency Overview</h4>
+            <h4 className="font-bold text-foreground mb-4">Habit Consistency Overview</h4>
             <div className="space-y-3">
               {habits.map((habit) => {
                 const streak = streaks[habit.id];
@@ -333,10 +333,10 @@ export default function HabitWellbeingTracker() {
                     <span className="text-lg w-8 text-center">{habit.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-slate-300 truncate">{habit.name}</span>
-                        <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{weeklyPct}%</span>
+                        <span className="text-xs font-semibold text-soft truncate">{habit.name}</span>
+                        <span className="text-xs font-bold text-muted-foreground shrink-0 ml-2">{weeklyPct}%</span>
                       </div>
-                      <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-foreground/5 overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -354,19 +354,19 @@ export default function HabitWellbeingTracker() {
           </div>
 
           {/* AI-style weekly insight */}
-          <div className="glass-panel p-6 border border-violet-500/20 bg-violet-950/10">
-            <div className="text-xs font-bold text-violet-400 uppercase tracking-wider mb-3">🤖 Weekly Wellness Insight</div>
-            <p className="text-sm text-slate-300 leading-relaxed mb-4">
+          <div className="glass-panel p-6 border border-plum/20 bg-plum-soft/70">
+            <div className="text-xs font-bold text-plum uppercase tracking-wider mb-3">🤖 Weekly Wellness Insight</div>
+            <p className="text-sm text-soft leading-relaxed mb-4">
               Your habit consistency is strongest in morning routines and nutrition practices. To improve, focus on the evening habits — particularly earlier sleep timing — which have the greatest downstream effect on morning energy and digestive fire regulation.
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20">
-                <div className="text-xs text-emerald-400 font-bold mb-1">Top Pattern 🌟</div>
-                <p className="text-xs text-slate-300">Morning nutrition rituals — 85% weekly consistency. Outstanding!</p>
+              <div className="p-3 rounded-xl bg-brand-soft border border-brand/20">
+                <div className="text-xs text-brand font-bold mb-1">Top Pattern 🌟</div>
+                <p className="text-xs text-soft">Morning nutrition rituals — 85% weekly consistency. Outstanding!</p>
               </div>
-              <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20">
-                <div className="text-xs text-amber-400 font-bold mb-1">Improve Next 📈</div>
-                <p className="text-xs text-slate-300">Sleep timing — aim for 3 consecutive nights before 10:30 PM this week.</p>
+              <div className="p-3 rounded-xl bg-gold-soft border border-gold/20">
+                <div className="text-xs text-gold font-bold mb-1">Improve Next 📈</div>
+                <p className="text-xs text-soft">Sleep timing — aim for 3 consecutive nights before 10:30 PM this week.</p>
               </div>
             </div>
           </div>

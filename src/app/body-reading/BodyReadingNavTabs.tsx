@@ -23,13 +23,13 @@ export function BodyReadingNavTabs() {
             href={tab.href}
             className={`flex shrink-0 items-center gap-2 px-5 py-3.5 text-sm font-semibold transition-all ${
               isActive
-                ? "border-b-2 border-amber-400 text-amber-200 bg-amber-500/10 font-bold"
-                : "text-stone-400 hover:text-amber-200 hover:bg-stone-900/40"
+                ? "border-b-2 border-gold text-gold-strong bg-gold/10 font-bold"
+                : "text-muted-foreground hover:text-gold-strong hover:bg-card/40"
             }`}
           >
             <span>{tab.emoji}</span>
             <span className="hidden sm:inline">{tab.label}</span>
-            <span lang="am" className="text-xs text-stone-400 sm:hidden">
+            <span lang="am" className="text-xs text-muted-foreground sm:hidden">
               {tab.am}
             </span>
           </Link>
