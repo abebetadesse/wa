@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useSession } from "@/features/session/SessionProvider";
 import { useExplore } from "./useExplore";
+import { withBasePath } from '@/lib/base-path';
 
 /**
  * Records when someone who works in a business opens a toolkit tool, whether they came from the
@@ -24,7 +25,7 @@ export function ToolUsageTracker() {
     if (!isTool) return;
     const businessId = new URLSearchParams(window.location.search).get("toolkit") ?? undefined;
     const timer = setTimeout(() => {
-      void fetch("/api/toolkit/track", {
+      void fetch(withBasePath("/api/toolkit/track"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",

@@ -8,6 +8,7 @@ import {
   ConstitutionAnswers,
   ConstitutionAssessment,
 } from "@/lib/cultural/constitutionAssessment";
+import { withBasePath } from '@/lib/base-path';
 
 interface Question {
   key: ConstitutionAnswerKey;
@@ -65,7 +66,7 @@ export default function ConstitutionExperience() {
   useEffect(() => {
     let active = true;
     setLoadingHistory(true);
-    fetch("/api/profile/constitution-history")
+    fetch(withBasePath("/api/profile/constitution-history"))
       .then(async (response) => (response.ok ? response.json() : []))
       .then((data: unknown) => {
         if (!active) return;
@@ -96,7 +97,7 @@ export default function ConstitutionExperience() {
   async function saveAssessment() {
     setStatus("Saving...");
     try {
-      const response = await fetch("/api/profile/constitution", {
+      const response = await fetch(withBasePath("/api/profile/constitution"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...assessment, answers }),
@@ -113,9 +114,9 @@ export default function ConstitutionExperience() {
     <main className="mx-auto max-w-5xl space-y-8 px-4 py-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-sky-700">Ethiopian Wisdom self-reflection</p>
-          <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100">Constitution assessment</h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-sm font-semibold text-info-strong">Ethiopian Wisdom self-reflection</p>
+          <h1 className="mt-1 text-3xl font-bold text-foreground dark:text-foreground">Constitution assessment</h1>
+          <p className="mt-2 max-w-2xl text-sm text-subtle dark:text-soft">
             Explore patterns across energy, digestion, stress, sleep, temperature, and movement.
           </p>
         </div>
@@ -128,13 +129,13 @@ export default function ConstitutionExperience() {
             <span>Question {step + 1} of {QUESTIONS.length}</span>
             <span>{completion}% complete</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-sky-100">
-            <div className="h-full rounded-full bg-sky-600 transition-all" style={{ width: `${completion}%` }} />
+          <div className="h-2 overflow-hidden rounded-full bg-info-soft">
+            <div className="h-full rounded-full bg-info transition-all" style={{ width: `${completion}%` }} />
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{question.title}</h2>
-            <p className="mt-2 text-slate-700 dark:text-slate-300">{question.prompt}</p>
-            <p className="mt-1 text-sm text-slate-500">{question.description}</p>
+            <h2 className="text-2xl font-semibold text-foreground dark:text-foreground">{question.title}</h2>
+            <p className="mt-2 text-subtle dark:text-soft">{question.prompt}</p>
+            <p className="mt-1 text-sm text-subtle">{question.description}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {OPTIONS.map((option) => (
@@ -143,12 +144,12 @@ export default function ConstitutionExperience() {
                 type="button"
                 onClick={() => choose(option.value)}
                 className={`rounded-xl border p-4 text-left transition ${answers[question.key] === option.value
-                    ? "border-sky-600 bg-sky-50 ring-2 ring-sky-200 dark:bg-sky-950/40"
-                    : "border-slate-200 hover:border-sky-400 dark:border-slate-700"
+                    ? "border-info bg-info-soft ring-2 ring-info dark:bg-info-soft"
+                    : "border-border-strong hover:border-info dark:border-border"
                   }`}
               >
                 <span className="font-medium">{option.label}</span>
-                <span className="mt-1 block text-xs text-slate-500">Score {option.value} of 3</span>
+                <span className="mt-1 block text-xs text-subtle">Score {option.value} of 3</span>
               </button>
             ))}
           </div>
@@ -158,44 +159,44 @@ export default function ConstitutionExperience() {
           </div>
         </div>
 
-        <aside className="card-forest space-y-5 p-6 text-white">
+        <aside className="card-forest space-y-5 p-6 text-foreground">
           <div>
-            <p className="text-sm text-sky-200">Current reflection</p>
+            <p className="text-sm text-info-strong">Current reflection</p>
             <h2 className="mt-1 text-2xl font-semibold">{assessment.tcmLabel}</h2>
           </div>
           <dl className="space-y-3 text-sm">
-            <div className="flex justify-between gap-4"><dt className="text-sky-200">Dosha tendency</dt><dd>{assessment.doshaLabel}</dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-sky-200">Humoral focus</dt><dd>{assessment.humoralLabel}</dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-sky-200">Five-element focus</dt><dd>{assessment.fiveElementFocus}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-info-strong">Dosha tendency</dt><dd>{assessment.doshaLabel}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-info-strong">Humoral focus</dt><dd>{assessment.humoralLabel}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-info-strong">Five-element focus</dt><dd>{assessment.fiveElementFocus}</dd></div>
           </dl>
           <div>
             <h3 className="font-semibold">Reflective guidance</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-sky-100">
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-info-strong">
               {assessment.reflectiveGuidance.map((item) => <li key={item}>{item}</li>)}
             </ul>
           </div>
-          <p className="border-t border-white/20 pt-4 text-xs text-sky-200">{assessment.disclaimer}</p>
+          <p className="border-t border-border-strong pt-4 text-xs text-info-strong">{assessment.disclaimer}</p>
           <div className="flex flex-wrap gap-2">
-            <button className="btn-pill-primary bg-white text-sky-800 hover:bg-sky-50" onClick={saveAssessment}>Save</button>
-            <button className="btn-pill-secondary border-white/40 bg-transparent text-white hover:bg-white/10" onClick={() => downloadAssessment(assessment)}>Export JSON</button>
+            <button className="btn-pill-primary bg-foreground text-background hover:bg-info-soft" onClick={saveAssessment}>Save</button>
+            <button className="btn-pill-secondary border-border-strong bg-transparent text-foreground hover:bg-foreground/10" onClick={() => downloadAssessment(assessment)}>Export JSON</button>
           </div>
-          {status && <p className="text-sm text-sky-100" role="status">{status}</p>}
+          {status && <p className="text-sm text-info-strong" role="status">{status}</p>}
         </aside>
       </section>
 
       <section className="card-warm p-6">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-xl font-semibold">Saved reflections</h2>
-          {loadingHistory && <span className="text-sm text-slate-500">Loading...</span>}
+          {loadingHistory && <span className="text-sm text-subtle">Loading...</span>}
         </div>
         {history.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">No saved reflections yet.</p>
+          <p className="mt-3 text-sm text-subtle">No saved reflections yet.</p>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {history.slice(0, 6).map((entry, index) => (
-              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-700" key={`${entry.tcmType}-${index}`}>
+              <div className="rounded-xl border border-border-strong p-4 dark:border-border" key={`${entry.tcmType}-${index}`}>
                 <p className="font-medium">{entry.tcmLabel}</p>
-                <p className="mt-1 text-sm text-slate-500">{entry.doshaLabel} · {entry.humoralLabel}</p>
+                <p className="mt-1 text-sm text-subtle">{entry.doshaLabel} · {entry.humoralLabel}</p>
               </div>
             ))}
           </div>

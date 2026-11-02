@@ -13,49 +13,49 @@ export default function CircleDetailPanel({ circle }: CircleDetailPanelProps) {
   const relevantCategories = AWUDE_NEGEST_60_CATEGORIES.slice(0, 12);
 
   return (
-    <aside className="rounded-[26px] border border-amber-500/20 bg-gradient-to-b from-stone-900 via-stone-950 to-stone-900 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.32)]">
-      <div className="flex items-center justify-between gap-3 border-b border-stone-800 pb-4">
+    <aside className="rounded-[26px] border border-gold/20 bg-gradient-to-b from-card via-background to-card p-5 shadow-[0_18px_60px_rgba(0,0,0,0.32)]">
+      <div className="flex items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Selected circle</p>
-          <h3 className="mt-1 text-xl font-bold text-white">{circle.name}</h3>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">Selected circle</p>
+          <h3 className="mt-1 text-xl font-bold text-foreground">{circle.name}</h3>
         </div>
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-2xl text-amber-300">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10 text-2xl text-gold-strong">
           {circle.symbol}
         </span>
       </div>
 
       <div className="mt-5 space-y-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-3">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">Ge&apos;ez</div>
-            <div className="mt-2 font-semibold text-amber-200">{circle.geezTitle}</div>
+          <div className="rounded-2xl border border-border bg-background/60 p-3">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Ge&apos;ez</div>
+            <div className="mt-2 font-semibold text-gold-strong">{circle.geezTitle}</div>
           </div>
-          <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-3">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-stone-400">Guardian</div>
-            <div className="mt-2 font-semibold text-amber-200">{circle.guardianAngel}</div>
+          <div className="rounded-2xl border border-border bg-background/60 p-3">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Guardian</div>
+            <div className="mt-2 font-semibold text-gold-strong">{circle.guardianAngel}</div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">
-            <Sparkles size={12} className="text-amber-300" />
+        <div className="rounded-2xl border border-border bg-background/60 p-4">
+          <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <Sparkles size={12} className="text-gold" />
             Elemental affinity
           </div>
-          <p className="text-base font-semibold text-white">{circle.elementalAffinity}</p>
+          <p className="text-base font-semibold text-foreground">{circle.elementalAffinity}</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">General prophecy</div>
-          <p className="text-sm leading-relaxed text-stone-200">{circle.generalProphecy}</p>
+        <div className="rounded-2xl border border-border bg-background/60 p-4">
+          <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">General prophecy</div>
+          <p className="text-sm leading-relaxed text-soft">{circle.generalProphecy}</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-          <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Relevant categories</div>
+        <div className="rounded-2xl border border-border bg-background/60 p-4">
+          <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Relevant categories</div>
           <div className="flex flex-wrap gap-2">
             {relevantCategories.map((category) => (
               <span
                 key={category.id}
-                className="rounded-full border border-amber-500/25 bg-amber-500/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-amber-100"
+                className="rounded-full border border-gold/25 bg-gold/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-gold-strong"
               >
                 {category.en}
               </span>
@@ -66,7 +66,7 @@ export default function CircleDetailPanel({ circle }: CircleDetailPanelProps) {
 
       <Link
         href="/case/workflows/new/spiritual"
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-sm font-semibold text-stone-950 transition hover:brightness-110"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-gold-fill to-gold-fill px-4 py-3 text-sm font-semibold text-gold-foreground transition hover:brightness-110"
       >
         Begin Divination Reading
         <ArrowRight size={16} />

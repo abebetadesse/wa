@@ -16,9 +16,9 @@ export function AwdeCircleVisualizer({
   const center = 140;
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-b from-stone-900 via-stone-950 to-black border border-amber-500/30 overflow-hidden shadow-2xl">
+    <div className="relative flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-b from-card via-background to-background border border-gold/30 overflow-hidden shadow-raised">
       {/* Decorative background glow */}
-      <div className="absolute inset-0 bg-radial-gradient from-amber-500/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-gradient from-gold/10 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative w-[280px] h-[280px]">
         <svg viewBox="0 0 280 280" className="w-full h-full animate-spin-slow">
@@ -89,13 +89,13 @@ export function AwdeCircleVisualizer({
 
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 pointer-events-none">
-          <span className="text-xs uppercase tracking-widest text-amber-400/90 font-mono">
+          <span className="text-xs uppercase tracking-wider text-gold">
             Circle {circleNum}
           </span>
-          <span className="text-base font-bold text-amber-100 font-serif leading-tight mt-1">
+          <span className="text-base font-bold text-gold-strong font-serif leading-tight mt-1">
             {circle?.nameAmharic || "ቅድስት"}
           </span>
-          <span className="text-[10px] text-stone-300 font-sans mt-0.5">
+          <span className="text-[10px] text-soft font-sans mt-0.5">
             {circle?.name || "Transformation"}
           </span>
         </div>
@@ -103,12 +103,12 @@ export function AwdeCircleVisualizer({
 
       {/* Segment details */}
       <div className="mt-4 text-center max-w-sm space-y-1">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold-strong text-xs font-medium">
           <span>💧 {circle?.lakeName || "Lake of Renewal"}</span>
           <span>·</span>
           <span>Segment {segment?.number || 1}: {segment?.topic || "New Beginnings"}</span>
         </div>
-        <p className="text-xs text-stone-300 mt-2 font-serif italic">
+        <p className="text-xs text-soft mt-2 font-serif italic">
           &ldquo;{segment?.prediction || "A cycle is completing, making space for a new phase."}&rdquo;
         </p>
       </div>

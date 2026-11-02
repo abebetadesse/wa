@@ -63,15 +63,15 @@ export default function PractitionerHexacorePanel({
 
   if (!dossier) {
     return (
-      <div className={`rounded-2xl border border-white/10 bg-white/[0.03] p-5 ${className}`}>
+      <div className={`rounded-2xl border border-border bg-foreground/[0.03] p-5 ${className}`}>
         <div className="flex items-center gap-2 mb-3">
-          <Orbit className="h-5 w-5 text-amber-400" />
-          <h3 className="font-bold text-white text-sm">Hexacore Client Reading</h3>
+          <Orbit className="h-5 w-5 text-gold" />
+          <h3 className="font-bold text-foreground text-sm">Hexacore Client Reading</h3>
         </div>
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 text-center text-sm text-slate-400">
-          <AlertTriangle className="h-6 w-6 text-amber-500/60 mx-auto mb-2" />
+        <div className="rounded-xl border border-border bg-foreground/[0.02] p-4 text-center text-sm text-muted-foreground">
+          <AlertTriangle className="h-6 w-6 text-gold mx-auto mb-2" />
           <p>No Hexacore dossier is attached to this booking.</p>
-          <p className="text-xs mt-1 text-slate-500">
+          <p className="text-xs mt-1 text-subtle">
             If the client booked a Hexacore reading session, their dossier will appear here after payment verification.
           </p>
         </div>
@@ -79,17 +79,17 @@ export default function PractitionerHexacorePanel({
     );
   }
 
-  const dominantColor = CORE_COLORS[dossier.dominantCore] || "#D4AF37";
+  const dominantColor = CORE_COLORS[dossier.dominantCore] || "var(--gold)";
 
   return (
     <div
       className={`rounded-2xl border overflow-hidden ${className}`}
-      style={{ borderColor: "rgba(212,175,55,0.25)", background: "rgba(13,19,34,0.95)" }}
+      style={{ borderColor: "color-mix(in srgb, var(--gold-fill) 25%, transparent)", background: "var(--bg-card)" }}
     >
       {/* Panel Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-white/[0.03] transition text-left"
+        className="w-full flex items-center justify-between p-4 hover:bg-foreground/[0.03] transition text-left"
         id={`practitioner-hexacore-toggle-${bookingId}`}
       >
         <div className="flex items-center gap-3">
@@ -100,8 +100,8 @@ export default function PractitionerHexacorePanel({
             <Orbit className="h-4 w-4" style={{ color: dominantColor }} />
           </div>
           <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-amber-400">Hexacore Natal Reading</div>
-            <h3 className="font-bold text-white text-sm">
+            <div className="text-xs font-bold uppercase tracking-wider text-gold">Hexacore Natal Reading</div>
+            <h3 className="font-bold text-foreground text-sm">
               {clientName} · {dossier.dominantCore} Core · #{dossier.coreNumber}
             </h3>
           </div>
@@ -113,15 +113,15 @@ export default function PractitionerHexacorePanel({
           >
             {dossier.masterArchetype}
           </span>
-          {expanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+          {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </div>
       </button>
 
       {expanded && (
-        <div className="px-4 pb-5 space-y-4 border-t border-white/10 pt-4">
+        <div className="px-4 pb-5 space-y-4 border-t border-border pt-4">
           {/* 6-Core Spectrum */}
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-gold mb-2">
               6-Core Energetic Spectrum
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -129,15 +129,15 @@ export default function PractitionerHexacorePanel({
                 const names: Record<string, string> = {
                   P: "Power", H: "Humanity", C: "Creation", E: "Peace", S: "Spirit", O: "Order",
                 };
-                const color = CORE_COLORS[names[core]] || "#D4AF37";
+                const color = CORE_COLORS[names[core]] || "var(--gold)";
                 const val = dossier.coreRadar[core] || 0;
                 return (
                   <div key={core}>
                     <div className="flex justify-between text-[11px] mb-0.5">
-                      <span className="text-slate-400">{names[core]}</span>
+                      <span className="text-muted-foreground">{names[core]}</span>
                       <strong style={{ color }}>{val}%</strong>
                     </div>
-                    <div className="h-1.5 rounded-full overflow-hidden bg-white/10">
+                    <div className="h-1.5 rounded-full overflow-hidden bg-foreground/10">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{ width: `${val}%`, background: color }}
@@ -151,30 +151,30 @@ export default function PractitionerHexacorePanel({
 
           {/* Creation-Day & Solfeggio */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="text-[10px] text-amber-400 font-bold uppercase mb-1">Creation-Day Anchor</div>
-              <div className="text-sm font-semibold text-white">{dossier.creationDayAnchor.day}</div>
-              <div className="text-xs text-slate-400">{dossier.creationDayAnchor.element}</div>
-              <div className="text-[11px] text-slate-500 mt-1 italic">{dossier.creationDayAnchor.theme}</div>
+            <div className="rounded-xl border border-border bg-foreground/[0.03] p-3">
+              <div className="text-[10px] text-gold font-bold uppercase mb-1">Creation-Day Anchor</div>
+              <div className="text-sm font-semibold text-foreground">{dossier.creationDayAnchor.day}</div>
+              <div className="text-xs text-muted-foreground">{dossier.creationDayAnchor.element}</div>
+              <div className="text-[11px] text-subtle mt-1 italic">{dossier.creationDayAnchor.theme}</div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="text-[10px] text-indigo-400 font-bold uppercase mb-1">Acoustic Key</div>
-              <div className="text-lg font-black text-indigo-300">{dossier.solfeggioHz} Hz</div>
-              <div className="text-[11px] text-slate-400">{dossier.biorhythm.season} · {dossier.biorhythm.lifeStage}</div>
+            <div className="rounded-xl border border-border bg-foreground/[0.03] p-3">
+              <div className="text-[10px] text-info font-bold uppercase mb-1">Acoustic Key</div>
+              <div className="text-lg font-bold text-info">{dossier.solfeggioHz} Hz</div>
+              <div className="text-[11px] text-muted-foreground">{dossier.biorhythm.season} · {dossier.biorhythm.lifeStage}</div>
             </div>
           </div>
 
           {/* Initiation Gate */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <div className="rounded-xl border border-border bg-foreground/[0.03] p-3">
             <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="h-4 w-4 text-amber-400" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Initiation Gate (Layer 11)</span>
+              <BookOpen className="h-4 w-4 text-gold" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gold">Initiation Gate (Layer 11)</span>
             </div>
-            <div className="text-sm text-white font-semibold">{dossier.initiationGate.gate}</div>
-            <div className="text-xs text-slate-400 mt-1">
-              <strong className="text-slate-300">Trial:</strong> {dossier.initiationGate.trial}
+            <div className="text-sm text-foreground font-semibold">{dossier.initiationGate.gate}</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              <strong className="text-soft">Trial:</strong> {dossier.initiationGate.trial}
             </div>
-            <div className="text-xs text-emerald-400 mt-1">
+            <div className="text-xs text-brand mt-1">
               <strong>Reward:</strong> {dossier.initiationGate.reward}
             </div>
           </div>
@@ -183,8 +183,8 @@ export default function PractitionerHexacorePanel({
           {dossier.botanicalPrescriptions && dossier.botanicalPrescriptions.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Leaf className="h-4 w-4 text-emerald-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                <Leaf className="h-4 w-4 text-brand" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
                   Botanical Correspondence Formulas
                 </span>
               </div>
@@ -192,17 +192,17 @@ export default function PractitionerHexacorePanel({
                 {dossier.botanicalPrescriptions.map((p) => (
                   <div
                     key={p.sku}
-                    className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-3"
+                    className="rounded-xl border border-border bg-foreground/[0.02] p-3"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="text-sm font-semibold text-white">{p.herbNameEn}</div>
-                        <div className="text-[11px] italic text-slate-500">{p.scientificName}</div>
+                        <div className="text-sm font-semibold text-foreground">{p.herbNameEn}</div>
+                        <div className="text-[11px] italic text-subtle">{p.scientificName}</div>
                       </div>
-                      <span className="text-xs font-bold text-emerald-400">{p.priceEtb} ETB</span>
+                      <span className="text-xs font-bold text-brand">{p.priceEtb} ETB</span>
                     </div>
-                    <div className="mt-1 text-xs text-slate-400">{p.therapeuticSynergyEn}</div>
-                    <div className="mt-1 text-[10px] text-amber-600/80 bg-amber-500/[0.08] rounded px-2 py-1">
+                    <div className="mt-1 text-xs text-muted-foreground">{p.therapeuticSynergyEn}</div>
+                    <div className="mt-1 text-[10px] text-gold-strong bg-gold/[0.08] rounded px-2 py-1">
                       ⚠ {p.safetyCautionEn}
                     </div>
                   </div>
@@ -214,8 +214,8 @@ export default function PractitionerHexacorePanel({
           {/* Practitioner Notes */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Activity className="h-4 w-4 text-violet-400" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400">
+              <Activity className="h-4 w-4 text-plum" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-plum">
                 Practitioner Notes & Remedy Prescription
               </span>
             </div>
@@ -225,21 +225,21 @@ export default function PractitionerHexacorePanel({
               onChange={(e) => setPractitionerNotes(e.target.value)}
               placeholder="Record session observations, lineage insights, specific remedies prescribed, follow-up practices..."
               rows={4}
-              className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-violet-500/60 focus:outline-none resize-none"
+              className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-plum/60 focus:outline-none resize-none"
             />
             <div className="mt-2">
-              <label className="block text-[11px] text-slate-400 mb-1">Specific Remedy Prescribed</label>
+              <label className="block text-[11px] text-muted-foreground mb-1">Specific Remedy Prescribed</label>
               <input
                 id={`practitioner-remedy-${bookingId}`}
                 type="text"
                 value={prescribedRemedy}
                 onChange={(e) => setPrescribedRemedy(e.target.value)}
                 placeholder="e.g. Damakesse tincture 15ml, 3× weekly..."
-                className="w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:border-violet-500/60 focus:outline-none"
+                className="w-full rounded-xl border border-border bg-foreground/[0.04] px-3.5 py-2 text-sm text-foreground placeholder:text-subtle focus:border-plum/60 focus:outline-none"
               />
             </div>
             {saveError && (
-              <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
+              <div className="mt-2 text-xs text-danger flex items-center gap-1">
                 <AlertTriangle className="h-3.5 w-3.5" /> {saveError}
               </div>
             )}
@@ -248,12 +248,12 @@ export default function PractitionerHexacorePanel({
               onClick={handleSaveNotes}
               disabled={saving || !practitionerNotes.trim()}
               className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition disabled:opacity-50"
-              style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.4)", color: "#A78BFA" }}
+              style={{ background: "var(--plum-soft)", border: "1px solid color-mix(in srgb, var(--plum) 40%, transparent)", color: "var(--plum-strong)" }}
             >
               {saving ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
               ) : saved ? (
-                <><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Notes Saved</>
+                <><CheckCircle2 className="h-4 w-4 text-brand" /> Notes Saved</>
               ) : (
                 "Save Practitioner Notes"
               )}
@@ -261,8 +261,8 @@ export default function PractitionerHexacorePanel({
           </div>
 
           {/* Ethical Footer */}
-          <div className="flex items-start gap-2 rounded-xl border border-amber-500/15 bg-amber-500/[0.04] p-3 text-[10px] text-amber-900/80 text-amber-200/60">
-            <Shield className="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-600" />
+          <div className="flex items-start gap-2 rounded-xl border border-gold/15 bg-gold/[0.04] p-3 text-[10px] text-gold-strong text-gold-strong">
+            <Shield className="h-3.5 w-3.5 shrink-0 mt-0.5 text-gold" />
             Hexacore reading is a cultural reflection tool. Practitioners must not use these correspondences as medical diagnoses, substitute them for psychological therapy, or present herbal formulas as clinical treatments.
           </div>
         </div>

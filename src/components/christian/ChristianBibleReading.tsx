@@ -12,6 +12,7 @@ import {
   type ReadingOption,
 } from "@/lib/christian/readingLibrary";
 import { getLiturgicalContext } from "@/lib/christian/liturgicalCalendar";
+import { assetUrl } from "@/lib/base-path";
 
 // ─── Local storage ──────────────────────────────────────────────
 
@@ -126,21 +127,21 @@ export default function ChristianBibleReading() {
   return (
     <section
       aria-labelledby="christian-reading-heading"
-      className="mt-8 rounded-3xl border border-amber-500/30 bg-stone-950/70 p-6 shadow-xl shadow-amber-950/10"
+      className="mt-8 rounded-3xl border border-gold/30 bg-background/70 p-6 shadow-panel"
     >
       {/* Header */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-300">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold">
             Christian reading path · Amharic Bible
           </p>
           <h2
             id="christian-reading-heading"
-            className="mt-2 text-2xl font-bold text-white"
+            className="mt-2 text-2xl font-bold text-foreground"
           >
             Read a chapter in Amharic
           </h2>
-          <p className="mt-2 text-sm leading-6 text-stone-300">
+          <p className="mt-2 text-sm leading-6 text-soft">
             Because your profile identifies a Christian tradition, you can open
             an Amharic chapter directly from WordProject. This platform does
             not copy or host the full text.
@@ -149,12 +150,12 @@ export default function ChristianBibleReading() {
 
         <div className="flex flex-col items-end gap-2">
           {traditionLabel && (
-            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+            <span className="rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-strong">
               {traditionLabel}
             </span>
           )}
           {liturgical.summary !== "Ordinary day" && (
-            <span className="rounded-full border border-violet-500/40 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+            <span className="rounded-full border border-plum/40 bg-plum/10 px-3 py-1 text-xs font-semibold text-plum-strong">
               {liturgical.summary}
             </span>
           )}
@@ -164,7 +165,7 @@ export default function ChristianBibleReading() {
       {/* Category tabs */}
       <nav
         aria-label="Reading categories"
-        className="mt-6 flex flex-wrap gap-2 border-b border-stone-800 pb-3"
+        className="mt-6 flex flex-wrap gap-2 border-b border-border pb-3"
       >
         {READING_CATEGORIES.map((cat) => {
           const active = activeCategory === cat.id;
@@ -176,8 +177,8 @@ export default function ChristianBibleReading() {
               aria-current={active ? "page" : undefined}
               className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
                 active
-                  ? "bg-amber-500 text-black"
-                  : "border border-stone-700 text-stone-300 hover:border-amber-500/50 hover:text-amber-200"
+                  ? "bg-gold-fill text-gold-foreground"
+                  : "border border-border text-soft hover:border-gold/50 hover:text-gold-strong"
               }`}
             >
               {cat.label}
@@ -202,28 +203,28 @@ export default function ChristianBibleReading() {
               aria-pressed={isSelected}
               className={`relative rounded-2xl border p-4 text-left transition ${
                 isSelected
-                  ? "border-amber-400 bg-amber-500/10"
-                  : "border-stone-800 bg-black/20 hover:border-amber-500/50"
+                  ? "border-gold bg-gold/10"
+                  : "border-border bg-sunken/50 hover:border-gold/50"
               }`}
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="font-semibold text-amber-100">
+                <div className="font-semibold text-gold-strong">
                   {reading.label}
                 </div>
                 {isMarked && (
                   <span
                     aria-label="Bookmarked"
-                    className="text-xs text-amber-400"
+                    className="text-xs text-gold"
                   >
                     ★
                   </span>
                 )}
               </div>
-              <div className="mt-1 text-xs leading-5 text-stone-400">
+              <div className="mt-1 text-xs leading-5 text-muted-foreground">
                 {reading.description}
               </div>
               {reading.ethiopianNote && (
-                <div className="mt-2 border-l-2 border-violet-500/40 pl-2 text-[11px] leading-4 text-violet-300">
+                <div className="mt-2 border-l-2 border-plum/40 pl-2 text-[11px] leading-4 text-plum">
                   {reading.ethiopianNote}
                 </div>
               )}
@@ -234,25 +235,25 @@ export default function ChristianBibleReading() {
 
       {/* Empty state — theoretically unreachable, but safe */}
       {categoryReadings.length === 0 && (
-        <p className="mt-5 text-center text-sm text-stone-500">
+        <p className="mt-5 text-center text-sm text-subtle">
           No readings in this category yet. More are being added.
         </p>
       )}
 
       {/* Selected reading detail */}
-      <div className="mt-6 rounded-2xl border border-stone-800 bg-black/30 p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-sunken/50 p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-subtle">
               Now selected
             </p>
-            <h3 className="mt-1 text-lg font-bold text-amber-100">
+            <h3 className="mt-1 text-lg font-bold text-gold-strong">
               {selected.label}{" "}
-              <span className="ml-2 text-sm font-normal text-stone-400">
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
                 {selected.labelAm}
               </span>
             </h3>
-            <p className="mt-1 text-sm text-stone-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               {selected.description}
             </p>
           </div>
@@ -264,8 +265,8 @@ export default function ChristianBibleReading() {
               aria-pressed={isBookmarked}
               className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
                 isBookmarked
-                  ? "border-amber-400 bg-amber-500/10 text-amber-200"
-                  : "border-stone-700 text-stone-300 hover:border-amber-500/50 hover:text-amber-200"
+                  ? "border-gold bg-gold/10 text-gold-strong"
+                  : "border-border text-soft hover:border-gold/50 hover:text-gold-strong"
               }`}
             >
               {isBookmarked ? "★ Bookmarked" : "☆ Bookmark"}
@@ -273,7 +274,7 @@ export default function ChristianBibleReading() {
             <button
               type="button"
               onClick={handleShare}
-              className="rounded-lg border border-stone-700 px-3 py-2 text-xs font-semibold text-stone-300 transition hover:border-amber-500/50 hover:text-amber-200"
+              className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-soft transition hover:border-gold/50 hover:text-gold-strong"
             >
               {justCopied ? "Copied ✓" : "Share / Copy link"}
             </button>
@@ -282,9 +283,9 @@ export default function ChristianBibleReading() {
       </div>
 
       {/* Short attributed quotation */}
-      <blockquote className="mt-5 rounded-2xl border-l-4 border-amber-400 bg-amber-500/5 px-4 py-3 text-sm leading-6 text-stone-200">
+      <blockquote className="mt-5 rounded-2xl border-l-4 border-gold bg-gold/5 px-4 py-3 text-sm leading-6 text-soft">
         “በመጀመሪያው ቃል ነበረ፥ ቃልም በእግዚአብሔር ዘንድ ነበረ።”
-        <footer className="mt-2 text-xs text-stone-400">
+        <footer className="mt-2 text-xs text-muted-foreground">
           Short quotation · John 1:1 · Source: International Biblical
           Association / WordProject
         </footer>
@@ -293,25 +294,25 @@ export default function ChristianBibleReading() {
       {/* Actions */}
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <a
-          href={sourceUrl}
+          href={assetUrl(sourceUrl)}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-amber-400"
+          className="rounded-xl bg-gold-fill px-5 py-3 text-sm font-bold text-gold-foreground transition hover:bg-gold-fill"
         >
           Open {selected.label} in WordProject ↗
         </a>
         <a
-          href={WORDPROJECT_INDEX_URL}
+          href={assetUrl(WORDPROJECT_INDEX_URL)}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 transition hover:border-amber-400 hover:text-amber-200"
+          className="rounded-xl border border-border px-5 py-3 text-sm font-semibold text-soft transition hover:border-gold hover:text-gold-strong"
         >
           Browse Amharic Bible index ↗
         </a>
       </div>
 
       {/* Attribution */}
-      <p className="mt-4 text-[11px] leading-5 text-stone-500">
+      <p className="mt-4 text-[11px] leading-5 text-subtle">
         Source and copyright notice: WordProject / International Biblical
         Association. This link opens the original external passage; Ethiopian
         Wisdom Atlas provides only navigation and a brief attributed excerpt.
@@ -327,19 +328,19 @@ function LoadingSkeleton() {
     <section
       aria-busy="true"
       aria-label="Loading Christian reading path"
-      className="mt-8 animate-pulse rounded-3xl border border-amber-500/20 bg-stone-950/70 p-6"
+      className="mt-8 animate-pulse rounded-3xl border border-gold/20 bg-background/70 p-6"
     >
-      <div className="h-3 w-48 rounded bg-stone-800" />
-      <div className="mt-3 h-6 w-72 rounded bg-stone-800" />
-      <div className="mt-3 h-4 w-full max-w-xl rounded bg-stone-800/60" />
+      <div className="h-3 w-48 rounded bg-muted" />
+      <div className="mt-3 h-6 w-72 rounded bg-muted" />
+      <div className="mt-3 h-4 w-full max-w-xl rounded bg-muted/60" />
       <div className="mt-6 flex gap-2">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-7 w-20 rounded-full bg-stone-800" />
+          <div key={i} className="h-7 w-20 rounded-full bg-muted" />
         ))}
       </div>
       <div className="mt-5 grid gap-3 md:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-24 rounded-2xl bg-stone-800/40" />
+          <div key={i} className="h-24 rounded-2xl bg-muted/40" />
         ))}
       </div>
     </section>

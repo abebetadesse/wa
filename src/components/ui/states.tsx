@@ -20,7 +20,7 @@ export function EmptyState({ title, description, action, className }: { title: s
   return (
     <div className={cn("flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border p-10 text-center", className)}>
       <SearchX className="size-8 text-muted-foreground" aria-hidden="true" />
-      <p className="font-display font-bold text-foreground">{title}</p>
+      <p className="font-display text-lg font-semibold text-foreground">{title}</p>
       {description && <p className="max-w-md text-sm text-muted-foreground">{description}</p>}
       {action}
     </div>
@@ -30,7 +30,7 @@ export function EmptyState({ title, description, action, className }: { title: s
 export function ErrorState({ message, onRetry, className }: { message: string; onRetry?: () => void; className?: string }) {
   const { t } = useLanguage();
   return (
-    <div role="alert" className={cn("flex flex-col items-center gap-3 rounded-2xl border border-danger/30 bg-danger/5 p-8 text-center", className)}>
+    <div role="alert" className={cn("flex flex-col items-center gap-3 rounded-2xl border border-danger/30 bg-danger-soft p-8 text-center", className)}>
       <p className="font-semibold text-foreground">{t.common.errorTitle}</p>
       <p className="max-w-md text-sm text-muted-foreground">{message}</p>
       {onRetry && (

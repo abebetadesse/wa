@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Sparkles, Eye, BookOpen, ShieldCheck, Maximize2, Scroll } from "lucide-react";
 import type { TelsemSeal } from "@/lib/cultural/telsemData";
+import { assetUrl } from "@/lib/base-path";
 
 interface TelsemSacredSealProps {
   seal: TelsemSeal;
@@ -37,13 +38,13 @@ export function TelsemSacredSeal({
 
   return (
     <div
-      className={`rounded-3xl border border-amber-500/30 bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950/20 p-5 shadow-2xl relative overflow-hidden backdrop-blur-md ${className}`}
+      className={`rounded-3xl border border-gold/30 bg-gradient-to-br from-background via-card to-gold-soft p-5 shadow-raised relative overflow-hidden  ${className}`}
     >
       {/* Decorative Traditional Ethiopian Corner Hareg Motif */}
-      <div className="absolute top-2 left-2 text-amber-500/20 text-xs font-mono select-none pointer-events-none">
+      <div className="absolute top-2 left-2 text-gold/20 text-xs font-mono select-none pointer-events-none">
         ❖ ═══
       </div>
-      <div className="absolute top-2 right-2 text-amber-500/20 text-xs font-mono select-none pointer-events-none">
+      <div className="absolute top-2 right-2 text-gold/20 text-xs font-mono select-none pointer-events-none">
         ═══ ❖
       </div>
 
@@ -51,31 +52,31 @@ export function TelsemSacredSeal({
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest bg-amber-500/10 border border-amber-500/30 text-amber-300">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-gold/10 border border-gold/30 text-gold-strong">
               {seal.categoryLabelAm} • {seal.categoryLabelEn}
             </span>
             {seal.sourcePage && (
-              <span className="text-[10px] text-stone-400 font-mono">
+              <span className="text-[10px] text-muted-foreground font-mono">
                 ገጽ {seal.sourcePage}
               </span>
             )}
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold font-serif text-amber-100 mt-1">
+          <h3 className="text-xl sm:text-2xl font-bold font-serif text-gold-strong mt-1">
             {seal.nameAm}
           </h3>
-          <p className="text-xs text-stone-400 italic">{seal.nameEn}</p>
+          <p className="text-xs text-muted-foreground italic">{seal.nameEn}</p>
         </div>
 
         {/* View Toggle */}
         {interactive && seal.sourceImage && (
-          <div className="flex items-center rounded-xl bg-stone-950 border border-stone-800 p-1 shrink-0">
+          <div className="flex items-center rounded-xl bg-background border border-border p-1 shrink-0">
             <button
               type="button"
               onClick={() => setViewMode("plate")}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 viewMode === "plate"
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                  : "text-stone-400 hover:text-stone-200"
+                  ? "bg-gold/20 text-gold-strong border border-gold/30"
+                  : "text-muted-foreground hover:text-soft"
               }`}
             >
               ብራና (Plate)
@@ -85,8 +86,8 @@ export function TelsemSacredSeal({
               onClick={() => setViewMode("vector")}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 viewMode === "vector"
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                  : "text-stone-400 hover:text-stone-200"
+                  ? "bg-gold/20 text-gold-strong border border-gold/30"
+                  : "text-muted-foreground hover:text-soft"
               }`}
             >
               ኅልቆት (Vector)
@@ -98,16 +99,16 @@ export function TelsemSacredSeal({
       {/* Seal Artwork Container */}
       <div className="flex flex-col items-center justify-center my-4">
         <div
-          className={`relative ${sizeClasses} rounded-2xl border border-amber-500/40 bg-stone-950/90 shadow-[inset_0_0_40px_rgba(217,119,6,0.15)] flex items-center justify-center overflow-hidden p-4 group`}
+          className={`relative ${sizeClasses} rounded-2xl border border-gold/40 bg-background/90 shadow-[inset_0_0_40px_rgba(217,119,6,0.15)] flex items-center justify-center overflow-hidden p-4 group`}
         >
           {/* Subtle parchment grain simulation overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/40 pointer-events-none z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/40 pointer-events-none z-10" />
 
           {viewMode === "plate" && seal.sourceImage ? (
             <div className="relative w-full h-full flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={seal.sourceImage}
+                src={assetUrl(seal.sourceImage)}
                 alt={seal.nameAm}
                 className="max-w-full max-h-full object-contain filter contrast-125 sepia-[0.35] brightness-90 transition-transform duration-500 group-hover:scale-105"
               />
@@ -115,7 +116,7 @@ export function TelsemSacredSeal({
                 <button
                   type="button"
                   onClick={() => setIsZoomed(true)}
-                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 border border-stone-700 text-stone-300 hover:text-amber-300 opacity-80 group-hover:opacity-100 transition-opacity z-20"
+                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 border border-white/20 text-white/85 hover:text-gold-fill opacity-80 group-hover:opacity-100 transition-opacity z-20"
                   title="View full plate"
                 >
                   <Maximize2 size={16} />
@@ -133,14 +134,14 @@ export function TelsemSacredSeal({
       {/* Interactive Tabs */}
       {showDetails && interactive && (
         <div className="mt-4 space-y-3">
-          <div className="flex items-center gap-1 border-b border-stone-800 pb-2 text-xs">
+          <div className="flex items-center gap-1 border-b border-border pb-2 text-xs">
             <button
               type="button"
               onClick={() => setActiveTab("meaning")}
               className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 activeTab === "meaning"
-                  ? "bg-amber-500/10 text-amber-300 border border-amber-500/30 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
+                  ? "bg-gold/10 text-gold-strong border border-gold/30 font-semibold"
+                  : "text-muted-foreground hover:text-soft"
               }`}
             >
               ምሥጢር (Symbolism)
@@ -150,8 +151,8 @@ export function TelsemSacredSeal({
               onClick={() => setActiveTab("prayer")}
               className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 activeTab === "prayer"
-                  ? "bg-amber-500/10 text-amber-300 border border-amber-500/30 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
+                  ? "bg-gold/10 text-gold-strong border border-gold/30 font-semibold"
+                  : "text-muted-foreground hover:text-soft"
               }`}
             >
               የጸሎት ቃል (Formula)
@@ -161,8 +162,8 @@ export function TelsemSacredSeal({
               onClick={() => setActiveTab("materials")}
               className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 activeTab === "materials"
-                  ? "bg-amber-500/10 text-amber-300 border border-amber-500/30 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
+                  ? "bg-gold/10 text-gold-strong border border-gold/30 font-semibold"
+                  : "text-muted-foreground hover:text-soft"
               }`}
             >
               ገቢር (Practice)
@@ -170,10 +171,10 @@ export function TelsemSacredSeal({
           </div>
 
           {activeTab === "meaning" && (
-            <div className="space-y-2 text-xs text-stone-300 animate-fadeIn">
+            <div className="space-y-2 text-xs text-soft animate-fadeIn">
               <p className="leading-relaxed">{seal.spiritualMeaning}</p>
-              <div className="p-2.5 rounded-xl bg-black/40 border border-stone-800 text-[11px] text-amber-200/90 font-mono">
-                <span className="font-bold text-amber-400 block mb-1">ቅርጸ ጠልሰም (Sacred Geometry):</span>
+              <div className="p-2.5 rounded-xl bg-sunken/80 border border-border text-[11px] text-gold-strong font-mono">
+                <span className="font-bold text-gold block mb-1">ቅርጸ ጠልሰም (Sacred Geometry):</span>
                 {seal.sacredGeometryDescription}
               </div>
             </div>
@@ -181,10 +182,10 @@ export function TelsemSacredSeal({
 
           {activeTab === "prayer" && (
             <div className="space-y-2 text-xs animate-fadeIn">
-              <div className="p-3 rounded-xl bg-stone-950/80 border border-amber-500/20 text-amber-200 font-serif leading-loose">
+              <div className="p-3 rounded-xl bg-background/80 border border-gold/20 text-gold-strong font-serif leading-loose">
                 {seal.traditionalFormulaGe}
               </div>
-              <p className="text-[11px] text-stone-400 italic">
+              <p className="text-[11px] text-muted-foreground italic">
                 Translation: &ldquo;{seal.traditionalFormulaEn}&rdquo;
               </p>
             </div>
@@ -192,18 +193,18 @@ export function TelsemSacredSeal({
 
           {activeTab === "materials" && (
             <div className="space-y-2 text-xs animate-fadeIn">
-              <span className="text-stone-400 font-bold block">ባህላዊ ቁሳቁሶች (Traditional Inks & Botanical Elements):</span>
+              <span className="text-muted-foreground font-bold block">ባህላዊ ቁሳቁሶች (Traditional Inks & Botanical Elements):</span>
               <div className="flex flex-wrap gap-1.5">
                 {seal.ritualMaterials.map((mat, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-1 rounded-lg bg-stone-900 border border-stone-700 text-stone-200 text-[11px]"
+                    className="px-2.5 py-1 rounded-lg bg-card border border-border text-soft text-[11px]"
                   >
                     ✦ {mat}
                   </span>
                 ))}
               </div>
-              <p className="text-[10px] text-stone-500 mt-2">
+              <p className="text-[10px] text-subtle mt-2">
                 ምንጭ: {seal.sourceManuscript}
               </p>
             </div>
@@ -219,17 +220,17 @@ export function TelsemSacredSeal({
           className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 sm:p-8 animate-fadeIn"
           onClick={() => setIsZoomed(false)}
         >
-          <div className="relative max-w-4xl max-h-[85vh] overflow-auto rounded-2xl border border-amber-500/40 p-2 bg-stone-950">
+          <div className="relative max-w-4xl max-h-[85vh] overflow-auto rounded-2xl border border-gold/40 p-2 bg-background">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={seal.sourceImage}
+              src={assetUrl(seal.sourceImage)}
               alt={seal.nameAm}
               className="max-w-full max-h-[80vh] object-contain rounded-xl"
             />
           </div>
           <div className="mt-4 text-center">
-            <h4 className="text-lg font-bold text-amber-200 font-serif">{seal.nameAm}</h4>
-            <p className="text-xs text-stone-400 font-mono">
+            <h4 className="text-lg font-bold text-gold-strong font-serif">{seal.nameAm}</h4>
+            <p className="text-xs text-muted-foreground font-mono">
               {seal.sourceManuscript} {seal.sourcePage ? `• ገጽ ${seal.sourcePage}` : ""} • Click anywhere to close
             </p>
           </div>

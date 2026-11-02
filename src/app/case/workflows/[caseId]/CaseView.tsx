@@ -41,6 +41,7 @@ import {
 } from "@/features/cases/components";
 import { STAGE_LABELS } from "../WorkflowHub";
 import { FoodHerbCard } from "./FoodHerbCard";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 const POLL_MS = 30_000;
 
@@ -99,8 +100,8 @@ export function CaseView({ caseId }: { caseId: string }) {
           <CardHeader><CardTitle>Attached recording</CardTitle></CardHeader>
           <CardContent>
             {view.answers.mediaKind === "video"
-              ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="max-h-72 w-full rounded-xl" />
-              : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`} className="w-full" />}
+              ? <video controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`)} className="max-h-72 w-full rounded-xl" />
+              : <audio controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(String(view.answers.mediaId))}`)} className="w-full" />}
           </CardContent>
         </Card>
       )}
@@ -140,7 +141,7 @@ export function CaseView({ caseId }: { caseId: string }) {
       {view.stage === "full_report_released" && !view.bookingId && <ConsultationForm view={view} onChange={setView} />}
       {view.bookingId && view.stage === "full_report_released" && (
         <Alert tone="success" title="Included with your booking">
-          This report is part of your booked session. <a href={`/account/bookings/${view.bookingId}`} className="font-semibold text-brand underline">View your booking</a>
+          This report is part of your booked session. <a href={withBasePath(`/account/bookings/${view.bookingId}`)} className="font-semibold text-brand underline">View your booking</a>
         </Alert>
       )}
       {view.stage === "consultation_requested" && view.consultation && (
@@ -318,7 +319,7 @@ function IntakeForm({ view, onChange }: { view: OwnerView; onChange: (view: Owne
           aria-labelledby="confirm-submit-title"
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
         >
-          <div className="mx-4 flex max-w-sm flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-xl">
+          <div className="mx-4 flex max-w-sm flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-panel">
             <div className="flex items-start gap-3">
               <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
               <div>
@@ -411,7 +412,7 @@ function ConversationCard({ view, onChange }: { view: OwnerView; onChange: (view
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><MessageCircle className="size-5 text-brand" aria-hidden="true" /> Messages with your reviewer</CardTitle>
         <CardDescription>
-          Add anything you forgot, or answer your reviewer&apos;s questions. If you connected Telegram or WhatsApp on your <a href="/account" className="font-semibold text-brand underline">account page</a>, messages also arrive there and you can simply reply in the chat.
+          Add anything you forgot, or answer your reviewer&apos;s questions. If you connected Telegram or WhatsApp on your <a href={withBasePath("/account")} className="font-semibold text-brand underline">account page</a>, messages also arrive there and you can simply reply in the chat.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -559,7 +560,7 @@ function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view
                     type="button"
                     onClick={() => setFormat(value as typeof format)}
                     aria-pressed={selected}
-                    className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${selected ? "border-brand bg-brand/10 text-brand" : "border-border bg-background text-muted-foreground hover:border-input hover:text-foreground"}`}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${selected ? "border-brand bg-brand/10 text-brand-strong" : "border-border bg-background text-muted-foreground hover:border-input hover:text-foreground"}`}
                   >
                     <FormatIcon className="size-4" aria-hidden="true" />
                     {FORMAT_LABELS[value]}
@@ -605,7 +606,7 @@ function ConsultationForm({ view, onChange }: { view: OwnerView; onChange: (view
                   <span
                     key={slot}
                     role="listitem"
-                    className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand"
+                    className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand-strong"
                   >
                     {slot}
                     <button

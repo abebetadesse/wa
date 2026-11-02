@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { AuthenticatedUser } from "@/lib/auth";
 import { AUTH_STATE_CHANGED } from "@/lib/auth/clientEvents";
 import { getClientUser, invalidateClientUser } from "@/lib/auth/clientState";
+import { withBasePath } from '@/lib/base-path';
 
 interface SessionValue {
   user: AuthenticatedUser | null;
@@ -45,7 +46,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const signOut = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => null);
+    await fetch(withBasePath("/api/auth/logout"), { method: "POST", credentials: "include" }).catch(() => null);
     invalidateClientUser();
     setUser(null);
     window.dispatchEvent(new Event(AUTH_STATE_CHANGED));

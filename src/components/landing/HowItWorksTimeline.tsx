@@ -9,7 +9,7 @@ const STEPS = [
     amharic: "የመምረጫ መንገድ",
     description:
       "Choose from Spiritual Life Direction, Relationship Harmony, Career Timing, Elder Dispute Mediation, or Precision wellbeing.",
-    icon: <Compass size={22} className="text-amber-400" />,
+    icon: <Compass size={22} className="text-gold" />,
     badge: "5 Pathways",
   },
   {
@@ -18,7 +18,7 @@ const STEPS = [
     amharic: "ስምና የተወለዱበት መረጃ",
     description:
       "Input your name in Latin or Ge'ez Fidel alongside your birth date, time, and ancestral city to lock exact astrological and gematric coordinates.",
-    icon: <Sparkles size={22} className="text-cyan-400" />,
+    icon: <Sparkles size={22} className="text-info" />,
     badge: "Real-time Gematria",
   },
   {
@@ -27,7 +27,7 @@ const STEPS = [
     amharic: "ባለ ሁለት ዘርፍ ትንተና",
     description:
       "Domain A processes scientific nutritional baselines (EFCT) & herb safety gates, while Domain B computes the 16 Awde Negest circles.",
-    icon: <ShieldCheck size={22} className="text-emerald-400" />,
+    icon: <ShieldCheck size={22} className="text-brand" />,
     badge: "Strictly Firewalled",
   },
   {
@@ -36,7 +36,7 @@ const STEPS = [
     amharic: "የተረጋገጠ የጥበብ ውጤት",
     description:
       "Access your comprehensive digital parchment report, complete with talismanic symbols, auspicious windows, and remedial wisdom.",
-    icon: <ScrollText size={22} className="text-purple-400" />,
+    icon: <ScrollText size={22} className="text-plum" />,
     badge: "Expert Verified",
   },
 ];
@@ -45,14 +45,14 @@ export default function HowItWorksTimeline() {
   return (
     <section className="relative my-12" aria-label="How the platform works">
       <div className="section-header text-center mb-10">
-        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-mono font-medium text-cyan-300 mb-3">
-          <Sparkles size={12} className="text-cyan-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-info/30 bg-info/10 px-3.5 py-1 text-xs font-mono font-medium text-info-strong mb-3">
+          <Sparkles size={12} className="text-info" />
           SYSTEM OPERATIONAL FLOW
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
           How Ancestral Intelligence Operates
         </h2>
-        <p className="mt-2 text-sm text-stone-400 max-w-xl mx-auto">
+        <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
           Four disciplined stages combining centuries of Ethiopian scholastic tradition with modern algorithmic precision.
         </p>
       </div>
@@ -61,31 +61,31 @@ export default function HowItWorksTimeline() {
         {STEPS.map((item, index) => (
           <div
             key={item.step}
-            className="group relative rounded-2xl border border-white/10 bg-gradient-to-b from-stone-900/60 to-stone-950/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10"
+            className="group relative rounded-2xl border border-border bg-gradient-to-b from-card/60 to-background/80 p-6  transition-all duration-300 hover:border-gold/40 hover:-translate-y-1 hover:shadow-panel"
           >
             {/* Step Number & Badge */}
             <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-2xl font-black text-white/20 group-hover:text-amber-400/40 transition-colors">
+              <span className="font-mono text-2xl font-bold text-subtle group-hover:text-gold/40 transition-colors">
                 {item.step}
               </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] font-mono text-stone-400 uppercase tracking-wider">
+              <span className="rounded-full border border-border bg-foreground/5 px-2.5 py-0.5 text-[10px] text-muted-foreground uppercase tracking-wider">
                 {item.badge}
               </span>
             </div>
 
             {/* Icon */}
-            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-transform group-hover:scale-110">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-foreground/5 transition-transform group-hover:scale-110">
               {item.icon}
             </div>
 
             {/* Title */}
-            <h3 className="text-base font-bold text-white group-hover:text-amber-300 transition-colors">
+            <h3 className="text-base font-bold text-foreground group-hover:text-gold transition-colors">
               {item.title}
             </h3>
-            <div className="text-xs font-mono text-amber-400/80 mb-2">{item.amharic}</div>
+            <div className="text-xs font-mono text-gold mb-2">{item.amharic}</div>
 
             {/* Description */}
-            <p className="text-xs text-stone-400 leading-relaxed">{item.description}</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
           </div>
         ))}
       </div>

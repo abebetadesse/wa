@@ -37,10 +37,10 @@ export function CaseProgressBar({ phase }: CaseProgressBarProps) {
                 <span
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all duration-300 ${
                     isCompleted
-                      ? "bg-emerald-500/20 border-emerald-500/60 text-emerald-300"
+                      ? "bg-brand/20 border-brand/60 text-brand-strong"
                       : isCurrent
-                      ? "bg-emerald-500/30 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/40"
-                      : "bg-white/5 border-white/10 text-slate-600"
+                      ? "bg-brand/30 border-brand text-brand-strong ring-2 ring-brand/40"
+                      : "bg-foreground/5 border-border text-subtle"
                   }`}
                 >
                   {isCompleted ? "✓" : index + 1}
@@ -48,17 +48,17 @@ export function CaseProgressBar({ phase }: CaseProgressBarProps) {
                 <span
                   className={`text-[11px] font-medium transition-colors ${
                     isCompleted
-                      ? "text-emerald-400"
+                      ? "text-brand"
                       : isCurrent
-                      ? "text-white"
-                      : "text-slate-600"
+                      ? "text-foreground"
+                      : "text-subtle"
                   }`}
                 >
                   {PHASE_LABELS[key]}
                 </span>
               </div>
               {index < phases.length - 1 && (
-                <span className="mx-2 text-slate-700 text-xs">/</span>
+                <span className="mx-2 text-subtle text-xs">/</span>
               )}
             </li>
           );

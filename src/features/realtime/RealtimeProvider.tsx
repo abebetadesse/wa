@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useSession } from "@/features/session/SessionProvider";
+import { withBasePath } from '@/lib/base-path';
 
 export interface RealtimeEvent {
   id: number;
@@ -36,7 +37,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       return;
     }
     setState("connecting");
-    const source = new EventSource("/api/realtime", { withCredentials: true });
+    const source = new EventSource(withBasePath("/api/realtime"), { withCredentials: true });
     source.onopen = () => setState("live");
     source.onerror = () => setState(source.readyState === EventSource.CLOSED ? "offline" : "connecting");
     source.onmessage = (message) => {

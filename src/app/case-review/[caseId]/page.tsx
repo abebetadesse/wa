@@ -10,6 +10,7 @@ import { AnalysisPanel, cleanDraft, Conversation, DraftEditor, type DraftState, 
 import { orderSections } from "@/server/cases/reportLayout";
 import { CaseAssistant } from "@/features/cases/CaseAssistant";
 import type { CaseAnalysis, CaseMessage, ReportSection } from "@/server/cases/types";
+import { assetUrl } from "@/lib/base-path";
 
 interface ReviewItem {
   id: string;
@@ -213,70 +214,70 @@ export default function CaseReviewItemPage() {
 
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8">
-      <Link href="/case-review" className="text-sm text-emerald-300 hover:underline">← Back to requests</Link>
-      {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-3 text-sm text-rose-200">{error}</p>}
-      {status && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-sm text-emerald-200">{status}</p>}
-      {!item && !error && <p className="text-sm text-slate-400">Loading request…</p>}
+      <Link href="/case-review" className="text-sm text-brand hover:underline">← Back to requests</Link>
+      {error && <p role="alert" className="rounded-xl border border-danger/30 bg-danger-soft p-3 text-sm text-danger-strong">{error}</p>}
+      {status && <p role="status" className="rounded-xl border border-brand/30 bg-brand-soft p-3 text-sm text-brand-strong">{status}</p>}
+      {!item && !error && <p className="text-sm text-muted-foreground">Loading request…</p>}
       {item && (
         <>
           <header>
-            <p className="text-xs uppercase tracking-wide text-slate-400">{item.label} · {item.safety.priority} priority · Assigned role: {item.assignedRole ?? "expert pool"}</p>
-            <h1 className="mt-2 text-2xl font-bold text-white">Review case request</h1>
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{item.label} · {item.safety.priority} priority · Assigned role: {item.assignedRole ?? "expert pool"}</p>
+            <h1 className="mt-2 text-2xl font-bold text-foreground">Review case request</h1>
+            <p className="mt-2 text-xs text-muted-foreground">
               Received {new Date(item.createdAt).toLocaleString()} · last activity {new Date(item.updatedAt).toLocaleString()} · stage: {item.stage.replace(/_/g, " ")}
               {" · "}{item.messages.length} message{item.messages.length === 1 ? "" : "s"}
               {" · "}profile use {item.consent.dataUsage ? "consented" : "not consented"}
               {item.draft && <> · report draft: {item.draft.sections.length} sections</>}
             </p>
           </header>
-          {item.safety.reason && <aside className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 text-sm text-amber-100">Safety note: {item.safety.reason}</aside>}
+          {item.safety.reason && <aside className="rounded-xl border border-gold/30 bg-gold-soft p-4 text-sm text-gold-strong">Safety note: {item.safety.reason}</aside>}
           {item.stage === "awaiting_expert" && (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
-              <p className="min-w-0 flex-1 text-sm text-emerald-100">Claim this request to edit the report and write to the person.</p>
-              <button disabled={busy} onClick={() => void claim()} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-brand/30 bg-brand-soft p-4">
+              <p className="min-w-0 flex-1 text-sm text-brand-strong">Claim this request to edit the report and write to the person.</p>
+              <button disabled={busy} onClick={() => void claim()} className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-50">
                 {busy ? "Claiming…" : "Claim request"}
               </button>
             </div>
           )}
-          {item.stage === "in_review" && !mayAct && <p className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 text-sm text-amber-100">This request is claimed by another reviewer. You can read it but not change it.</p>}
+          {item.stage === "in_review" && !mayAct && <p className="rounded-xl border border-gold/30 bg-gold-soft p-4 text-sm text-gold-strong">This request is claimed by another reviewer. You can read it but not change it.</p>}
 
-          <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-            <h2 className="font-semibold text-white">What the person told us</h2>
+          <section className="rounded-xl border border-border bg-foreground/[0.03] p-5">
+            <h2 className="font-semibold text-foreground">What the person told us</h2>
             <dl className="mt-4 grid gap-3">
               {item.questions.filter((question) => item.answers[question.id] !== undefined && question.id !== "mediaId" && question.id !== "mediaKind").map((question) => (
                 <div key={question.id}>
-                  <dt className="text-xs text-slate-400">{question.text}</dt>
-                  <dd className="mt-1 whitespace-pre-wrap text-sm text-slate-200">{answerText(question, item.answers[question.id])}</dd>
+                  <dt className="text-xs text-muted-foreground">{question.text}</dt>
+                  <dd className="mt-1 whitespace-pre-wrap text-sm text-soft">{answerText(question, item.answers[question.id])}</dd>
                 </div>
               ))}
               {item.domain === "biological" && typeof item.answers.mediaId === "string" && (
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-slate-200">Client attachment</p>
+                  <p className="text-sm font-semibold text-soft">Client attachment</p>
                   {item.answers.mediaKind === "video"
-                    ? <video controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 max-h-72 w-full rounded-xl" />
+                    ? <video controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`)} className="mt-2 max-h-72 w-full rounded-xl" />
                     : item.answers.mediaKind === "image"
                       ? <NextImage src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} alt="Private case evidence provided by the client" width={720} height={480} unoptimized className="mt-2 max-h-72 rounded-xl object-contain" />
-                      : <audio controls src={`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`} className="mt-2 w-full" />}
+                      : <audio controls src={assetUrl(`/api/case-workflows/media/${encodeURIComponent(item.answers.mediaId)}`)} className="mt-2 w-full" />}
                   {item.answers.mediaKind !== "audio" && (
                     <div className="mt-3 flex flex-wrap items-center gap-3">
-                      <button type="button" disabled={!mayAct || busy || analysingMedia} onClick={() => void analyseMedia(item.answers.mediaId as string)} className="rounded-lg border border-violet-400/30 px-3 py-2 text-xs font-semibold text-violet-100 hover:bg-violet-950/30 disabled:opacity-50">
+                      <button type="button" disabled={!mayAct || busy || analysingMedia} onClick={() => void analyseMedia(item.answers.mediaId as string)} className="rounded-lg border border-plum/30 px-3 py-2 text-xs font-semibold text-plum-strong hover:bg-plum-soft disabled:opacity-50">
                         {analysingMedia ? "Analyzing attachment…" : "Prepare AI observations"}
                       </button>
-                      <span className="text-xs text-slate-400">Uses the provider-enabled vision model. Observations are provisional; a qualified reviewer must verify them.</span>
+                      <span className="text-xs text-muted-foreground">Uses the provider-enabled vision model. Observations are provisional; a qualified reviewer must verify them.</span>
                     </div>
                   )}
                   {mediaAssessment?.mediaId === item.answers.mediaId && (
-                    <div className="mt-4 rounded-lg border border-violet-400/30 bg-violet-950/20 p-4">
-                      <h3 className="text-sm font-semibold text-violet-100">Provisional AI observations</h3>
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-200">{mediaAssessment.assessment.observations.map((entry, index) => <li key={`observation-${index}`}>{entry}</li>)}</ul>
+                    <div className="mt-4 rounded-lg border border-plum/30 bg-plum-soft p-4">
+                      <h3 className="text-sm font-semibold text-plum-strong">Provisional AI observations</h3>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-soft">{mediaAssessment.assessment.observations.map((entry, index) => <li key={`observation-${index}`}>{entry}</li>)}</ul>
                       {mediaAssessment.assessment.limitations.length > 0 && (
                         <>
-                          <h4 className="mt-3 text-xs font-semibold uppercase tracking-wide text-amber-200">Limitations</h4>
-                          <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-amber-100">{mediaAssessment.assessment.limitations.map((entry, index) => <li key={`limitation-${index}`}>{entry}</li>)}</ul>
+                          <h4 className="mt-3 text-xs font-semibold uppercase tracking-wide text-gold-strong">Limitations</h4>
+                          <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-gold-strong">{mediaAssessment.assessment.limitations.map((entry, index) => <li key={`limitation-${index}`}>{entry}</li>)}</ul>
                         </>
                       )}
-                      <p className="mt-3 text-xs text-slate-300">Not a diagnosis or treatment recommendation. Verify against the original attachment and the case requirements.</p>
-                      {mayAct && draft && <button type="button" onClick={addMediaAssessment} className="mt-3 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-600">Add observations to editable report</button>}
+                      <p className="mt-3 text-xs text-soft">Not a diagnosis or treatment recommendation. Verify against the original attachment and the case requirements.</p>
+                      {mayAct && draft && <button type="button" onClick={addMediaAssessment} className="mt-3 rounded-lg bg-plum px-3 py-2 text-xs font-semibold text-plum-foreground hover:bg-plum">Add observations to editable report</button>}
                     </div>
                   )}
                 </div>
@@ -290,9 +291,9 @@ export default function CaseReviewItemPage() {
             <AnalysisPanel analysis={item.analysis} canAct={mayAct} busy={busy} onAddSection={addSection} onAddSections={addSections} profileConsented={item.consent.dataUsage} onAsk={(question) => void send("question", question)} onReanalyse={() => void reanalyse()} />
           ) : (
             (item.stage === "awaiting_expert" || item.stage === "in_review") && (
-              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5">
-                <p className="min-w-0 flex-1 text-sm text-slate-300">No analysis is stored for this request yet.</p>
-                <button type="button" disabled={busy} onClick={() => void reanalyse()} className="rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 disabled:opacity-50">Run analysis</button>
+              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-foreground/[0.03] p-5">
+                <p className="min-w-0 flex-1 text-sm text-soft">No analysis is stored for this request yet.</p>
+                <button type="button" disabled={busy} onClick={() => void reanalyse()} className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-soft hover:bg-foreground/10 disabled:opacity-50">Run analysis</button>
               </div>
             )
           )}
@@ -311,42 +312,42 @@ export default function CaseReviewItemPage() {
             />
           )}
           {draft && !mayAct && (
-            <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-              <h2 className="text-lg font-semibold text-white">{draft.title}</h2>
-              <p className="mt-3 whitespace-pre-wrap text-sm text-slate-200">{draft.summary}</p>
+            <section className="rounded-xl border border-border bg-foreground/[0.03] p-5">
+              <h2 className="text-lg font-semibold text-foreground">{draft.title}</h2>
+              <p className="mt-3 whitespace-pre-wrap text-sm text-soft">{draft.summary}</p>
               <div className="mt-5 grid gap-4">
                 {draft.sections.map((section) => (
-                  <article key={section.id} className="border-t border-white/10 pt-4">
-                    <h3 className="font-medium text-white">{section.title}</h3>
-                    {section.body && <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{section.body}</p>}
-                    {section.items?.length ? <ul className="mt-2 list-disc pl-5 text-sm text-slate-300">{section.items.map((entry, index) => <li key={`${section.id}-${index}`}>{entry}</li>)}</ul> : null}
+                  <article key={section.id} className="border-t border-border pt-4">
+                    <h3 className="font-medium text-foreground">{section.title}</h3>
+                    {section.body && <p className="mt-2 whitespace-pre-wrap text-sm text-soft">{section.body}</p>}
+                    {section.items?.length ? <ul className="mt-2 list-disc pl-5 text-sm text-soft">{section.items.map((entry, index) => <li key={`${section.id}-${index}`}>{entry}</li>)}</ul> : null}
                   </article>
                 ))}
               </div>
-              <p className="mt-5 text-xs text-slate-400">{draft.disclaimer}</p>
+              <p className="mt-5 text-xs text-muted-foreground">{draft.disclaimer}</p>
             </section>
           )}
 
           {mayAct && (
-            <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-              <h2 className="font-semibold text-white">Approve and send</h2>
+            <section className="rounded-xl border border-border bg-foreground/[0.03] p-5">
+              <h2 className="font-semibold text-foreground">Approve and send</h2>
               <div className="mt-3 grid gap-3">
                 {item.checklist.map((entry) => (
-                  <label key={entry.id} className="flex items-start gap-3 text-sm text-slate-200">
-                    <input type="checkbox" checked={checked[entry.id] ?? false} onChange={(event) => setChecked((current) => ({ ...current, [entry.id]: event.target.checked }))} className="mt-0.5 accent-emerald-500" />
+                  <label key={entry.id} className="flex items-start gap-3 text-sm text-soft">
+                    <input type="checkbox" checked={checked[entry.id] ?? false} onChange={(event) => setChecked((current) => ({ ...current, [entry.id]: event.target.checked }))} className="mt-0.5 accent-brand" />
                     {entry.label}
                   </label>
                 ))}
               </div>
-              <label className="mt-5 grid gap-2 text-sm font-medium text-slate-200">
+              <label className="mt-5 grid gap-2 text-sm font-medium text-soft">
                 Your message to the person
-                <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={4000} rows={4} className="rounded-lg border border-white/15 bg-slate-950 px-3 py-2 text-sm" placeholder="Sent with the notification that the report is ready, in the app and on their Telegram or WhatsApp." />
+                <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={4000} rows={4} className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Sent with the notification that the report is ready, in the app and on their Telegram or WhatsApp." />
               </label>
-              {!reportValid && <p className="mt-3 text-xs text-amber-200">The report needs a title and a summary.</p>}
-              <button disabled={busy || !allChecked || !reportValid} onClick={() => void approve()} className="mt-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Sending response…" : "Approve and send response"}</button>
+              {!reportValid && <p className="mt-3 text-xs text-gold-strong">The report needs a title and a summary.</p>}
+              <button disabled={busy || !allChecked || !reportValid} onClick={() => void approve()} className="mt-4 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-50">{busy ? "Sending response…" : "Approve and send response"}</button>
             </section>
           )}
-          {["visible_to_user", "full_report_released", "consultation_requested"].includes(item.stage) && <p className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 text-sm text-emerald-200">Response approved. The person has been notified in the app and on the chat apps they connected.</p>}
+          {["visible_to_user", "full_report_released", "consultation_requested"].includes(item.stage) && <p className="rounded-xl border border-brand/30 bg-brand-soft p-4 text-sm text-brand-strong">Response approved. The person has been notified in the app and on the chat apps they connected.</p>}
         </>
       )}
     </main>

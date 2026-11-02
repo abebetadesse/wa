@@ -110,19 +110,26 @@ async function hasValidAccessToken(token: string | undefined) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRequest = pathname.startsWith("/api/");
+  // nextUrl keeps the app's base path; new URL(path, request.url) would drop it.
+  const urlFor = (path: string, search = "") => {
+    const target = request.nextUrl.clone();
+    target.pathname = path;
+    target.search = search;
+    return target;
+  };
 
   if (pathname === "/expert-desk" || pathname.startsWith("/expert-desk/") || pathname.startsWith("/api/expert/")) {
     const token = request.cookies.get("ethio_access")?.value;
     if (!(await hasValidAccessToken(token))) {
       if (isApiRequest) return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
-      return NextResponse.redirect(new URL("/auth?next=/expert-desk", request.url));
+      return NextResponse.redirect(urlFor("/auth", "?next=/expert-desk"));
     }
 
     try {
       const payload = JSON.parse(decodeBase64Url(token!.split(".")[0])) as { role?: string };
       if (!["expert", "admin", "super_admin", "practitioner"].includes(String(payload.role).toLowerCase())) {
         if (isApiRequest) return NextResponse.json({ success: false, error: "Expert access required." }, { status: 403 });
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(urlFor("/"));
       }
     } catch {
       return NextResponse.json({ success: false, error: "Unable to verify expert access." }, { status: 401 });
@@ -152,7 +159,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  const authUrl = new URL("/auth", request.url);
+  const authUrl = urlFor("/auth");
   authUrl.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
   return NextResponse.redirect(authUrl);
 }

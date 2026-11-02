@@ -83,28 +83,28 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
   };
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md">
+    <div className="bg-card/90 border border-border rounded-2xl p-6 shadow-raised ">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-xl font-bold text-slate-100">Interactive Natal Chart Wheel</h3>
-            <span className="px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full">
+            <h3 className="text-xl font-bold text-foreground">Interactive Natal Chart Wheel</h3>
+            <span className="px-2.5 py-0.5 text-xs font-semibold bg-brand/10 text-brand-strong border border-brand/30 rounded-full">
               Cast for your birth data
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Ascendant: <strong className="text-slate-200">{ascendant.sign} {ascendant.degree.toFixed(1)}°</strong> •
-            Midheaven: <strong className="text-slate-200">{midheaven.sign} {midheaven.degree.toFixed(1)}°</strong>
+          <p className="text-xs text-muted-foreground mt-1">
+            Ascendant: <strong className="text-soft">{ascendant.sign} {ascendant.degree.toFixed(1)}°</strong> •
+            Midheaven: <strong className="text-soft">{midheaven.sign} {midheaven.degree.toFixed(1)}°</strong>
           </p>
-          {castNote && <p className="text-[11px] text-slate-400 mt-1 max-w-xl">{castNote}</p>}
+          {castNote && <p className="text-[11px] text-muted-foreground mt-1 max-w-xl">{castNote}</p>}
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAspectGrid(!showAspectGrid)}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${showAspectGrid
-                ? "bg-emerald-600 text-white border-emerald-500"
-                : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700"
+                ? "bg-brand text-brand-foreground border-brand"
+                : "bg-muted text-soft border-border hover:bg-sunken"
               }`}
           >
             {showAspectGrid ? "Show Chart Wheel" : "View Aspect Grid"}
@@ -253,19 +253,19 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                 </text>
               </svg>
 
-              <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-slate-400">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block" /> Trine (120°)</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" /> Sextile (60°)</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" /> Square (90°)</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" /> Opposition (180°)</span>
+              <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-info inline-block" /> Trine (120°)</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand inline-block" /> Sextile (60°)</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-danger inline-block" /> Square (90°)</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gold-fill inline-block" /> Opposition (180°)</span>
               </div>
             </div>
           ) : (
             /* Aspect Grid Matrix View */
-            <div className="w-full overflow-x-auto bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+            <div className="w-full overflow-x-auto bg-background/60 p-4 rounded-xl border border-border">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 font-semibold">
+                  <tr className="border-b border-border text-muted-foreground font-semibold">
                     <th className="p-2">Planets</th>
                     <th className="p-2">Aspect</th>
                     <th className="p-2">Orb</th>
@@ -275,19 +275,19 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                 </thead>
                 <tbody>
                   {aspects.map((asp, idx) => (
-                    <tr key={idx} className="border-b border-slate-900/80 hover:bg-slate-800/40">
-                      <td className="p-2 font-medium text-slate-200">
+                    <tr key={idx} className="border-b border-border hover:bg-muted/40">
+                      <td className="p-2 font-medium text-soft">
                         {asp.planet1} {PLANET_GLYPHS[asp.planet1]} ↔ {asp.planet2} {PLANET_GLYPHS[asp.planet2]}
                       </td>
-                      <td className="p-2 capitalize text-sky-400 font-semibold">{asp.aspectType}</td>
-                      <td className="p-2 text-slate-400">{asp.orb.toFixed(1)}°</td>
+                      <td className="p-2 capitalize text-info font-semibold">{asp.aspectType}</td>
+                      <td className="p-2 text-muted-foreground">{asp.orb.toFixed(1)}°</td>
                       <td className="p-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${asp.nature === "harmonious" ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800"
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${asp.nature === "harmonious" ? "bg-brand-soft text-brand-strong border border-brand/30" : "bg-danger-soft text-danger-strong border border-danger/30"
                           }`}>
                           {asp.nature}
                         </span>
                       </td>
-                      <td className="p-2 text-slate-300">{asp.wellbeingImpact}</td>
+                      <td className="p-2 text-soft">{asp.wellbeingImpact}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -299,50 +299,50 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
         {/* Selected Planet Details Panel */}
         <div className="lg:col-span-5 space-y-4">
           {selectedPlanet ? (
-            <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-4">
+            <div className="bg-background/80 border border-border rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-xl font-bold text-emerald-300">
+                  <div className="w-10 h-10 rounded-xl bg-brand-soft border border-brand/40 flex items-center justify-center text-xl font-bold text-brand-strong">
                     {PLANET_GLYPHS[selectedPlanet.planet]}
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-100">{selectedPlanet.planet}</h4>
-                    <p className="text-xs text-slate-400 font-medium">
+                    <h4 className="text-lg font-bold text-foreground">{selectedPlanet.planet}</h4>
+                    <p className="text-xs text-muted-foreground font-medium">
                       {selectedPlanet.sign} • House {selectedPlanet.house} • {selectedPlanet.degree.toFixed(2)}°
                     </p>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-lg">
+                <span className="px-2.5 py-1 text-xs font-semibold bg-gold/10 text-gold-strong border border-gold/30 rounded-lg">
                   {selectedPlanet.ethiopianName}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-900/60 rounded-lg border border-slate-800 text-xs text-slate-300 leading-relaxed">
-                <p className="font-semibold text-emerald-400 mb-1">Ethiopian Traditional Sphere:</p>
+              <div className="p-3 bg-card/60 rounded-lg border border-border text-xs text-soft leading-relaxed">
+                <p className="font-semibold text-brand mb-1">Ethiopian Traditional Sphere:</p>
                 {selectedPlanet.ethiopianInterpretation}
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Physiological & Somatic Correlates</p>
+                <p className="text-xs font-semibold text-soft uppercase tracking-wider">Physiological & Somatic Correlates</p>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
-                    <span className="text-slate-400 block text-[10px]">Governed Organs:</span>
-                    <span className="text-slate-200 font-medium">{selectedPlanet.wellbeingAssociations.organs.join(", ")}</span>
+                  <div className="bg-card/40 p-2.5 rounded-lg border border-border">
+                    <span className="text-muted-foreground block text-[10px]">Governed Organs:</span>
+                    <span className="text-soft font-medium">{selectedPlanet.wellbeingAssociations.organs.join(", ")}</span>
                   </div>
-                  <div className="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80">
-                    <span className="text-slate-400 block text-[10px]">Vitality Strength:</span>
-                    <span className="text-emerald-400 font-medium">{selectedPlanet.wellbeingAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
+                  <div className="bg-card/40 p-2.5 rounded-lg border border-border">
+                    <span className="text-muted-foreground block text-[10px]">Vitality Strength:</span>
+                    <span className="text-brand font-medium">{selectedPlanet.wellbeingAssociations.vitalityStrengths[0] || "Resilient stamina"}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+              <div className="pt-2 border-t border-border text-[11px] text-muted-foreground flex items-center justify-between">
                 <span>Total Longitude: {selectedPlanet.totalLongitude.toFixed(2)}°</span>
-                <span>Element: <strong className="text-slate-300 capitalize">{selectedPlanet.element}</strong></span>
+                <span>Element: <strong className="text-soft capitalize">{selectedPlanet.element}</strong></span>
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-500 text-sm">
+            <div className="text-center py-12 text-subtle text-sm">
               Click any planet on the wheel to view coordinates and interpretations.
             </div>
           )}
@@ -354,8 +354,8 @@ export default function NatalChartWheel({ planets, aspects, ascendant, midheaven
                 key={p.planet}
                 onClick={() => setSelectedPlanet(p)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${selectedPlanet?.planet === p.planet
-                    ? "bg-emerald-600 text-white border-emerald-400"
-                    : "bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200"
+                    ? "bg-brand text-brand-foreground border-brand"
+                    : "bg-background text-muted-foreground border-border hover:text-soft"
                   }`}
               >
                 {PLANET_GLYPHS[p.planet]} {p.planet}

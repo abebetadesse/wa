@@ -97,7 +97,7 @@ function AuthScreen() {
           </ul>
         </section>
 
-        <Card className="shadow-xl shadow-black/5">
+        <Card className="shadow-panel shadow-black/5">
           <CardContent className="flex flex-col gap-6 p-6 sm:p-8">
             <div role="tablist" aria-label="Sign in or create an account" className="grid grid-cols-2 rounded-2xl bg-muted p-1">
               {(["login", "register"] as const).map((tab) => (
@@ -204,6 +204,7 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const passed = CHECKS.filter((check) => check.test(password)).length;
 
   async function submit(event: FormEvent) {
@@ -213,15 +214,28 @@ function RegisterForm({ onDone }: { onDone: (role: string) => void }) {
     setBusy(true);
     setError(null);
     try {
-      const user = await apiFetch<{ role: string }>("/api/auth/register", {
+      const user = await apiFetch<{ role: string; pendingApproval?: boolean }>("/api/auth/register", {
         method: "POST",
         json: { fullName: name, email, password, confirmPassword: password, preferredLanguage: language, dateOfBirth: dateOfBirth || undefined, birthTime: birthTime || undefined, birthLocation: birthLocation || undefined, motherName: motherName || undefined, consentSpiritual, acceptTerms: true, acceptPrivacy: true },
       });
+      if (user.pendingApproval) {
+        setWaiting(true);
+        setBusy(false);
+        return;
+      }
       onDone(user.role);
     } catch (err) {
       setError(errorMessage(err));
       setBusy(false);
     }
+  }
+
+  if (waiting) {
+    return (
+      <Alert tone="success" title="Registration received">
+        An administrator will approve your account. You can sign in once that is done.
+      </Alert>
+    );
   }
 
   return (

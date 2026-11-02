@@ -2,6 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { isVisible, ProfileFieldType } from "@/lib/profileFields";
+import { withBasePath } from '@/lib/base-path';
 
 interface ProfileField {
   id: string;
@@ -24,7 +25,7 @@ function getFieldValue(value: unknown): string | number {
 }
 
 function FieldHelp({ text }: { text: string | null }) {
-  return text ? <small className="text-slate-500">{text}</small> : null;
+  return text ? <small className="text-subtle">{text}</small> : null;
 }
 
 interface ProfileFieldControlProps {
@@ -96,7 +97,7 @@ export default function ProfileEditPage() {
     let active = true;
     async function loadProfile() {
       try {
-        const profileResponse = await fetch("/api/profile", { credentials: "include", cache: "no-store" });
+        const profileResponse = await fetch(withBasePath("/api/profile"), { credentials: "include", cache: "no-store" });
         if (!profileResponse.ok) throw new Error("Authentication required.");
         const profile = await profileResponse.json();
         if (!profile.success) throw new Error(profile.error || "Unable to load profile.");
@@ -130,7 +131,7 @@ export default function ProfileEditPage() {
     setSaving(true);
     setMessage("Saving...");
     try {
-      const response = await fetch("/api/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values) });
+      const response = await fetch(withBasePath("/api/profile"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Unable to save profile.");
       setValues(result.data || values);
@@ -147,7 +148,7 @@ export default function ProfileEditPage() {
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
       <h1 className="text-3xl font-bold">My wellbeing profile</h1>
-      <p className="text-slate-600">Your profile is used to personalize workflows. You control what you provide.</p>
+      <p className="text-subtle">Your profile is used to personalize workflows. You control what you provide.</p>
       {loading ? <p role="status">Loading your profile...</p> : (
         <form onSubmit={save} className="card-warm space-y-8 p-6">
           {sections.map((section) => (

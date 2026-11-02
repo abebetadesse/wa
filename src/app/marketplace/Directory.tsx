@@ -392,7 +392,7 @@ export function Directory() {
 
         {/* Autocomplete Dropdown */}
         {showSuggestions && hasSuggestions && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-3xl border border-border bg-card p-3 shadow-2xl backdrop-blur">
+          <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-3xl border border-border bg-card p-3 shadow-raised backdrop-blur">
             {suggestions.popular.length > 0 && !query.trim() && (
               <div>
                 <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Popular searches</p>
@@ -445,7 +445,7 @@ export function Directory() {
                     >
                       <div>
                         <span className="font-semibold">{biz.name}</span>
-                        {biz.demoSample && <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">Sample</span>}
+                        {biz.demoSample && <span className="ml-1.5 rounded bg-gold-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-gold-strong">Sample</span>}
                         {biz.nameAm && <span className="ml-1.5 text-xs text-muted-foreground">({biz.nameAm})</span>}
                         <span className="ml-2 text-xs text-muted-foreground">· {biz.categoryName}</span>
                       </div>
@@ -474,7 +474,7 @@ export function Directory() {
                       <div>
                         <span className="font-semibold text-brand-strong">{srv.name}</span>
                         <span className="ml-2 text-xs text-muted-foreground">at {srv.businessName}</span>
-                        {srv.demoSample && <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-900">Sample</span>}
+                        {srv.demoSample && <span className="ml-1.5 rounded bg-gold-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-gold-strong">Sample</span>}
                       </div>
                       <span className="font-display text-xs font-bold text-foreground">{formatEtb(srv.priceEtb)}</span>
                     </button>
@@ -622,8 +622,8 @@ export function Directory() {
 
       {showFilters && (
         <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Filters">
-          <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setShowFilters(false)} aria-label="Close filters" />
-          <div className="absolute inset-y-0 right-0 flex w-[min(22rem,90vw)] flex-col gap-4 overflow-y-auto bg-background p-5 shadow-2xl">
+          <button type="button" className="absolute inset-0 bg-overlay" onClick={() => setShowFilters(false)} aria-label="Close filters" />
+          <div className="absolute inset-y-0 right-0 flex w-[min(22rem,90vw)] flex-col gap-4 overflow-y-auto bg-background p-5 shadow-raised">
             <div className="flex items-center justify-between">
               <p className="font-display text-lg font-bold text-foreground">Filters</p>
               <button type="button" onClick={() => setShowFilters(false)} className="rounded-full p-2 hover:bg-accent" aria-label="Close filters">

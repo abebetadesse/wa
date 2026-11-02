@@ -15,18 +15,18 @@ import {
 type MealType = MealLog["mealType"];
 
 const MEAL_TYPE_LABELS: Record<MealType, { label: string; icon: string; color: string }> = {
-  breakfast: { label: "Breakfast", icon: "🌅", color: "text-amber-400" },
-  lunch: { label: "Lunch", icon: "☀️", color: "text-yellow-400" },
-  dinner: { label: "Dinner", icon: "🌙", color: "text-violet-400" },
-  snack: { label: "Snack", icon: "🍃", color: "text-emerald-400" },
-  coffee_ceremony: { label: "Coffee Ceremony", icon: "☕", color: "text-amber-600" },
+  breakfast: { label: "Breakfast", icon: "🌅", color: "text-gold" },
+  lunch: { label: "Lunch", icon: "☀️", color: "text-gold" },
+  dinner: { label: "Dinner", icon: "🌙", color: "text-plum" },
+  snack: { label: "Snack", icon: "🍃", color: "text-brand" },
+  coffee_ceremony: { label: "Coffee Ceremony", icon: "☕", color: "text-gold" },
 };
 
 const SEVERITY_STYLES = {
-  adequate: { bar: "bg-emerald-500", text: "text-emerald-400", label: "✓ Adequate" },
-  mild_gap: { bar: "bg-amber-500", text: "text-amber-400", label: "~ Mild Gap" },
-  moderate_gap: { bar: "bg-orange-500", text: "text-orange-400", label: "! Moderate Gap" },
-  severe_gap: { bar: "bg-rose-500", text: "text-rose-400", label: "✗ Severe Gap" },
+  adequate: { bar: "bg-brand", text: "text-brand", label: "✓ Adequate" },
+  mild_gap: { bar: "bg-gold-fill", text: "text-gold", label: "~ Mild Gap" },
+  moderate_gap: { bar: "bg-warning", text: "text-warning", label: "! Moderate Gap" },
+  severe_gap: { bar: "bg-danger", text: "text-danger", label: "✗ Severe Gap" },
 };
 
 export default function FoodTrackingView() {
@@ -101,17 +101,17 @@ export default function FoodTrackingView() {
       {/* Header */}
       <div>
         <div className="badge badge-safe mb-2">FoodTrack · Ethiopian EFCT 2025</div>
-        <h2 className="text-xl font-bold text-white">Ethiopian Food Diary & Nutrition Tracker</h2>
-        <p className="text-xs text-slate-400 mt-1">Log meals from the Ethiopian Food Composition Table with bioavailability-adjusted micronutrient tracking.</p>
+        <h2 className="text-xl font-bold text-foreground">Ethiopian Food Diary & Nutrition Tracker</h2>
+        <p className="text-xs text-muted-foreground mt-1">Log meals from the Ethiopian Food Composition Table with bioavailability-adjusted micronutrient tracking.</p>
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 p-1 bg-black/30 rounded-xl border border-white/5 w-fit">
+      <div className="flex gap-1 p-1 bg-sunken/50 rounded-xl border border-border w-fit">
         {(["add", "log", "summary"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === tab ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"}`}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === tab ? "bg-brand text-brand-foreground" : "text-muted-foreground hover:text-brand-foreground"}`}
           >
             {tab === "add" ? "🔍 Add Food" : tab === "log" ? `📋 Meal Log (${allMealLogs.length})` : "📊 Daily Summary"}
           </button>
@@ -129,14 +129,14 @@ export default function FoodTrackingView() {
                   placeholder="Search Ethiopian foods... (e.g., injera, misir, gomen)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-emerald-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-background border border-border text-foreground text-sm outline-none focus:border-brand"
                 />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle">🔍</span>
               </div>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs outline-none focus:border-emerald-500"
+                className="px-3 py-2 rounded-xl bg-background border border-border text-foreground text-xs outline-none focus:border-brand"
               >
                 <option value="all">All Categories</option>
                 <option value="fermented">Fermented</option>
@@ -153,33 +153,33 @@ export default function FoodTrackingView() {
               {searchResults.map((food) => (
                 <div
                   key={food.id}
-                  className="glass-panel p-4 flex items-start justify-between gap-4 cursor-pointer hover:border-emerald-500/30 transition-all"
+                  className="glass-panel p-4 flex items-start justify-between gap-4 cursor-pointer hover:border-brand/30 transition-all"
                   onClick={() => addFoodToMeal(food)}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-white text-sm truncate">{food.name}</span>
+                      <span className="font-semibold text-foreground text-sm truncate">{food.name}</span>
                       {food.nameAmharic && (
-                        <span className="text-xs text-amber-400 font-medium shrink-0">{food.nameAmharic}</span>
+                        <span className="text-xs text-gold font-medium shrink-0">{food.nameAmharic}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="badge badge-safe text-[10px] capitalize">{food.category}</span>
                       {food.bioavailabilityModifiers.fermented && (
-                        <span className="text-[10px] text-emerald-400 font-semibold">🧫 Fermented</span>
+                        <span className="text-[10px] text-brand font-semibold">🧫 Fermented</span>
                       )}
                       {food.wellbeingFlags.slice(0, 2).map((flag: string) => (
-                        <span key={flag} className="text-[10px] text-slate-400 font-mono">{flag}</span>
+                        <span key={flag} className="text-[10px] text-muted-foreground font-mono">{flag}</span>
                       ))}
                     </div>
                     <div className="flex gap-4 mt-2 text-[11px] font-mono">
-                      <span className="text-white font-bold">{food.macros.calories} cal</span>
-                      <span className="text-blue-400">{food.macros.protein}g protein</span>
-                      <span className="text-amber-400">{food.macros.carbohydrates}g carbs</span>
-                      <span className="text-red-400">{food.macros.fat}g fat</span>
+                      <span className="text-foreground font-bold">{food.macros.calories} cal</span>
+                      <span className="text-info">{food.macros.protein}g protein</span>
+                      <span className="text-gold">{food.macros.carbohydrates}g carbs</span>
+                      <span className="text-danger">{food.macros.fat}g fat</span>
                     </div>
                   </div>
-                  <button className="shrink-0 w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all text-lg font-bold flex items-center justify-center">
+                  <button className="shrink-0 w-8 h-8 rounded-lg bg-brand/20 border border-brand/30 text-brand-strong hover:bg-brand hover:text-brand-foreground transition-all text-lg font-bold flex items-center justify-center">
                     +
                   </button>
                 </div>
@@ -190,10 +190,10 @@ export default function FoodTrackingView() {
           {/* Current Meal Builder */}
           <div className="lg:col-span-2 space-y-4">
             <div className="glass-panel p-5">
-              <h3 className="font-bold text-white mb-3">Current Meal</h3>
+              <h3 className="font-bold text-foreground mb-3">Current Meal</h3>
 
               <div className="mb-4">
-                <label className="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-2">Meal Type</label>
+                <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider block mb-2">Meal Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   {(Object.keys(MEAL_TYPE_LABELS) as MealType[]).map((type) => {
                     const info = MEAL_TYPE_LABELS[type];
@@ -201,7 +201,7 @@ export default function FoodTrackingView() {
                       <button
                         key={type}
                         onClick={() => setSelectedMealType(type)}
-                        className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${selectedMealType === type ? "bg-emerald-600/20 border-emerald-500 text-white" : "border-white/10 text-slate-400 hover:border-emerald-500/30"}`}
+                        className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${selectedMealType === type ? "bg-brand/20 border-brand text-foreground" : "border-border text-muted-foreground hover:border-brand/30"}`}
                       >
                         <span>{info.icon}</span>
                         <span>{info.label}</span>
@@ -212,7 +212,7 @@ export default function FoodTrackingView() {
               </div>
 
               {currentMealItems.length === 0 ? (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-subtle">
                   <div className="text-4xl mb-2">🍽️</div>
                   <p className="text-xs">Click foods on the left to add them to your meal</p>
                 </div>
@@ -220,29 +220,29 @@ export default function FoodTrackingView() {
                 <>
                   <div className="space-y-2 mb-4 max-h-[280px] overflow-y-auto">
                     {currentMealItems.map((item) => (
-                      <div key={item.food.id} className="flex items-center gap-3 p-2 rounded-lg bg-black/30 border border-white/5">
+                      <div key={item.food.id} className="flex items-center gap-3 p-2 rounded-lg bg-sunken/50 border border-border">
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-white truncate">{item.food.name}</div>
-                          <div className="text-[10px] text-slate-500">{item.food.servingLabel}</div>
+                          <div className="text-xs font-semibold text-foreground truncate">{item.food.name}</div>
+                          <div className="text-[10px] text-subtle">{item.food.servingLabel}</div>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
-                          <button onClick={() => updateServings(item.food.id, item.servings - 1)} className="w-6 h-6 rounded bg-white/5 text-white text-sm hover:bg-white/10 flex items-center justify-center">−</button>
-                          <span className="text-white text-xs font-bold w-6 text-center">{item.servings}</span>
-                          <button onClick={() => updateServings(item.food.id, item.servings + 1)} className="w-6 h-6 rounded bg-white/5 text-white text-sm hover:bg-white/10 flex items-center justify-center">+</button>
+                          <button onClick={() => updateServings(item.food.id, item.servings - 1)} className="w-6 h-6 rounded bg-foreground/5 text-foreground text-sm hover:bg-foreground/10 flex items-center justify-center">−</button>
+                          <span className="text-foreground text-xs font-bold w-6 text-center">{item.servings}</span>
+                          <button onClick={() => updateServings(item.food.id, item.servings + 1)} className="w-6 h-6 rounded bg-foreground/5 text-foreground text-sm hover:bg-foreground/10 flex items-center justify-center">+</button>
                         </div>
-                        <button onClick={() => removeItem(item.food.id)} className="text-rose-400 hover:text-rose-300 text-xs">✕</button>
+                        <button onClick={() => removeItem(item.food.id)} className="text-danger hover:text-danger text-xs">✕</button>
                       </div>
                     ))}
                   </div>
 
                   {/* Macro summary */}
-                  <div className="p-3 rounded-lg bg-black/30 border border-white/5 mb-4">
-                    <div className="text-xs font-bold text-slate-400 mb-2">Meal Totals</div>
+                  <div className="p-3 rounded-lg bg-sunken/50 border border-border mb-4">
+                    <div className="text-xs font-bold text-muted-foreground mb-2">Meal Totals</div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div><span className="text-slate-400">Calories:</span> <span className="text-white font-bold">{Math.round(currentMealTotals.calories)}</span></div>
-                      <div><span className="text-slate-400">Protein:</span> <span className="text-blue-400 font-bold">{Math.round(currentMealTotals.protein * 10) / 10}g</span></div>
-                      <div><span className="text-slate-400">Carbs:</span> <span className="text-amber-400 font-bold">{Math.round(currentMealTotals.carbs * 10) / 10}g</span></div>
-                      <div><span className="text-slate-400">Fat:</span> <span className="text-red-400 font-bold">{Math.round(currentMealTotals.fat * 10) / 10}g</span></div>
+                      <div><span className="text-muted-foreground">Calories:</span> <span className="text-foreground font-bold">{Math.round(currentMealTotals.calories)}</span></div>
+                      <div><span className="text-muted-foreground">Protein:</span> <span className="text-info font-bold">{Math.round(currentMealTotals.protein * 10) / 10}g</span></div>
+                      <div><span className="text-muted-foreground">Carbs:</span> <span className="text-gold font-bold">{Math.round(currentMealTotals.carbs * 10) / 10}g</span></div>
+                      <div><span className="text-muted-foreground">Fat:</span> <span className="text-danger font-bold">{Math.round(currentMealTotals.fat * 10) / 10}g</span></div>
                     </div>
                   </div>
 
@@ -261,7 +261,7 @@ export default function FoodTrackingView() {
           {allMealLogs.length === 0 ? (
             <div className="glass-panel p-12 text-center">
               <div className="text-5xl mb-4">📋</div>
-              <p className="text-slate-400">No meals logged today. Use the Add Food tab to log your first meal.</p>
+              <p className="text-muted-foreground">No meals logged today. Use the Add Food tab to log your first meal.</p>
             </div>
           ) : (
             allMealLogs.map((log) => {
@@ -272,14 +272,14 @@ export default function FoodTrackingView() {
                     <span className="text-xl">{mealInfo.icon}</span>
                     <div>
                       <span className={`font-bold text-sm ${mealInfo.color}`}>{mealInfo.label}</span>
-                      <span className="text-xs text-slate-500 ml-2">{new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                      <span className="text-xs text-subtle ml-2">{new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     {log.items.map((item, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs py-1 px-2 rounded bg-white/[0.02]">
-                        <span className="text-slate-300">{item.food.name}</span>
-                        <span className="text-slate-500 font-mono">×{item.servings} serving{item.servings > 1 ? "s" : ""}</span>
+                      <div key={i} className="flex items-center justify-between text-xs py-1 px-2 rounded bg-foreground/[0.02]">
+                        <span className="text-soft">{item.food.name}</span>
+                        <span className="text-subtle font-mono">×{item.servings} serving{item.servings > 1 ? "s" : ""}</span>
                       </div>
                     ))}
                   </div>
@@ -295,22 +295,22 @@ export default function FoodTrackingView() {
           {!todaySummary ? (
             <div className="glass-panel p-12 text-center">
               <div className="text-5xl mb-4">📊</div>
-              <p className="text-slate-400">Log meals first to see your daily nutritional summary.</p>
+              <p className="text-muted-foreground">Log meals first to see your daily nutritional summary.</p>
             </div>
           ) : (
             <>
               {/* Macro Overview */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: "Calories", value: Math.round(todaySummary.totalCalories), unit: "kcal", color: "text-white", target: 2000 },
-                  { label: "Protein", value: Math.round(todaySummary.totalProtein), unit: "g", color: "text-blue-400", target: 55 },
-                  { label: "Carbs", value: Math.round(todaySummary.totalCarbs), unit: "g", color: "text-amber-400", target: 260 },
-                  { label: "Fat", value: Math.round(todaySummary.totalFat), unit: "g", color: "text-red-400", target: 65 },
+                  { label: "Calories", value: Math.round(todaySummary.totalCalories), unit: "kcal", color: "text-foreground", target: 2000 },
+                  { label: "Protein", value: Math.round(todaySummary.totalProtein), unit: "g", color: "text-info", target: 55 },
+                  { label: "Carbs", value: Math.round(todaySummary.totalCarbs), unit: "g", color: "text-gold", target: 260 },
+                  { label: "Fat", value: Math.round(todaySummary.totalFat), unit: "g", color: "text-danger", target: 65 },
                 ].map((macro) => (
                   <div key={macro.label} className="glass-panel p-4 text-center">
-                    <div className={`text-2xl font-black ${macro.color}`}>{macro.value}</div>
-                    <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">{macro.label} {macro.unit}</div>
-                    <div className="mt-2 h-1 rounded-full bg-white/5 overflow-hidden">
+                    <div className={`text-2xl font-bold ${macro.color}`}>{macro.value}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">{macro.label} {macro.unit}</div>
+                    <div className="mt-2 h-1 rounded-full bg-foreground/5 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
@@ -319,7 +319,7 @@ export default function FoodTrackingView() {
                         }}
                       />
                     </div>
-                    <div className="text-[10px] text-slate-500 mt-1">{Math.round((macro.value / macro.target) * 100)}% of target</div>
+                    <div className="text-[10px] text-subtle mt-1">{Math.round((macro.value / macro.target) * 100)}% of target</div>
                   </div>
                 ))}
               </div>
@@ -337,36 +337,36 @@ export default function FoodTrackingView() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-black text-white">{todaySummary.ethioAlignmentScore}</span>
+                    <span className="text-lg font-bold text-foreground">{todaySummary.ethioAlignmentScore}</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Ethiopian Food Alignment Score</div>
-                  <p className="text-sm text-white font-semibold">
+                  <div className="text-xs font-bold text-brand uppercase tracking-wider mb-1">Ethiopian Food Alignment Score</div>
+                  <p className="text-sm text-foreground font-semibold">
                     {todaySummary.ethioAlignmentScore >= 70 ? "Excellent — Deeply aligned with Ethiopian nutritional wisdom" :
                       todaySummary.ethioAlignmentScore >= 50 ? "Good — Some traditional practices incorporated" :
                         "Developing — Increase fermented foods, traditional spices, and cultural staples"}
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">Based on EFCT 2025 criteria, fermented food inclusion, and cultural pattern alignment.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Based on EFCT 2025 criteria, fermented food inclusion, and cultural pattern alignment.</p>
                 </div>
               </div>
 
               {/* Micronutrient Gaps */}
               <div className="glass-panel p-5">
-                <h4 className="font-bold text-white mb-4">Micronutrient Status</h4>
+                <h4 className="font-bold text-foreground mb-4">Micronutrient Status</h4>
                 <div className="space-y-3">
                   {todaySummary.micronutrientGaps.map((gap) => {
                     const sev = SEVERITY_STYLES[gap.severity];
                     return (
                       <div key={gap.nutrient}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold text-slate-300">{gap.nutrient}</span>
+                          <span className="text-xs font-semibold text-soft">{gap.nutrient}</span>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono text-slate-400">{gap.achieved} / {gap.target}</span>
+                            <span className="text-xs font-mono text-muted-foreground">{gap.achieved} / {gap.target}</span>
                             <span className={`text-[10px] font-bold ${sev.text}`}>{sev.label}</span>
                           </div>
                         </div>
-                        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-foreground/5 overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${sev.bar}`}
                             style={{ width: `${Math.min(100, gap.percentOfTarget)}%` }}

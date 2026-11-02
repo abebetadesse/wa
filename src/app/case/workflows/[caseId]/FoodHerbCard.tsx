@@ -5,6 +5,7 @@ import { Camera, Leaf, Trash2, Utensils } from "lucide-react";
 import type { OwnerView } from "@/server/cases/views";
 import { apiFetch, errorMessage } from "@/lib/api/client";
 import { Alert, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, ChoiceGroup, Field, Input, Textarea } from "@/components/ui";
+import { assetUrl } from "@/lib/base-path";
 
 type Kind = "meal" | "herb";
 interface Candidate {
@@ -228,7 +229,7 @@ export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (v
                     className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
                       !consent || busy
                         ? "cursor-not-allowed border-border text-muted-foreground opacity-50"
-                        : "border-brand/40 bg-brand/10 text-brand hover:bg-brand/20"
+                        : "border-brand/40 bg-brand/10 text-brand-strong hover:bg-brand/20"
                     }`}
                   >
                     <Camera className="size-4" aria-hidden="true" />
@@ -246,7 +247,7 @@ export function FoodHerbCard({ view, onChange }: { view: OwnerView; onChange: (v
                   {preview && (
                     <div className="flex items-end gap-3">
                       {/* eslint-disable-next-line @next/next/no-img-element -- a local, in-memory preview */}
-                      <img src={preview} alt="Your photo, shown only on this device" className="max-h-40 rounded-lg border border-border" />
+                      <img src={assetUrl(preview)} alt="Your photo, shown only on this device" className="max-h-40 rounded-lg border border-border" />
                       <Button variant="ghost" size="sm" onClick={clearPhoto}>Remove photo</Button>
                     </div>
                   )}

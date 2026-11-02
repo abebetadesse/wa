@@ -38,6 +38,7 @@ import {
   type FeaturePin,
   type LineTrace,
 } from "@/lib/hexacore/HexacoreVisionEngine";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 interface HexacoreCameraScannerProps {
   initialType?: BodyScanType;
@@ -287,7 +288,7 @@ export default function HexacoreCameraScanner({
             else ctx.lineTo(px, py);
           });
           ctx.closePath();
-          ctx.fillStyle = zone.color.startsWith("#") ? `${zone.color}33` : "rgba(212,175,55,0.18)";
+          ctx.fillStyle = zone.color.startsWith("#") ? `${zone.color}33` : "color-mix(in srgb, var(--gold-fill) 18%, transparent)";
           ctx.fill();
           ctx.strokeStyle = zone.color;
           ctx.lineWidth = Math.max(2, Math.round(w * 0.003));
@@ -323,25 +324,25 @@ export default function HexacoreCameraScanner({
           // Outer glowing ring
           ctx.beginPath();
           ctx.arc(px, py, w * 0.025, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(212, 175, 55, 0.35)";
+          ctx.fillStyle = "color-mix(in srgb, var(--gold-fill) 35%, transparent)";
           ctx.fill();
-          ctx.strokeStyle = "#D4AF37";
+          ctx.strokeStyle = "var(--gold)";
           ctx.lineWidth = 2;
           ctx.stroke();
 
           // Center solid dot
           ctx.beginPath();
           ctx.arc(px, py, w * 0.01, 0, Math.PI * 2);
-          ctx.fillStyle = "#FFFFFF";
+          ctx.fillStyle = "var(--text-primary)";
           ctx.fill();
 
           // Text badge
           ctx.font = `bold ${Math.round(w * 0.018)}px sans-serif`;
-          ctx.fillStyle = "rgba(13, 19, 34, 0.85)";
+          ctx.fillStyle = "var(--bg-card)";
           const text = pin.titleEn;
           const textW = ctx.measureText(text).width;
           ctx.fillRect(px + 12, py - 14, textW + 14, 22);
-          ctx.strokeStyle = "rgba(212, 175, 55, 0.6)";
+          ctx.strokeStyle = "color-mix(in srgb, var(--gold-fill) 60%, transparent)";
           ctx.strokeRect(px + 12, py - 14, textW + 14, 22);
 
           ctx.fillStyle = "#FFD700";
@@ -350,14 +351,14 @@ export default function HexacoreCameraScanner({
       }
 
       // 6. Draw HUD Watermark & Metrics Header
-      ctx.fillStyle = "rgba(13, 19, 34, 0.88)";
+      ctx.fillStyle = "var(--bg-card)";
       ctx.fillRect(16, 16, Math.min(w - 32, 420), 86);
-      ctx.strokeStyle = "rgba(212, 175, 55, 0.5)";
+      ctx.strokeStyle = "color-mix(in srgb, var(--gold-fill) 50%, transparent)";
       ctx.lineWidth = 1.5;
       ctx.strokeRect(16, 16, Math.min(w - 32, 420), 86);
 
       ctx.font = `bold ${Math.round(w * 0.022)}px serif`;
-      ctx.fillStyle = "#D4AF37";
+      ctx.fillStyle = "var(--gold)";
       ctx.fillText(
         `HEXACORE BIO-VISION • ${scanType.toUpperCase()} READING`,
         30,
@@ -371,7 +372,7 @@ export default function HexacoreCameraScanner({
         30,
         68
       );
-      ctx.fillStyle = "#94A3B8";
+      ctx.fillStyle = "var(--text-muted)";
       ctx.fillText(`Timestamp: ${new Date().toISOString().slice(0, 16)} • Domain A Reflective`, 30, 88);
 
       // Trigger download
@@ -385,21 +386,21 @@ export default function HexacoreCameraScanner({
 
   return (
     <div
-      className={`rounded-3xl border border-amber-500/30 overflow-hidden shadow-2xl ${className}`}
+      className={`rounded-3xl border border-gold/30 overflow-hidden shadow-raised ${className}`}
       style={{
-        background: "radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 60%), #0A0F1D",
+        background: "radial-gradient(circle at top right, color-mix(in srgb, var(--gold-fill) 8%, transparent), transparent 60%), var(--bg-card)",
       }}
     >
       {/* ── TOP CONTROL HEADER ───────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-white/10 bg-black/40 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border bg-muted/60">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/40 bg-gold/10 text-gold-strong text-xs font-bold uppercase tracking-wider">
             <Sparkles className="h-3.5 w-3.5" />
             <span>{lang === "en" ? "Somatic Bio-Vision" : "የሰውነት ባዮ-ራዕይ"}</span>
           </div>
 
           {/* Scan Type Selector */}
-          <div className="flex items-center rounded-xl border border-white/15 bg-white/[0.04] p-1">
+          <div className="flex items-center rounded-xl border border-border bg-foreground/[0.04] p-1">
             <button
               onClick={() => {
                 setScanType("tongue");
@@ -408,11 +409,11 @@ export default function HexacoreCameraScanner({
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                 scanType === "tongue"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-md"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-gradient-to-r from-gold-fill to-gold-fill text-gold-foreground shadow-md"
+                  : "text-muted-foreground hover:text-gold-foreground"
               }`}
             >
-              {lang === "en" ? "👅 Tongue Reading" : "👅 የአንደበት ቅኝት"}
+              {lang === "en" ? "�� Tongue Reading" : "�� የአንደበት ቅኝት"}
             </button>
             <button
               onClick={() => {
@@ -422,8 +423,8 @@ export default function HexacoreCameraScanner({
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                 scanType === "palm"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-md"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-gradient-to-r from-gold-fill to-gold-fill text-gold-foreground shadow-md"
+                  : "text-muted-foreground hover:text-gold-foreground"
               }`}
             >
               {lang === "en" ? "✋ Palm Reading" : "✋ የመዳፍ ቅኝት"}
@@ -435,7 +436,7 @@ export default function HexacoreCameraScanner({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLang(lang === "en" ? "am" : "en")}
-            className="rounded-lg px-2.5 py-1 text-xs font-bold border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 transition"
+            className="rounded-lg px-2.5 py-1 text-xs font-bold border border-gold/30 text-gold-strong hover:bg-gold/10 transition"
           >
             {lang === "en" ? "አማርኛ" : "English"}
           </button>
@@ -443,7 +444,7 @@ export default function HexacoreCameraScanner({
           {capturedImage && (
             <button
               onClick={handleRetake}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold bg-white/10 text-white hover:bg-white/20 transition"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold bg-foreground/10 text-foreground hover:bg-foreground/20 transition"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>{lang === "en" ? "New Scan" : "አዲስ ቅኝት"}</span>
@@ -455,10 +456,10 @@ export default function HexacoreCameraScanner({
       {/* ── MAIN WORKSPACE: CAMERA / ANNOTATED IMAGE ──────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
         {/* Left Column: Visual Canvas Area (7 cols on lg) */}
-        <div className="lg:col-span-7 relative bg-black/60 min-h-[420px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
+        <div className="lg:col-span-7 relative bg-sunken/80 min-h-[420px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-border">
           {/* A. Live Video Stream */}
           {!capturedImage && (
-            <div className="relative w-full h-full min-h-[440px] flex items-center justify-center bg-black">
+            <div className="relative w-full h-full min-h-[440px] flex items-center justify-center bg-sunken/80">
               {isStreaming ? (
                 <>
                   <video
@@ -474,28 +475,28 @@ export default function HexacoreCameraScanner({
                   <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                     {scanType === "tongue" ? (
                       /* Tongue oval guide */
-                      <div className="relative w-56 h-72 rounded-[45%] border-2 border-dashed border-amber-400/70 shadow-[0_0_25px_rgba(212,175,55,0.4)] flex flex-col items-center justify-between p-3 animate-pulse">
-                        <span className="text-[10px] font-bold text-amber-300 bg-black/70 px-2 py-0.5 rounded-full mt-2">
+                      <div className="relative w-56 h-72 rounded-[45%] border-2 border-dashed border-gold/70 shadow-panel flex flex-col items-center justify-between p-3 animate-pulse">
+                        <span className="text-[10px] font-bold text-gold bg-sunken/80 px-2 py-0.5 rounded-full mt-2">
                           {lang === "en" ? "Align Tongue Apex Here" : "የአንደበትን ጫፍ እዚህ አመሳስሉ"}
                         </span>
-                        <div className="w-12 h-0.5 bg-amber-400/60" />
-                        <span className="text-[10px] font-bold text-amber-300 bg-black/70 px-2 py-0.5 rounded-full mb-2">
+                        <div className="w-12 h-0.5 bg-gold-fill/60" />
+                        <span className="text-[10px] font-bold text-gold bg-sunken/80 px-2 py-0.5 rounded-full mb-2">
                           {lang === "en" ? "Root Zone" : "የሥር ክፍል"}
                         </span>
                       </div>
                     ) : (
                       /* Palm hand guide */
-                      <div className="relative w-64 h-80 rounded-3xl border-2 border-dashed border-cyan-400/70 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col items-center justify-between p-3 animate-pulse">
-                        <span className="text-[10px] font-bold text-cyan-300 bg-black/70 px-2 py-0.5 rounded-full mt-2">
+                      <div className="relative w-64 h-80 rounded-3xl border-2 border-dashed border-gold-fill/80 shadow-panel flex flex-col items-center justify-between p-3 animate-pulse">
+                        <span className="text-[10px] font-bold text-info bg-sunken/80 px-2 py-0.5 rounded-full mt-2">
                           {lang === "en" ? "Fingers Extended Top" : "ጣቶችዎን ወደ ላይ ዘርጉ"}
                         </span>
                         <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-                          <span className="text-[10px] font-bold text-cyan-200">
+                          <div className="w-2.5 h-2.5 rounded-full bg-info animate-ping" />
+                          <span className="text-[10px] font-bold text-info-strong">
                             {lang === "en" ? "Keep Flat & Illuminated" : "መዳፍዎን በብርሃን ያሳዩ"}
                           </span>
                         </div>
-                        <span className="text-[10px] font-bold text-cyan-300 bg-black/70 px-2 py-0.5 rounded-full mb-2">
+                        <span className="text-[10px] font-bold text-info bg-sunken/80 px-2 py-0.5 rounded-full mb-2">
                           {lang === "en" ? "Wrist Base" : "የእጅ አንጓ"}
                         </span>
                       </div>
@@ -506,7 +507,7 @@ export default function HexacoreCameraScanner({
                   <div className="absolute bottom-5 inset-x-0 flex items-center justify-center gap-4 z-20 px-4">
                     <button
                       onClick={toggleCameraFacing}
-                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition border border-white/15"
+                      className="p-3 rounded-full bg-foreground/10 hover:bg-foreground/20 text-foreground  transition border border-border"
                       title={lang === "en" ? "Flip camera" : "ካሜራ ቀይር"}
                     >
                       <FlipHorizontal className="h-5 w-5" />
@@ -514,8 +515,8 @@ export default function HexacoreCameraScanner({
 
                     <button
                       onClick={handleCaptureSnapshot}
-                      className="flex items-center gap-2 px-6 py-3.5 rounded-full font-black text-sm text-black shadow-xl transition transform active:scale-95"
-                      style={{ background: "linear-gradient(135deg, #D4AF37, #10B981)" }}
+                      className="flex items-center gap-2 px-6 py-3.5 rounded-full font-bold text-sm text-foreground shadow-panel transition transform active:scale-95"
+                      style={{ background: "var(--gold-fill)" }}
                     >
                       <Camera className="h-5 w-5" />
                       <span>{lang === "en" ? "Capture & Analyze" : "ቅረጽና ተንትን"}</span>
@@ -523,7 +524,7 @@ export default function HexacoreCameraScanner({
 
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition border border-white/15"
+                      className="p-3 rounded-full bg-foreground/10 hover:bg-foreground/20 text-foreground  transition border border-border"
                       title={lang === "en" ? "Upload from device" : "ፎቶ ይጫኑ"}
                     >
                       <Upload className="h-5 w-5" />
@@ -540,14 +541,14 @@ export default function HexacoreCameraScanner({
               ) : (
                 /* Camera Error / Standby Screen */
                 <div className="p-8 text-center max-w-sm space-y-4">
-                  <div className="mx-auto w-14 h-14 rounded-full border border-amber-500/40 bg-amber-500/10 flex items-center justify-center text-amber-400">
+                  <div className="mx-auto w-14 h-14 rounded-full border border-gold/40 bg-gold/10 flex items-center justify-center text-gold-strong">
                     <Camera className="h-7 w-7" />
                   </div>
                   <div>
-                    <h3 className="text-white font-bold text-base">
+                    <h3 className="text-foreground font-bold text-base">
                       {lang === "en" ? "Camera Ready" : "ካሜራ ዝግጁ ነው"}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {cameraError ||
                         (lang === "en"
                           ? "Activate your device camera or upload a clear, well-lit photo of your tongue or palm."
@@ -557,13 +558,13 @@ export default function HexacoreCameraScanner({
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
                     <button
                       onClick={() => startCameraStream(cameraFacing)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold text-black bg-amber-400 hover:bg-amber-300 transition"
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold text-gold-foreground bg-gold-fill hover:bg-gold-fill transition"
                     >
                       {lang === "en" ? "Enable Camera" : "ካሜራ አስጀምር"}
                     </button>
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 transition"
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-semibold text-foreground bg-foreground/10 hover:bg-foreground/20 transition"
                     >
                       {lang === "en" ? "Upload Photo" : "ፎቶ ጫን"}
                     </button>
@@ -578,19 +579,19 @@ export default function HexacoreCameraScanner({
             <div className="relative w-full h-full flex flex-col items-center justify-center p-2">
               {analyzing ? (
                 <div className="p-12 text-center space-y-3">
-                  <RefreshCw className="h-10 w-10 text-amber-400 animate-spin mx-auto" />
-                  <p className="text-sm font-bold text-amber-300 animate-pulse">
+                  <RefreshCw className="h-10 w-10 text-gold animate-spin mx-auto" />
+                  <p className="text-sm font-bold text-gold animate-pulse">
                     {lang === "en"
                       ? "Analyzing chromatic spectrum & biometric contours..."
                       : "የቀለም ስፔክትረምና የባዮሜትሪክ መስመሮችን እያጠናን ነው..."}
                   </p>
                 </div>
               ) : (
-                <div className="relative w-full max-w-[560px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/20 group">
+                <div className="relative w-full max-w-[560px] aspect-square rounded-2xl overflow-hidden shadow-raised border border-border-strong group">
                   {/* Base Photo */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={capturedImage}
+                    src={assetUrl(capturedImage)}
                     alt="Captured Scan"
                     className="w-full h-full object-cover select-none"
                   />
@@ -663,15 +664,15 @@ export default function HexacoreCameraScanner({
                             {/* Pulsing ring */}
                             <span
                               className={`absolute w-8 h-8 rounded-full animate-ping opacity-75 ${
-                                isSelected ? "bg-amber-400" : "bg-cyan-400"
+                                isSelected ? "bg-gold-fill" : "bg-info"
                               }`}
                             />
                             {/* Inner circle */}
                             <div
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-black shadow-lg transition-transform ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-bold shadow-panel transition-transform ${
                                 isSelected
-                                  ? "bg-amber-400 border-white text-black scale-125"
-                                  : "bg-slate-900 border-amber-400 text-amber-300 hover:scale-110"
+                                  ? "bg-gold-fill border-border-strong text-gold-foreground scale-125"
+                                  : "bg-card border-gold text-gold hover:scale-110"
                               }`}
                             >
                               !
@@ -680,10 +681,10 @@ export default function HexacoreCameraScanner({
 
                           {/* Hover / Active Pin Label */}
                           <div
-                            className={`absolute left-6 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg px-2.5 py-1 text-[11px] font-bold shadow-xl border backdrop-blur-md transition-all ${
+                            className={`absolute left-6 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg px-2.5 py-1 text-[11px] font-bold shadow-panel border  transition-all ${
                               isSelected
-                                ? "bg-black/90 border-amber-400 text-amber-300 opacity-100 scale-100 z-30"
-                                : "bg-black/75 border-white/20 text-white opacity-0 group-hover/pin:opacity-100 scale-95 group-hover/pin:scale-100"
+                                ? "theme-dark bg-black/90 border-gold text-gold opacity-100 scale-100 z-30"
+                                : "theme-dark bg-black/75 border-border-strong text-white opacity-0 group-hover/pin:opacity-100 scale-95 group-hover/pin:scale-100"
                             }`}
                           >
                             <span>{lang === "en" ? pin.titleEn : pin.titleAm}</span>
@@ -694,25 +695,25 @@ export default function HexacoreCameraScanner({
 
                   {/* 4. On-Image Digital HUD Watermark */}
                   {analysisResult && (
-                    <div className="absolute top-3 left-3 z-10 rounded-xl border border-white/20 bg-black/75 backdrop-blur-md px-3 py-2 text-left pointer-events-none">
+                    <div className="theme-dark absolute top-3 left-3 z-10 rounded-xl border border-border-strong bg-black/75  px-3 py-2 text-left pointer-events-none">
                       <div className="flex items-center gap-2">
-                        <Activity className="h-3.5 w-3.5 text-amber-400" />
-                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">
+                        <Activity className="h-3.5 w-3.5 text-gold" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gold">
                           {lang === "en" ? "Vitality Matrix" : "የሕይወት ማትሪክስ"}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-xs">
-                        <span className="text-white font-bold">
+                        <span className="text-foreground font-bold">
                           {analysisResult.hud.vitalityScore}% {lang === "en" ? "Vitality" : "ጽናት"}
                         </span>
-                        <span className="text-slate-400">|</span>
+                        <span className="text-muted-foreground">|</span>
                         <span
                           className={`font-semibold ${
                             analysisResult.hud.heatColdBalance > 15
-                              ? "text-red-400"
+                              ? "text-danger"
                               : analysisResult.hud.heatColdBalance < -15
-                              ? "text-sky-400"
-                              : "text-emerald-400"
+                              ? "text-info"
+                              : "text-brand"
                           }`}
                         >
                           {analysisResult.hud.heatColdBalance > 0
@@ -724,7 +725,7 @@ export default function HexacoreCameraScanner({
                   )}
 
                   {/* 5. On-Image Bottom Overlay Toolbar */}
-                  <div className="absolute bottom-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-black/80 backdrop-blur-md border border-white/15">
+                  <div className="theme-dark absolute bottom-3 inset-x-3 z-20 flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-black/80  border border-border">
                     {/* Mode Toggles */}
                     <div className="flex items-center gap-1">
                       {(
@@ -741,8 +742,8 @@ export default function HexacoreCameraScanner({
                           onClick={() => setOverlayMode(m.id)}
                           className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition ${
                             overlayMode === m.id
-                              ? "bg-amber-400 text-black shadow-sm"
-                              : "text-slate-300 hover:bg-white/10"
+                              ? "bg-gold-fill text-gold-foreground shadow-sm"
+                              : "text-soft hover:bg-foreground/10"
                           }`}
                         >
                           {m.label}
@@ -753,7 +754,7 @@ export default function HexacoreCameraScanner({
                     {/* Download Annotated PNG */}
                     <button
                       onClick={handleDownloadAnnotatedImage}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-amber-300 border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition"
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-gold-strong border border-gold/40 bg-gold/10 hover:bg-gold/20 transition"
                       title={lang === "en" ? "Download image with all overlays" : "ምስሉን ከትንታኔው ጋር ያውርዱ"}
                     >
                       <Download className="h-3.5 w-3.5" />
@@ -769,34 +770,34 @@ export default function HexacoreCameraScanner({
         </div>
 
         {/* Right Column: In-Depth Diagnostic Findings (5 cols on lg) */}
-        <div className="lg:col-span-5 p-5 space-y-5 overflow-y-auto max-h-[580px] bg-white/[0.01]">
+        <div className="lg:col-span-5 p-5 space-y-5 overflow-y-auto max-h-[580px] bg-foreground/[0.01]">
           {analysisResult ? (
             <>
               {/* Active Selected Pin / Zone Inspector Card */}
               {activePin && (
-                <div className="rounded-2xl border border-amber-500/40 bg-amber-500/[0.08] p-4 space-y-2">
+                <div className="rounded-2xl border border-gold/40 bg-gold/[0.08] p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gold">
                       {lang === "en" ? "Direct Feature Callout" : "የተለየ ምልክት ምርመራ"}
                     </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gold/20 text-gold-strong border border-gold/30">
                       {activePin.core} Core
                     </span>
                   </div>
-                  <h4 className="text-white font-bold text-sm">
+                  <h4 className="text-foreground font-bold text-sm">
                     {lang === "en" ? activePin.titleEn : activePin.titleAm}
                   </h4>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-soft leading-relaxed">
                     {lang === "en" ? activePin.descriptionEn : activePin.descriptionAm}
                   </p>
-                  <div className="text-[11px] text-amber-300/90 pt-1 font-medium italic">
+                  <div className="text-[11px] text-gold pt-1 font-medium italic">
                     {lang === "en" ? activePin.traditionalSign : activePin.traditionalSignAm}
                   </div>
                 </div>
               )}
 
               {/* Navigation Tabs for Detailed Results */}
-              <div className="flex items-center gap-1 border-b border-white/10 pb-2">
+              <div className="flex items-center gap-1 border-b border-border pb-2">
                 {(
                   [
                     { id: "findings", label: lang === "en" ? "Biometrics" : "ባዮሜትሪክስ" },
@@ -811,8 +812,8 @@ export default function HexacoreCameraScanner({
                     onClick={() => setActiveTab(t.id)}
                     className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition text-center ${
                       activeTab === t.id
-                        ? "bg-white/10 text-amber-300 border border-amber-500/30"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-foreground/10 text-gold border border-gold/30"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {t.label}
@@ -824,26 +825,26 @@ export default function HexacoreCameraScanner({
               {activeTab === "findings" && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2 text-center">
-                    <div className="p-3 rounded-xl border border-white/10 bg-white/[0.02]">
-                      <div className="text-[10px] text-slate-400 uppercase tracking-wide">
+                    <div className="p-3 rounded-xl border border-border bg-foreground/[0.02]">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
                         {lang === "en" ? "Vitality Reserve" : "የሕይወት ጽናት"}
                       </div>
-                      <div className="text-xl font-black text-amber-400 mt-0.5">
+                      <div className="text-xl font-bold text-gold mt-0.5">
                         {analysisResult.hud.vitalityScore}%
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl border border-white/10 bg-white/[0.02]">
-                      <div className="text-[10px] text-slate-400 uppercase tracking-wide">
+                    <div className="p-3 rounded-xl border border-border bg-foreground/[0.02]">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
                         {lang === "en" ? "Dominant Core" : "ቀዳሚ ማዕከል"}
                       </div>
-                      <div className="text-sm font-bold text-emerald-400 mt-1">
+                      <div className="text-sm font-bold text-brand mt-1">
                         {lang === "en" ? analysisResult.hud.dominantCore : analysisResult.hud.dominantCoreAm}
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="text-xs font-bold text-slate-300">
+                    <div className="text-xs font-bold text-soft">
                       {lang === "en" ? "Analyzed Somatic Zones" : "የተመረመሩ የአካል ክፍሎች"}
                     </div>
                     {analysisResult.zones.map((zone) => (
@@ -852,12 +853,12 @@ export default function HexacoreCameraScanner({
                         onClick={() => setActiveZone(zone)}
                         className={`p-3 rounded-xl border transition cursor-pointer text-left ${
                           activeZone?.id === zone.id
-                            ? "border-amber-400/80 bg-amber-500/10"
-                            : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
+                            ? "border-gold/80 bg-gold/10"
+                            : "border-border bg-foreground/[0.02] hover:bg-foreground/[0.04]"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-xs text-white">
+                          <span className="font-bold text-xs text-foreground">
                             {lang === "en" ? zone.name : zone.nameAm}
                           </span>
                           <span
@@ -870,7 +871,7 @@ export default function HexacoreCameraScanner({
                             {zone.status}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                        <p className="text-[11px] text-soft leading-relaxed">
                           {lang === "en" ? zone.readingEn : zone.readingAm}
                         </p>
                       </div>
@@ -882,7 +883,7 @@ export default function HexacoreCameraScanner({
               {/* TAB 2: 6-CORE RADAR IMPACT */}
               {activeTab === "radar" && (
                 <div className="space-y-4">
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-soft leading-relaxed">
                     {lang === "en"
                       ? "Visual features directly calibrate your dynamic 6-core energetic resonance:"
                       : "የአካል ምልክቶቹ በቀጥታ የ6ቱን ማዕከላት ኃይል ሚዛን ያመለክታሉ፡"}
@@ -896,19 +897,19 @@ export default function HexacoreCameraScanner({
                         { key: "Creation" as const, label: "Creation (ፍጥረት)", color: "#EC4899" },
                         { key: "Peace" as const, label: "Peace (ዕርቅ)", color: "#6366F1" },
                         { key: "Spirit" as const, label: "Spirit (መንፈስ)", color: "#EAB308" },
-                        { key: "Order" as const, label: "Order (ሥርዓት)", color: "#10B981" },
+                        { key: "Order" as const, label: "Order (ሥርዓት)", color: "var(--brand)" },
                       ] as const
                     ).map(({ key, label, color }) => {
                       const score = analysisResult.hexacoreRadar[key];
                       return (
                         <div key={key} className="space-y-1">
                           <div className="flex justify-between text-xs font-semibold">
-                            <span className="text-slate-300">{label}</span>
+                            <span className="text-soft">{label}</span>
                             <span className="font-bold" style={{ color }}>
                               {score}%
                             </span>
                           </div>
-                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                          <div className="w-full h-2 rounded-full bg-foreground/10 overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-700"
                               style={{ width: `${score}%`, backgroundColor: color }}
@@ -924,40 +925,40 @@ export default function HexacoreCameraScanner({
               {/* TAB 3: BOTANICAL PRESCRIPTION */}
               {activeTab === "botanical" && (
                 <div className="space-y-3">
-                  <div className="p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] space-y-2">
+                  <div className="p-4 rounded-2xl border border-brand/30 bg-brand/[0.06] space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-brand uppercase tracking-wider">
                         {lang === "en" ? "Custom Botanical Formulation" : "የባህላዊ ዕፅዋት ቀመር"}
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-400">
+                      <span className="text-[10px] font-semibold text-muted-foreground">
                         {analysisResult.botanical.targetCore}
                       </span>
                     </div>
 
-                    <h4 className="text-base font-black text-white">
+                    <h4 className="text-base font-bold text-foreground">
                       {lang === "en"
                         ? analysisResult.botanical.primaryHerb
                         : analysisResult.botanical.primaryHerbAm}
                     </h4>
-                    <p className="text-[11px] text-slate-400 italic">
+                    <p className="text-[11px] text-muted-foreground italic">
                       {analysisResult.botanical.scientificName}
                     </p>
 
-                    <div className="text-xs text-slate-300 pt-1 leading-relaxed">
+                    <div className="text-xs text-soft pt-1 leading-relaxed">
                       <strong>{lang === "en" ? "Preparation: " : "አዘገጃጀት፡ "}</strong>
                       {lang === "en"
                         ? analysisResult.botanical.preparation
                         : analysisResult.botanical.preparationAm}
                     </div>
 
-                    <div className="text-xs text-emerald-200/90 leading-relaxed">
+                    <div className="text-xs text-brand-strong leading-relaxed">
                       <strong>{lang === "en" ? "Action: " : "ጥቅም፡ "}</strong>
                       {lang === "en"
                         ? analysisResult.botanical.actionEn
                         : analysisResult.botanical.actionAm}
                     </div>
 
-                    <div className="text-[10px] text-amber-300/80 pt-1">
+                    <div className="text-[10px] text-gold pt-1">
                       ⚠️ {analysisResult.botanical.safetyNote}
                     </div>
                   </div>
@@ -967,22 +968,22 @@ export default function HexacoreCameraScanner({
               {/* TAB 4: PRACTICES & FREQUENCY */}
               {activeTab === "practices" && (
                 <div className="space-y-3">
-                  <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/[0.05] flex items-center justify-between">
+                  <div className="p-3.5 rounded-xl border border-gold/30 bg-gold/[0.05] flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wide">
+                      <div className="text-[10px] font-bold text-gold uppercase tracking-wide">
                         {lang === "en" ? "Acoustic Tuning Frequency" : "የድምፅ ፍሪኩዌንሲ ቃና"}
                       </div>
-                      <div className="text-sm font-bold text-white mt-0.5">
+                      <div className="text-sm font-bold text-foreground mt-0.5">
                         {analysisResult.solfeggioTitle}
                       </div>
                     </div>
-                    <div className="text-xl font-black text-amber-300">
+                    <div className="text-xl font-bold text-gold">
                       {analysisResult.solfeggioHz} Hz
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="text-xs font-bold text-slate-300">
+                    <div className="text-xs font-bold text-soft">
                       {lang === "en" ? "Daily Somatic Practices" : "የዕለት ተዕለት ልምምዶች"}
                     </div>
                     {(lang === "en"
@@ -991,9 +992,9 @@ export default function HexacoreCameraScanner({
                     ).map((guide, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-2 p-2.5 rounded-xl border border-white/10 bg-white/[0.02] text-xs text-slate-300"
+                        className="flex items-start gap-2 p-2.5 rounded-xl border border-border bg-foreground/[0.02] text-xs text-soft"
                       >
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
                         <span>{guide}</span>
                       </div>
                     ))}
@@ -1005,21 +1006,21 @@ export default function HexacoreCameraScanner({
               {activeTab === "strands" && (
                 <div className="space-y-4">
                   {/* Knowledge Admin Portal Link & Fast Export Action Bar */}
-                  <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 space-y-2.5">
+                  <div className="p-3.5 rounded-xl border border-gold/30 bg-gold/10 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-bold text-xs text-amber-200">
-                        <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-gold-strong">
+                        <Sparkles className="h-3.5 w-3.5 text-gold" />
                         <span>
                           {lang === "en"
                             ? "Epistemic Knowledge Base Integration"
                             : "የእውቀት ማዕከል ግንኙነት"}
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/40 border border-amber-400/30 text-amber-300">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sunken/80 border border-gold/30 text-gold">
                         http://localhost:5500/admin/knowledge
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                    <p className="text-[11px] text-soft leading-relaxed">
                       {lang === "en"
                         ? "Hexacore maps this somatic reading across 11 multidisciplinary knowledge strands. You can view, export, or ingest these findings directly into the local Knowledge Governance portal."
                         : "ይህ ስካነር ንባቡን በ11ቱ ዘርፎች (Domain A ባዮሜዲካል እና Domain B ባህላዊ አውደ ነገሥት) ያገናኛል።"}
@@ -1030,7 +1031,7 @@ export default function HexacoreCameraScanner({
                         href="http://localhost:5500/admin/knowledge"
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg border border-amber-400/40 bg-amber-400/20 hover:bg-amber-400/30 text-amber-100 text-xs font-bold transition flex items-center gap-1"
+                        className="px-2.5 py-1.5 rounded-lg border border-gold/40 bg-gold/20 hover:bg-gold/30 text-gold-strong text-xs font-bold transition flex items-center gap-1"
                       >
                         <ExternalLink className="h-3 w-3" />
                         <span>
@@ -1041,16 +1042,16 @@ export default function HexacoreCameraScanner({
                       </a>
 
                       <a
-                        href="/api/admin/knowledge/export/strands?download=true"
-                        className="px-2.5 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-xs font-bold transition flex items-center gap-1"
+                        href={withBasePath("/api/admin/knowledge/export/strands?download=true")}
+                        className="px-2.5 py-1.5 rounded-lg border border-brand/40 bg-brand/20 hover:bg-brand/30 text-brand-strong text-xs font-bold transition flex items-center gap-1"
                       >
                         <Download className="h-3 w-3" />
                         <span>JSON</span>
                       </a>
 
                       <a
-                        href="/api/admin/knowledge/export/strands?format=csv"
-                        className="px-2.5 py-1.5 rounded-lg border border-sky-500/40 bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 text-xs font-bold transition flex items-center gap-1"
+                        href={withBasePath("/api/admin/knowledge/export/strands?format=csv")}
+                        className="px-2.5 py-1.5 rounded-lg border border-info/40 bg-info/20 hover:bg-info/30 text-info-strong text-xs font-bold transition flex items-center gap-1"
                       >
                         <Download className="h-3 w-3" />
                         <span>CSV</span>
@@ -1066,12 +1067,12 @@ export default function HexacoreCameraScanner({
                             setTimeout(() => setCopiedPayload(false), 3000);
                           }
                         }}
-                        className="px-2.5 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition flex items-center gap-1"
+                        className="px-2.5 py-1.5 rounded-lg border border-border-strong bg-foreground/10 hover:bg-foreground/15 text-foreground text-xs font-bold transition flex items-center gap-1"
                       >
                         {copiedPayload ? (
                           <>
-                            <Check className="h-3 w-3 text-emerald-400" />
-                            <span className="text-emerald-300">
+                            <Check className="h-3 w-3 text-brand" />
+                            <span className="text-brand">
                               {lang === "en" ? "Copied JSON!" : "ኮፒ ተደርጓል!"}
                             </span>
                           </>
@@ -1098,23 +1099,23 @@ export default function HexacoreCameraScanner({
                           key={strand.key}
                           className={`p-3 rounded-xl border transition ${
                             isActive
-                              ? "border-emerald-500/40 bg-emerald-950/20"
-                              : "border-white/10 bg-white/[0.02]"
+                              ? "border-brand/40 bg-brand-soft"
+                              : "border-border bg-foreground/[0.02]"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-bold text-white">
+                                <span className="text-xs font-bold text-foreground">
                                   {lang === "en" ? strand.name : strand.nameAm}
                                 </span>
                                 {isActive && (
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold">
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-brand/20 border border-brand/40 text-brand-strong font-semibold">
                                     {lang === "en" ? "Active in Scan" : "ተግባራዊ"}
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                              <p className="text-[11px] text-soft mt-1 leading-snug">
                                 {lang === "en" ? strand.description : strand.descriptionAm}
                               </p>
                             </div>
@@ -1123,13 +1124,13 @@ export default function HexacoreCameraScanner({
                               <span
                                 className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
                                   strand.domain === "A"
-                                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                                    : "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                                    ? "bg-brand/10 text-brand-strong border-brand/30"
+                                    : "bg-plum/10 text-plum-strong border-plum/30"
                                 }`}
                               >
                                 Domain {strand.domain}
                               </span>
-                              <span className="text-[9px] uppercase tracking-wider text-slate-400">
+                              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
                                 {strand.tier}
                               </span>
                             </div>
@@ -1139,7 +1140,7 @@ export default function HexacoreCameraScanner({
                             {strand.categories.map((c, i) => (
                               <span
                                 key={i}
-                                className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-slate-400"
+                                className="text-[9px] px-1.5 py-0.5 rounded bg-foreground/5 border border-border text-muted-foreground"
                               >
                                 {c}
                               </span>
@@ -1153,9 +1154,9 @@ export default function HexacoreCameraScanner({
               )}
 
               {/* Domain A / B Safety Notice */}
-              <div className="p-3 rounded-xl border border-white/10 bg-black/40 text-[10px] text-slate-400 space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-slate-300">
-                  <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
+              <div className="p-3 rounded-xl border border-border bg-sunken/80 text-[10px] text-muted-foreground space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-soft">
+                  <ShieldAlert className="h-3.5 w-3.5 text-gold" />
                   <span>{lang === "en" ? "Domain A & B Safety Notice" : "የደህንነትና የሕግ ማስታወሻ"}</span>
                 </div>
                 <p>{lang === "en" ? analysisResult.disclaimer.en : analysisResult.disclaimer.am}</p>
@@ -1163,12 +1164,12 @@ export default function HexacoreCameraScanner({
             </>
           ) : (
             /* Empty State Guide */
-            <div className="p-8 text-center space-y-4 text-slate-400">
-              <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center mx-auto text-amber-400">
+            <div className="p-8 text-center space-y-4 text-muted-foreground">
+              <div className="w-12 h-12 rounded-2xl border border-border bg-foreground/5 flex items-center justify-center mx-auto text-gold">
                 <Sliders className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="text-white font-bold text-sm">
+                <h4 className="text-foreground font-bold text-sm">
                   {lang === "en" ? "Ready for Image Capture" : "ፎቶ ለማንሳት ዝግጁ ነው"}
                 </h4>
                 <p className="text-xs mt-1 leading-relaxed">

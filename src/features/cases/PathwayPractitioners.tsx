@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { apiFetch } from "@/lib/api/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
 import { Monogram, formatEtb } from "@/features/marketplace/shared";
+import { assetUrl } from "@/lib/base-path";
 
 interface Practitioner {
   id: string;
@@ -43,7 +44,7 @@ export function PathwayPractitioners({ domain }: { domain: string }) {
           <Link key={p.id} href={`/b/${p.slug}/book?service=${p.serviceId}`} className="flex items-center gap-3 rounded-2xl border border-border p-3 transition-colors hover:border-brand/40">
             {p.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.logoUrl} alt="" className="size-11 rounded-xl object-cover" />
+              <img src={assetUrl(p.logoUrl)} alt="" className="size-11 rounded-xl object-cover" />
             ) : (
               <Monogram name={p.name} className="size-11 rounded-xl" />
             )}

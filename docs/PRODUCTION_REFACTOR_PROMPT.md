@@ -19,8 +19,8 @@ Bring the Ethiopian Wisdom platform to a production-ready standard without weake
 
 - Next.js 15 App Router with React 19 and TypeScript.
 - Global shell: `src/app/layout.tsx`, `src/components/Navbar.tsx`, `src/components/Footer.tsx`, and `src/styles/globals.css`.
-- Theme tokens already use Luminous scientific Blue with light, dark, and high-contrast modes.
-- Fonts actually loaded are DM Sans, Manrope, and JetBrains Mono.
+- Theme: warm Ethiopian heritage tokens in `src/styles/tokens.css` (cream and parchment surfaces, coffee-brown ink, Ethiopian green for the platform, gold for cultural content) with light, dark and high-contrast modes; `.theme-dark` scopes always-dark stages. Components use semantic Tailwind colours only (`bg-card`, `text-muted-foreground`, `bg-gold-soft` …); `npm run theme:check` and `src/tests/theme.test.mjs` reject raw palette shades.
+- Fonts actually loaded are Noto Sans and Noto Sans Ethiopic (body), Fraunces and Noto Serif Ethiopic (headings), and JetBrains Mono.
 - Case workflow is the main guided interaction and includes server autosave, live assistance, diagnostic assessment, voice input, and local draft recovery.
 - Do not invent the audited `tailwind.config.ts`, React Query, Capacitor, or role-dashboard structure unless the repository first gains those files through an explicit scoped change.
 
@@ -28,8 +28,7 @@ Bring the Ethiopian Wisdom platform to a production-ready standard without weake
 
 ### P0: Correctness and safety
 
-- Fix undefined or conflicting CSS variables and remove stale palette references.
-- Replace hardcoded legacy dark-green surfaces with shared design tokens, starting with admin, report, auth, and scientific encounter views.
+- Keep CSS variables defined in `tokens.css` for every theme; never reintroduce raw palette shades or hard-coded hex surfaces in components.
 - Verify every protected route enforces authorization server-side; client checks are only presentation.
 - Preserve audit events for authentication, impersonation, role changes, knowledge publishing, report generation, and safety decisions.
 - Add safe loading, empty, error, retry, and offline states to every data-backed screen.

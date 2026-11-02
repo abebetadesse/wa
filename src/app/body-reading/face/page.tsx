@@ -36,8 +36,8 @@ export default function FaceReadingPage() {
         </p>
       </header>
 
-      <section role="note" className="flex items-start gap-3 rounded-2xl border border-amber-400/30 bg-amber-500/[0.08] p-5 text-sm leading-relaxed text-amber-100">
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-amber-300" aria-hidden="true" />
+      <section role="note" className="flex items-start gap-3 rounded-2xl border border-gold/30 bg-gold/[0.08] p-5 text-sm leading-relaxed text-gold-strong">
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-gold" aria-hidden="true" />
         <p><strong>Ethical boundary:</strong> Do not infer identity, health, personality, emotion, ethnicity, character, or trustworthiness from someone&apos;s face. Do not use appearance to make personal, professional, or safety decisions.</p>
       </section>
 

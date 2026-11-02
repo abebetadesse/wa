@@ -9,11 +9,12 @@ import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EMERGENCY_GUIDANCE, verifiedEmergencyContacts, type EmergencyContact } from "@/lib/safety/emergencyContacts";
+import { withBasePath } from '@/lib/base-path';
 
 let pending: Promise<EmergencyContact[]> | null = null;
 
 function loadVerified(): Promise<EmergencyContact[]> {
-  pending ??= fetch("/api/platform/settings", { credentials: "same-origin" })
+  pending ??= fetch(withBasePath("/api/platform/settings"), { credentials: "same-origin" })
     .then((response) => response.json())
     .then((payload) => (Array.isArray(payload?.data?.emergencyContacts) ? (payload.data.emergencyContacts as EmergencyContact[]) : []))
     .catch(() => {
@@ -56,7 +57,7 @@ export function EmergencyHelp({
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       {showGuidance && (
-        <p className={cn("text-sm font-semibold", dark ? "text-rose-100" : "text-foreground")}>{EMERGENCY_GUIDANCE}</p>
+        <p className={cn("text-sm font-semibold", dark ? "text-danger-strong" : "text-foreground")}>{EMERGENCY_GUIDANCE}</p>
       )}
       {verified.length > 0 && (
         <ul className="grid gap-2 sm:grid-cols-2">
@@ -66,13 +67,13 @@ export function EmergencyHelp({
                 href={`tel:${contact.number.replace(/[^\d+]/g, "")}`}
                 className={cn(
                   "flex items-center gap-3 rounded-xl border p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  dark ? "border-rose-400/40 bg-black/40 text-white hover:bg-rose-900/50" : "border-border bg-card hover:border-input",
+                  dark ? "border-danger/40 bg-sunken/80 text-foreground hover:bg-danger-soft" : "border-border bg-card hover:border-input",
                 )}
               >
-                <Phone className={cn("size-4", dark ? "text-rose-300" : "text-brand")} aria-hidden="true" />
+                <Phone className={cn("size-4", dark ? "text-danger" : "text-brand")} aria-hidden="true" />
                 <span className="flex flex-col">
                   <span className="font-semibold" translate="no">{contact.number}</span>
-                  <span className={cn("text-xs", dark ? "text-rose-200" : "text-muted-foreground")}>{contact.name}</span>
+                  <span className={cn("text-xs", dark ? "text-danger-strong" : "text-muted-foreground")}>{contact.name}</span>
                 </span>
               </a>
             </li>

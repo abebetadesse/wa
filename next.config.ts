@@ -11,7 +11,15 @@ export const CASE_ENTRY_REDIRECTS: Array<{ source: string; destination: string; 
   { source: "/case/spiritual/intake/step-2", destination: "/case/workflows/new/spiritual", missing: [{ type: "query", key: "caseId" }] },
 ];
 
+// Set NEXT_PUBLIC_BASE_PATH=/wa when the app is published under a path of a shared domain.
+// It is inlined at build time, so rebuild after changing it. Keep the rule in sync with src/lib/base-path.ts.
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").trim().replace(/\/+$/, "");
+if (basePath && !/^\/[A-Za-z0-9._~\-/]*$/.test(basePath)) {
+  throw new Error("NEXT_PUBLIC_BASE_PATH must be a path such as /wa.");
+}
+
 const nextConfig: NextConfig = {
+  basePath: basePath || undefined,
   reactStrictMode: true,
   // Lets a verification build run beside a live `next dev` without sharing its .next folder.
   distDir: process.env.NEXT_DIST_DIR || ".next",

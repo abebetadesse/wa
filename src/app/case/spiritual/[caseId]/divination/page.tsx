@@ -8,6 +8,7 @@ import { TelsemSacredSeal } from "@/components/cultural/TelsemSacredSeal";
 import { TelsemScrollCanvas } from "@/components/cultural/TelsemScrollCanvas";
 import { getTelsemForArchetype } from "@/lib/cultural/telsemData";
 import { SpiritualIntakeProgress } from "@/components/case/SpiritualIntakeProgress";
+import { withBasePath } from '@/lib/base-path';
 
 export default function SpiritualDivinationPage({
   params,
@@ -28,7 +29,7 @@ export default function SpiritualDivinationPage({
     setIsProcessing(true);
     setError("");
     try {
-      const response = await fetch(`/api/case/spiritual/${caseId}/process`, {
+      const response = await fetch(withBasePath(`/api/case/spiritual/${caseId}/process`), {
         method: "POST",
         credentials: "include",
       });
@@ -43,7 +44,7 @@ export default function SpiritualDivinationPage({
   };
 
   useEffect(() => {
-    fetch(`/api/case/spiritual/${caseId}/divination`, { credentials: "include", cache: "no-store" })
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/divination`), { credentials: "include", cache: "no-store" })
       .then(async (res) => {
         const payload = await res.json();
         if (!res.ok || !payload.success) throw new Error(payload.error || "Unable to load the cultural reading.");
@@ -72,7 +73,7 @@ export default function SpiritualDivinationPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-amber-300 gap-3">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-gold gap-3">
         <span className="text-4xl animate-spin">🔮</span>
         <p className="text-sm font-mono">Unfolding Sacred Awde Negest Parchment...</p>
       </div>
@@ -83,11 +84,11 @@ export default function SpiritualDivinationPage({
 
   if (!data || !gem) {
     return (
-      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-stone-200 gap-4 px-6 text-center">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-soft gap-4 px-6 text-center">
         <p className="text-lg font-semibold">This Case 1 session is no longer available.</p>
-        <p className="text-sm text-stone-400">Start a new reading to create a secure session.</p>
-        {error.startsWith("Sign in") && <Link href="/auth" className="rounded-xl border border-stone-700 px-5 py-3 text-stone-200">Sign in</Link>}
-        <Link href="/case/workflows/new/spiritual" className="rounded-xl bg-amber-500 px-5 py-3 font-bold text-black">
+        <p className="text-sm text-muted-foreground">Start a new reading to create a secure session.</p>
+        {error.startsWith("Sign in") && <Link href="/auth" className="rounded-xl border border-border px-5 py-3 text-soft">Sign in</Link>}
+        <Link href="/case/workflows/new/spiritual" className="rounded-xl bg-gold-fill px-5 py-3 font-bold text-gold-foreground">
           Start a new reading
         </Link>
       </div>
@@ -95,14 +96,14 @@ export default function SpiritualDivinationPage({
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
         {/* Breadcrumb */}
-        <div className="flex items-center justify-between text-xs text-stone-400 border-b border-stone-800 pb-4">
-          <Link href={`/case/spiritual/intake/step-2?caseId=${caseId}`} className="hover:text-amber-400 transition-colors">
+        <div className="flex items-center justify-between text-xs text-muted-foreground border-b border-border pb-4">
+          <Link href={`/case/spiritual/intake/step-2?caseId=${caseId}`} className="hover:text-gold transition-colors">
             ← Back to Questions
           </Link>
-          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 font-mono">
+          <span className="px-3 py-1 rounded-full bg-gold/10 text-gold-strong font-mono">
             STEP 3 OF 5: CULTURAL READING
           </span>
         </div>
@@ -110,68 +111,68 @@ export default function SpiritualDivinationPage({
 
         {/* Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 font-mono uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-gold uppercase tracking-wider">
             <span>✨ Complete Numerical Alignment</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black font-serif text-amber-100">
+          <h1 className="text-3xl sm:text-4xl font-bold font-serif text-gold-strong">
             Your Divination Context — Live Reveal
           </h1>
-          <p className="text-sm text-stone-300">
-            Based on your name <span className="text-amber-300 font-bold">{gem.nameGeez}</span>
+          <p className="text-sm text-soft">
+            Based on your name <span className="text-gold font-bold">{gem.nameGeez}</span>
             {gem?.motherNameGeez ? (
-              <> and mother&apos;s name <span className="text-amber-300 font-bold">{gem?.motherNameGeez}</span></>
+              <> and mother&apos;s name <span className="text-gold font-bold">{gem?.motherNameGeez}</span></>
             ) : ""}
           </p>
         </div>
 
         {selectedService && (
-          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-stone-900 to-emerald-500/10 p-5 shadow-lg">
-            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Chosen spiritual service</div>
+          <div className="rounded-3xl border border-gold/30 bg-gradient-to-r from-gold/10 via-card to-brand/10 p-5 shadow-panel">
+            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold">Chosen spiritual service</div>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-amber-50">{selectedService.title}</h2>
-                <p className="text-sm text-stone-300">{selectedService.label}</p>
+                <h2 className="text-2xl font-bold text-gold-strong">{selectedService.title}</h2>
+                <p className="text-sm text-soft">{selectedService.label}</p>
               </div>
               {selectedService.telsemName && (
-                <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-strong">
                   Telsem: {selectedService.telsemName}
                 </span>
               )}
             </div>
-            <p className="mt-4 text-sm leading-6 text-stone-200">“{selectedService.prayer}”</p>
+            <p className="mt-4 text-sm leading-6 text-soft">“{selectedService.prayer}”</p>
           </div>
         )}
 
         {/* Step 1: Name Resonance Summary */}
         <div
-          className={`p-6 rounded-3xl bg-stone-900/90 border border-amber-500/30 shadow-2xl transition-all duration-700 ${revealStep >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          className={`p-6 rounded-3xl bg-card/90 border border-gold/30 shadow-raised transition-all duration-700 ${revealStep >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
         >
-          <div className="flex items-center justify-between border-b border-stone-800 pb-3 mb-4">
-            <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
+            <span className="text-xs uppercase tracking-wider text-gold font-bold">
               1. Name Lineage & Frequency (የስም ምሥጢር)
             </span>
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-brand/20 text-brand-strong text-xs font-mono font-bold">
               Final Number: {gem.finalNumber ?? "—"}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-            <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
-              <span className="text-xs text-stone-400 block">Total Gematria</span>
-              <span className="text-2xl font-black font-mono text-amber-300">{gem.totalSum ?? "—"}</span>
+            <div className="p-3 rounded-2xl bg-sunken/80 border border-border">
+              <span className="text-xs text-muted-foreground block">Total Gematria</span>
+              <span className="text-2xl font-bold font-mono text-gold">{gem.totalSum ?? "—"}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
-              <span className="text-xs text-stone-400 block">÷ 12 Quotient</span>
-              <span className="text-2xl font-black font-mono text-stone-200">{gem.dividedBy12 ?? "—"}</span>
+            <div className="p-3 rounded-2xl bg-sunken/80 border border-border">
+              <span className="text-xs text-muted-foreground block">÷ 12 Quotient</span>
+              <span className="text-2xl font-bold font-mono text-soft">{gem.dividedBy12 ?? "—"}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
-              <span className="text-xs text-stone-400 block">Zodiac Sign</span>
-              <span className="text-lg font-bold text-amber-200">{gem.zodiac?.name || "—"} {gem.zodiac?.symbol || ""}</span>
+            <div className="p-3 rounded-2xl bg-sunken/80 border border-border">
+              <span className="text-xs text-muted-foreground block">Zodiac Sign</span>
+              <span className="text-lg font-bold text-gold-strong">{gem.zodiac?.name || "—"} {gem.zodiac?.symbol || ""}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-black/50 border border-stone-800">
-              <span className="text-xs text-stone-400 block">Ruling Planet</span>
-              <span className="text-lg font-bold text-amber-200">{gem.zodiac?.rulingPlanet || "—"}</span>
+            <div className="p-3 rounded-2xl bg-sunken/80 border border-border">
+              <span className="text-xs text-muted-foreground block">Ruling Planet</span>
+              <span className="text-lg font-bold text-gold-strong">{gem.zodiac?.rulingPlanet || "—"}</span>
             </div>
           </div>
         </div>
@@ -193,19 +194,19 @@ export default function SpiritualDivinationPage({
                 revealStep >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
             >
-              <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+              <div className="flex items-center justify-between border-b border-border pb-2">
                 <div>
-                  <span className="text-xs uppercase tracking-wider text-amber-400 font-mono font-bold">
+                  <span className="text-xs uppercase tracking-wider text-gold font-bold">
                     3. Consecrated Talisman & Telsem (የተጠቃሚው ጠልሰም)
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold font-serif text-white">
+                  <h3 className="text-xl sm:text-2xl font-bold font-serif text-foreground">
                     {activeTelsem.nameAm}
                   </h3>
                 </div>
                 <Link
                   href="/library/telsem"
                   target="_blank"
-                  className="px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono transition-colors"
+                  className="px-3 py-1.5 rounded-xl border border-gold/30 bg-gold/10 hover:bg-gold/20 text-gold-strong text-xs font-mono transition-colors"
                 >
                   View Telsem Archive (22 Seals) ↗
                 </Link>
@@ -224,30 +225,30 @@ export default function SpiritualDivinationPage({
               />
 
               {/* Talismanic Attributes */}
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-950/30 via-stone-900 to-black border border-purple-500/30 shadow-xl space-y-4">
-                <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
-                  <span className="text-xs uppercase tracking-wider text-purple-300 font-mono font-bold">
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-plum-soft via-card to-background border border-plum/30 shadow-panel space-y-4">
+                <div className="flex items-center justify-between border-b border-plum/20 pb-3">
+                  <span className="text-xs uppercase tracking-wider text-plum font-bold">
                     Talismanic Lineage: {gem?.talismanic?.name || "The Visionary"} ({gem?.talismanic?.nameAmharic || "ራዕይ"})
                   </span>
                   <span className="text-2xl">🌟</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-                    <span className="text-purple-300 font-bold block">Sacred Colors</span>
-                    <span className="text-stone-300">{gem?.talismanic?.colors?.join(", ") || "Purple, Gold, Indigo"}</span>
+                  <div className="p-3.5 rounded-2xl bg-sunken/80 border border-border space-y-1">
+                    <span className="text-plum font-bold block">Sacred Colors</span>
+                    <span className="text-soft">{gem?.talismanic?.colors?.join(", ") || "Purple, Gold, Indigo"}</span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-                    <span className="text-purple-300 font-bold block">Gemstones</span>
-                    <span className="text-stone-300">{gem?.talismanic?.gemstones?.join(", ") || "Amethyst, Lapis Lazuli"}</span>
+                  <div className="p-3.5 rounded-2xl bg-sunken/80 border border-border space-y-1">
+                    <span className="text-plum font-bold block">Gemstones</span>
+                    <span className="text-soft">{gem?.talismanic?.gemstones?.join(", ") || "Amethyst, Lapis Lazuli"}</span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-                    <span className="text-purple-300 font-bold block">Traditional Herbs</span>
-                    <span className="text-stone-300">{gem?.talismanic?.herbs?.join(", ") || "Sage, Frankincense, Star Anise"}</span>
+                  <div className="p-3.5 rounded-2xl bg-sunken/80 border border-border space-y-1">
+                    <span className="text-plum font-bold block">Traditional Herbs</span>
+                    <span className="text-soft">{gem?.talismanic?.herbs?.join(", ") || "Sage, Frankincense, Star Anise"}</span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-stone-800 space-y-1">
-                    <span className="text-purple-300 font-bold block">Ruling Day & Element</span>
-                    <span className="text-stone-300">
+                  <div className="p-3.5 rounded-2xl bg-sunken/80 border border-border space-y-1">
+                    <span className="text-plum font-bold block">Ruling Day & Element</span>
+                    <span className="text-soft">
                       {gem?.talismanic?.dayOfWeek || "Thursday"} · {gem?.talismanic?.element || "Air"}
                     </span>
                   </div>
@@ -259,10 +260,10 @@ export default function SpiritualDivinationPage({
 
         {/* Step 4: Cultural Disclaimer */}
         <div
-          className={`p-5 rounded-2xl bg-stone-900/60 border border-stone-800 text-xs text-stone-400 space-y-2 transition-all duration-700 ${revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          className={`p-5 rounded-2xl bg-card/60 border border-border text-xs text-muted-foreground space-y-2 transition-all duration-700 ${revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
         >
-          <div className="flex items-center gap-2 font-bold text-amber-300">
+          <div className="flex items-center gap-2 font-bold text-gold">
             <span>⚠️</span>
             <span>Ethical Heritage Reflection & Cultural Heritage Scope</span>
           </div>
@@ -275,7 +276,7 @@ export default function SpiritualDivinationPage({
 
         {/* Action Button */}
         {error && (
-          <p role="alert" className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">
+          <p role="alert" className="rounded-xl border border-danger/40 bg-danger-soft p-4 text-sm text-danger-strong">
             {error} {error.startsWith("Sign in") && <Link href="/auth" className="font-bold underline underline-offset-2">Sign in</Link>}
           </p>
         )}
@@ -284,7 +285,7 @@ export default function SpiritualDivinationPage({
             type="button"
             onClick={continueToProcessing}
             disabled={isProcessing}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-base shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-fill to-gold-fill hover:from-gold-fill hover:to-gold-fill text-gold-foreground font-bold text-base shadow-panel transition-all flex items-center justify-center gap-2"
           >
             <span>{isProcessing ? "Preparing your draft..." : "Continue to Step 4: Process my answers →"}</span>
           </button>

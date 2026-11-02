@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Sparkles, Scroll, ShieldCheck, Copy, Check, Printer } from "lucide-react";
 import type { TelsemSeal } from "@/lib/cultural/telsemData";
 import { TelsemSacredSeal } from "./TelsemSacredSeal";
+import { assetUrl } from "@/lib/base-path";
 
 interface TelsemScrollCanvasProps {
   seekerNameGeez?: string;
@@ -45,15 +46,15 @@ export function TelsemScrollCanvas({
   return (
     <div className={`telsem-print-root space-y-4 ${className}`}>
       {/* Scroll Actions Bar */}
-      <div className="telsem-no-print flex flex-wrap items-center justify-between gap-3 bg-stone-900/80 p-3 px-4 rounded-2xl border border-stone-800 text-xs">
+      <div className="telsem-no-print flex flex-wrap items-center justify-between gap-3 bg-card/80 p-3 px-4 rounded-2xl border border-border text-xs">
         <div className="flex items-center gap-2">
-          <Scroll size={16} className="text-amber-400" />
-          <span className="font-serif font-bold text-amber-200">
+          <Scroll size={16} className="text-gold" />
+          <span className="font-serif font-bold text-gold-strong">
             {studyCopy ? "Tsifet · Telsem prayer study copy" : "የብራና ክታብ (Parchment Protective Scroll)"}
           </span>
-          <span className="hidden sm:inline-block text-stone-500">•</span>
-          <span className="hidden sm:inline-block text-stone-400">
-            Dedicated for <span className="text-amber-300 font-bold">{seekerNameGeez}</span>
+          <span className="hidden sm:inline-block text-subtle">•</span>
+          <span className="hidden sm:inline-block text-muted-foreground">
+            Dedicated for <span className="text-gold font-bold">{seekerNameGeez}</span>
             {motherNameGeez ? ` ወለተ ${motherNameGeez}` : ""}
           </span>
         </div>
@@ -62,14 +63,14 @@ export function TelsemScrollCanvas({
           <button
             type="button"
             onClick={() => setIsUnrolled(!isUnrolled)}
-            className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-medium transition-all"
+            className="px-3 py-1.5 rounded-xl bg-muted hover:bg-sunken text-soft font-medium transition-all"
           >
             {isUnrolled ? "ጠቀልል (Roll Up)" : "ዘርጋ (Unroll Scroll)"}
           </button>
           <button
             type="button"
             onClick={handleCopyBlessing}
-            className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-xl bg-gold/10 hover:bg-gold/20 text-gold-strong border border-gold/30 font-medium transition-all flex items-center gap-1.5"
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
             <span>{copied ? "ተቀድቷል (Copied)" : "ቅዳ (Copy Text)"}</span>
@@ -77,14 +78,14 @@ export function TelsemScrollCanvas({
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-medium text-emerald-200 transition-all hover:bg-emerald-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-brand/30 bg-brand/10 px-3 py-1.5 font-medium text-brand-strong transition-all hover:bg-brand/20"
           >
             <Printer size={14} />
             Print Tsifet
           </button>
         </div>
       </div>
-      {copyError && <p role="alert" className="telsem-no-print text-xs text-rose-300">{copyError}</p>}
+      {copyError && <p role="alert" className="telsem-no-print text-xs text-danger">{copyError}</p>}
 
       {/* Parchment Scroll Body */}
       <div
@@ -92,7 +93,7 @@ export function TelsemScrollCanvas({
           isUnrolled ? "max-h-[3000px] opacity-100" : "max-h-24 opacity-75"
         }`}
       >
-        <article className="telsem-paper relative mx-auto max-w-2xl rounded-3xl border-4 border-[#85582b] bg-[#fbf5e6] text-[#2b1f17] shadow-2xl p-6 sm:p-10 font-serif">
+        <article className="telsem-paper relative mx-auto max-w-2xl rounded-3xl border-4 border-[#85582b] bg-[#fbf5e6] text-[#2b1f17] shadow-raised p-6 sm:p-10 font-serif">
           {/* Leather Stitching Visuals along borders */}
           <div className="absolute top-0 inset-x-0 h-4 bg-[#6b4226] rounded-t-[20px] flex items-center justify-around px-4">
             {[...Array(12)].map((_, i) => (
@@ -123,7 +124,7 @@ export function TelsemScrollCanvas({
             </div>
 
             {/* Hareg Ornamental Lattice Band */}
-            <div className="py-2 text-center text-[#b91c1c] text-xs font-mono tracking-widest select-none">
+            <div className="py-2 text-center text-[#b91c1c] text-xs tracking-wider select-none">
               ❖═══════════❖ ፠ ❖═══════════❖
             </div>
 
@@ -134,7 +135,7 @@ export function TelsemScrollCanvas({
                   <div className="space-y-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={seal.sourceImage}
+                      src={assetUrl(seal.sourceImage)}
                       alt={seal.nameAm}
                       className="w-full max-h-72 object-contain mx-auto filter sepia-[0.4] contrast-125 rounded-lg border border-[#d97706]/40"
                     />
@@ -150,7 +151,7 @@ export function TelsemScrollCanvas({
 
             {/* Sacred Ge'ez Formula in Traditional Black & Red Ink */}
             <div className="space-y-3 text-left bg-[#f2e7cd] p-5 rounded-2xl border border-[#d97706]/30 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#b91c1c] uppercase tracking-wider font-mono">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#b91c1c] uppercase tracking-wider">
                 <Sparkles size={14} />
                 <span>የጸሎት ጽሑፍ · Prayer text (as catalogued)</span>
               </div>
@@ -162,7 +163,7 @@ export function TelsemScrollCanvas({
                 <p className="mt-1 text-xs sm:text-sm leading-relaxed text-[#2b1f17]">{seal.traditionalFormulaEn}</p>
               </div>
               {(seal.traditionalFormulaGe.includes("...") || seal.traditionalFormulaEn.includes("...")) && (
-                <p className="rounded-lg border border-amber-700/30 bg-amber-100/70 p-2 text-xs text-[#78350f]">
+                <p className="rounded-lg border border-gold/30 bg-gold-soft p-2 text-xs text-[#78350f]">
                   This catalog transcription contains an ellipsis and may be abbreviated. Consult the manuscript page scan for the complete source text where available.
                 </p>
               )}
@@ -207,7 +208,7 @@ export function TelsemScrollCanvas({
             )}
 
             {/* Bottom Hareg Motif */}
-            <div className="pt-2 text-center text-[#b91c1c] text-xs font-mono tracking-widest select-none">
+            <div className="pt-2 text-center text-[#b91c1c] text-xs tracking-wider select-none">
               ❖═══════════❖ ፠ ❖═══════════❖
             </div>
 

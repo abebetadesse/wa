@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { SpiritualCaseStatus, Expert } from "@/lib/case-workflow/spiritualExpertEngine";
+import { withBasePath } from '@/lib/base-path';
 
 export function useCaseStatusStream(caseId: string) {
   const [status, setStatus] = useState<SpiritualCaseStatus | null>(null);
@@ -17,7 +18,7 @@ export function useCaseStatusStream(caseId: string) {
     let eventSource: EventSource | null = null;
 
     // 1. Initial fetch
-    fetch(`/api/case/spiritual/${caseId}/status`)
+    fetch(withBasePath(`/api/case/spiritual/${caseId}/status`))
       .then((res) => res.json())
       .then((payload) => {
         if (isMounted && payload.success && payload.data) {
@@ -34,7 +35,7 @@ export function useCaseStatusStream(caseId: string) {
 
     // 2. Server-Sent Events stream
     try {
-      eventSource = new EventSource(`/api/case/spiritual/${caseId}/stream`);
+      eventSource = new EventSource(withBasePath(`/api/case/spiritual/${caseId}/stream`));
 
       eventSource.onmessage = (event) => {
         try {
@@ -74,7 +75,7 @@ export function useCaseStatusStream(caseId: string) {
 
     // 3. Periodic fallback poll (every 5 seconds) in case SSE is blocked
     const interval = setInterval(() => {
-      fetch(`/api/case/spiritual/${caseId}/status`)
+      fetch(withBasePath(`/api/case/spiritual/${caseId}/status`))
         .then((r) => r.json())
         .then((res) => {
           if (isMounted && res.success && res.data) {

@@ -229,7 +229,7 @@ function PaymentSettingsForm() {
         </CardContent>
       </Card>
 
-      <Card className={cn(draft.profileGating?.enabled && "border-amber-500/40")}>
+      <Card className={cn(draft.profileGating?.enabled && "border-gold/40")}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -428,7 +428,7 @@ function PaymentSettingsForm() {
 
       {error && <Alert tone="danger">{error}</Alert>}
       <div className="sticky bottom-4 flex justify-end">
-        <Button size="lg" onClick={() => save()} disabled={saving} className="shadow-lg">{saving ? "Saving…" : "Save payment settings"}</Button>
+        <Button size="lg" onClick={() => save()} disabled={saving} className="shadow-panel">{saving ? "Saving…" : "Save payment settings"}</Button>
       </div>
     </div>
   );

@@ -1,148 +1,334 @@
 /*
- * Design tokens — the single source of colour, type, radius and motion.
- * Luminous Blue for the platform (Domain A), warm gold for cultural and reflective content (Domain B).
- * Themes: light (default), dark (html.dark) and high contrast (html.dark.contrast-mode).
+ * Design tokens — the single source of colour, type, radius, shadow and motion.
+ *
+ * Warm Ethiopian heritage: cream and parchment surfaces, coffee-brown ink, Ethiopian green for the
+ * platform (Domain A) and gold for cultural and reflective content (Domain B). Red is kept for danger.
+ *
+ * Themes: light (default), dark (html.dark), and high contrast on top of either (html.contrast-mode).
+ * `.theme-dark` gives one subtree the dark values in any theme: for visual stages that are always
+ * dark (the orrery, the camera scanner) and inverse panels (.card-forest), so the semantic names
+ * inside them still read correctly.
+ * Components use the Tailwind names declared at the bottom (bg-card, text-muted-foreground,
+ * bg-gold-soft, text-brand-foreground …), never raw palette shades; scripts/check-theme.mjs enforces it.
+ *
+ * Every hue H comes in four parts:
+ *   H             accent text, icons and solid fills
+ *   H-strong      text on an H-soft surface, or wherever H needs more contrast
+ *   H-soft        a tinted surface (callouts, badges, selected rows)
+ *   H-foreground  text and icons on a solid H fill
  */
 
 :root {
-  --bg-primary: #f5faff;
-  --bg-secondary: #eaf4fb;
-  --bg-card: rgba(255, 255, 255, 0.88);
+  /* Surfaces */
+  --bg-primary: #fbf7ef;
+  --bg-secondary: #f4ecdd;
+  --bg-card: #fffdf8;
   --bg-card-hover: #ffffff;
   --bg-elevated: #ffffff;
-  --bg-overlay: rgba(7, 48, 78, 0.36);
+  --bg-sunken: #ece2d0;
+  --bg-overlay: rgba(43, 30, 20, 0.45);
 
-  --border-subtle: rgba(7, 89, 133, 0.14);
-  --border-strong: rgba(2, 132, 199, 0.32);
-  --border-gold: rgba(229, 169, 60, 0.42);
+  --border-subtle: #e4d8c3;
+  --border-strong: #c9b597;
+  --border-gold: #dcc08a;
 
-  --brand-primary: #075985;
-  --brand-accent: #0284c7;
-  --brand-dark: #12304a;
-  --brand-contrast: #ffffff;
+  /* Ink */
+  --text-primary: #2b1e14;
+  --text-secondary: #4a3828;
+  --text-muted: #5c4836;
+  --text-dim: #6a5a48;
 
-  --cultural-gold: #a86e12;
-  --cultural-gold-soft: rgba(229, 169, 60, 0.16);
+  /* Ethiopian green — the platform */
+  --brand: #1f6b45;
+  --brand-strong: #154d31;
+  --brand-soft: #e2efe5;
+  --brand-foreground: #ffffff;
 
-  --status-success: #047857;
-  --status-warning: #b45309;
-  --status-danger: #be123c;
-  --status-info: #0369a1;
+  /* Gold — cultural and reflective content */
+  --gold: #7d5610;
+  --gold-strong: #5e3f08;
+  --gold-soft: #f6ead0;
+  --gold-foreground: #2b1e14;
+  --gold-fill: #c8952e;
 
-  --text-primary: #16324f;
-  --text-secondary: #334e68;
-  --text-muted: #58738a;
-  --text-dim: #7890a3;
+  --success: #276a43;
+  --success-strong: #1a4d30;
+  --success-soft: #e3f1e8;
+  --success-foreground: #ffffff;
 
-  /* Inverse surfaces stay dark with light text in every theme (feature panels, footers). */
-  --surface-inverse: #12304a;
-  --surface-inverse-strong: #075985;
-  --text-inverse: #f8fafc;
-  --text-inverse-muted: #cbd5e1;
+  --warning: #97460a;
+  --warning-strong: #6e3307;
+  --warning-soft: #fcebdc;
+  --warning-foreground: #ffffff;
 
-  --shadow-panel: 0 18px 45px rgba(7, 48, 78, 0.12);
-  --shadow-focus: 0 0 0 3px rgba(2, 132, 199, 0.25);
-  --focus-ring: var(--brand-accent);
+  --danger: #b42318;
+  --danger-strong: #86190f;
+  --danger-soft: #fbe5e2;
+  --danger-foreground: #ffffff;
 
-  --motion-standard: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --info: #2f5d8a;
+  --info-strong: #1f4266;
+  --info-soft: #e4ecf5;
+  --info-foreground: #ffffff;
+
+  /* Plum — spiritual and reflective accents (formerly violet, purple, pink) */
+  --plum: #6e3f78;
+  --plum-strong: #4f2b57;
+  --plum-soft: #f1e5f2;
+  --plum-foreground: #ffffff;
+
+  /* Inverse surfaces stay dark with light text in every theme (footer, feature panels). */
+  --surface-inverse: #2b1e14;
+  --surface-inverse-strong: #1f150d;
+  --text-inverse: #fbf7ef;
+  --text-inverse-muted: #d6c6ad;
+  --brand-inverse: #8fd1aa;
+
+  --shadow-soft: 0 1px 2px rgba(43, 30, 20, 0.06);
+  --shadow-panel: 0 1px 2px rgba(43, 30, 20, 0.05), 0 10px 28px rgba(43, 30, 20, 0.08);
+  --shadow-raised: 0 2px 4px rgba(43, 30, 20, 0.06), 0 18px 44px rgba(43, 30, 20, 0.14);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--brand) 28%, transparent);
+  --focus-ring: var(--brand);
+
+  /* The tibeb band: the woven border of Ethiopian cloth, used as a thin accent. */
+  --tibeb: repeating-linear-gradient(90deg, #1f6b45 0 14px, #c8952e 14px 20px, #b42318 20px 26px, #c8952e 26px 32px);
+
+  --motion-standard: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Older names still read by component CSS. */
+  --brand-primary: var(--brand-strong);
+  --brand-accent: var(--brand);
+  --brand-dark: var(--surface-inverse);
+  --brand-contrast: var(--brand-foreground);
+  --cultural-gold: var(--gold);
+  --cultural-gold-soft: var(--gold-soft);
+  --status-success: var(--success);
+  --status-warning: var(--warning);
+  --status-danger: var(--danger);
+  --status-info: var(--info);
+
   color-scheme: light;
 }
 
-html.dark {
-  --bg-primary: #06131f;
-  --bg-secondary: #0d2233;
-  --bg-card: rgba(13, 34, 51, 0.88);
-  --bg-card-hover: #12304a;
-  --bg-elevated: #12304a;
-  --bg-overlay: rgba(0, 0, 0, 0.6);
+html.dark,
+.theme-dark,
+.card-forest {
+  --bg-primary: #16110c;
+  --bg-secondary: #261e16;
+  --bg-card: #1f1812;
+  --bg-card-hover: #261e16;
+  --bg-elevated: #2a2119;
+  --bg-sunken: #120d09;
+  --bg-overlay: rgba(0, 0, 0, 0.62);
 
-  --border-subtle: rgba(125, 211, 252, 0.16);
-  --border-strong: rgba(125, 211, 252, 0.32);
-  --border-gold: rgba(244, 199, 107, 0.4);
+  --border-subtle: #3a2f24;
+  --border-strong: #5a4a38;
+  --border-gold: #6b5326;
 
-  --brand-primary: #7dd3fc;
-  --brand-accent: #38bdf8;
-  --brand-dark: #071521;
-  --brand-contrast: #06131f;
+  --text-primary: #f4ebdc;
+  --text-secondary: #e0d2bd;
+  --text-muted: #cdbfa8;
+  --text-dim: #b3a088;
 
-  --cultural-gold: #f4c76b;
-  --cultural-gold-soft: rgba(244, 199, 107, 0.14);
+  --brand: #6cc093;
+  --brand-strong: #9bdab6;
+  --brand-soft: #1b2c21;
+  --brand-foreground: #0d1710;
 
-  --status-success: #34d399;
-  --status-warning: #fbbf24;
-  --status-danger: #fb7185;
-  --status-info: #7dd3fc;
+  --gold: #e3b65a;
+  --gold-strong: #f3d394;
+  --gold-soft: #33280f;
+  --gold-foreground: #1a1309;
+  --gold-fill: #e3b65a;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --success: #7bc79a;
+  --success-strong: #a9dfbe;
+  --success-soft: #1b2d22;
+  --success-foreground: #0d1710;
 
-  --surface-inverse: #0d2233;
-  --surface-inverse-strong: #12304a;
+  --warning: #f0a35e;
+  --warning-strong: #f8c799;
+  --warning-soft: #36230f;
+  --warning-foreground: #1d1207;
 
-  --shadow-panel: 0 18px 45px rgba(0, 0, 0, 0.35);
-  --shadow-focus: 0 0 0 3px rgba(125, 211, 252, 0.3);
-  --focus-ring: #7dd3fc;
+  --danger: #f08a7e;
+  --danger-strong: #f8b8b0;
+  --danger-soft: #3a1b17;
+  --danger-foreground: #1f0c09;
+
+  --info: #8db4dd;
+  --info-strong: #bcd4ee;
+  --info-soft: #1a2634;
+  --info-foreground: #0b1420;
+
+  --plum: #cda4d6;
+  --plum-strong: #e5cbeb;
+  --plum-soft: #2d1f31;
+  --plum-foreground: #1a0f1d;
+
+  --surface-inverse: #2a2119;
+  --surface-inverse-strong: #0f0b07;
+  --text-inverse: #f4ebdc;
+  --text-inverse-muted: #c2b098;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-raised: 0 2px 6px rgba(0, 0, 0, 0.35), 0 20px 48px rgba(0, 0, 0, 0.45);
+  --tibeb: repeating-linear-gradient(90deg, #3f9a6a 0 14px, #e3b65a 14px 20px, #d9574b 20px 26px, #e3b65a 26px 32px);
+
   color-scheme: dark;
 }
 
-html.dark.contrast-mode {
+/* High contrast: pure surfaces, black or white ink, and solid borders, in either theme. */
+html.contrast-mode {
+  --bg-primary: #ffffff;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f2f2f2;
+  --border-subtle: #000000;
+  --border-strong: #000000;
+  --border-gold: #000000;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-muted: #1a1a1a;
+  --text-dim: #333333;
+  --brand: #0a4a2a;
+  --brand-strong: #05301a;
+  --gold: #5a3c00;
+  --gold-strong: #3d2900;
+  --danger: #8a0f06;
+  --danger-strong: #5e0a04;
+  --info: #0f3a66;
+  --plum: #4a1f55;
+  --warning: #7a3400;
+  --success: #0a4a2a;
+  --focus-ring: #000000;
+}
+
+html.dark.contrast-mode,
+html.contrast-mode .theme-dark,
+html.contrast-mode .card-forest {
   --bg-primary: #000000;
-  --bg-secondary: #050505;
+  --bg-secondary: #000000;
   --bg-card: #000000;
   --bg-card-hover: #0a0a0a;
   --bg-elevated: #000000;
-  --border-subtle: #7dd3fc;
+  --bg-sunken: #0d0d0d;
+  --border-subtle: #ffffff;
   --border-strong: #ffffff;
-  --brand-primary: #fcd34d;
-  --brand-accent: #7dd3fc;
-  --cultural-gold: #fcd34d;
+  --border-gold: #ffd166;
   --text-primary: #ffffff;
   --text-secondary: #ffffff;
-  --text-muted: #f1f5f9;
-  --text-dim: #e2e8f0;
-  --focus-ring: #fcd34d;
+  --text-muted: #f0f0f0;
+  --text-dim: #d9d9d9;
+  --brand: #9be5b9;
+  --brand-strong: #c8f5da;
+  --gold: #ffd166;
+  --gold-strong: #ffe4a3;
+  --danger: #ffa196;
+  --danger-strong: #ffc9c2;
+  --info: #a8ccf0;
+  --plum: #e6c2ee;
+  --warning: #ffbd80;
+  --success: #9be5b9;
+  --focus-ring: #ffd166;
 }
 
-/* Semantic colours for Tailwind utilities (bg-primary, text-muted-foreground, ring-ring …). */
+/* A dark subtree inherits light ink from its own tokens, not from the page. */
+.theme-dark,
+.card-forest {
+  color: var(--text-primary);
+}
+
+/* Semantic colours for Tailwind utilities. */
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
+  --color-soft: var(--text-secondary);
+  --color-muted-foreground: var(--text-muted);
+  --color-subtle: var(--text-dim);
+
   --color-card: var(--bg-card);
   --color-card-foreground: var(--text-primary);
-  --color-primary: var(--brand-accent);
-  --color-primary-foreground: var(--brand-contrast);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-primary);
+  --color-elevated: var(--bg-elevated);
+  --color-muted: var(--bg-secondary);
+  --color-sunken: var(--bg-sunken);
+  --color-overlay: var(--bg-overlay);
   --color-secondary: var(--bg-secondary);
   --color-secondary-foreground: var(--text-primary);
-  --color-muted: var(--bg-secondary);
-  --color-muted-foreground: var(--text-muted);
   --color-accent: var(--bg-secondary);
-  --color-accent-foreground: var(--brand-primary);
-  --color-destructive: var(--status-danger);
-  --color-destructive-foreground: #ffffff;
+  --color-accent-foreground: var(--brand-strong);
+
   --color-border: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--border-strong);
   --color-ring: var(--focus-ring);
-  --color-brand: var(--brand-accent);
-  --color-brand-strong: var(--brand-primary);
-  --color-gold: var(--cultural-gold);
+
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--brand-foreground);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--danger-foreground);
+
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-foreground: var(--brand-foreground);
+
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-gold-fill: var(--gold-fill);
+
+  --color-success: var(--success);
+  --color-success-strong: var(--success-strong);
+  --color-success-soft: var(--success-soft);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-strong: var(--warning-strong);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-foreground: var(--danger-foreground);
+
+  --color-info: var(--info);
+  --color-info-strong: var(--info-strong);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-plum: var(--plum);
+  --color-plum-strong: var(--plum-strong);
+  --color-plum-soft: var(--plum-soft);
+  --color-plum-foreground: var(--plum-foreground);
+
   --color-inverse: var(--surface-inverse);
+  --color-inverse-strong: var(--surface-inverse-strong);
   --color-inverse-foreground: var(--text-inverse);
-  --color-success: var(--status-success);
-  --color-warning: var(--status-warning);
-  --color-danger: var(--status-danger);
+  --color-inverse-muted: var(--text-inverse-muted);
+  --color-brand-inverse: var(--brand-inverse);
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-panel: var(--shadow-panel);
+  --shadow-raised: var(--shadow-raised);
 }
 
 /* Type and shape. Emitted on :root, so var(--font-sans) / var(--radius-lg) work in plain CSS too. */
 @theme {
-  --font-sans: "DM Sans", "Segoe UI", sans-serif;
-  --font-display: "Manrope", "DM Sans", "Segoe UI", sans-serif;
+  --font-sans: "Noto Sans", "Noto Sans Ethiopic", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Fraunces", "Noto Serif Ethiopic", Georgia, serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-  --font-geez: "Noto Sans Ethiopic", "Abyssinica SIL", "Nyala", "DM Sans", sans-serif;
+  --font-geez: "Noto Serif Ethiopic", "Noto Sans Ethiopic", "Abyssinica SIL", "Nyala", serif;
 
-  --radius-sm: 0.625rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
   --radius-xl: 1.5rem;
 }

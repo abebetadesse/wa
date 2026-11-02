@@ -95,19 +95,19 @@ const PALM_LINES = [
 ];
 
 const MOUNTS = [
-  { id: "jupiter", name: "Mount of Jupiter", am: "ጁፒተር ተራራ", finger: "Index finger base", meaning: "Ambition, leadership, confidence", color: "bg-sky-500/10 border-sky-500/30 text-sky-200" },
-  { id: "saturn",  name: "Mount of Saturn",  am: "ሳተርን ተራራ",  finger: "Middle finger base", meaning: "Discipline, wisdom, solitude", color: "bg-stone-500/10 border-stone-500/30 text-stone-200" },
-  { id: "apollo",  name: "Mount of Apollo",  am: "አፖሎ ተራራ",  finger: "Ring finger base",   meaning: "Creativity, beauty, expression", color: "bg-yellow-500/10 border-yellow-500/30 text-yellow-200" },
-  { id: "mercury", name: "Mount of Mercury", am: "ሜርኩሪ ተራራ", finger: "Pinky finger base",  meaning: "Communication, wit, commerce", color: "bg-emerald-500/10 border-emerald-500/30 text-emerald-200" },
-  { id: "venus",   name: "Mount of Venus",   am: "ቬኑስ ተራራ",   finger: "Thumb base",        meaning: "Love, sensuality, family bond", color: "bg-rose-500/10 border-rose-500/30 text-rose-200" },
-  { id: "moon",    name: "Mount of Moon",    am: "ጨረቃ ተራራ",    finger: "Lower outer palm",  meaning: "Intuition, dreams, imagination", color: "bg-indigo-500/10 border-indigo-500/30 text-indigo-200" },
+  { id: "jupiter", name: "Mount of Jupiter", am: "ጁፒተር ተራራ", finger: "Index finger base", meaning: "Ambition, leadership, confidence", color: "bg-info/10 border-info/30 text-info-strong" },
+  { id: "saturn",  name: "Mount of Saturn",  am: "ሳተርን ተራራ",  finger: "Middle finger base", meaning: "Discipline, wisdom, solitude", color: "bg-border-strong/10 border-border-strong text-soft" },
+  { id: "apollo",  name: "Mount of Apollo",  am: "አፖሎ ተራራ",  finger: "Ring finger base",   meaning: "Creativity, beauty, expression", color: "bg-gold/10 border-gold/30 text-gold-strong" },
+  { id: "mercury", name: "Mount of Mercury", am: "ሜርኩሪ ተራራ", finger: "Pinky finger base",  meaning: "Communication, wit, commerce", color: "bg-brand/10 border-brand/30 text-brand-strong" },
+  { id: "venus",   name: "Mount of Venus",   am: "ቬኑስ ተራራ",   finger: "Thumb base",        meaning: "Love, sensuality, family bond", color: "bg-danger/10 border-danger/30 text-danger-strong" },
+  { id: "moon",    name: "Mount of Moon",    am: "ጨረቃ ተራራ",    finger: "Lower outer palm",  meaning: "Intuition, dreams, imagination", color: "bg-info/10 border-info/30 text-info-strong" },
 ];
 
 const HAND_SHAPES = [
-  { id: "earth", shape: "Earth Hand", am: "የምድር እጅ", desc: "Square palm, short fingers. Grounded, practical, stable. Values tradition, hard work, and community.", color: "bg-amber-800/20 border-amber-700/30 text-amber-200" },
-  { id: "air",   shape: "Air Hand",   am: "የአየር እጅ",  desc: "Square palm, long fingers. Intellectual, communicative, curious. Needs mental stimulation.", color: "bg-sky-800/20 border-sky-700/30 text-sky-200" },
-  { id: "fire",  shape: "Fire Hand",  am: "የእሳት እጅ", desc: "Rectangular palm, short fingers. Energetic, confident, impulsive. Natural leader.", color: "bg-red-800/20 border-red-700/30 text-red-200" },
-  { id: "water", shape: "Water Hand", am: "የውሃ እጅ",   desc: "Rectangular palm, long fingers. Sensitive, empathic, intuitive. Deep emotional world.", color: "bg-indigo-800/20 border-indigo-700/30 text-indigo-200" },
+  { id: "earth", shape: "Earth Hand", am: "የምድር እጅ", desc: "Square palm, short fingers. Grounded, practical, stable. Values tradition, hard work, and community.", color: "bg-gold-soft border-gold/30 text-gold-strong" },
+  { id: "air",   shape: "Air Hand",   am: "የአየር እጅ",  desc: "Square palm, long fingers. Intellectual, communicative, curious. Needs mental stimulation.", color: "bg-info-soft border-info/30 text-info-strong" },
+  { id: "fire",  shape: "Fire Hand",  am: "የእሳት እጅ", desc: "Rectangular palm, short fingers. Energetic, confident, impulsive. Natural leader.", color: "bg-danger-soft border-danger/30 text-danger-strong" },
+  { id: "water", shape: "Water Hand", am: "የውሃ እጅ",   desc: "Rectangular palm, long fingers. Sensitive, empathic, intuitive. Deep emotional world.", color: "bg-info-soft border-info/30 text-info-strong" },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -119,11 +119,11 @@ export default function PalmReadingPage() {
   const line = PALM_LINES.find((l) => l.id === activeLine) ?? PALM_LINES[0];
 
   const colorMap: Record<string, { border: string; bg: string; text: string; pill: string }> = {
-    rose:    { border: "border-rose-500/40",    bg: "bg-rose-500/10",    text: "text-rose-200",    pill: "bg-rose-500 text-black" },
-    sky:     { border: "border-sky-500/40",     bg: "bg-sky-500/10",     text: "text-sky-200",     pill: "bg-sky-500 text-black" },
-    emerald: { border: "border-emerald-500/40", bg: "bg-emerald-500/10", text: "text-emerald-200", pill: "bg-emerald-500 text-black" },
-    amber:   { border: "border-amber-500/40",   bg: "bg-amber-500/10",   text: "text-amber-200",   pill: "bg-amber-500 text-black" },
-    yellow:  { border: "border-yellow-500/40",  bg: "bg-yellow-500/10",  text: "text-yellow-200",  pill: "bg-yellow-400 text-black" },
+    rose:    { border: "border-danger/40",    bg: "bg-danger/10",    text: "text-danger-strong",    pill: "bg-danger text-danger-foreground" },
+    sky:     { border: "border-info/40",     bg: "bg-info/10",     text: "text-info-strong",     pill: "bg-info text-info-foreground" },
+    emerald: { border: "border-brand/40", bg: "bg-brand/10", text: "text-brand-strong", pill: "bg-brand text-brand-foreground" },
+    amber:   { border: "border-gold/40",   bg: "bg-gold/10",   text: "text-gold-strong",   pill: "bg-gold-fill text-gold-foreground" },
+    yellow:  { border: "border-gold/40",  bg: "bg-gold/10",  text: "text-gold-strong",  pill: "bg-gold-fill text-gold-foreground" },
   };
   const c = colorMap[line.color] ?? colorMap.amber;
 
@@ -132,17 +132,17 @@ export default function PalmReadingPage() {
 
       {/* ── Hero ──────────────────────────────────────────────────── */}
       <header>
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 mb-2">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold mb-2">
           <Sparkles className="size-3.5" aria-hidden="true" />
           <span>Body-Sign Reading · Palm</span>
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
           Palm Reading{" "}
-          <span lang="am" className="block text-2xl font-semibold text-amber-300 sm:inline sm:text-3xl">
+          <span lang="am" className="block text-2xl font-semibold text-gold sm:inline sm:text-3xl">
             የእጅ ንባብ
           </span>
         </h1>
-        <p className="mt-3 max-w-3xl text-sm text-stone-400 leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm text-muted-foreground leading-relaxed">
           Ethiopian hand-reading (እጅ ንባብ) is a centuries-old reflective practice woven into the Hexacore wisdom
           system. Lines, mounts, and hand shape are read together to offer a cultural portrait — a mirror,
           not a map of fixed fate. Offered here as educational and reflective content only.
@@ -152,8 +152,8 @@ export default function PalmReadingPage() {
       {/* ── Live Camera Palm Scanner ───────────────────────────── */}
       <section aria-labelledby="live-camera-palm-scanner" className="space-y-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-amber-400" />
-          <h2 id="live-camera-palm-scanner" className="text-xl font-bold text-white">
+          <Sparkles className="size-4 text-gold" />
+          <h2 id="live-camera-palm-scanner" className="text-xl font-bold text-foreground">
             Interactive Camera Palm Line & Mount Scanner
           </h2>
         </div>
@@ -227,7 +227,7 @@ export default function PalmReadingPage() {
               />
             </svg>
           </div>
-          <p className="text-[11px] text-stone-500 text-center max-w-[14rem]">
+          <p className="text-[11px] text-subtle text-center max-w-[14rem]">
             Click any line on the palm to explore its reflective meaning.
           </p>
         </div>
@@ -235,15 +235,15 @@ export default function PalmReadingPage() {
         {/* Line Detail Panel */}
         <div className={`rounded-3xl border ${c.border} ${c.bg} p-6 space-y-5`}>
           <div>
-            <span className={`text-[10px] font-mono uppercase tracking-widest ${c.text}`}>Line</span>
-            <h2 className="text-2xl font-extrabold text-white mt-1">
+            <span className={`text-[10px] uppercase tracking-wider ${c.text}`}>Line</span>
+            <h2 className="text-2xl font-extrabold text-foreground mt-1">
               {line.symbol} {line.name}
             </h2>
             <p lang="am" className={`text-sm font-semibold ${c.text} mb-1`}>{line.am}</p>
-            <p className="text-xs text-stone-500 italic">{line.position}</p>
+            <p className="text-xs text-subtle italic">{line.position}</p>
           </div>
 
-          <p className="text-sm text-stone-300 leading-relaxed">{line.description}</p>
+          <p className="text-sm text-soft leading-relaxed">{line.description}</p>
 
           <div className="space-y-2">
             <h3 className={`text-xs font-bold uppercase tracking-wider ${c.text}`}>Feature Readings</h3>
@@ -251,18 +251,18 @@ export default function PalmReadingPage() {
               const key = `${line.id}-${i}`;
               const open = expandedReading === key;
               return (
-                <div key={key} className="rounded-2xl border border-stone-800 bg-stone-950/60">
+                <div key={key} className="rounded-2xl border border-border bg-background/60">
                   <button
                     className="w-full flex items-center justify-between px-4 py-3 text-left"
                     onClick={() => setExpandedReading(open ? null : key)}
                   >
-                    <span className="text-sm font-semibold text-stone-200">{r.feature}</span>
-                    {open ? <ChevronUp className="size-4 text-stone-400 shrink-0" /> : <ChevronDown className="size-4 text-stone-400 shrink-0" />}
+                    <span className="text-sm font-semibold text-soft">{r.feature}</span>
+                    {open ? <ChevronUp className="size-4 text-muted-foreground shrink-0" /> : <ChevronDown className="size-4 text-muted-foreground shrink-0" />}
                   </button>
                   {open && (
                     <div className="px-4 pb-4 space-y-1">
-                      <p className="text-sm text-amber-200">{r.meaning}</p>
-                      <p lang="am" className="text-xs text-stone-500">{r.am}</p>
+                      <p className="text-sm text-gold-strong">{r.meaning}</p>
+                      <p lang="am" className="text-xs text-subtle">{r.am}</p>
                     </div>
                   )}
                 </div>
@@ -283,7 +283,7 @@ export default function PalmReadingPage() {
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold border transition-all ${
                 activeLine === l.id
                   ? `${lc.bg} ${lc.border} ${lc.text}`
-                  : "border-stone-800 bg-stone-900/60 text-stone-400 hover:border-stone-600"
+                  : "border-border bg-card/60 text-muted-foreground hover:border-border-strong"
               }`}
             >
               {l.symbol} {l.name}
@@ -294,17 +294,17 @@ export default function PalmReadingPage() {
 
       {/* ── Mounts Reference ─────────────────────────────────────── */}
       <section>
-        <h2 className="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
-          <BookOpen className="size-5 text-amber-400" />
+        <h2 className="text-xl font-extrabold text-foreground mb-4 flex items-center gap-2">
+          <BookOpen className="size-5 text-gold" />
           Mounts of the Hand
-          <span lang="am" className="text-base font-semibold text-amber-300">— ተራሮች</span>
+          <span lang="am" className="text-base font-semibold text-gold">— ተራሮች</span>
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {MOUNTS.map((m) => (
             <div key={m.id} className={`rounded-2xl border p-4 ${m.color}`}>
               <p className="font-bold text-sm">{m.name}</p>
               <p lang="am" className="text-[11px] opacity-60 mb-1">{m.am}</p>
-              <p className="text-[11px] text-stone-400 mb-2">Below: {m.finger}</p>
+              <p className="text-[11px] text-muted-foreground mb-2">Below: {m.finger}</p>
               <p className="text-xs leading-relaxed opacity-80">{m.meaning}</p>
             </div>
           ))}
@@ -313,10 +313,10 @@ export default function PalmReadingPage() {
 
       {/* ── Hand Shape Reference ──────────────────────────────────── */}
       <section>
-        <h2 className="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
-          <Info className="size-5 text-amber-400" />
+        <h2 className="text-xl font-extrabold text-foreground mb-4 flex items-center gap-2">
+          <Info className="size-5 text-gold" />
           Hand Shape Types
-          <span lang="am" className="text-base font-semibold text-amber-300">— የእጅ ቅርፅ</span>
+          <span lang="am" className="text-base font-semibold text-gold">— የእጅ ቅርፅ</span>
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {HAND_SHAPES.map((hs) => (
@@ -330,14 +330,14 @@ export default function PalmReadingPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────── */}
-      <footer className="flex flex-col gap-4 border-t border-stone-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex items-start gap-2 text-[11px] text-stone-500 max-w-xl">
-          <AlertTriangle className="size-3.5 shrink-0 text-amber-700 mt-0.5" />
+      <footer className="flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 text-[11px] text-subtle max-w-xl">
+          <AlertTriangle className="size-3.5 shrink-0 text-gold-strong mt-0.5" />
           Palm reading is a reflective cultural tool. It does not predict the future, diagnose illness, or constitute professional advice.
         </p>
         <Link
           href="/body-reading/face"
-          className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-amber-400 transition-colors shrink-0"
+          className="inline-flex items-center gap-2 rounded-2xl bg-gold-fill px-5 py-2.5 text-sm font-bold text-gold-foreground hover:bg-gold-fill transition-colors shrink-0"
         >
           Face Reading & Biometrics <ArrowRight className="size-4" />
         </Link>

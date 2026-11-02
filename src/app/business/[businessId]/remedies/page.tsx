@@ -260,7 +260,7 @@ function RemedyEditor({ remedy, onClose, onSaved }: { remedy: Remedy | null; onC
               }
             }} />
             {herbResults.length > 0 && (
-              <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-2xl border border-border bg-card p-1 shadow-xl">
+              <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-2xl border border-border bg-card p-1 shadow-panel">
                 {herbResults.map((herb) => (
                   <li key={herb.id}>
                     <button type="button" onClick={() => { setIngredients((list) => [...list, { name: herb.vernacularName, herbId: herb.id, scientificName: herb.scientificName, safetyLevel: herb.safetyLevel }]); setHerbQuery(""); setHerbResults([]); }} className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-accent">

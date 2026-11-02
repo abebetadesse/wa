@@ -7,8 +7,8 @@ const HudDashboard = dynamic(() => import("@/components/dashboard/HudDashboard")
   loading: () => (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="glass-panel max-w-md p-8 text-center">
-        <div className="mx-auto h-8 w-8 animate-pulse rounded-full bg-cyan-500/40" />
-        <div className="mt-4 h-4 w-36 mx-auto animate-pulse rounded bg-white/10" />
+        <div className="mx-auto h-8 w-8 animate-pulse rounded-full bg-info/40" />
+        <div className="mt-4 h-4 w-36 mx-auto animate-pulse rounded bg-foreground/10" />
       </div>
     </div>
   ),

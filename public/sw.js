@@ -5,6 +5,13 @@ const KNOWLEDGE_CACHE = "ethio-knowledge-v3";
 const APP_SHELL = ["/", "/offline", "/constitution", "/atlas", "/emergency", "/foods", "/safety"];
 const CACHEABLE_NAVIGATIONS = new Set(APP_SHELL);
 
+// URL prefix the app is published under (e.g. "/wa"), taken from the scope it was registered with.
+// Everything above and below is written without it; withBase() adds it where a URL is requested
+// and routeOf() removes it before a pathname is compared.
+const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
+const withBase = (path) => (path === "/" ? BASE || "/" : `${BASE}${path}`);
+const routeOf = (pathname) => (BASE && (pathname === BASE || pathname.startsWith(`${BASE}/`)) ? pathname.slice(BASE.length) || "/" : pathname);
+
 // API routes to cache for offline knowledge base
 const KNOWLEDGE_API_ROUTES = [
   "/api/foods",
@@ -18,7 +25,7 @@ self.addEventListener("install", (event) => {
     Promise.all([
       precacheAppShell(),
       caches.open(KNOWLEDGE_CACHE).then((cache) =>
-        Promise.allSettled(KNOWLEDGE_API_ROUTES.map((url) => cache.add(url)))
+        Promise.allSettled(KNOWLEDGE_API_ROUTES.map((url) => cache.add(withBase(url))))
       ),
     ]).then(() => self.skipWaiting())
   );
@@ -26,8 +33,8 @@ self.addEventListener("install", (event) => {
 
 async function precacheAppShell() {
   const cache = await caches.open(CACHE_NAME);
-  await cache.addAll(APP_SHELL);
-  const offlinePage = await cache.match("/offline");
+  await cache.addAll(APP_SHELL.map(withBase));
+  const offlinePage = await cache.match(withBase("/offline"));
   if (!offlinePage) throw new Error("Offline page could not be cached.");
   const html = await offlinePage.text();
   const assets = new Set(
@@ -65,8 +72,8 @@ async function refreshKnowledgeCache() {
   await Promise.allSettled(
     KNOWLEDGE_API_ROUTES.map(async (url) => {
       try {
-        const response = await fetch(url);
-        if (response.ok) await cache.put(url, response);
+        const response = await fetch(withBase(url));
+        if (response.ok) await cache.put(withBase(url), response);
       } catch {
         // Offline — keep existing cache
       }
@@ -78,27 +85,28 @@ async function refreshKnowledgeCache() {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
+  const route = routeOf(url.pathname);
 
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
   // Knowledge API routes: stale-while-revalidate
-  if (KNOWLEDGE_API_ROUTES.some((route) => url.pathname.startsWith(route))) {
+  if (KNOWLEDGE_API_ROUTES.some((prefix) => route.startsWith(prefix))) {
     event.respondWith(staleWhileRevalidate(request, KNOWLEDGE_CACHE));
     return;
   }
 
   // Place suggestions for the location field: public reference data, kept for offline use as
   // they are looked up (never precached: the full list is large).
-  if (url.pathname === "/api/locations" && url.searchParams.get("fields") === "places") {
+  if (route === "/api/locations" && url.searchParams.get("fields") === "places") {
     event.respondWith(staleWhileRevalidate(request, KNOWLEDGE_CACHE));
     return;
   }
 
   // Skip dynamic API routes (intake, report, export etc)
-  if (url.pathname.startsWith("/api/")) return;
+  if (route.startsWith("/api/")) return;
 
   // Never intercept dev hot-reload, HMR, or chunk query versions in SW
-  if (url.pathname.includes("_next/webpack-hmr") || url.pathname.includes(".hot-update.") || (url.pathname.startsWith("/_next/") && url.searchParams.has("v"))) {
+  if (route.includes("_next/webpack-hmr") || route.includes(".hot-update.") || (route.startsWith("/_next/") && url.searchParams.has("v"))) {
     return;
   }
 
@@ -107,18 +115,18 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.ok && CACHEABLE_NAVIGATIONS.has(url.pathname) && !url.search) {
+          if (response.ok && CACHEABLE_NAVIGATIONS.has(route) && !url.search) {
             const copy = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           }
           return response;
         })
         .catch(async () => {
-          const cached = CACHEABLE_NAVIGATIONS.has(url.pathname) && !url.search
+          const cached = CACHEABLE_NAVIGATIONS.has(route) && !url.search
             ? await caches.match(request)
             : null;
           if (cached) return cached;
-          if (url.pathname !== "/offline" && await caches.match("/offline")) return offlineFallback();
+          if (route !== "/offline" && await caches.match(withBase("/offline"))) return offlineFallback();
           return Response.error();
         })
     );
@@ -126,7 +134,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Cache only versioned build assets and bundled public knowledge images.
-  if (!url.pathname.startsWith("/_next/static/") && !url.pathname.startsWith("/icons/") && !url.pathname.startsWith("/app-icons/") && !url.pathname.startsWith("/images/")) return;
+  if (!route.startsWith("/_next/static/") && !route.startsWith("/icons/") && !route.startsWith("/app-icons/") && !route.startsWith("/images/")) return;
 
   event.respondWith(
     caches.match(request).then(

@@ -550,3 +550,13 @@ AI, diagnostic-adjacent, divination, numerology, astrology, body-sign, herbal, a
 ## Safety disclaimer
 
 This platform provides educational, reflective, cultural, and wellness-oriented information. It is not a substitute for emergency services or qualified professional advice. Do not delay urgent medical, mental-wellbeing, safeguarding, legal, or other professional care because of content shown by the application.
+
+## On its own, and under service.echat.et
+
+This repository is the app's source of truth: change the code here.
+
+- **On its own** (the default) the app serves from `/` on whatever address it is deployed to. Set `NEXT_PUBLIC_BASE_PATH` (at build time) only to publish it under a path of another site.
+- **service.echat.et/app** is built by [abebetadesse/all-app](https://github.com/abebetadesse/all-app),
+  which copies `main` of this repository into `apps/app` (on every push, through
+  `.github/workflows/notify-all-app.yml`, and hourly) and builds it under `/app`. Nothing in this
+  repository needs to change for that.

@@ -15,9 +15,9 @@ import { analyzeTongue, analyzePulse } from "@/lib/wellbeing/tcmDiagnosisEngine"
 type DiagMode = "tongue" | "pulse";
 
 const URGENCY_STYLES = {
-  normal: { border: "border-emerald-500/40", bg: "bg-emerald-950/20", badge: "bg-emerald-600 text-white", icon: "✓" },
-  monitor: { border: "border-amber-500/40", bg: "bg-amber-950/20", badge: "bg-amber-500 text-black font-bold", icon: "◉" },
-  consult: { border: "border-rose-500/60", bg: "bg-rose-950/20", badge: "bg-rose-600 text-white animate-pulse", icon: "⚕" },
+  normal: { border: "border-brand/40", bg: "bg-brand-soft", badge: "bg-brand text-brand-foreground", icon: "✓" },
+  monitor: { border: "border-gold/40", bg: "bg-gold-soft", badge: "bg-gold-fill text-gold-foreground font-bold", icon: "◉" },
+  consult: { border: "border-danger/60", bg: "bg-danger-soft", badge: "bg-danger text-danger-foreground animate-pulse", icon: "⚕" },
 };
 
 export default function TCMDiagnosticView() {
@@ -52,21 +52,21 @@ export default function TCMDiagnosticView() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="badge badge-safe mb-2">Huazhen TCM · Visual Diagnosis</div>
-          <h2 className="text-xl font-bold text-white">AI-Guided TCM & Ethiopian Humoral Assessment</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h2 className="text-xl font-bold text-foreground">AI-Guided TCM & Ethiopian Humoral Assessment</h2>
+          <p className="text-xs text-muted-foreground mt-1">
             Self-reported tongue and pulse analysis cross-mapped with Ethiopian humoral medicine. Not a scientific diagnosis.
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => setMode("tongue")}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${mode === "tongue" ? "bg-amber-600 text-white" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${mode === "tongue" ? "bg-gold-fill text-gold-foreground" : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10"}`}
           >
             👅 Tongue
           </button>
           <button
             onClick={() => setMode("pulse")}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${mode === "pulse" ? "bg-violet-600 text-white" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${mode === "pulse" ? "bg-plum text-plum-foreground" : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10"}`}
           >
             💓 Pulse
           </button>
@@ -78,14 +78,14 @@ export default function TCMDiagnosticView() {
         <div className="lg:col-span-2 glass-panel p-6 space-y-5">
           {mode === "tongue" ? (
             <>
-              <h3 className="font-bold text-white flex items-center gap-2">
+              <h3 className="font-bold text-foreground flex items-center gap-2">
                 <span className="text-2xl">👅</span> Tongue Observation
               </h3>
 
               {/* Visual tongue guide */}
-              <div className="relative h-32 rounded-2xl overflow-hidden bg-gradient-to-b from-rose-950/60 to-red-900/40 border border-rose-500/20 flex items-center justify-center">
+              <div className="relative h-32 rounded-2xl overflow-hidden bg-gradient-to-b from-danger-soft to-danger-soft border border-danger/20 flex items-center justify-center">
                 <div
-                  className="w-24 h-16 rounded-full transition-all duration-500 shadow-lg"
+                  className="w-24 h-16 rounded-full transition-all duration-500 shadow-panel"
                   style={{
                     backgroundColor:
                       tongueColor === "pale" ? "#f8b4b4" :
@@ -110,7 +110,7 @@ export default function TCMDiagnosticView() {
                     />
                   )}
                 </div>
-                <p className="absolute bottom-2 text-[10px] text-rose-300/70 font-mono">Live preview</p>
+                <p className="absolute bottom-2 text-[10px] text-danger font-mono">Live preview</p>
               </div>
 
               {[
@@ -148,11 +148,11 @@ export default function TCMDiagnosticView() {
                 },
               ].map((field) => (
                 <div key={field.label}>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">{field.label}</label>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">{field.label}</label>
                   <select
                     value={field.value}
                     onChange={(e) => (field.onChange as (v: string) => void)(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-amber-500"
+                    className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm outline-none focus:border-gold"
                   >
                     {field.options.map((opt) => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -170,18 +170,18 @@ export default function TCMDiagnosticView() {
             </>
           ) : (
             <>
-              <h3 className="font-bold text-white flex items-center gap-2">
+              <h3 className="font-bold text-foreground flex items-center gap-2">
                 <span className="text-2xl">💓</span> Pulse Self-Assessment
               </h3>
 
-              <div className="p-4 rounded-xl bg-violet-950/20 border border-violet-500/20 text-xs text-slate-300 leading-relaxed">
-                <strong className="text-violet-300 block mb-1">How to assess your pulse:</strong>
+              <div className="p-4 rounded-xl bg-plum-soft border border-plum/20 text-xs text-soft leading-relaxed">
+                <strong className="text-plum block mb-1">How to assess your pulse:</strong>
                 Place 3 fingers lightly on your opposite wrist, just below the thumb. Feel the rhythm and quality.
                 Count beats for 15 seconds × 4 to get heart rate.
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
                   Heart Rate (BPM)
                 </label>
                 <input
@@ -189,21 +189,21 @@ export default function TCMDiagnosticView() {
                   min={40} max={120}
                   value={heartRate}
                   onChange={(e) => setHeartRate(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-sm outline-none focus:border-violet-500"
+                  className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm outline-none focus:border-plum"
                 />
                 <div className="flex items-center mt-2 gap-2">
                   <div
-                    className="h-1 rounded-full bg-gradient-to-r from-blue-500 via-emerald-500 to-rose-500 transition-all"
+                    className="h-1 rounded-full bg-gradient-to-r from-info via-brand to-danger transition-all"
                     style={{ width: `${Math.min(100, (heartRate / 120) * 100)}%`, maxWidth: "100%" }}
                   />
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-subtle">
                     {heartRate < 60 ? "Bradycardic" : heartRate < 100 ? "Normal range" : "Tachycardic"}
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">
                   Dominant Pulse Quality
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -221,10 +221,10 @@ export default function TCMDiagnosticView() {
                     <button
                       key={opt.value}
                       onClick={() => setPulseQuality(opt.value as PulseQuality)}
-                      className={`p-2 rounded-lg text-xs text-center transition-all border ${pulseQuality === opt.value ? "border-violet-500 bg-violet-950/40 text-white" : "border-white/10 text-slate-400 hover:border-violet-500/40"}`}
+                      className={`p-2 rounded-lg text-xs text-center transition-all border ${pulseQuality === opt.value ? "border-plum bg-plum-soft text-foreground" : "border-border text-muted-foreground hover:border-plum/40"}`}
                     >
                       <div className="font-semibold">{opt.label}</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">{opt.desc}</div>
+                      <div className="text-[10px] text-subtle mt-0.5">{opt.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -232,7 +232,7 @@ export default function TCMDiagnosticView() {
 
               <button
                 onClick={runPulseAnalysis}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-700 text-white hover:from-violet-500 hover:to-purple-600 transition-all"
+                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-plum to-plum text-plum-foreground hover:from-plum hover:to-plum transition-all"
               >
                 💓 Analyze Pulse Pattern
               </button>
@@ -250,28 +250,28 @@ export default function TCMDiagnosticView() {
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 ${styles.badge}`}>
                       {styles.icon} {tongueResult.urgencyFlag === "normal" ? "Balanced" : tongueResult.urgencyFlag === "monitor" ? "Monitor" : "Seek Consultation"}
                     </span>
-                    <h3 className="text-lg font-bold text-white">{tongueResult.tcmPattern}</h3>
-                    <p className="text-sm text-amber-300 mt-1">{tongueResult.ethiopianHumoralCorrelation}</p>
+                    <h3 className="text-lg font-bold text-foreground">{tongueResult.tcmPattern}</h3>
+                    <p className="text-sm text-gold mt-1">{tongueResult.ethiopianHumoralCorrelation}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {tongueResult.organSystems.map((organ) => (
-                    <span key={organ} className="px-2 py-1 rounded-md bg-white/5 text-slate-300 text-xs border border-white/10">
+                    <span key={organ} className="px-2 py-1 rounded-md bg-foreground/5 text-soft text-xs border border-border">
                       {organ}
                     </span>
                   ))}
                 </div>
 
-                <p className="text-sm text-slate-300 leading-relaxed">{tongueResult.scientificSignificance}</p>
+                <p className="text-sm text-soft leading-relaxed">{tongueResult.scientificSignificance}</p>
               </div>
 
               <div className="glass-panel p-5">
-                <h4 className="text-sm font-bold text-emerald-400 mb-3">🌿 Dietary Recommendations</h4>
+                <h4 className="text-sm font-bold text-brand mb-3">🌿 Dietary Recommendations</h4>
                 <ul className="space-y-2">
                   {tongueResult.dietaryRecommendations.map((rec, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                      <span className="text-emerald-500 mt-0.5 shrink-0">→</span>
+                    <li key={i} className="flex items-start gap-2 text-xs text-soft">
+                      <span className="text-brand mt-0.5 shrink-0">→</span>
                       {rec}
                     </li>
                   ))}
@@ -279,66 +279,66 @@ export default function TCMDiagnosticView() {
               </div>
 
               <div className="glass-panel p-5">
-                <h4 className="text-sm font-bold text-amber-400 mb-3">🌱 Herbal Support</h4>
+                <h4 className="text-sm font-bold text-gold mb-3">🌱 Herbal Support</h4>
                 <div className="space-y-3">
                   {tongueResult.herbalRecommendations.map((herb, i) => (
-                    <div key={i} className="p-3 rounded-lg bg-black/30 border border-white/5">
+                    <div key={i} className="p-3 rounded-lg bg-sunken/50 border border-border">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-semibold text-white">{herb.herb}</span>
-                        <span className="text-xs text-amber-400 font-mono">{herb.ethiopianName}</span>
+                        <span className="text-sm font-semibold text-foreground">{herb.herb}</span>
+                        <span className="text-xs text-gold font-mono">{herb.ethiopianName}</span>
                       </div>
-                      <p className="text-xs text-slate-400">{herb.action}</p>
+                      <p className="text-xs text-muted-foreground">{herb.action}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-950/10">
-                <p className="text-xs text-amber-200/70 leading-relaxed">
+              <div className="p-4 rounded-xl border border-gold/20 bg-gold-soft/70">
+                <p className="text-xs text-gold-strong leading-relaxed">
                   ⚠️ {tongueResult.disclaimer}
                 </p>
               </div>
             </>
           ) : mode === "pulse" && pulseResult ? (
             <>
-              <div className="glass-panel p-6 border-l-4 border-violet-500/40 bg-violet-950/10">
+              <div className="glass-panel p-6 border-l-4 border-plum/40 bg-plum-soft/70">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center text-2xl font-black text-white shadow-lg">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-plum to-plum-soft flex items-center justify-center text-2xl font-bold text-plum-foreground shadow-panel">
                     {pulseResult.overallHrEstimate}
                   </div>
                   <div>
-                    <div className="text-xs text-violet-400 font-semibold uppercase tracking-wider">Heart Rate BPM</div>
-                    <h3 className="text-lg font-bold text-white mt-1">{pulseResult.tcmConstitution}</h3>
-                    <p className="text-sm text-violet-300">{pulseResult.ethiopianHumoralBalance}</p>
+                    <div className="text-xs text-plum font-semibold uppercase tracking-wider">Heart Rate BPM</div>
+                    <h3 className="text-lg font-bold text-foreground mt-1">{pulseResult.tcmConstitution}</h3>
+                    <p className="text-sm text-plum">{pulseResult.ethiopianHumoralBalance}</p>
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-white/5 text-sm text-slate-300 leading-relaxed">
-                  <strong className="text-violet-300">Dominant Imbalance:</strong> {pulseResult.dominantImbalance}
+                <div className="p-3 rounded-lg bg-foreground/5 text-sm text-soft leading-relaxed">
+                  <strong className="text-plum">Dominant Imbalance:</strong> {pulseResult.dominantImbalance}
                 </div>
-                <div className="mt-3 p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/20 text-sm text-slate-300">
-                  <strong className="text-emerald-400">Therapeutic Principle:</strong> {pulseResult.therapeuticPrinciple}
+                <div className="mt-3 p-3 rounded-lg bg-brand-soft border border-brand/20 text-sm text-soft">
+                  <strong className="text-brand">Therapeutic Principle:</strong> {pulseResult.therapeuticPrinciple}
                 </div>
               </div>
 
               <div className="glass-panel p-5">
-                <h4 className="text-sm font-bold text-violet-400 mb-3">Pulse Position Map (3-Position Method)</h4>
+                <h4 className="text-sm font-bold text-plum mb-3">Pulse Position Map (3-Position Method)</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {(["leftWrist", "rightWrist"] as const).map((wrist) => (
                     <div key={wrist}>
-                      <div className="text-xs font-bold text-slate-400 uppercase mb-2">
+                      <div className="text-xs font-bold text-muted-foreground uppercase mb-2">
                         {wrist === "leftWrist" ? "Left Wrist" : "Right Wrist"}
                       </div>
                       <div className="space-y-2">
                         {(["cun", "guan", "chi"] as const).map((pos) => {
                           const reading = pulseResult[wrist][pos];
                           return (
-                            <div key={pos} className="p-2 rounded-lg bg-black/30 border border-white/5">
+                            <div key={pos} className="p-2 rounded-lg bg-sunken/50 border border-border">
                               <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] font-bold text-violet-400 uppercase">{pos.toUpperCase()}</span>
-                                <span className="text-[10px] text-slate-500 font-mono">{reading.depth}</span>
+                                <span className="text-[10px] font-bold text-plum uppercase">{pos.toUpperCase()}</span>
+                                <span className="text-[10px] text-subtle font-mono">{reading.depth}</span>
                               </div>
-                              <div className="text-xs text-white font-semibold">{reading.associatedOrgan}</div>
-                              <div className="text-[10px] text-slate-400 mt-0.5">{reading.ethiopianEquivalent}</div>
+                              <div className="text-xs text-foreground font-semibold">{reading.associatedOrgan}</div>
+                              <div className="text-[10px] text-muted-foreground mt-0.5">{reading.ethiopianEquivalent}</div>
                             </div>
                           );
                         })}
@@ -348,17 +348,17 @@ export default function TCMDiagnosticView() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl border border-violet-500/20 bg-violet-950/10">
-                <p className="text-xs text-violet-200/70 leading-relaxed">⚠️ {pulseResult.disclaimer}</p>
+              <div className="p-4 rounded-xl border border-plum/20 bg-plum-soft/70">
+                <p className="text-xs text-plum-strong leading-relaxed">⚠️ {pulseResult.disclaimer}</p>
               </div>
             </>
           ) : (
             <div className="glass-panel p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
               <div className="text-6xl mb-6">{mode === "tongue" ? "👅" : "💓"}</div>
-              <h3 className="text-lg font-bold text-white mb-2">
+              <h3 className="text-lg font-bold text-foreground mb-2">
                 {mode === "tongue" ? "Tongue Pattern Analysis" : "Pulse Quality Assessment"}
               </h3>
-              <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+              <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
                 {mode === "tongue"
                   ? "Select your tongue characteristics on the left and click Analyze to receive TCM pattern insights with Ethiopian humoral correlations."
                   : "Enter your heart rate and describe the dominant pulse quality to receive TCM constitutional insights."}

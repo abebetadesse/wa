@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState, useMemo } from "react";
 import { SYSTEM_KNOWLEDGE_STRANDS, SystemStrandMetadata } from "@/lib/hexacore/HexacoreVisionEngine";
+import { withBasePath, assetUrl } from '@/lib/base-path';
 
 type Field = { name: string; label?: string; type?: string; required?: boolean; options?: string[]; default?: unknown };
 type Strand = { id: string; name: string; description: string; version: string; isActive: boolean };
@@ -9,7 +10,7 @@ type Category = { id: string; name: string; description: string; schema: { field
 type Item = { id: string; data: Record<string, unknown>; version: number; status: string; updatedAt: string };
 
 async function api(url: string, options?: RequestInit) {
-  const response = await fetch(url, options);
+  const response = await fetch(withBasePath(url), options);
   const payload = await response.json();
   if (!response.ok || !payload.success) throw new Error(payload.error || "Request failed");
   return payload.data;
@@ -308,24 +309,24 @@ export default function KnowledgeAdminPage() {
   }
 
   if (loading)
-    return <main className="app-container py-12 text-slate-400">Loading knowledge workspace...</main>;
+    return <main className="app-container py-12 text-muted-foreground">Loading knowledge workspace...</main>;
 
   return (
     <main className="app-container py-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header */}
-        <header className="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-white/10">
+        <header className="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-border">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="badge badge-safe">Knowledge Governance & Somatic Engine</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 font-mono">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-info/10 border border-info/30 text-info-strong font-mono">
                 port:5500
               </span>
             </div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-3xl font-extrabold text-foreground tracking-tight">
               Knowledge Management & Engine Strands
             </h1>
-            <p className="text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
+            <p className="text-sm text-muted-foreground mt-1 max-w-3xl leading-relaxed">
               Manage the 11 epistemic knowledge strands spanning Domain A (Biomedical & Empirical) and Domain B (Ethnobotanical & Awde Negast Archetypes). Direct exports available for somatic vision scanners.
             </p>
           </div>
@@ -334,34 +335,34 @@ export default function KnowledgeAdminPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setShowSomaticModal(true)}
-              className="px-3 py-1.5 rounded-xl border border-purple-500/30 bg-purple-500/15 hover:bg-purple-500/25 text-purple-200 text-xs font-bold transition flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl border border-plum/30 bg-plum/15 hover:bg-plum/25 text-plum-strong text-xs font-bold transition flex items-center gap-1.5"
             >
-              🔮 Ingest Somatic Scan
+              �� Ingest Somatic Scan
             </button>
 
             <button
               onClick={handleSeedSystemStrands}
               disabled={seeding}
-              className="px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-200 text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-50"
+              className="px-3 py-1.5 rounded-xl border border-gold/40 bg-gold/15 hover:bg-gold/25 text-gold-strong text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-50"
             >
               {seeding ? "⚡ Seeding..." : `⚡ Seed 11 Engine Strands (${syncedCount}/11 Synced)`}
             </button>
 
             {/* Available Strands Exports */}
             <a
-              href="/api/admin/knowledge/export/strands?download=true"
-              className="px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 text-xs font-bold transition flex items-center gap-1.5"
+              href={withBasePath("/api/admin/knowledge/export/strands?download=true")}
+              className="px-3 py-1.5 rounded-xl border border-brand/40 bg-brand/15 hover:bg-brand/25 text-brand-strong text-xs font-bold transition flex items-center gap-1.5"
               title="Download all 11 system strands in JSON format"
             >
-              📥 Export Strands (JSON)
+              �� Export Strands (JSON)
             </a>
 
             <a
-              href="/api/admin/knowledge/export/strands?format=csv"
-              className="px-3 py-1.5 rounded-xl border border-sky-500/40 bg-sky-500/15 hover:bg-sky-500/25 text-sky-200 text-xs font-bold transition flex items-center gap-1.5"
+              href={withBasePath("/api/admin/knowledge/export/strands?format=csv")}
+              className="px-3 py-1.5 rounded-xl border border-info/40 bg-info/15 hover:bg-info/25 text-info-strong text-xs font-bold transition flex items-center gap-1.5"
               title="Download all 11 system strands in CSV format"
             >
-              📊 Export Strands (CSV)
+              �� Export Strands (CSV)
             </a>
 
             <label className="btn-secondary text-xs cursor-pointer">
@@ -374,15 +375,13 @@ export default function KnowledgeAdminPage() {
             </label>
             <a
               className="btn-secondary text-xs"
-              href={
-                selectedCategory
+              href={assetUrl(selectedCategory
                   ? `/api/admin/knowledge/export/csv?categoryId=${selectedCategory.id}`
-                  : "/api/admin/knowledge/export/csv"
-              }
+                  : "/api/admin/knowledge/export/csv")}
             >
               Export Items CSV
             </a>
-            <a className="btn-secondary text-xs" href="/api/admin/knowledge/export/json">
+            <a className="btn-secondary text-xs" href={withBasePath("/api/admin/knowledge/export/json")}>
               Export Items JSON
             </a>
           </div>
@@ -390,43 +389,43 @@ export default function KnowledgeAdminPage() {
 
         {/* Notifications */}
         {error && (
-          <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-3.5 text-sm text-rose-200 flex items-center justify-between">
+          <div className="rounded-xl border border-danger/40 bg-danger-soft p-3.5 text-sm text-danger-strong flex items-center justify-between">
             <span>⚠️ {error}</span>
-            <button onClick={() => setError("")} className="text-xs text-rose-400 hover:text-white ml-2">Dismiss</button>
+            <button onClick={() => setError("")} className="text-xs text-danger hover:text-foreground ml-2">Dismiss</button>
           </div>
         )}
         {notice && (
-          <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3.5 text-sm text-emerald-200 flex items-center justify-between">
+          <div className="rounded-xl border border-brand/40 bg-brand-soft p-3.5 text-sm text-brand-strong flex items-center justify-between">
             <span>✅ {notice}</span>
-            <button onClick={() => setNotice("")} className="text-xs text-emerald-400 hover:text-white ml-2">Dismiss</button>
+            <button onClick={() => setNotice("")} className="text-xs text-brand hover:text-foreground ml-2">Dismiss</button>
           </div>
         )}
 
         {/* SECTION: AVAILABLE SYSTEM STRANDS SHOWCASE (11 STRANDS) */}
-        <section className="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
+        <section className="glass-panel p-5 rounded-2xl border border-border space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>🧬 Available Hexacore Knowledge Strands</span>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/20">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <span>�� Available Hexacore Knowledge Strands</span>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-strong border border-gold/20">
                     11 System Strands
                   </span>
                 </h2>
                 <button
                   onClick={() => setShowSystemStrands(!showSystemStrands)}
-                  className="text-xs text-slate-400 hover:text-white underline ml-2"
+                  className="text-xs text-muted-foreground hover:text-foreground underline ml-2"
                 >
                   {showSystemStrands ? "Collapse" : "Expand"}
                 </button>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 The Hexacore epistemic taxonomy merges 9 Domain A biomedical/somatic axes with 2 Domain B traditional Awde Negast axes.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/10 text-xs">
+            <div className="flex items-center gap-1.5 bg-sunken/80 p-1 rounded-xl border border-border text-xs">
               {(
                 [
                   { id: "all", label: `All (${SYSTEM_KNOWLEDGE_STRANDS.length})` },
@@ -441,8 +440,8 @@ export default function KnowledgeAdminPage() {
                   onClick={() => setStrandFilter(tab.id)}
                   className={`px-2.5 py-1 rounded-lg font-medium transition ${
                     strandFilter === tab.id
-                      ? "bg-white/15 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-foreground/15 text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {tab.label}
@@ -460,17 +459,17 @@ export default function KnowledgeAdminPage() {
                     key={strand.key}
                     className={`p-3.5 rounded-xl border transition flex flex-col justify-between ${
                       isSelected
-                        ? "border-amber-400/80 bg-amber-500/10 shadow-lg shadow-amber-500/5"
-                        : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                        ? "border-gold/80 bg-gold/10 shadow-panel"
+                        : "border-border bg-foreground/[0.02] hover:border-border-strong hover:bg-foreground/[0.04]"
                     }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-white">{strand.name}</span>
+                            <span className="font-bold text-sm text-foreground">{strand.name}</span>
                           </div>
-                          <div className="text-xs text-amber-300/90 font-medium">{strand.nameAm}</div>
+                          <div className="text-xs text-gold font-medium">{strand.nameAm}</div>
                         </div>
 
                         {/* Domain Badge */}
@@ -478,22 +477,22 @@ export default function KnowledgeAdminPage() {
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                               strand.domain === "A"
-                                ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                                : "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                                ? "bg-brand/10 text-brand-strong border-brand/30"
+                                : "bg-plum/10 text-plum-strong border-plum/30"
                             }`}
                           >
                             Domain {strand.domain}: {strand.domain === "A" ? "Scientific" : "Cultural"}
                           </span>
-                          <span className="text-[9px] uppercase tracking-wider text-slate-400 px-1.5 py-0.5 rounded bg-white/5 border border-white/10">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground px-1.5 py-0.5 rounded bg-foreground/5 border border-border">
                             {strand.tier}
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">
+                      <p className="text-xs text-soft leading-relaxed line-clamp-2">
                         {strand.description}
                       </p>
-                      <p className="text-[11px] text-slate-400 italic line-clamp-1">
+                      <p className="text-[11px] text-muted-foreground italic line-clamp-1">
                         {strand.descriptionAm}
                       </p>
 
@@ -502,7 +501,7 @@ export default function KnowledgeAdminPage() {
                         {strand.categories.map((c, i) => (
                           <span
                             key={i}
-                            className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-slate-300"
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-foreground/5 border border-border text-soft"
                           >
                             {c}
                           </span>
@@ -510,13 +509,13 @@ export default function KnowledgeAdminPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/5 text-[11px]">
+                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-border text-[11px]">
                       {strand.isSynced ? (
-                        <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                        <div className="flex items-center gap-1.5 text-brand font-medium">
                           <span>✓ Synced in DB</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1.5 text-amber-400 font-medium">
+                        <div className="flex items-center gap-1.5 text-gold font-medium">
                           <span>○ Available to Seed</span>
                         </div>
                       )}
@@ -524,7 +523,7 @@ export default function KnowledgeAdminPage() {
                       {strand.dbRecord ? (
                         <button
                           onClick={() => setSelectedStrand(strand.dbRecord)}
-                          className="px-2.5 py-1 rounded-lg border border-sky-400/40 bg-sky-500/10 hover:bg-sky-500/20 text-sky-200 text-xs font-semibold transition"
+                          className="px-2.5 py-1 rounded-lg border border-info/40 bg-info/10 hover:bg-info/20 text-info-strong text-xs font-semibold transition"
                         >
                           Select in Workspace →
                         </button>
@@ -532,7 +531,7 @@ export default function KnowledgeAdminPage() {
                         <button
                           onClick={handleSeedSystemStrands}
                           disabled={seeding}
-                          className="px-2.5 py-1 rounded-lg border border-amber-400/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold transition"
+                          className="px-2.5 py-1 rounded-lg border border-gold/40 bg-gold/10 hover:bg-gold/20 text-gold-strong text-xs font-semibold transition"
                         >
                           Seed to DB
                         </button>
@@ -548,15 +547,15 @@ export default function KnowledgeAdminPage() {
         {/* WORKSPACE 3-COLUMN LAYOUT: STRANDS -> CATEGORIES -> ITEMS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Column 1: Strands */}
-          <section className="glass-panel p-4 lg:col-span-3 rounded-2xl border border-white/10 space-y-3">
+          <section className="glass-panel p-4 lg:col-span-3 rounded-2xl border border-border space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-white text-base">Active Strands ({strands.length})</h2>
-              <span className="text-[11px] text-slate-400">Database Records</span>
+              <h2 className="font-bold text-foreground text-base">Active Strands ({strands.length})</h2>
+              <span className="text-[11px] text-muted-foreground">Database Records</span>
             </div>
 
             <div className="space-y-1.5 max-h-[480px] overflow-y-auto pr-1">
               {strands.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-white/10 rounded-xl">
+                <div className="p-4 text-center text-xs text-subtle border border-dashed border-border rounded-xl">
                   No strands currently stored in DB. Click <strong>⚡ Seed 11 Engine Strands</strong> above to populate the registry.
                 </div>
               ) : (
@@ -566,19 +565,19 @@ export default function KnowledgeAdminPage() {
                       onClick={() => setSelectedStrand(strand)}
                       className={`flex-1 text-left p-3 rounded-xl border text-sm transition ${
                         selectedStrand?.id === strand.id
-                          ? "border-sky-400 bg-sky-500/15 text-white"
-                          : "border-white/10 text-slate-400 hover:border-white/20 hover:text-white"
+                          ? "border-info bg-info/15 text-foreground"
+                          : "border-border text-muted-foreground hover:border-border-strong hover:text-foreground"
                       }`}
                     >
-                      <strong className="block text-white font-medium">{strand.name}</strong>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                      <strong className="block text-foreground font-medium">{strand.name}</strong>
+                      <span className="block text-[11px] text-subtle mt-0.5">
                         v{strand.version} · {strand.isActive ? "active" : "archived"}
                       </span>
                     </button>
-                    <button onClick={() => editStrand(strand)} className="px-2 text-sky-300 hover:text-sky-200" title="Edit">
+                    <button onClick={() => editStrand(strand)} className="px-2 text-info hover:text-info-strong" title="Edit">
                       ✎
                     </button>
-                    <button onClick={() => archiveStrand(strand)} className="px-2 text-rose-300 hover:text-rose-200" title="Archive">
+                    <button onClick={() => archiveStrand(strand)} className="px-2 text-danger hover:text-danger-strong" title="Archive">
                       ×
                     </button>
                   </div>
@@ -587,8 +586,8 @@ export default function KnowledgeAdminPage() {
             </div>
 
             {/* Add Custom Strand Form */}
-            <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
-              <div className="text-xs font-semibold text-slate-300">Add Custom Strand</div>
+            <div className="mt-4 pt-3 border-t border-border space-y-2">
+              <div className="text-xs font-semibold text-soft">Add Custom Strand</div>
               <input
                 value={strandForm.name}
                 onChange={(e) => setStrandForm({ ...strandForm, name: e.target.value })}
@@ -608,11 +607,11 @@ export default function KnowledgeAdminPage() {
           </section>
 
           {/* Column 2: Categories */}
-          <section className="glass-panel p-4 lg:col-span-3 rounded-2xl border border-white/10 space-y-3">
+          <section className="glass-panel p-4 lg:col-span-3 rounded-2xl border border-border space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-bold text-white text-base">Categories ({categories.length})</h2>
-                <div className="text-[11px] text-amber-300 truncate max-w-[180px]">
+                <h2 className="font-bold text-foreground text-base">Categories ({categories.length})</h2>
+                <div className="text-[11px] text-gold truncate max-w-[180px]">
                   {selectedStrand ? selectedStrand.name : "Select a strand"}
                 </div>
               </div>
@@ -620,11 +619,11 @@ export default function KnowledgeAdminPage() {
 
             <div className="space-y-1.5 max-h-[480px] overflow-y-auto pr-1">
               {!selectedStrand ? (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-white/10 rounded-xl">
+                <div className="p-4 text-center text-xs text-subtle border border-dashed border-border rounded-xl">
                   Select a strand on the left to inspect its categories.
                 </div>
               ) : categories.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-white/10 rounded-xl">
+                <div className="p-4 text-center text-xs text-subtle border border-dashed border-border rounded-xl">
                   No categories in this strand yet.
                 </div>
               ) : (
@@ -634,19 +633,19 @@ export default function KnowledgeAdminPage() {
                       onClick={() => setSelectedCategory(category)}
                       className={`flex-1 text-left p-3 rounded-xl border text-sm transition ${
                         selectedCategory?.id === category.id
-                          ? "border-amber-400 bg-amber-500/10 text-white"
-                          : "border-white/10 text-slate-400 hover:border-white/20 hover:text-white"
+                          ? "border-gold bg-gold/10 text-foreground"
+                          : "border-border text-muted-foreground hover:border-border-strong hover:text-foreground"
                       }`}
                     >
-                      <strong className="block text-white font-medium">{category.name}</strong>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                      <strong className="block text-foreground font-medium">{category.name}</strong>
+                      <span className="block text-[11px] text-subtle mt-0.5">
                         {category.schema?.fields?.length || 0} schema fields
                       </span>
                     </button>
-                    <button onClick={() => editCategory(category)} className="px-2 text-sky-300 hover:text-sky-200" title="Edit">
+                    <button onClick={() => editCategory(category)} className="px-2 text-info hover:text-info-strong" title="Edit">
                       ✎
                     </button>
-                    <button onClick={() => archiveCategory(category)} className="px-2 text-rose-300 hover:text-rose-200" title="Archive">
+                    <button onClick={() => archiveCategory(category)} className="px-2 text-danger hover:text-danger-strong" title="Archive">
                       ×
                     </button>
                   </div>
@@ -656,8 +655,8 @@ export default function KnowledgeAdminPage() {
 
             {/* Add Custom Category Form */}
             {selectedStrand && (
-              <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
-                <div className="text-xs font-semibold text-slate-300">Add Category to {selectedStrand.name}</div>
+              <div className="mt-4 pt-3 border-t border-border space-y-2">
+                <div className="text-xs font-semibold text-soft">Add Category to {selectedStrand.name}</div>
                 <input
                   value={categoryForm.name}
                   onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
@@ -722,11 +721,11 @@ export default function KnowledgeAdminPage() {
           </section>
 
           {/* Column 3: Items & Dynamic Editor */}
-          <section className="glass-panel p-4 lg:col-span-6 rounded-2xl border border-white/10 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+          <section className="glass-panel p-4 lg:col-span-6 rounded-2xl border border-border space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
               <div>
-                <h2 className="font-bold text-white text-base">Knowledge Items ({items.length})</h2>
-                <p className="text-xs text-slate-400">
+                <h2 className="font-bold text-foreground text-base">Knowledge Items ({items.length})</h2>
+                <p className="text-xs text-muted-foreground">
                   {selectedCategory ? `${selectedCategory.name} Category` : "Select a category to view items"}
                 </p>
               </div>
@@ -736,7 +735,7 @@ export default function KnowledgeAdminPage() {
             </div>
 
             {items.length === 0 ? (
-              <p className="py-8 text-center text-sm text-slate-500">
+              <p className="py-8 text-center text-sm text-subtle">
                 {selectedCategory ? "No items in this category yet. Click '+ New Item' or import." : "Select a category to inspect its items."}
               </p>
             ) : (
@@ -745,7 +744,7 @@ export default function KnowledgeAdminPage() {
                   <div
                     key={item.id}
                     className={`p-3 rounded-xl border transition ${
-                      selectedItem?.id === item.id ? "border-sky-400 bg-sky-500/10" : "border-white/10 hover:border-white/20"
+                      selectedItem?.id === item.id ? "border-info bg-info/10" : "border-border hover:border-border-strong"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -756,10 +755,10 @@ export default function KnowledgeAdminPage() {
                           setItemData(item.data);
                         }}
                       >
-                        <strong className="text-sm text-white font-medium">
+                        <strong className="text-sm text-foreground font-medium">
                           {String(item.data.name || item.data.title || "Untitled Knowledge Item")}
                         </strong>
-                        <span className="block text-[11px] text-slate-400 mt-0.5">
+                        <span className="block text-[11px] text-muted-foreground mt-0.5">
                           v{item.version} · <span className="capitalize">{item.status}</span> · updated {new Date(item.updatedAt).toLocaleDateString()}
                         </span>
                       </button>
@@ -787,23 +786,23 @@ export default function KnowledgeAdminPage() {
             )}
 
             {/* Dynamic Schema Item Editor */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-t border-border pt-4">
               {selectedItem && selectedCategory ? (
                 <>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                       <span>Dynamic Schema Item Editor</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-slate-300">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-foreground/10 text-soft">
                         {selectedCategory.name}
                       </span>
                     </h3>
-                    <span className="text-xs text-slate-400">Status: {selectedItem.status}</span>
+                    <span className="text-xs text-muted-foreground">Status: {selectedItem.status}</span>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1">
                     {(selectedCategory.schema.fields || []).map((field) => (
-                      <label key={field.name} className="text-xs text-slate-300">
-                        <span className="font-medium text-slate-200">
+                      <label key={field.name} className="text-xs text-soft">
+                        <span className="font-medium text-soft">
                           {field.label || field.name}
                           {field.required ? " *" : ""}
                         </span>
@@ -820,9 +819,9 @@ export default function KnowledgeAdminPage() {
                               type="checkbox"
                               checked={Boolean(itemData[field.name])}
                               onChange={(e) => setItemData({ ...itemData, [field.name]: e.target.checked })}
-                              className="rounded border-white/20"
+                              className="rounded border-border-strong"
                             />
-                            <span className="text-slate-400 text-xs">Enabled / Active</span>
+                            <span className="text-muted-foreground text-xs">Enabled / Active</span>
                           </div>
                         ) : field.type === "select" ? (
                           <select
@@ -851,7 +850,7 @@ export default function KnowledgeAdminPage() {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/10">
+                  <div className="flex items-center gap-2 mt-4 pt-3 border-t border-border">
                     <button onClick={saveItem} className="btn-primary text-xs">
                       Save Draft
                     </button>
@@ -867,7 +866,7 @@ export default function KnowledgeAdminPage() {
                   </div>
                 </>
               ) : (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-white/10 rounded-xl">
+                <div className="p-4 text-center text-xs text-subtle border border-dashed border-border rounded-xl">
                   Select an item to edit it dynamically using its category schema.
                 </div>
               )}
@@ -878,36 +877,36 @@ export default function KnowledgeAdminPage() {
 
       {/* SOMATIC PAYLOAD INGEST MODAL */}
       {showSomaticModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-2xl p-6 rounded-3xl border border-white/20 space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur">
+          <div className="glass-panel w-full max-w-2xl p-6 rounded-3xl border border-border-strong space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>🔮 Ingest Somatic Vision Payload</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <span>�� Ingest Somatic Vision Payload</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-plum/20 text-plum-strong border border-plum/30">
                     Hexacore Vision Bridge
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Paste the JSON exported from the camera scanner (Tongue or Palm) to automatically create knowledge items in the active category: <strong>{selectedCategory?.name || "No Category Selected"}</strong>
                 </p>
               </div>
               <button
                 onClick={() => setShowSomaticModal(false)}
-                className="text-slate-400 hover:text-white text-lg p-1"
+                className="text-muted-foreground hover:text-foreground text-lg p-1"
               >
                 ✕
               </button>
             </div>
 
             {!selectedCategory && (
-              <div className="p-3 rounded-xl border border-amber-500/40 bg-amber-950/20 text-xs text-amber-200">
+              <div className="p-3 rounded-xl border border-gold/40 bg-gold-soft text-xs text-gold-strong">
                 ⚠️ Please select a Category in the workspace before ingesting, or close this dialog, choose a strand/category, and reopen.
               </div>
             )}
 
             <div>
-              <label className="text-xs font-medium text-slate-300 block mb-1">
+              <label className="text-xs font-medium text-soft block mb-1">
                 Somatic Scan Payload JSON
               </label>
               <textarea

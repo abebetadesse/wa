@@ -5,6 +5,7 @@ import { ArrowRight, BadgeCheck, Briefcase, CalendarCheck, Compass, Dna, Heart, 
 import { ButtonLink } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n/context";
 import { BusinessCard } from "@/features/marketplace/shared";
+import { withBasePath } from "@/lib/base-path";
 
 type HomeData = {
   facets?: {
@@ -19,12 +20,12 @@ type HomeData = {
 
 /** The expert-reviewed care pathways (labels match src/server/cases/domains; a test keeps them in step). */
 export const CASE_PATHWAYS = [
-  { domain: "biological", label: "Biological, Wellbeing and Health", icon: Dna, color: "text-teal-500" },
-  { domain: "relationship", label: "Relationships & Family", icon: Heart, color: "text-rose-500" },
-  { domain: "social", label: "Belonging & Community", icon: Users, color: "text-emerald-500" },
-  { domain: "spiritual", label: "Spiritual & Life Direction", icon: Compass, color: "text-violet-500" },
-  { domain: "legal", label: "Peace & Harmony", icon: Scale, color: "text-blue-500" },
-  { domain: "career", label: "Money & Business Reflection", icon: Briefcase, color: "text-amber-500" },
+  { domain: "biological", label: "Biological, Wellbeing and Health", icon: Dna, color: "text-brand" },
+  { domain: "relationship", label: "Relationships & Family", icon: Heart, color: "text-danger" },
+  { domain: "social", label: "Belonging & Community", icon: Users, color: "text-brand" },
+  { domain: "spiritual", label: "Spiritual & Life Direction", icon: Compass, color: "text-plum" },
+  { domain: "legal", label: "Peace & Harmony", icon: Scale, color: "text-info" },
+  { domain: "career", label: "Money & Business Reflection", icon: Briefcase, color: "text-gold" },
 ] as const;
 
 export function HomePageContent({ data }: { data: HomeData }) {
@@ -37,11 +38,11 @@ export function HomePageContent({ data }: { data: HomeData }) {
   return (
     <div className="relative overflow-hidden">
       <section className="relative isolate">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_10%_-10%,color-mix(in_srgb,var(--cultural-gold)_28%,transparent),transparent),radial-gradient(50rem_30rem_at_95%_10%,color-mix(in_srgb,var(--brand-accent)_25%,transparent),transparent)]" />
-        <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(45deg,currentColor_1px,transparent_1px),linear-gradient(-45deg,currentColor_1px,transparent_1px)] [background-size:28px_28px] text-foreground" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_10%_-10%,color-mix(in_srgb,var(--gold-fill)_22%,transparent),transparent),radial-gradient(50rem_30rem_at_95%_10%,color-mix(in_srgb,var(--brand)_10%,transparent),transparent)]" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.06] [background-image:linear-gradient(45deg,currentColor_1px,transparent_1px),linear-gradient(-45deg,currentColor_1px,transparent_1px)] [background-size:28px_28px] text-gold" />
         <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:pb-24 lg:pt-20">
           <div className="flex flex-col gap-6">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-gold">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-gold-strong">
               <Sparkles className="size-3.5" aria-hidden="true" /> {t.home.badge}
             </span>
             <h1 className="font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-6xl">
@@ -51,7 +52,7 @@ export function HomePageContent({ data }: { data: HomeData }) {
 
             {data?.facets?.searchVisible && (
               <>
-                <form action="/marketplace" className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-xl shadow-brand/5 focus-within:ring-2 focus-within:ring-ring">
+                <form action={withBasePath("/marketplace")} className="flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-panel focus-within:ring-2 focus-within:ring-ring">
                   <Search className="ml-3 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
                   <label htmlFor="home-search" className="sr-only">{t.home.search}</label>
                   <input
@@ -67,11 +68,11 @@ export function HomePageContent({ data }: { data: HomeData }) {
 
                 <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
                   <span>{t.home.popular}</span>
-                  <Link href="/marketplace?q=herbal" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🌿 {t.home.herbal}</Link>
-                  <Link href="/marketplace?q=Awde+Negest" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📜 {t.home.awdeNegest}</Link>
-                  <Link href="/marketplace?q=bone+setting" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">🦴 {t.home.boneSetting}</Link>
+                  <Link href="/marketplace?q=herbal" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">�� {t.home.herbal}</Link>
+                  <Link href="/marketplace?q=Awde+Negest" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">�� {t.home.awdeNegest}</Link>
+                  <Link href="/marketplace?q=bone+setting" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">�� {t.home.boneSetting}</Link>
                   <Link href="/marketplace?q=ceremony" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">☕ {t.home.ceremony}</Link>
-                  <Link href="/marketplace?region=Addis+Ababa" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">📍 {t.home.addis}</Link>
+                  <Link href="/marketplace?region=Addis+Ababa" className="rounded-full border border-border bg-card/80 px-2.5 py-0.5 font-medium text-foreground hover:border-brand hover:text-brand-strong">�� {t.home.addis}</Link>
                 </div>
               </>
             )}
@@ -84,10 +85,10 @@ export function HomePageContent({ data }: { data: HomeData }) {
           </div>
 
           <div className="relative hidden lg:block" aria-hidden="true">
-            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-inverse to-brand-strong shadow-2xl" />
+            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-inverse to-brand-strong shadow-raised" />
             <div className="absolute inset-4 rounded-[2rem] border border-gold/40" />
             <div className="relative flex h-full flex-col justify-between p-10 text-inverse-foreground">
-              <p lang="am" className="font-geez text-7xl font-bold text-gold/90">ጥበብ</p>
+              <p lang="am" className="font-geez text-7xl font-bold text-gold">ጥበብ</p>
               <div className="space-y-4">
                 <p className="font-display text-3xl font-extrabold leading-tight">{t.home.knowledgeCarried}</p>
                 <p className="text-sm text-inverse-foreground/75">
@@ -194,7 +195,7 @@ export function HomePageContent({ data }: { data: HomeData }) {
             { icon: MessageCircle, title: t.home.stayInTouch, body: t.home.stayInTouchBody },
           ].map((step, index) => (
             <li key={step.title} className="relative rounded-3xl border border-border bg-card p-6">
-              <span className="absolute right-5 top-4 font-display text-5xl font-extrabold text-muted-foreground/15">{index + 1}</span>
+              <span aria-hidden="true" className="absolute right-5 top-4 font-display text-5xl font-semibold text-gold/20">{index + 1}</span>
               <step.icon className="size-7 text-brand" aria-hidden="true" />
               <h3 className="mt-4 font-display text-lg font-bold text-foreground">{step.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{step.body}</p>
@@ -204,7 +205,7 @@ export function HomePageContent({ data }: { data: HomeData }) {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-inverse via-brand-strong to-inverse p-8 text-inverse-foreground shadow-2xl sm:p-12">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-inverse via-brand-strong to-inverse p-8 text-inverse-foreground shadow-raised sm:p-12">
           <div aria-hidden="true" className="absolute -right-10 -top-10 size-64 rounded-full bg-gold/25 blur-3xl" />
           <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div>

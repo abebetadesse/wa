@@ -58,22 +58,22 @@ export default function NutrientRadarChart({ data }: RadarChartProps) {
     <div className="glass-panel p-6 flex flex-col items-center">
       <div className="w-full flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
             <span>Biochemical Nutrient Balance Radar</span>
             <span className="badge badge-safe text-[9px]">EFCT Baseline vs Altitude</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Green dashed circle marks 100% of altitude-calibrated physiological requirements
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-400"></span>
-            <span className="text-slate-300">Client Intake</span>
+            <span className="w-3 h-3 rounded-full bg-brand/30 border border-brand"></span>
+            <span className="text-soft">Client Intake</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-amber-400"></span>
-            <span className="text-slate-300">Target (100%)</span>
+            <span className="w-3 h-1 bg-gold-fill"></span>
+            <span className="text-soft">Target (100%)</span>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@ export default function NutrientRadarChart({ data }: RadarChartProps) {
                   y={labelPos.y}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  className="text-[11px] font-semibold fill-slate-200"
+                  className="text-[11px] font-semibold fill-foreground"
                 >
                   {item.symbol || item.name.slice(0, 4)}
                 </text>
@@ -162,7 +162,7 @@ export default function NutrientRadarChart({ data }: RadarChartProps) {
                   y={labelPos.y + 12}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  className={`text-[9px] font-mono ${isDeficient ? "fill-rose-400 font-bold" : "fill-emerald-400"}`}
+                  className={`text-[9px] font-mono ${isDeficient ? "fill-danger font-bold" : "fill-brand"}`}
                 >
                   {item.pct}%
                 </text>
@@ -172,11 +172,11 @@ export default function NutrientRadarChart({ data }: RadarChartProps) {
         </svg>
       </div>
 
-      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2 mt-6 pt-4 border-t border-white/10 text-xs">
+      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2 mt-6 pt-4 border-t border-border text-xs">
         {data.slice(0, 4).map((d, idx) => (
-          <div key={idx} className="p-2 rounded bg-white/[0.02] text-center">
-            <span className="text-slate-400 text-[10px] block">{d.name}</span>
-            <span className={`font-mono font-bold ${d.pct < 70 ? "text-rose-400" : "text-emerald-400"}`}>
+          <div key={idx} className="p-2 rounded bg-foreground/[0.02] text-center">
+            <span className="text-muted-foreground text-[10px] block">{d.name}</span>
+            <span className={`font-mono font-bold ${d.pct < 70 ? "text-danger" : "text-brand"}`}>
               {d.actual} / {d.target} {d.unit}
             </span>
           </div>

@@ -10,9 +10,9 @@ export function PageHeader({ eyebrow, title, description, actions, className }: 
   return (
     <header className={cn("mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
       <div className="flex flex-col gap-2">
-        {eyebrow && <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand">{eyebrow}</p>}
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{title}</h1>
-        {description && <p className="max-w-2xl text-base text-muted-foreground">{description}</p>}
+        {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-strong">{eyebrow}</p>}
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{title}</h1>
+        {description && <p className="max-w-2xl text-base text-soft">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
     </header>

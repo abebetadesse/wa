@@ -1,15 +1,17 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export type BadgeTone = "neutral" | "brand" | "gold" | "success" | "warning" | "danger";
+export type BadgeTone = "neutral" | "brand" | "gold" | "success" | "warning" | "danger" | "info" | "plum";
 
 const tones: Record<BadgeTone, string> = {
-  neutral: "border-border bg-muted text-muted-foreground",
-  brand: "border-brand/30 bg-brand/10 text-brand-strong",
-  gold: "border-gold/35 bg-gold/15 text-gold",
-  success: "border-success/30 bg-success/10 text-success",
-  warning: "border-warning/30 bg-warning/10 text-warning",
-  danger: "border-danger/30 bg-danger/10 text-danger",
+  neutral: "border-border bg-muted text-soft",
+  brand: "border-brand/30 bg-brand-soft text-brand-strong",
+  gold: "border-gold/35 bg-gold-soft text-gold-strong",
+  success: "border-success/30 bg-success-soft text-success-strong",
+  warning: "border-warning/30 bg-warning-soft text-warning-strong",
+  danger: "border-danger/30 bg-danger-soft text-danger-strong",
+  info: "border-info/30 bg-info-soft text-info-strong",
+  plum: "border-plum/30 bg-plum-soft text-plum-strong",
 };
 
 export function Badge({ className, tone = "brand", ...props }: HTMLAttributes<HTMLSpanElement> & { tone?: BadgeTone }) {

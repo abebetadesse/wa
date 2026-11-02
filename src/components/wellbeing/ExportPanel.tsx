@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { withBasePath } from '@/lib/base-path';
 
 interface ExportPanelProps {
   reportId: string;
@@ -14,7 +15,7 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
     setLoading(format);
     setError(null);
     try {
-      const response = await fetch(`/api/export/${reportId}?format=${format}`);
+      const response = await fetch(withBasePath(`/api/export/${reportId}?format=${format}`));
       if (!response.ok) {
         throw new Error("Export failed. Please try again.");
       }
@@ -38,12 +39,12 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
   return (
     <div className="glass-panel p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
+        <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-soft">
           ⬇
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white">Export Report</h3>
-          <p className="text-[10px] text-slate-500">Download your scientific gap analysis</p>
+          <h3 className="text-sm font-bold text-foreground">Export Report</h3>
+          <p className="text-[10px] text-subtle">Download your scientific gap analysis</p>
         </div>
       </div>
 
@@ -53,16 +54,16 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
           id="export-json-btn"
           onClick={() => handleExport("json")}
           disabled={loading !== null}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 hover:bg-white/[0.07] transition-all text-left group disabled:opacity-50"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-foreground/[0.04] border border-border hover:border-brand/40 hover:bg-foreground/[0.07] transition-all text-left group disabled:opacity-50"
         >
           <span className="text-xl">{ }</span>
           <div className="flex-1">
-            <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+            <div className="text-sm font-semibold text-soft group-hover:text-foreground transition-colors">
               {loading === "json" ? "Downloading…" : "Export as JSON"}
             </div>
-            <div className="text-[10px] text-slate-500">Full structured data · gaps, causes, solutions, sources</div>
+            <div className="text-[10px] text-subtle">Full structured data · gaps, causes, solutions, sources</div>
           </div>
-          <span className="text-xs text-slate-600 font-mono">.json</span>
+          <span className="text-xs text-subtle font-mono">.json</span>
         </button>
 
         {/* CSV */}
@@ -70,26 +71,26 @@ export default function ExportPanel({ reportId }: ExportPanelProps) {
           id="export-csv-btn"
           onClick={() => handleExport("csv")}
           disabled={loading !== null}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 hover:border-teal-500/40 hover:bg-white/[0.07] transition-all text-left group disabled:opacity-50"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-foreground/[0.04] border border-border hover:border-brand/40 hover:bg-foreground/[0.07] transition-all text-left group disabled:opacity-50"
         >
           <span className="text-xl">📊</span>
           <div className="flex-1">
-            <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+            <div className="text-sm font-semibold text-soft group-hover:text-foreground transition-colors">
               {loading === "csv" ? "Downloading…" : "Export as CSV"}
             </div>
-            <div className="text-[10px] text-slate-500">Spreadsheet-ready · nutrient gaps with RDA targets</div>
+            <div className="text-[10px] text-subtle">Spreadsheet-ready · nutrient gaps with RDA targets</div>
           </div>
-          <span className="text-xs text-slate-600 font-mono">.csv</span>
+          <span className="text-xs text-subtle font-mono">.csv</span>
         </button>
       </div>
 
       {error && (
-        <div className="mt-3 px-3 py-2 rounded-lg bg-rose-950/50 border border-rose-500/30 text-rose-300 text-xs">
+        <div className="mt-3 px-3 py-2 rounded-lg bg-danger-soft border border-danger/30 text-danger-strong text-xs">
           {error}
         </div>
       )}
 
-      <p className="mt-3 text-[10px] text-slate-700 leading-relaxed">
+      <p className="mt-3 text-[10px] text-subtle leading-relaxed">
         Exports contain Domain A (scientific) data only. Cultural / Ge&apos;ez heritage data (Domain B) is never included.
         Report ID: <span className="font-mono">{reportId.slice(0, 8)}…</span>
       </p>

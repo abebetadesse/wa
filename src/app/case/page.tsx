@@ -13,6 +13,7 @@ import { AWDE_NEGEST_CIRCLES } from "@/lib/cultural/spiritualDivinationEngine";
 import { EthiopianLocationInput } from "@/components/location/EthiopianLocationInput";
 import { estimateAgroEcology } from "@/lib/location/regions";
 import { clearQueued, isQueued, queuePut, startOutboxSync } from "@/lib/offline/outbox";
+import { withBasePath } from '@/lib/base-path';
 
 type Answers = Record<string, unknown>;
 type Phase = "domain" | "challenge" | "specific" | "endorsement" | "report" | "causes" | "solutions" | "complete";
@@ -172,7 +173,7 @@ export default function CasePage() {
     setCasesLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/cases", { credentials: "include", cache: "no-store" });
+      const response = await fetch(withBasePath("/api/cases"), { credentials: "include", cache: "no-store" });
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.error || "The case domains could not be loaded.");
       setCases(payload.data || []);
@@ -256,8 +257,8 @@ export default function CasePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/profile", { credentials: "include", cache: "no-store" }),
-      fetch("/api/auth/me", { credentials: "include", cache: "no-store" }),
+      fetch(withBasePath("/api/profile"), { credentials: "include", cache: "no-store" }),
+      fetch(withBasePath("/api/auth/me"), { credentials: "include", cache: "no-store" }),
     ])
       .then(async ([profileResponse, authResponse]) => ({
         profile: profileResponse.ok ? await profileResponse.json() : null,
@@ -309,7 +310,7 @@ export default function CasePage() {
     const timer = window.setTimeout(async () => {
       setAnswerSync("saving");
       try {
-        const response = await fetch(url, {
+        const response = await fetch(withBasePath(url), {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -348,7 +349,7 @@ export default function CasePage() {
     }
     const timer = window.setTimeout(async () => {
       try {
-        const response = await fetch(`/api/diagnostic/assist?query=${encodeURIComponent(detail)}`);
+        const response = await fetch(withBasePath(`/api/diagnostic/assist?query=${encodeURIComponent(detail)}`));
         const payload = await response.json();
         if (payload.success) setAssist(payload.data);
       } catch {
@@ -369,26 +370,26 @@ export default function CasePage() {
     const meta: Record<string, { label: string; tone: string; accent: string; action: string }> = {
       low: {
         label: "Stable review",
-        tone: "text-emerald-300 border-emerald-500/40 bg-emerald-950/25",
-        accent: "bg-emerald-500",
+        tone: "text-brand-strong border-brand/40 bg-brand-soft",
+        accent: "bg-brand",
         action: "Continue with the selected findings and monitor the plan over time.",
       },
       moderate: {
         label: "Monitor closely",
-        tone: "text-amber-300 border-amber-500/40 bg-amber-950/20",
-        accent: "bg-amber-500",
+        tone: "text-gold-strong border-gold/40 bg-gold-soft",
+        accent: "bg-gold-fill",
         action: "Review the findings in context and consider a follow-up check-in or additional assessment.",
       },
       high: {
         label: "Watch closely",
-        tone: "text-orange-300 border-orange-500/40 bg-orange-950/20",
-        accent: "bg-orange-500",
+        tone: "text-warning-strong border-warning/40 bg-warning-soft",
+        accent: "bg-warning",
         action: "Prioritize a timely review and consider escalating care if symptoms worsen or become urgent.",
       },
       critical: {
         label: "Urgent attention",
-        tone: "text-rose-300 border-rose-500/40 bg-rose-950/25",
-        accent: "bg-rose-500",
+        tone: "text-danger-strong border-danger/40 bg-danger-soft",
+        accent: "bg-danger",
         action: "This case shows an urgent or high-risk pattern; encourage immediate Scientific attention or emergency support.",
       },
     };
@@ -420,7 +421,7 @@ export default function CasePage() {
     : [];
 
   async function readJson(url: string, options?: RequestInit) {
-    const response = await fetch(url, options);
+    const response = await fetch(withBasePath(url), options);
     const payload = await response.json();
     if (!response.ok || !payload.success) throw new Error(payload.error || "The workflow could not continue.");
     return payload.data;
@@ -463,7 +464,7 @@ export default function CasePage() {
     if (query.length < 2) {
       throw new Error("Describe the case before running the diagnostic assessment.");
     }
-    const response = await fetch("/api/diagnostic/analyze", {
+    const response = await fetch(withBasePath("/api/diagnostic/analyze"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -542,7 +543,7 @@ export default function CasePage() {
             : undefined;
       const activityValue = asText(profileContext["Physical activity level"]).toLowerCase();
       const culturalOptIn = String(answers.reflectionLens || "").toLowerCase().includes("yes");
-      const response = await fetch("/api/intake", {
+      const response = await fetch(withBasePath("/api/intake"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -688,7 +689,7 @@ export default function CasePage() {
         String(answers.detail || ""),
         String(answers.medications || ""),
       ].filter(Boolean).join("\n");
-      const summaryResponse = await fetch("/api/case/summary", {
+      const summaryResponse = await fetch(withBasePath("/api/case/summary"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -703,7 +704,7 @@ export default function CasePage() {
         throw new Error(summaryPayload.error || "Unable to prepare your case summary.");
       }
       if (summaryPayload.data.isCrisis) {
-        window.location.assign(summaryPayload.data.emergencyRoute || "/emergency");
+        window.location.assign(withBasePath(summaryPayload.data.emergencyRoute || "/emergency"));
         return;
       }
       setSummaryReview(summaryPayload.data.card as SummaryReviewCard);
@@ -720,7 +721,7 @@ export default function CasePage() {
     setIsSubmitting(true);
     setError("");
     try {
-      const endorsementResponse = await fetch(`/api/case/summary/${summaryReview.id}/endorse`, {
+      const endorsementResponse = await fetch(withBasePath(`/api/case/summary/${summaryReview.id}/endorse`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -871,23 +872,23 @@ export default function CasePage() {
   function renderQuestions() {
     return questions.map((question) => (
       <div key={question.id} className="space-y-2">
-        <label className="block text-sm font-semibold text-white">
+        <label className="block text-sm font-semibold text-foreground">
           {question.text}
-          {question.required && <span className="text-amber-400 ml-1">*</span>}
+          {question.required && <span className="text-gold ml-1">*</span>}
         </label>
         {question.type === "textarea" ? (
           <textarea
             value={String(answers[question.fieldId] ?? "")}
             onChange={(e) => updateAnswer(question.fieldId, e.target.value)}
             rows={5}
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors"
+            className="w-full rounded-xl bg-sunken/80 border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors"
             placeholder="Describe your situation in detail..."
           />
         ) : question.type === "select" ? (
           <select
             value={String(answers[question.fieldId] ?? "")}
             onChange={(e) => updateAnswer(question.fieldId, e.target.value)}
-            className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors"
+            className="w-full rounded-xl bg-background border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors"
           >
             <option value="">Select one</option>
             {(question.options || []).map((option) => (
@@ -903,7 +904,7 @@ export default function CasePage() {
             onChange={(e) =>
               updateAnswer(question.fieldId, question.type === "number" ? Number(e.target.value) : e.target.value)
             }
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors"
+            className="w-full rounded-xl bg-sunken/80 border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors"
             placeholder={question.type === "number" ? "Enter a number" : "Enter your response..."}
           />
         )}
@@ -923,17 +924,17 @@ export default function CasePage() {
       {
         label: "Signal match",
         value: `${Math.round((reportCauses.reduce((sum, cause) => sum + cause.confidence, 0) / Math.max(reportCauses.length, 1)) * 100)}%`,
-        tone: "border-sky-500/30 bg-sky-950/15 text-sky-100",
+        tone: "border-info/30 bg-info-soft/70 text-info-strong",
       },
       {
         label: "Findings",
         value: `${reportCauses.filter((cause) => cause.isSelected).length}`,
-        tone: "border-violet-500/30 bg-violet-950/15 text-violet-100",
+        tone: "border-plum/30 bg-plum-soft/70 text-plum-strong",
       },
       {
         label: "Next action",
         value: activeSolutions[0]?.title ?? "Review and refine",
-        tone: "border-amber-500/30 bg-amber-950/15 text-amber-100",
+        tone: "border-gold/30 bg-gold-soft/70 text-gold-strong",
       },
     ];
 
@@ -941,8 +942,8 @@ export default function CasePage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map((card) => (
           <div key={card.label} className={`rounded-2xl border p-4 ${card.tone}`}>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-300">{card.label}</div>
-            <div className="mt-3 text-base font-semibold text-white leading-snug">{card.value}</div>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-soft">{card.label}</div>
+            <div className="mt-3 text-base font-semibold text-foreground leading-snug">{card.value}</div>
           </div>
         ))}
       </div>
@@ -955,12 +956,12 @@ export default function CasePage() {
       (assist.suggestions.length ? assist.suggestions[0] : "Case pattern is being interpreted.");
     const currentUrgency = diagnosticResult?.summary?.urgency ?? "low";
     const urgencyTone = currentUrgency === "critical"
-      ? "text-rose-300 border-rose-500/40 bg-rose-950/20"
+      ? "text-danger-strong border-danger/40 bg-danger-soft"
       : currentUrgency === "high"
-        ? "text-orange-300 border-orange-500/40 bg-orange-950/20"
+        ? "text-warning-strong border-warning/40 bg-warning-soft"
         : currentUrgency === "medium"
-          ? "text-amber-300 border-amber-500/40 bg-amber-950/20"
-          : "text-emerald-300 border-emerald-500/40 bg-emerald-950/20";
+          ? "text-gold-strong border-gold/40 bg-gold-soft"
+          : "text-brand-strong border-brand/40 bg-brand-soft";
 
     const wellbeingContextLoaded = Boolean(profileContext && Object.keys(profileContext).length > 0);
     const hasDiagnostic = Boolean(diagnosticResult);
@@ -972,70 +973,70 @@ export default function CasePage() {
       <aside className="glass-panel p-6 space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">AI Case Intelligence</div>
-            <div className="mt-2 text-lg font-black text-white font-serif">{currentDomain}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold">AI Case Intelligence</div>
+            <div className="mt-2 text-lg font-bold text-foreground font-serif">{currentDomain}</div>
           </div>
-          <span className="rounded-full border border-emerald-500/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-emerald-300">
+          <span className="rounded-full border border-brand/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand">
             Live
           </span>
         </div>
 
         <div className={`rounded-2xl border p-4 ${urgencyTone}`}>
-          <div className="text-[10px] font-black uppercase tracking-[0.2em]">Signal</div>
-          <div className="mt-2 text-sm font-bold text-white">{String(currentUrgency).toUpperCase()}</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em]">Signal</div>
+          <div className="mt-2 text-sm font-bold text-foreground">{String(currentUrgency).toUpperCase()}</div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Analysis Lens</div>
-          <p className="mt-3 text-sm leading-6 text-slate-200">
+        <div className="rounded-2xl border border-border bg-sunken/50 p-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">Analysis Lens</div>
+          <p className="mt-3 text-sm leading-6 text-soft">
             {currentSummary}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 p-4">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">AI Response Stream</div>
+        <div className="rounded-2xl border border-border bg-background/30 p-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">AI Response Stream</div>
           <div className="mt-3 space-y-2">
             {aiSignals.map((item) => (
-              <div key={String(item)} className="flex items-center gap-2 text-xs text-slate-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
+              <div key={String(item)} className="flex items-center gap-2 text-xs text-soft">
+                <span className="h-1.5 w-1.5 rounded-full bg-gold-fill" />
                 <span>{String(item)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-950/10 p-4">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Care Readiness</div>
+        <div className="rounded-2xl border border-brand/25 bg-brand-soft/70 p-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">Care Readiness</div>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
+            <span className="rounded-full border border-border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-soft">
               {!profileContextLoaded ? "Loading profile" : wellbeingContextLoaded ? "Profile loaded" : "Intake only"}
             </span>
-            <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-300">
+            <span className="rounded-full border border-border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-soft">
               {hasDiagnostic ? "Diagnostic" : "No diagnostic"}
             </span>
           </div>
         </div>
 
         {diagnosticResult && (
-          <div className="rounded-2xl border border-sky-500/30 bg-sky-950/15 p-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-300">Scientific Fit</div>
-            <div className="mt-2 text-sm font-bold text-white">
+          <div className="rounded-2xl border border-info/30 bg-info-soft/70 p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-info">Scientific Fit</div>
+            <div className="mt-2 text-sm font-bold text-foreground">
               {diagnosticResult.summary.confidence > 0
                 ? `Signal strength ${Math.round(diagnosticResult.summary.confidence)}%`
                 : "Not enough relevant evidence for a match"}
             </div>
-            <div className="mt-2 text-[11px] text-sky-100">
+            <div className="mt-2 text-[11px] text-info-strong">
               {diagnosticResult.summary.intent || "Scientific reasoning loaded"}
             </div>
           </div>
         )}
 
         {assist.safetyFlags.length > 0 && (
-          <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-300">Safety Signals</div>
+          <div className="rounded-2xl border border-danger/30 bg-danger-soft/70 p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-danger">Safety Signals</div>
             <div className="mt-2 space-y-1">
               {assist.safetyFlags.slice(0, 3).map((flag) => (
-                <div key={flag} className="text-[11px] text-rose-100">• {String(flag)}</div>
+                <div key={flag} className="text-[11px] text-danger-strong">• {String(flag)}</div>
               ))}
             </div>
           </div>
@@ -1079,15 +1080,15 @@ export default function CasePage() {
         </header>
 
         {/* Hub View Switcher & Companion Heritage Tools */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 p-2 rounded-2xl bg-zinc-900/60 border border-white/10 backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 p-2 rounded-2xl bg-card/60 border border-border ">
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => setActiveHubView("intake")}
               className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeHubView === "intake"
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-950/30"
-                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                  ? "bg-brand/20 text-brand-strong border border-brand/40 shadow-panel"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
             >
               <span>🏛️</span>
@@ -1098,8 +1099,8 @@ export default function CasePage() {
               onClick={() => setActiveHubView("hatata")}
               className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeHubView === "hatata"
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-950/30"
-                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                  ? "bg-gold/20 text-gold-strong border border-gold/40 shadow-panel"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
             >
               <span>📜</span>
@@ -1110,8 +1111,8 @@ export default function CasePage() {
               onClick={() => setActiveHubView("telsem")}
               className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeHubView === "telsem"
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-950/30"
-                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                  ? "bg-plum/20 text-plum-strong border border-plum/40 shadow-panel"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
             >
               <span>🛡️</span>
@@ -1122,8 +1123,8 @@ export default function CasePage() {
               onClick={() => setActiveHubView("awde")}
               className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeHubView === "awde"
-                  ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-lg shadow-sky-950/30"
-                  : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                  ? "bg-info/20 text-info-strong border border-info/40 shadow-panel"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
               }`}
             >
               <span>🧭</span>
@@ -1131,7 +1132,7 @@ export default function CasePage() {
             </button>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-[11px] text-amber-300/80 px-3 font-mono">
+          <div className="hidden sm:flex items-center gap-2 text-[11px] text-gold px-3 font-mono">
             <span>✨ ዓውደ መድረክ · Planetary Sanctuary</span>
           </div>
         </div>
@@ -1139,8 +1140,8 @@ export default function CasePage() {
         {/* Companion Tab View Overlays */}
         {activeHubView === "hatata" && (
           <div className="space-y-4 mb-10">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h2 className="text-xl font-bold text-amber-200">ሃተታ መናፍስት ወ አውደ ነገሥት ከነትርጉሙ</h2>
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h2 className="text-xl font-bold text-gold-strong">ሃተታ መናፍስት ወ አውደ ነገሥት ከነትርጉሙ</h2>
               <button
                 type="button"
                 onClick={() => setActiveHubView("intake")}
@@ -1155,8 +1156,8 @@ export default function CasePage() {
 
         {activeHubView === "telsem" && (
           <div className="space-y-4 mb-10">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h2 className="text-xl font-bold text-amber-200">የጠልሰም ቤተ-መጻሕፍት (Sacred Telsem Manuscript Library)</h2>
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h2 className="text-xl font-bold text-gold-strong">የጠልሰም ቤተ-መጻሕፍት (Sacred Telsem Manuscript Library)</h2>
               <button
                 type="button"
                 onClick={() => setActiveHubView("intake")}
@@ -1171,8 +1172,8 @@ export default function CasePage() {
 
         {activeHubView === "awde" && (
           <div className="space-y-6 mb-10">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h2 className="text-xl font-bold text-amber-200">Awde Negest 16 Circles & Celestial Divination</h2>
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h2 className="text-xl font-bold text-gold-strong">Awde Negest 16 Circles & Celestial Divination</h2>
               <button
                 type="button"
                 onClick={() => setActiveHubView("intake")}
@@ -1190,17 +1191,17 @@ export default function CasePage() {
 
         {/* Crisis Emergency Banner */}
         {isCrisisNarrative && (
-          <div className="mb-8 p-6 rounded-3xl bg-rose-950/80 border-2 border-rose-500/80 shadow-2xl backdrop-blur-md text-white animate-fade-in">
+          <div className="mb-8 p-6 rounded-3xl bg-danger-soft border-2 border-danger/80 shadow-raised  text-foreground animate-fade-in">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-rose-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-lg">
+              <div className="w-12 h-12 rounded-2xl bg-danger flex items-center justify-center text-2xl flex-shrink-0 shadow-panel">
                 🛡️
               </div>
               <div className="space-y-1.5 flex-1">
-                <div className="inline-block px-3 py-1 rounded-full bg-rose-500/30 text-rose-200 text-xs font-bold uppercase tracking-wider">
+                <div className="inline-block px-3 py-1 rounded-full bg-danger/30 text-danger-strong text-xs font-bold uppercase tracking-wider">
                   Emergency Support Notice · Non-Gated Safety Protocol
                 </div>
-                <h3 className="text-xl font-extrabold text-white">Immediate Care & Emergency Assistance</h3>
-                <p className="text-sm text-rose-100/90 leading-relaxed">
+                <h3 className="text-xl font-extrabold text-foreground">Immediate Care & Emergency Assistance</h3>
+                <p className="text-sm text-danger-strong leading-relaxed">
                   Your entry indicates urgent distress or safety risk. You do not need to navigate this alone — free, confidential professional support is available right now.
                 </p>
               </div>
@@ -1221,27 +1222,27 @@ export default function CasePage() {
                   <div className="flex items-center gap-1.5 whitespace-nowrap">
                     <span
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all duration-300 ${isCompleted
-                        ? "bg-emerald-500/20 border-emerald-500/60 text-emerald-300"
+                        ? "bg-brand/20 border-brand/60 text-brand-strong"
                         : isCurrent
-                          ? "bg-emerald-500/30 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/40"
-                          : "bg-white/5 border-white/10 text-slate-600"
+                          ? "bg-brand/30 border-brand text-brand-strong ring-2 ring-brand/40"
+                          : "bg-foreground/5 border-border text-subtle"
                         }`}
                     >
                       {isCompleted ? "✓" : index + 1}
                     </span>
                     <span
                       className={`text-[11px] font-medium transition-colors ${isCompleted
-                        ? "text-emerald-400"
+                        ? "text-brand"
                         : isCurrent
-                          ? "text-white"
-                          : "text-slate-600"
+                          ? "text-foreground"
+                          : "text-subtle"
                         }`}
                     >
                       {label}
                     </span>
                   </div>
                   {index < Object.keys(PHASE_LABELS).length - 1 && (
-                    <span className="mx-2 text-slate-700 text-xs">/</span>
+                    <span className="mx-2 text-subtle text-xs">/</span>
                   )}
                 </li>
               );
@@ -1250,14 +1251,14 @@ export default function CasePage() {
         </nav>
 
         {draftAvailable && (
-          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-sky-500/30 bg-sky-950/20 p-4 text-sm text-sky-100" role="status">
-            <span className="text-sky-300">↻</span>
+          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-info/30 bg-info-soft p-4 text-sm text-info-strong" role="status">
+            <span className="text-info">↻</span>
             <span className="flex-1">
               {draftNeedsReanalysis
                 ? "This saved report contained cultural or astrological material presented as a finding. Your case answers were preserved; generate a fresh report to continue."
                 : "Your active case was restored from this browser."}
             </span>
-            <button type="button" onClick={discardDraft} className="text-xs text-sky-300 underline underline-offset-2 hover:text-white">
+            <button type="button" onClick={discardDraft} className="text-xs text-info underline underline-offset-2 hover:text-foreground">
               Discard draft
             </button>
           </div>
@@ -1269,12 +1270,12 @@ export default function CasePage() {
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200 flex items-start gap-3">
-            <span className="text-rose-400">⚠️</span>
+          <div className="mb-6 rounded-xl border border-danger/40 bg-danger-soft p-4 text-sm text-danger-strong flex items-start gap-3">
+            <span className="text-danger">⚠️</span>
             <span>{error}</span>
             <button
               onClick={() => setError("")}
-              className="ml-auto text-rose-400 hover:text-rose-200"
+              className="ml-auto text-danger hover:text-danger-strong"
             >
               ✕
             </button>
@@ -1285,10 +1286,10 @@ export default function CasePage() {
         {phase === "domain" && activeHubView === "intake" && (
           <section aria-label="Choose a case domain">
             {casesLoading ? (
-              <p className="text-sm text-slate-400" role="status">Loading case domains...</p>
+              <p className="text-sm text-muted-foreground" role="status">Loading case domains...</p>
             ) : cases.length === 0 ? (
               <div className="glass-panel p-6 space-y-4">
-                <p className="text-sm text-slate-300">No case domains are available right now.</p>
+                <p className="text-sm text-soft">No case domains are available right now.</p>
                 <button type="button" onClick={() => void loadCases()} className="btn-secondary">Retry loading domains</button>
               </div>
             ) : (
@@ -1309,8 +1310,8 @@ export default function CasePage() {
                         onClick={() => setDomainFilter(tab.id as any)}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                           domainFilter === tab.id
-                            ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
-                            : "bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                            ? "bg-brand text-brand-foreground shadow-md"
+                            : "bg-foreground/5 border border-border text-muted-foreground hover:text-brand-foreground hover:bg-foreground/10"
                         }`}
                       >
                         {tab.label}
@@ -1324,29 +1325,29 @@ export default function CasePage() {
                   {(domainFilter === "all" || domainFilter === "flagship" || domainFilter === "purpose") && (
                     <div className="space-y-4">
                       {/* FLAGSHIP 1: SPIRITUAL & LIFE DIRECTION */}
-                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-amber-950/70 via-stone-900/90 to-black border-2 border-amber-500/60 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-amber-500 to-amber-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-gold-soft via-card/90 to-background border-2 border-gold/60 shadow-raised relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-gold-fill to-gold-fill text-gold-foreground font-bold text-xs uppercase tracking-wider shadow-panel">
                           ✨ Flagship 1 · Adaptive Divination
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                          <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                          <div className="w-16 h-16 rounded-2xl bg-gold/20 border border-gold/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             🔮
                           </div>
                           <div className="space-y-1.5 flex-1">
-                            <h2 className="text-2xl font-black text-amber-100 font-serif group-hover:text-amber-300 transition-colors">
+                            <h2 className="text-2xl font-bold text-gold-strong font-serif group-hover:text-gold transition-colors">
                               Spiritual & Life Direction (መንፈሳዊ አቅጣጫ)
                             </h2>
-                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                            <p className="text-xs text-soft leading-relaxed max-w-2xl">
                               Live Ge&apos;ez Fidel gematria calculation as you type, 16 Circles of Awde Negest, personalized talismanic lineages, AI follow-ups, and verified debtera review.
                             </p>
                             <div className="flex flex-wrap gap-1.5 pt-2">
-                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-gold/10 border border-gold/30 text-gold-strong text-[11px] font-mono">
                                 Live Gematria (የፊደል ሂሳብ)
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-gold/10 border border-gold/30 text-gold-strong text-[11px] font-mono">
                                 Awde Negest (አውደ ነገሥት)
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-gold/10 border border-gold/30 text-gold-strong text-[11px] font-mono">
                                 Verified Debtera Review
                               </span>
                             </div>
@@ -1354,7 +1355,7 @@ export default function CasePage() {
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
                               href="/case/workflows/new/spiritual"
-                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-gold-fill text-gold-foreground font-bold text-xs hover:bg-gold-fill transition-colors shadow-panel"
                             >
                               Launch Engine →
                             </Link>
@@ -1362,7 +1363,7 @@ export default function CasePage() {
                               <button
                                 type="button"
                                 onClick={() => void chooseDomain(cases.find((c) => c.id === "spiritual")!)}
-                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                                className="px-4 py-2 rounded-xl bg-foreground/5 border border-border text-soft text-xs hover:text-foreground hover:bg-foreground/10"
                               >
                                 Quick In-Hub
                               </button>
@@ -1372,29 +1373,29 @@ export default function CasePage() {
                       </div>
 
                       {/* FLAGSHIP 2: CAREER TIMING & VOCATIONAL DESTINY */}
-                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-sky-950/70 via-stone-900/90 to-black border-2 border-sky-500/60 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-sky-400 to-sky-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-info-soft via-card/90 to-background border-2 border-info/60 shadow-raised relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-info to-info text-info-foreground font-bold text-xs uppercase tracking-wider shadow-panel">
                           ✨ Flagship 2 · Livelihood Reflection
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                          <div className="w-16 h-16 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                          <div className="w-16 h-16 rounded-2xl bg-info/20 border border-info/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             💼
                           </div>
                           <div className="space-y-1.5 flex-1">
-                            <h2 className="text-2xl font-black text-sky-100 font-serif group-hover:text-sky-300 transition-colors">
+                            <h2 className="text-2xl font-bold text-info-strong font-serif group-hover:text-info transition-colors">
                               Money & Business Reflection
                             </h2>
-                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                            <p className="text-xs text-soft leading-relaxed max-w-2xl">
                               Reflect on work, livelihood, and enterprise through cultural values. This is not financial, business, or career advice.
                             </p>
                             <div className="flex flex-wrap gap-1.5 pt-2">
-                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-info/10 border border-info/30 text-info-strong text-[11px] font-mono">
                                 Work & Livelihood Values
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-info/10 border border-info/30 text-info-strong text-[11px] font-mono">
                                 Ge&apos;ez Voice Input
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-info/10 border border-info/30 text-info-strong text-[11px] font-mono">
                                 Cultural Reflection
                               </span>
                             </div>
@@ -1402,7 +1403,7 @@ export default function CasePage() {
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
                               href="/case/workflows/new/career"
-                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-sky-500 text-black font-bold text-xs hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-info text-info-foreground font-bold text-xs hover:bg-info transition-colors shadow-panel"
                             >
                               Launch Engine →
                             </Link>
@@ -1410,7 +1411,7 @@ export default function CasePage() {
                               <button
                                 type="button"
                                 onClick={() => void chooseDomain(cases.find((c) => c.id === "career")!)}
-                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                                className="px-4 py-2 rounded-xl bg-foreground/5 border border-border text-soft text-xs hover:text-foreground hover:bg-foreground/10"
                               >
                                 Quick In-Hub
                               </button>
@@ -1424,32 +1425,32 @@ export default function CasePage() {
                   {(domainFilter === "all" || domainFilter === "flagship" || domainFilter === "legal_social") && (
                     <div className="space-y-4">
                       {/* FLAGSHIP 3: PEACE & HARMONY */}
-                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-purple-950/70 via-stone-900/90 to-black border-2 border-purple-500/60 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-purple-400 to-purple-600 text-black font-mono font-bold text-xs uppercase tracking-wider shadow-lg">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-plum-soft via-card/90 to-background border-2 border-plum/60 shadow-raised relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-l from-plum to-plum text-plum-foreground font-bold text-xs uppercase tracking-wider shadow-panel">
                           ✨ Flagship 3 · Customary Peacemaking & Shimgelna
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                          <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                          <div className="w-16 h-16 rounded-2xl bg-plum/20 border border-plum/40 flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             🕊️
                           </div>
                           <div className="space-y-1.5 flex-1">
-                            <h2 className="text-2xl font-black text-purple-100 font-serif group-hover:text-purple-300 transition-colors">
+                            <h2 className="text-2xl font-bold text-plum-strong font-serif group-hover:text-plum transition-colors">
                               Peace & Harmony
                             </h2>
-                            <p className="text-xs text-stone-300 leading-relaxed max-w-2xl">
+                            <p className="text-xs text-soft leading-relaxed max-w-2xl">
                               Rooted entirely in Ethiopian customary reconciliation (ሽምግልና / Shemgelna), spiritual peacemaking, and traditional restorative justice. Provides cultural and spiritual wisdom for dispute resolution, family harmony, and conscience guidance — with no scientific or statutory advice.
                             </p>
                             <div className="flex flex-wrap gap-1.5 pt-2">
-                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-plum/10 border border-plum/30 text-plum-strong text-[11px] font-mono">
                                 Customary Peacemaking (ሽምግልና)
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-plum/10 border border-plum/30 text-plum-strong text-[11px] font-mono">
                                 Spiritual Conscience & Ethics
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-plum/10 border border-plum/30 text-plum-strong text-[11px] font-mono">
                                 Restorative Community Wisdom
                               </span>
-                              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-mono">
+                              <span className="px-2.5 py-0.5 rounded-full bg-plum/10 border border-plum/30 text-plum-strong text-[11px] font-mono">
                                 Cultural & Spiritual Only · No Scientific Advice
                               </span>
                             </div>
@@ -1457,7 +1458,7 @@ export default function CasePage() {
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                             <Link
                               href="/case/workflows/new/legal"
-                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-purple-500 text-white font-bold text-xs hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/20"
+                              className="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-plum text-plum-foreground font-bold text-xs hover:bg-plum transition-colors shadow-panel"
                             >
                               Launch Engine →
                             </Link>
@@ -1465,7 +1466,7 @@ export default function CasePage() {
                               <button
                                 type="button"
                                 onClick={() => void chooseDomain(cases.find((c) => c.id === "legal")!)}
-                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 text-xs hover:text-white hover:bg-white/10"
+                                className="px-4 py-2 rounded-xl bg-foreground/5 border border-border text-soft text-xs hover:text-foreground hover:bg-foreground/10"
                               >
                                 Quick In-Hub
                               </button>
@@ -1480,9 +1481,9 @@ export default function CasePage() {
                       ADDITIONAL CASE DOMAINS
                      ══════════════════════════════════════════════════════════ */}
                   <div className="pt-2">
-                    <div className="text-xs uppercase tracking-wider text-slate-400 font-mono font-bold mb-3 flex items-center justify-between">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-3 flex items-center justify-between">
                       <span>Standard & Specialized Care Domains</span>
-                      <span className="text-emerald-400 text-[10px]">Dual Domain A & B Analysis</span>
+                      <span className="text-brand text-[10px]">Dual Domain A & B Analysis</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1500,24 +1501,24 @@ export default function CasePage() {
                             type="button"
                             onClick={() => void chooseDomain(item)}
                             disabled={loading}
-                            className={`glass-panel p-6 text-left transition-all disabled:opacity-50 hover:shadow-lg group relative ${
+                            className={`glass-panel p-6 text-left transition-all disabled:opacity-50 hover:shadow-panel group relative ${
                               item.id === "wellbeing"
-                                ? "border-emerald-500/60 bg-emerald-950/20 hover:border-emerald-400"
-                                : "hover:border-emerald-400/60 hover:shadow-emerald-950/20"
+                                ? "border-brand/60 bg-brand-soft hover:border-brand"
+                                : "hover:border-brand/60"
                             }`}
                           >
                             <div className="flex items-start justify-between">
-                              <span className="text-3xl text-amber-300 group-hover:scale-110 transition-transform inline-block">
+                              <span className="text-3xl text-gold group-hover:scale-110 transition-transform inline-block">
                                 {item.icon}
                               </span>
                               {item.id === "wellbeing" && (
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/40">
+                                <span className="px-2 py-0.5 rounded-full bg-brand/20 text-brand-strong text-[10px] font-mono border border-brand/40">
                                   Clinical Engine
                                 </span>
                               )}
                             </div>
-                            <h2 className="text-xl font-bold text-white mt-4">{item.name}</h2>
-                            <p className="text-sm text-slate-400 mt-2 leading-relaxed">{item.description}</p>
+                            <h2 className="text-xl font-bold text-foreground mt-4">{item.name}</h2>
+                            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{item.description}</p>
                             <div className="flex flex-wrap gap-2 mt-5">
                               {item.interests.slice(0, 3).map((interest) => (
                                 <span key={interest} className="badge badge-safe normal-case tracking-normal text-xs">
@@ -1544,16 +1545,16 @@ export default function CasePage() {
           <section className="grid gap-6 xl:grid-cols-[minmax(640px,2fr)_minmax(280px,0.8fr)]">
             <section className="glass-panel p-6 md:p-8">
               <div className="badge badge-moderate mb-3">{selectedCase.name} · Common challenges</div>
-              <h2 className="text-2xl font-bold text-white">Which pattern sounds closest?</h2>
-              <p className="text-sm text-slate-400 mt-2 mb-6">
+              <h2 className="text-2xl font-bold text-foreground">Which pattern sounds closest?</h2>
+              <p className="text-sm text-muted-foreground mt-2 mb-6">
                 This second step is tailored to the domain you selected.
               </p>
               <form onSubmit={submitChallenge} className="space-y-4">
                 {questions.map((question) => (
                   <div key={question.id} className="space-y-2">
-                    <label className="block text-sm font-semibold text-white">
+                    <label className="block text-sm font-semibold text-foreground">
                       {question.text}
-                      {question.required && <span className="text-amber-400 ml-1">*</span>}
+                      {question.required && <span className="text-gold ml-1">*</span>}
                     </label>
                     <div className="grid grid-cols-1 gap-3">
                       {(question.options || []).map((option) => (
@@ -1564,8 +1565,8 @@ export default function CasePage() {
                           disabled={loading || isSubmitting}
                           aria-pressed={answers[question.fieldId] === option}
                           className={`w-full text-left p-4 rounded-xl border transition-colors ${answers[question.fieldId] === option
-                            ? "border-emerald-400 bg-emerald-500/15 text-white"
-                            : "border-white/10 bg-black/25 text-slate-300 hover:border-white/30"
+                            ? "border-brand bg-brand/15 text-foreground"
+                            : "border-border bg-sunken/50 text-soft hover:border-border-strong"
                             }`}
                         >
                           {option}
@@ -1594,8 +1595,8 @@ export default function CasePage() {
             <section className="space-y-6">
               <div className="glass-panel p-6 md:p-8">
                 <div className="badge badge-moderate mb-3">{selectedCase.name} · Specific case</div>
-                <h2 className="text-2xl font-bold text-white">Tell us what you want to work on</h2>
-                <p className="text-sm text-slate-400 mt-2 mb-6">
+                <h2 className="text-2xl font-bold text-foreground">Tell us what you want to work on</h2>
+                <p className="text-sm text-muted-foreground mt-2 mb-6">
                   Your chosen interest will refine the report and recommendations.
                 </p>
 
@@ -1606,8 +1607,8 @@ export default function CasePage() {
                       {/* Row 1: Age + Location */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <label htmlFor="case-age" className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                            How old are you? <span className="text-amber-400">*</span>
+                          <label htmlFor="case-age" className="block text-xs font-semibold text-soft uppercase tracking-wide">
+                            How old are you? <span className="text-gold">*</span>
                           </label>
                           <input
                             id="case-age"
@@ -1618,7 +1619,7 @@ export default function CasePage() {
                             onChange={(e) => updateAnswer("age", e.target.value ? Number(e.target.value) : "")}
                             placeholder="e.g. 32"
                             required
-                            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600"
+                            className="w-full rounded-xl bg-sunken/80 border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors placeholder:text-subtle"
                           />
                         </div>
                         <EthiopianLocationInput
@@ -1640,8 +1641,8 @@ export default function CasePage() {
 
                       {/* Describe concern */}
                       <div className="space-y-1.5">
-                        <label htmlFor="case-detail" className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                          Describe the concern, including timing and what makes it better or worse <span className="text-amber-400">*</span>
+                        <label htmlFor="case-detail" className="block text-xs font-semibold text-soft uppercase tracking-wide">
+                          Describe the concern, including timing and what makes it better or worse <span className="text-gold">*</span>
                         </label>
                         <textarea
                           id="case-detail"
@@ -1650,23 +1651,23 @@ export default function CasePage() {
                           rows={4}
                           required
                           placeholder="e.g. head ache, repeatedly happen at mid day worsen by thirst…"
-                          className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600 resize-none"
+                          className="w-full rounded-xl bg-sunken/80 border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors placeholder:text-subtle resize-none"
                         />
                         {/* Live safety hints */}
                         {(assist.urgencyHint || assist.safetyFlags.length > 0 || assist.suggestions.length > 0) && (
-                          <div className="mt-2 rounded-lg border border-sky-500/30 bg-sky-950/20 p-3 space-y-1.5">
+                          <div className="mt-2 rounded-lg border border-info/30 bg-info-soft p-3 space-y-1.5">
                             {assist.urgencyHint && (
-                              <p className="text-xs text-rose-300 flex items-center gap-1.5"><span>⚠️</span>{assist.urgencyHint}</p>
+                              <p className="text-xs text-danger flex items-center gap-1.5"><span>⚠️</span>{assist.urgencyHint}</p>
                             )}
                             {assist.safetyFlags.map((flag) => (
-                              <p key={flag} className="text-xs text-amber-200 flex items-center gap-1.5"><span>⚠️</span>{flag}</p>
+                              <p key={flag} className="text-xs text-gold-strong flex items-center gap-1.5"><span>⚠️</span>{flag}</p>
                             ))}
                             {assist.suggestions.map((suggestion) => (
                               <button
                                 type="button"
                                 key={suggestion}
                                 onClick={() => updateAnswer("detail", `${String(answers.detail || "").trim()} ${suggestion}`.trim())}
-                                className="block text-left text-xs text-sky-300 hover:text-sky-100 underline"
+                                className="block text-left text-xs text-info hover:text-info-strong underline"
                               >
                                 💡 {suggestion}
                               </button>
@@ -1677,31 +1678,31 @@ export default function CasePage() {
 
                       {/* Medicines */}
                       <div className="space-y-1.5">
-                        <label htmlFor="case-medications" className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
+                        <label htmlFor="case-medications" className="block text-xs font-semibold text-soft uppercase tracking-wide">
                           List medicines, supplements, or herbs currently in use
                         </label>
-                        <p className="text-xs text-slate-500">💡 Mention any medicines, herbs, or supplements you currently use.</p>
+                        <p className="text-xs text-subtle">💡 Mention any medicines, herbs, or supplements you currently use.</p>
                         <textarea
                           id="case-medications"
                           value={String(answers.medications ?? "")}
                           onChange={(e) => updateAnswer("medications", e.target.value)}
                           rows={2}
                           placeholder="e.g. Metformin 500mg, Tena Adam tea, Vitamin D…"
-                          className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600 resize-none"
+                          className="w-full rounded-xl bg-sunken/80 border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors placeholder:text-subtle resize-none"
                         />
                       </div>
 
                       {/* Which area should shape recommendations */}
                       <div className="space-y-1.5">
-                        <label htmlFor="case-interest" className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                          Which area should shape the recommendations? <span className="text-amber-400">*</span>
+                        <label htmlFor="case-interest" className="block text-xs font-semibold text-soft uppercase tracking-wide">
+                          Which area should shape the recommendations? <span className="text-gold">*</span>
                         </label>
                         <select
                           id="case-interest"
                           value={String(answers.selectedInterest ?? "")}
                           onChange={(e) => updateAnswer("selectedInterest", e.target.value)}
                           required
-                          className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors"
+                          className="w-full rounded-xl bg-background border border-border px-4 py-3 text-sm text-foreground outline-none focus:border-brand transition-colors"
                         >
                           <option value="">Select one…</option>
                           {(questions.find((q) => q.fieldId === "selectedInterest")?.options ||
@@ -1723,8 +1724,8 @@ export default function CasePage() {
 
                       {/* Cultural reflection layer */}
                       <div className="space-y-2">
-                        <p className="block text-xs font-semibold text-slate-300 uppercase tracking-wide">
-                          Would you like a cultural reflection layer included? <span className="text-amber-400">*</span>
+                        <p className="block text-xs font-semibold text-soft uppercase tracking-wide">
+                          Would you like a cultural reflection layer included? <span className="text-gold">*</span>
                         </p>
                         <div className="flex gap-3">
                           {["Yes — include Domain B", "No — Scientific Domain A only"].map((opt) => {
@@ -1737,9 +1738,9 @@ export default function CasePage() {
                                 onClick={() => updateAnswer("reflectionLens", val)}
                                 className={`flex-1 py-2.5 px-4 rounded-xl border text-sm font-medium transition-all ${selected
                                   ? val === "yes"
-                                    ? "border-amber-400 bg-amber-500/15 text-amber-200"
-                                    : "border-emerald-400 bg-emerald-500/15 text-emerald-200"
-                                  : "border-white/10 bg-black/25 text-slate-400 hover:border-white/30"
+                                    ? "border-gold bg-gold/15 text-gold-strong"
+                                    : "border-brand bg-brand/15 text-brand-strong"
+                                  : "border-border bg-sunken/50 text-muted-foreground hover:border-border-strong"
                                   }`}
                               >
                                 {val === "yes" ? "🌿 Yes" : "⚕️ No"} — {val === "yes" ? "include Domain B" : "Scientific only"}
@@ -1757,29 +1758,29 @@ export default function CasePage() {
                   {/* ── Domain A / Domain B visual layer panels ── */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     {/* Domain A — Scientific */}
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-4 space-y-2">
+                    <div className="rounded-xl border border-brand/30 bg-brand-soft/70 p-4 space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
-                        <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">Scientific Domain A</span>
+                        <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0" />
+                        <span className="text-xs font-bold text-brand uppercase tracking-wide">Scientific Domain A</span>
                       </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         Biochemical · Nutritional · Ecological · Drug-Herb Safety · Mechanistic
                       </p>
-                      <p className="text-[10px] text-emerald-400/70">Active — shapes Scientific report</p>
+                      <p className="text-[10px] text-brand">Active — shapes Scientific report</p>
                     </div>
 
                     {/* Domain B — Cultural (opt-in only) */}
                     {String(answers.reflectionLens ?? "").toLowerCase() === "yes" && (
-                      <div className="rounded-xl border border-amber-500/40 bg-amber-950/15 p-4 space-y-2">
+                      <div className="rounded-xl border border-gold/40 bg-gold-soft/70 p-4 space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
-                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wide">Cultural Domain B</span>
-                          <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold">Firewalled</span>
+                          <span className="w-2 h-2 rounded-full bg-gold-fill flex-shrink-0" />
+                          <span className="text-xs font-bold text-gold uppercase tracking-wide">Cultural Domain B</span>
+                          <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-gold/20 text-gold-strong font-semibold">Firewalled</span>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           Ge'ez calendar · Numerology · AwudeNegest · Traditional heritage
                         </p>
-                        <p className="text-[10px] text-amber-400/70">
+                        <p className="text-[10px] text-gold">
                           Opted in — enrichment layer only, never alters Scientific gaps
                         </p>
                       </div>
@@ -1788,50 +1789,50 @@ export default function CasePage() {
 
                   {/* ── Integrated client assessment ── */}
                   <section
-                    className="rounded-2xl border border-emerald-500/25 bg-emerald-950/10 p-5 space-y-5"
+                    className="rounded-2xl border border-brand/25 bg-brand-soft/70 p-5 space-y-5"
                     aria-label="Integrated assessment tools"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <div className="badge badge-safe mb-2">Integrated client assessment</div>
-                        <h3 className="text-base font-bold text-white">Bring your wellbeing context into this case</h3>
-                        <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        <h3 className="text-base font-bold text-foreground">Bring your wellbeing context into this case</h3>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                           Profile fields from your personal, family, geographic, cultural, economic, wellbeing, and lifestyle
                           profile are sent as context. You can review and change them in Profile Edit.
                         </p>
                       </div>
-                      <div className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-300">
+                      <div className="rounded-full border border-brand/40 bg-brand/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-brand-strong">
                         AI Enhanced
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-violet-400/20 bg-violet-950/15 p-4">
-                      <p className="text-sm font-semibold text-white">Identity context (optional)</p>
-                      <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                    <div className="rounded-xl border border-plum/20 bg-plum-soft/70 p-4">
+                      <p className="text-sm font-semibold text-foreground">Identity context (optional)</p>
+                      <p className="mt-1 text-xs leading-relaxed text-soft">
                         Religion and gender identity are never sent with scientific diagnostic analysis.
                         If you allow them in your profile and select them for this case, they are displayed here
                         as personal cultural context only.
                       </p>
                       {profileContext.identityContextConsent === true ? (
-                        <label className="mt-3 flex items-start gap-3 text-xs text-slate-200">
+                        <label className="mt-3 flex items-start gap-3 text-xs text-soft">
                           <input
                             type="checkbox"
                             checked={includeIdentityContext}
                             onChange={(event) => setIncludeIdentityContext(event.target.checked)}
-                            className="mt-0.5 accent-violet-400"
+                            className="mt-0.5 accent-plum"
                           />
                           <span>Show my saved religion and gender identity in this case&apos;s personal cultural context.</span>
                         </label>
                       ) : (
-                        <p className="mt-3 text-xs text-slate-300">
+                        <p className="mt-3 text-xs text-soft">
                           Not enabled. You can manage optional details and permissions in your{" "}
-                          <Link href="/profile" className="font-semibold text-violet-200 underline underline-offset-2">
+                          <Link href="/profile" className="font-semibold text-plum-strong underline underline-offset-2">
                             profile settings
                           </Link>.
                         </p>
                       )}
                       {includeIdentityContext && profileContext.identityContextConsent === true && (
-                        <p className="mt-2 text-xs text-violet-100" aria-live="polite">
+                        <p className="mt-2 text-xs text-plum-strong" aria-live="polite">
                           This case view will display: {[
                             asText(profileContext.identityGender),
                             asText(profileContext.identityReligion),
@@ -1843,71 +1844,71 @@ export default function CasePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {profileContextError && (
-                        <p className="md:col-span-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-100" role="status">
+                        <p className="md:col-span-2 rounded-lg border border-gold/30 bg-gold-soft p-3 text-xs text-gold-strong" role="status">
                           {profileContextError}
                         </p>
                       )}
-                      <div className="rounded-xl border border-white/8 bg-black/30 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Wellbeing Context</div>
-                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-300">
+                      <div className="rounded-xl border border-border bg-sunken/50 p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-subtle">Wellbeing Context</div>
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-soft">
                           <div>
-                            <span className="block text-slate-500">Name</span>
-                            <span className="font-semibold text-white">{String(profileContext["Full name"] || profileContext.name || "Case client")}</span>
+                            <span className="block text-subtle">Name</span>
+                            <span className="font-semibold text-foreground">{String(profileContext["Full name"] || profileContext.name || "Case client")}</span>
                           </div>
                           <div>
-                            <span className="block text-slate-500">Region</span>
-                            <span className="font-semibold text-white">{String(profileContext["Region or state"] || answers.region || "Addis Ababa")}</span>
+                            <span className="block text-subtle">Region</span>
+                            <span className="font-semibold text-foreground">{String(profileContext["Region or state"] || answers.region || "Addis Ababa")}</span>
                           </div>
                           <div>
-                            <span className="block text-slate-500">Age</span>
-                            <span className="font-semibold text-white">{String(answers.age ?? profileContext["Date of birth"] ?? "—")}</span>
+                            <span className="block text-subtle">Age</span>
+                            <span className="font-semibold text-foreground">{String(answers.age ?? profileContext["Date of birth"] ?? "—")}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-white/8 bg-black/30 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Case Intake Snapshot</div>
-                        <div className="mt-3 space-y-2 text-xs text-slate-300">
+                      <div className="rounded-xl border border-border bg-sunken/50 p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-subtle">Case Intake Snapshot</div>
+                        <div className="mt-3 space-y-2 text-xs text-soft">
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-500">Selected challenge</span>
-                            <span className="font-semibold text-white">{String(answers.challenge || "New job")}</span>
+                            <span className="text-subtle">Selected challenge</span>
+                            <span className="font-semibold text-foreground">{String(answers.challenge || "New job")}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-500">Interest</span>
-                            <span className="font-semibold text-white">{String(answers.selectedInterest || "General review")}</span>
+                            <span className="text-subtle">Interest</span>
+                            <span className="font-semibold text-foreground">{String(answers.selectedInterest || "General review")}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-500">Care lens</span>
-                            <span className="font-semibold text-white">{String(answers.reflectionLens || "Scientific only")}</span>
+                            <span className="text-subtle">Care lens</span>
+                            <span className="font-semibold text-foreground">{String(answers.reflectionLens || "Scientific only")}</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-300">Scientific Attachments</div>
-                        <div className="mt-3 text-xs text-sky-100 space-y-2">
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-sky-300" /> Medications: {String(profileContext["Current medications"] || answers.medications || "None listed")}</div>
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-sky-300" /> History: {String(profileContext["Relevant medical history"] || "No known history")}</div>
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-sky-300" /> Allergies: {String(profileContext["Known allergies"] || "None reported")}</div>
+                      <div className="rounded-xl border border-info/30 bg-info-soft p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-info">Scientific Attachments</div>
+                        <div className="mt-3 text-xs text-info-strong space-y-2">
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-info" /> Medications: {String(profileContext["Current medications"] || answers.medications || "None listed")}</div>
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-info" /> History: {String(profileContext["Relevant medical history"] || "No known history")}</div>
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-info" /> Allergies: {String(profileContext["Known allergies"] || "None reported")}</div>
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-4">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-300">Lifestyle & Culture</div>
-                        <div className="mt-3 text-xs text-amber-100 space-y-2">
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-300" /> Activity: {String(profileContext["Physical activity level"] || "moderate")}</div>
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-300" /> Pregnancy/Lactation: {String(profileContext["Pregnancy or lactation status"] || "none")}</div>
-                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-300" /> Altitude: {String(answers.altitudeMeters ?? "2400m")}</div>
+                      <div className="rounded-xl border border-gold/30 bg-gold-soft/70 p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold">Lifestyle & Culture</div>
+                        <div className="mt-3 text-xs text-gold-strong space-y-2">
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-gold-fill" /> Activity: {String(profileContext["Physical activity level"] || "moderate")}</div>
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-gold-fill" /> Pregnancy/Lactation: {String(profileContext["Pregnancy or lactation status"] || "none")}</div>
+                          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-gold-fill" /> Altitude: {String(answers.altitudeMeters ?? "2400m")}</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Show detail prefill from form */}
                     {String(answers.detail || "").trim() && (
-                      <div className="rounded-lg bg-black/30 border border-white/8 px-4 py-2.5 text-xs text-slate-300 font-mono leading-relaxed">
-                        <span className="text-slate-500">Narrative:</span> {String(answers.detail)}
+                      <div className="rounded-lg bg-sunken/50 border border-border px-4 py-2.5 text-xs text-soft font-mono leading-relaxed">
+                        <span className="text-subtle">Narrative:</span> {String(answers.detail)}
                       </div>
                     )}
 
@@ -1937,13 +1938,13 @@ export default function CasePage() {
                     </div>
 
                     {diagnosticResult && (
-                      <div className="rounded-lg border border-sky-500/30 bg-sky-950/20 p-3 text-sm text-sky-100 flex items-start gap-2" role="status">
-                        <span className="text-sky-400 mt-0.5">✓</span>
+                      <div className="rounded-lg border border-info/30 bg-info-soft p-3 text-sm text-info-strong flex items-start gap-2" role="status">
+                        <span className="text-info mt-0.5">✓</span>
                         <span>
                           <strong>Diagnostic saved:</strong> {diagnosticResult.summary.problem} · Urgency{" "}
-                          <span className={`font-semibold ${diagnosticResult.summary.urgency === "critical" ? "text-rose-300" :
-                            diagnosticResult.summary.urgency === "high" ? "text-orange-300" :
-                              diagnosticResult.summary.urgency === "medium" ? "text-amber-300" : "text-emerald-300"
+                          <span className={`font-semibold ${diagnosticResult.summary.urgency === "critical" ? "text-danger" :
+                            diagnosticResult.summary.urgency === "high" ? "text-warning" :
+                              diagnosticResult.summary.urgency === "medium" ? "text-gold" : "text-brand"
                             }`}>{diagnosticResult.summary.urgency}</span>{" "}
                           {diagnosticResult.summary.confidence > 0 &&
                             ` · Signal strength ${Math.round(diagnosticResult.summary.confidence)}%`}
@@ -1952,16 +1953,16 @@ export default function CasePage() {
                     )}
 
                     {intakeResult && (
-                      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-4 space-y-2" role="status">
+                      <div className="rounded-lg border border-gold/30 bg-gold-soft p-4 space-y-2" role="status">
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="text-amber-400">✓</span>
-                          <span className="text-amber-100 font-semibold">Client intake saved:</span>
-                          <span className="text-amber-200/80 text-xs">{intakeResult.message || "Intake evaluated and wellbeing gap report generated successfully."}</span>
+                          <span className="text-gold">✓</span>
+                          <span className="text-gold-strong font-semibold">Client intake saved:</span>
+                          <span className="text-gold-strong text-xs">{intakeResult.message || "Intake evaluated and wellbeing gap report generated successfully."}</span>
                         </div>
                         {intakeResult.reportId && (
                           <Link
                             href={`/report/${intakeResult.reportId}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 underline underline-offset-2 hover:text-amber-100 transition-colors"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold underline underline-offset-2 hover:text-gold-strong transition-colors"
                           >
                             Open report →
                           </Link>
@@ -1969,20 +1970,20 @@ export default function CasePage() {
                       </div>
                     )}
 
-                    <div className="rounded-lg border border-amber-500/30 bg-amber-950/10 p-3">
-                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-amber-200">
+                    <div className="rounded-lg border border-gold/30 bg-gold-soft/70 p-3">
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-gold-strong">
                         <span>Live safety and completeness check</span>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <span className="rounded-full border border-emerald-500/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Profile context loaded</span>
-                        <span className="rounded-full border border-sky-500/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-sky-300">Diagnostic prepared</span>
-                        <span className="rounded-full border border-amber-500/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-amber-300">{String(answers.challenge ?? "New job")}</span>
+                        <span className="rounded-full border border-brand/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-brand">Profile context loaded</span>
+                        <span className="rounded-full border border-info/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-info">Diagnostic prepared</span>
+                        <span className="rounded-full border border-gold/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">{String(answers.challenge ?? "New job")}</span>
                       </div>
                     </div>
 
                     {answerSync === "error" && (
-                      <div className="rounded-lg border border-rose-500/30 bg-rose-950/10 p-3 text-xs text-rose-200">
-                        <span className="text-rose-400">⚠️</span>
+                      <div className="rounded-lg border border-danger/30 bg-danger-soft/70 p-3 text-xs text-danger-strong">
+                        <span className="text-danger">⚠️</span>
                         <span className="ml-2">Progress could not be saved yet; your step submission will retry it.</span>
                       </div>
                     )}
@@ -1990,10 +1991,10 @@ export default function CasePage() {
 
                   {/* Progress save status */}
                   {answerSync !== "idle" && (
-                    <p className={`text-xs flex items-center gap-1.5 ${answerSync === "error" ? "text-rose-300" :
-                      answerSync === "saved" ? "text-emerald-400" : "text-slate-400"
+                    <p className={`text-xs flex items-center gap-1.5 ${answerSync === "error" ? "text-danger" :
+                      answerSync === "saved" ? "text-brand" : "text-muted-foreground"
                       }`} role="status">
-                      {answerSync === "saving" && <><span className="w-2 h-2 rounded-full border border-slate-400 border-t-transparent animate-spin" />Saving your progress...</>}
+                      {answerSync === "saving" && <><span className="w-2 h-2 rounded-full border border-border-strong border-t-transparent animate-spin" />Saving your progress...</>}
                       {answerSync === "saved" && <><span>✓</span> Progress saved</>}
                       {answerSync === "queued" && "Saved on this device. It will be sent when you are back online."}
                       {answerSync === "error" && "Progress could not be saved. Your answers stay in this browser; try the next step again."}
@@ -2001,22 +2002,22 @@ export default function CasePage() {
                   )}
 
                   {/* Voice input */}
-                  <div className="flex items-center justify-between rounded-xl border border-sky-500/20 bg-sky-950/10 px-4 py-3">
-                    <span className="text-xs font-semibold text-sky-300">Live safety and completeness check</span>
+                  <div className="flex items-center justify-between rounded-xl border border-info/20 bg-info-soft/70 px-4 py-3">
+                    <span className="text-xs font-semibold text-info">Live safety and completeness check</span>
                     <button
                       type="button"
                       onClick={toggleVoiceInput}
-                      className={`btn-secondary text-xs ${listening ? "border-rose-400 text-rose-200 bg-rose-950/30" : ""
+                      className={`btn-secondary text-xs ${listening ? "border-danger text-danger-strong bg-danger-soft" : ""
                         }`}
                     >
                       {listening ? "⏹️ Stop listening" : "🎤 Use voice input"}
                     </button>
                   </div>
                   {listening && (
-                    <div className="flex items-center gap-2 text-xs text-sky-300 px-1">
-                      <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+                    <div className="flex items-center gap-2 text-xs text-info px-1">
+                      <span className="w-2 h-2 rounded-full bg-danger animate-ping" />
                       Listening… speak now
-                      {transcript && <span className="text-slate-400 ml-2">Transcript: {transcript}</span>}
+                      {transcript && <span className="text-muted-foreground ml-2">Transcript: {transcript}</span>}
                     </div>
                   )}
 
@@ -2027,7 +2028,7 @@ export default function CasePage() {
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                        <span className="w-4 h-4 rounded-full border-2 border-border-strong border-t-border-strong animate-spin" />
                         Preparing review…
                       </span>
                     ) : "Prepare my report for review"}
@@ -2044,32 +2045,32 @@ export default function CasePage() {
 
         {phase === "endorsement" && summaryReview && (
           <section className="mx-auto max-w-4xl space-y-5" aria-labelledby="case-summary-review-heading">
-            <div className="glass-panel border border-emerald-500/25 p-6 md:p-8">
-              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">Review before analysis</p>
-              <h2 id="case-summary-review-heading" className="mt-2 text-2xl font-bold text-white">{summaryReview.headline}</h2>
-              <p className="mt-2 text-sm text-slate-300">
+            <div className="glass-panel border border-brand/25 p-6 md:p-8">
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand">Review before analysis</p>
+              <h2 id="case-summary-review-heading" className="mt-2 text-2xl font-bold text-foreground">{summaryReview.headline}</h2>
+              <p className="mt-2 text-sm text-soft">
                 {summaryReview.userIntention} · {summaryReview.domain}{summaryReview.subDomain !== "general" ? ` / ${summaryReview.subDomain.replaceAll("_", " ")}` : ""}
               </p>
               {summaryReview.keySymptoms.length > 0 && (
                 <div className="mt-5">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Key points recognized</h3>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Key points recognized</h3>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {summaryReview.keySymptoms.map((item) => (
-                      <li key={item} className="rounded-md border border-white/10 bg-black/20 px-3 py-1.5 text-xs text-slate-200">{item}</li>
+                      <li key={item} className="rounded-md border border-border bg-sunken/50 px-3 py-1.5 text-xs text-soft">{item}</li>
                     ))}
                   </ul>
                 </div>
               )}
               {summaryReview.urgencyFlag !== "none" && (
-                <p className={`mt-4 rounded-md border p-3 text-sm ${summaryReview.urgencyFlag === "emergency" ? "border-rose-500/40 bg-rose-950/30 text-rose-100" : "border-amber-500/30 bg-amber-950/20 text-amber-100"}`} role="status">
+                <p className={`mt-4 rounded-md border p-3 text-sm ${summaryReview.urgencyFlag === "emergency" ? "border-danger/40 bg-danger-soft text-danger-strong" : "border-gold/30 bg-gold-soft text-gold-strong"}`} role="status">
                   Priority detected: {summaryReview.urgencyFlag}. This flag is a routing signal, not a diagnosis.
                 </p>
               )}
             </div>
 
-            <div className="glass-panel border border-sky-500/20 p-6">
-              <h3 className="text-sm font-semibold text-white">Knowledge types considered</h3>
-              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <div className="glass-panel border border-info/20 p-6">
+              <h3 className="text-sm font-semibold text-foreground">Knowledge types considered</h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 These sources are not equivalent. Biomedical evidence has the strongest clinical grounding; cultural and spiritual material is reflective and does not establish medical facts.
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -2083,11 +2084,11 @@ export default function CasePage() {
                       : tier === "traditional"
                         ? "Traditional knowledge"
                         : "Cultural and spiritual reflection";
-                  const tone = tier === "biomedical" ? "border-emerald-500/30" : tier === "evidence-informed" ? "border-sky-500/30" : tier === "traditional" ? "border-amber-500/30" : "border-rose-500/25";
+                  const tone = tier === "biomedical" ? "border-brand/30" : tier === "evidence-informed" ? "border-info/30" : tier === "traditional" ? "border-gold/30" : "border-danger/25";
                   return (
-                    <section key={tier} className={`rounded-lg border ${tone} bg-black/15 p-4`}>
-                      <h4 className="text-sm font-semibold text-white">{title}</h4>
-                      <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
+                    <section key={tier} className={`rounded-lg border ${tone} bg-sunken/50 p-4`}>
+                      <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+                      <ul className="mt-2 space-y-1.5 text-xs text-soft">
                         {items.map((item) => <li key={item.strand}>{item.rationale}</li>)}
                       </ul>
                     </section>
@@ -2113,7 +2114,7 @@ export default function CasePage() {
           selectedCase && (
             <section className="space-y-6">
               {/* Report Header */}
-              <div className="glass-panel p-6 md:p-8 border-l-4 border-l-emerald-400">
+              <div className="glass-panel p-6 md:p-8 border-l-4 border-l-brand">
                 <div className="flex flex-wrap justify-between gap-4">
                   <div>
                     <div className="badge badge-safe mb-3">
@@ -2122,15 +2123,15 @@ export default function CasePage() {
                       {phase === "solutions" && "Solution review"}
                       {phase === "complete" && "Case complete"}
                     </div>
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-bold text-foreground">
                       {selectedCase.name} case synthesis
                     </h2>
-                    <p className="text-sm text-slate-400 mt-2">
-                      Challenge: <strong className="text-white">{String(session.answers.challenge)}</strong> · Interest:{" "}
-                      <strong className="text-white">{String(session.answers.selectedInterest)}</strong>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Challenge: <strong className="text-foreground">{String(session.answers.challenge)}</strong> · Interest:{" "}
+                      <strong className="text-foreground">{String(session.answers.selectedInterest)}</strong>
                     </p>
                   </div>
-                  <div className="flex items-start gap-2 text-right text-xs text-slate-400">
+                  <div className="flex items-start gap-2 text-right text-xs text-muted-foreground">
                     <div>
                       <div>Domain A: {session.workflowContext?.domainA.length ?? selectedCase.knowledgeStrandFilters.length} strands</div>
                       <div>Domain B: {session.workflowContext?.domainB.length ? `${session.workflowContext.domainB.length} strands (opted in)` : "Not included"}</div>
@@ -2152,7 +2153,7 @@ export default function CasePage() {
                     <button
                       type="button"
                       onClick={resetWorkflow}
-                      className="btn-secondary text-xs text-rose-300 border-rose-500/30 hover:border-rose-400"
+                      className="btn-secondary text-xs text-danger border-danger/30 hover:border-danger"
                     >
                       Reset case
                     </button>
@@ -2163,8 +2164,8 @@ export default function CasePage() {
                 {session.workflowContext && session.workflowContext.safety.level !== "low" && (
                   <div
                     className={`mt-6 p-4 rounded-xl border text-sm ${session.workflowContext.safety.level === "critical"
-                      ? "border-rose-500/40 bg-rose-950/30 text-rose-200"
-                      : "border-amber-500/40 bg-amber-950/20 text-amber-200"
+                      ? "border-danger/40 bg-danger-soft text-danger-strong"
+                      : "border-gold/40 bg-gold-soft text-gold-strong"
                       }`}
                   >
                     <strong>
@@ -2175,32 +2176,32 @@ export default function CasePage() {
                 )}
 
                 <div className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-5">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                       <span className={`inline-block h-2.5 w-2.5 rounded-full ${workflowStatus.accent}`} />
                       Case overview
                     </div>
                     <div className="mt-4 space-y-4">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Main concern</p>
-                        <p className="mt-2 text-lg font-semibold text-white">{String(session.answers.challenge ?? "Selected issue")}</p>
+                        <p className="text-xs uppercase tracking-[0.18em] text-subtle">Main concern</p>
+                        <p className="mt-2 text-lg font-semibold text-foreground">{String(session.answers.challenge ?? "Selected issue")}</p>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-xl border border-white/8 bg-slate-950/40 p-3">
-                          <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Relevant interest</p>
-                          <p className="mt-2 text-sm font-medium text-slate-100">{String(session.answers.selectedInterest ?? "General review")}</p>
+                        <div className="rounded-xl border border-border bg-background/40 p-3">
+                          <p className="text-[10px] uppercase tracking-[0.18em] text-subtle">Relevant interest</p>
+                          <p className="mt-2 text-sm font-medium text-foreground">{String(session.answers.selectedInterest ?? "General review")}</p>
                         </div>
-                        <div className="rounded-xl border border-white/8 bg-slate-950/40 p-3">
-                          <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Risk level</p>
-                          <p className="mt-2 text-sm font-medium text-slate-100">{workflowStatus.label}</p>
+                        <div className="rounded-xl border border-border bg-background/40 p-3">
+                          <p className="text-[10px] uppercase tracking-[0.18em] text-subtle">Risk level</p>
+                          <p className="mt-2 text-sm font-medium text-foreground">{workflowStatus.label}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-sky-500/25 bg-sky-950/15 p-5">
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">Recommended next action</div>
-                    <p className="mt-4 text-sm leading-relaxed text-sky-50">{workflowStatus.action}</p>
+                  <div className="rounded-2xl border border-info/25 bg-info-soft/70 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-info">Recommended next action</div>
+                    <p className="mt-4 text-sm leading-relaxed text-info-strong">{workflowStatus.action}</p>
                   </div>
                 </div>
 
@@ -2209,33 +2210,33 @@ export default function CasePage() {
                 </div>
 
                 {reportDiagnostic?.summary && (
-                  <section className="mt-6 rounded-2xl border border-sky-500/25 bg-sky-950/10 p-5" aria-labelledby="case-analysis-heading">
+                  <section className="mt-6 rounded-2xl border border-info/25 bg-info-soft/70 p-5" aria-labelledby="case-analysis-heading">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">Personalized case analysis</div>
-                        <h3 id="case-analysis-heading" className="mt-2 text-lg font-bold text-white">{reportDiagnostic.summary.problem}</h3>
+                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-info">Personalized case analysis</div>
+                        <h3 id="case-analysis-heading" className="mt-2 text-lg font-bold text-foreground">{reportDiagnostic.summary.problem}</h3>
                       </div>
                       <div className="flex gap-2">
-                        <span className="rounded-full border border-sky-400/30 px-3 py-1 text-xs text-sky-100">
+                        <span className="rounded-full border border-info/30 px-3 py-1 text-xs text-info-strong">
                           Synthesis confidence {Math.round(reportDiagnostic.summary.confidence)}%
                         </span>
-                        <span className="rounded-full border border-amber-400/30 px-3 py-1 text-xs capitalize text-amber-100">
+                        <span className="rounded-full border border-gold/30 px-3 py-1 text-xs capitalize text-gold-strong">
                           {reportDiagnostic.summary.urgency} priority
                         </span>
                       </div>
                     </div>
                     {reportDiagnostic.reasoning?.summaryReasoning && (
-                      <p className="mt-3 text-sm leading-6 text-slate-200">{reportDiagnostic.reasoning.summaryReasoning}</p>
+                      <p className="mt-3 text-sm leading-6 text-soft">{reportDiagnostic.reasoning.summaryReasoning}</p>
                     )}
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-muted-foreground">
                       Based on this intake&apos;s answers and available profile context. This synthesis is not a diagnosis.
                     </p>
                     {reportDiagnostic.summary.matchedSignals.length > 0 && (
                       <div className="mt-4">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Signals considered</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Signals considered</div>
                         <ul className="mt-2 flex flex-wrap gap-2">
                           {reportDiagnostic.summary.matchedSignals.map((signal) => (
-                            <li key={signal} className="rounded-full border border-white/10 bg-black/25 px-3 py-1 text-xs text-slate-200">{signal}</li>
+                            <li key={signal} className="rounded-full border border-border bg-sunken/50 px-3 py-1 text-xs text-soft">{signal}</li>
                           ))}
                         </ul>
                       </div>
@@ -2243,20 +2244,20 @@ export default function CasePage() {
 
                     {diagnosticActionGroups.some(({ key }) => reportDiagnostic.action_plan[key]?.length > 0) && (
                       <div className="mt-5">
-                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Personalized action plan</h4>
+                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">Personalized action plan</h4>
                         <div className="mt-3 grid gap-3 md:grid-cols-2">
                           {diagnosticActionGroups.map(({ key, label }) => {
                             const actions = reportDiagnostic.action_plan[key] || [];
                             if (!actions.length) return null;
                             return (
-                              <div key={key} className="rounded-xl border border-white/10 bg-black/25 p-4">
-                                <h5 className="text-sm font-semibold text-white">{label}</h5>
+                              <div key={key} className="rounded-xl border border-border bg-sunken/50 p-4">
+                                <h5 className="text-sm font-semibold text-foreground">{label}</h5>
                                 <ul className="mt-3 space-y-3">
                                   {actions.map((action) => (
-                                    <li key={action.id} className="text-sm text-slate-200">
+                                    <li key={action.id} className="text-sm text-soft">
                                       <div className="font-medium">{action.title}</div>
-                                      <p className="mt-1 text-xs leading-5 text-slate-300">{action.action}</p>
-                                      <span className="mt-1 inline-block text-[10px] uppercase tracking-wide text-slate-500">
+                                      <p className="mt-1 text-xs leading-5 text-soft">{action.action}</p>
+                                      <span className="mt-1 inline-block text-[10px] uppercase tracking-wide text-subtle">
                                         {action.priority} · {action.category}
                                       </span>
                                     </li>
@@ -2270,15 +2271,15 @@ export default function CasePage() {
                     )}
 
                     {(reportDiagnostic.safety?.warnings.length > 0 || reportDiagnostic.safety?.herbDrugInteractions.length > 0) && (
-                      <div className="mt-5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-4">
-                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">Safety considerations</h4>
+                      <div className="mt-5 rounded-xl border border-gold/30 bg-gold-soft p-4">
+                        <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-strong">Safety considerations</h4>
                         {reportDiagnostic.safety.warnings.length > 0 && (
-                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-100">
+                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-gold-strong">
                             {reportDiagnostic.safety.warnings.map((warning) => <li key={warning}>{warning}</li>)}
                           </ul>
                         )}
                         {reportDiagnostic.safety.herbDrugInteractions.length > 0 && (
-                          <ul className="mt-3 space-y-2 text-xs text-amber-100">
+                          <ul className="mt-3 space-y-2 text-xs text-gold-strong">
                             {reportDiagnostic.safety.herbDrugInteractions.map((interaction, index) => (
                               <li key={`${interaction.herb}-${interaction.drug}-${index}`}>
                                 <strong>{interaction.herb} + {interaction.drug} ({interaction.severity}):</strong>{" "}
@@ -2293,36 +2294,36 @@ export default function CasePage() {
                 )}
 
                 {session.profileSynthesis && String(answers.reflectionLens || "").toLowerCase().includes("yes") && (
-                  <div className="mt-6 rounded-2xl border border-amber-500/25 bg-amber-950/10 p-5">
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Identity + geographic synthesis</div>
+                  <div className="mt-6 rounded-2xl border border-gold/25 bg-gold-soft/70 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Identity + geographic synthesis</div>
                     <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Name</div>
-                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.name}</div>
+                      <div className="rounded-xl border border-border bg-sunken/50 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">Name</div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{session.profileSynthesis.identity.name}</div>
                       </div>
-                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Mother name</div>
-                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.motherName || "Not provided"}</div>
+                      <div className="rounded-xl border border-border bg-sunken/50 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">Mother name</div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{session.profileSynthesis.identity.motherName || "Not provided"}</div>
                       </div>
-                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Birth data</div>
-                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.identity.birthDate}</div>
+                      <div className="rounded-xl border border-border bg-sunken/50 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">Birth data</div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{session.profileSynthesis.identity.birthDate}</div>
                       </div>
-                      <div className="rounded-xl border border-white/8 bg-black/25 p-3">
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Birthplace</div>
-                        <div className="mt-2 text-sm font-semibold text-white">{session.profileSynthesis.geography.city}</div>
+                      <div className="rounded-xl border border-border bg-sunken/50 p-3">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">Birthplace</div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{session.profileSynthesis.geography.city}</div>
                       </div>
                     </div>
-                    <div className="mt-4 rounded-xl border border-white/8 bg-slate-950/30 p-4">
-                      <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Narrative</div>
-                      <p className="mt-2 text-sm leading-6 text-slate-200">{session.profileSynthesis.summary}</p>
+                    <div className="mt-4 rounded-xl border border-border bg-background/30 p-4">
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">Narrative</div>
+                      <p className="mt-2 text-sm leading-6 text-soft">{session.profileSynthesis.summary}</p>
                     </div>
                     <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                       {session.profileSynthesis.chart.map((point) => (
-                        <div key={point.key} className="rounded-xl border border-white/8 bg-black/25 p-3">
-                          <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500">{point.label}</div>
-                          <div className="mt-2 text-xl font-bold text-white">{point.value}</div>
-                          <div className="mt-2 text-[11px] leading-relaxed text-slate-400">{point.description}</div>
+                        <div key={point.key} className="rounded-xl border border-border bg-sunken/50 p-3">
+                          <div className="text-[10px] uppercase tracking-[0.18em] text-subtle">{point.label}</div>
+                          <div className="mt-2 text-xl font-bold text-foreground">{point.value}</div>
+                          <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{point.description}</div>
                         </div>
                       ))}
                     </div>
@@ -2330,39 +2331,39 @@ export default function CasePage() {
                 )}
 
                 <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Key findings</div>
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Key findings</div>
                     <ul className="mt-4 space-y-3">
                       {activeFindings.length > 0 ? activeFindings.map((cause) => (
-                        <li key={cause.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-3">
-                          <div className="text-sm font-semibold text-white">{cause.description}</div>
-                          <div className="mt-2 text-xs text-slate-400">Signal match {Math.round(cause.confidence * 100)}%</div>
+                        <li key={cause.id} className="rounded-xl border border-border bg-background/30 p-3">
+                          <div className="text-sm font-semibold text-foreground">{cause.description}</div>
+                          <div className="mt-2 text-xs text-muted-foreground">Signal match {Math.round(cause.confidence * 100)}%</div>
                           {cause.culturalContext && (
-                            <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-950/15 p-3">
-                              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Domain B cultural context</div>
-                              <p className="mt-1 text-xs leading-relaxed text-amber-100/80">{cause.culturalContext.interpretation}</p>
-                              <p className="mt-2 text-[11px] leading-relaxed text-amber-200/70">Reflection: {cause.culturalContext.practice}</p>
+                            <div className="mt-3 rounded-lg border border-gold/25 bg-gold-soft/70 p-3">
+                              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold">Domain B cultural context</div>
+                              <p className="mt-1 text-xs leading-relaxed text-gold-strong">{cause.culturalContext.interpretation}</p>
+                              <p className="mt-2 text-[11px] leading-relaxed text-gold-strong">Reflection: {cause.culturalContext.practice}</p>
                             </div>
                           )}
                         </li>
                       )) : (
-                        <li className="rounded-xl border border-white/8 bg-slate-950/30 p-3 text-sm text-slate-300">
+                        <li className="rounded-xl border border-border bg-background/30 p-3 text-sm text-soft">
                           Selected findings will appear here once the report is refined.
                         </li>
                       )}
                     </ul>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Recommended actions</div>
+                  <div className="rounded-2xl border border-border bg-sunken/50 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recommended actions</div>
                     <ul className="mt-4 space-y-3">
                       {activeSolutions.length > 0 ? activeSolutions.map((solution) => (
-                        <li key={solution.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-3">
-                          <div className="text-sm font-semibold text-white">{solution.title}</div>
-                          <div className="mt-2 text-xs text-slate-400">{solution.description}</div>
+                        <li key={solution.id} className="rounded-xl border border-border bg-background/30 p-3">
+                          <div className="text-sm font-semibold text-foreground">{solution.title}</div>
+                          <div className="mt-2 text-xs text-muted-foreground">{solution.description}</div>
                         </li>
                       )) : (
-                        <li className="rounded-xl border border-white/8 bg-slate-950/30 p-3 text-sm text-slate-300">
+                        <li className="rounded-xl border border-border bg-background/30 p-3 text-sm text-soft">
                           Tailored options will appear after the findings are confirmed.
                         </li>
                       )}
@@ -2370,7 +2371,7 @@ export default function CasePage() {
                   </div>
                 </div>
 
-                <div className="mt-6 p-4 rounded-xl bg-black/30 border border-white/5 text-sm text-slate-300">
+                <div className="mt-6 p-4 rounded-xl bg-sunken/50 border border-border text-sm text-soft">
                   The report organizes possible contributing patterns and options. It is a review step,
                   not a diagnosis, legal advice, financial advice, or guaranteed outcome.
                 </div>
@@ -2388,7 +2389,7 @@ export default function CasePage() {
                     <button
                       type="button"
                       onClick={editReport}
-                      className="rounded-xl border border-white/15 px-4 py-2 text-sm text-slate-300 hover:border-emerald-400 hover:text-white"
+                      className="rounded-xl border border-border px-4 py-2 text-sm text-soft hover:border-brand hover:text-foreground"
                       disabled={loading}
                     >
                       Edit case details
@@ -2403,8 +2404,8 @@ export default function CasePage() {
               {(phase === "causes" || phase === "solutions" || phase === "complete") && (
                 <form onSubmit={refineCase} className="glass-panel p-6 md:p-8">
                   <div className="badge badge-moderate mb-3">Refine the result</div>
-                  <h2 className="text-xl font-bold text-white">Which findings should guide the next step?</h2>
-                  <p className="text-sm text-slate-400 mt-1 mb-5">
+                  <h2 className="text-xl font-bold text-foreground">Which findings should guide the next step?</h2>
+                  <p className="text-sm text-muted-foreground mt-1 mb-5">
                     Select the causes that resonate with your situation. Deselect any that feel unrelated.
                   </p>
                   <div className="space-y-3">
@@ -2412,19 +2413,19 @@ export default function CasePage() {
                       <label
                         key={cause.id}
                         className={`flex gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${selectedCauseIds.includes(cause.id)
-                          ? "border-emerald-400 bg-emerald-500/10"
-                          : "border-white/10 bg-black/25 hover:border-white/20"
+                          ? "border-brand bg-brand/10"
+                          : "border-border bg-sunken/50 hover:border-border-strong"
                           }`}
                       >
                         <input
                           type="checkbox"
                           checked={selectedCauseIds.includes(cause.id)}
                           onChange={() => toggleSelection(setSelectedCauseIds, cause.id)}
-                          className="mt-1 accent-emerald-500"
+                          className="mt-1 accent-brand"
                         />
                         <span>
-                          <strong className="text-white text-sm">{cause.description}</strong>
-                          <span className="block text-xs text-slate-500 mt-1">
+                          <strong className="text-foreground text-sm">{cause.description}</strong>
+                          <span className="block text-xs text-subtle mt-1">
                             Signal match {Math.round(cause.confidence * 100)}% ·{" "}
                             {cause.evidence.join(" · ")}
                           </span>
@@ -2448,8 +2449,8 @@ export default function CasePage() {
               {(phase === "solutions" || phase === "complete") && (
                 <form onSubmit={finalizeSolutions} className="glass-panel p-6 md:p-8">
                   <div className="badge badge-safe mb-3">Solution review</div>
-                  <h2 className="text-xl font-bold text-white">Choose what you want to take forward</h2>
-                  <p className="text-sm text-slate-400 mt-1 mb-5">
+                  <h2 className="text-xl font-bold text-foreground">Choose what you want to take forward</h2>
+                  <p className="text-sm text-muted-foreground mt-1 mb-5">
                     Select the solutions that feel most actionable and aligned with your goals.
                   </p>
                   <div className="space-y-3">
@@ -2457,8 +2458,8 @@ export default function CasePage() {
                       <label
                         key={solution.id}
                         className={`block p-4 rounded-xl border cursor-pointer transition-colors ${selectedSolutionIds.includes(solution.id)
-                          ? "border-amber-400 bg-amber-500/10"
-                          : "border-white/10 bg-black/25 hover:border-white/20"
+                          ? "border-gold bg-gold/10"
+                          : "border-border bg-sunken/50 hover:border-border-strong"
                           }`}
                       >
                         <div className="flex gap-3">
@@ -2466,21 +2467,21 @@ export default function CasePage() {
                             type="checkbox"
                             checked={selectedSolutionIds.includes(solution.id)}
                             onChange={() => toggleSelection(setSelectedSolutionIds, solution.id)}
-                            className="mt-1 accent-amber-500"
+                            className="mt-1 accent-gold"
                           />
                           <span>
-                            <strong className="text-white text-sm">{solution.title}</strong>
-                            <span className="block text-sm text-slate-300 mt-2">
+                            <strong className="text-foreground text-sm">{solution.title}</strong>
+                            <span className="block text-sm text-soft mt-2">
                               {solution.description}
                             </span>
-                            <span className="block text-xs text-slate-500 mt-2">
+                            <span className="block text-xs text-subtle mt-2">
                               {solution.steps.join(" · ")}
                             </span>
                             {solution.culturalContext && (
-                              <div className="mt-3 rounded-lg border border-amber-500/25 bg-amber-950/15 p-3">
-                                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Cultural and reflective layer</div>
-                                <p className="mt-1 text-xs leading-relaxed text-amber-100/80">{solution.culturalContext.interpretation}</p>
-                                <p className="mt-2 text-[11px] leading-relaxed text-amber-200/70">Reflection: {solution.culturalContext.practice}</p>
+                              <div className="mt-3 rounded-lg border border-gold/25 bg-gold-soft/70 p-3">
+                                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold">Cultural and reflective layer</div>
+                                <p className="mt-1 text-xs leading-relaxed text-gold-strong">{solution.culturalContext.interpretation}</p>
+                                <p className="mt-2 text-[11px] leading-relaxed text-gold-strong">Reflection: {solution.culturalContext.practice}</p>
                               </div>
                             )}
                           </span>
@@ -2498,7 +2499,7 @@ export default function CasePage() {
                     </button>
                   )}
                   {phase === "complete" && (
-                    <div className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 text-sm text-emerald-200">
+                    <div className="mt-6 rounded-xl border border-brand/30 bg-brand-soft p-4 text-sm text-brand-strong">
                       ✅ Your selected path is saved for review. You can revisit the case and change
                       the choices as your situation changes.
                     </div>
@@ -2509,16 +2510,16 @@ export default function CasePage() {
           )}
 
         {/* Footer Navigation */}
-        <div className="mt-8 flex flex-wrap justify-between text-xs text-slate-500 gap-4">
-          <Link href="/" className="hover:text-white inline-flex items-center gap-1">
+        <div className="mt-8 flex flex-wrap justify-between text-xs text-subtle gap-4">
+          <Link href="/" className="hover:text-foreground inline-flex items-center gap-1">
             ← Back to overview
           </Link>
-          <Link href="/diagnostic" className="hover:text-white inline-flex items-center gap-1">
+          <Link href="/diagnostic" className="hover:text-foreground inline-flex items-center gap-1">
             Open multi-strand diagnostic →
           </Link>
           <button
             onClick={resetWorkflow}
-            className="hover:text-rose-300 transition-colors"
+            className="hover:text-danger transition-colors"
           >
             Reset workflow
           </button>

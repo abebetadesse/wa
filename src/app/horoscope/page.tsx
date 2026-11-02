@@ -221,16 +221,16 @@ export default function HoroscopePage() {
 
   return (
     <main className="app-container py-10 md:py-14">
-      <header className="mb-8 rounded-[32px] border border-amber-500/20 bg-gradient-to-br from-[#1b1718] via-[#37251a] to-[#1c1f1b] p-6 md:p-8 shadow-[0_24px_90px_rgba(13,10,8,0.42)]">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-200">
+      <header className="mb-8 rounded-[32px] border border-gold/20 bg-gradient-to-br from-plum-soft via-card to-gold-soft p-6 md:p-8 shadow-panel">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold-strong">
           <Sparkles size={12} /> Daily cosmic desk
         </div>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-5xl">
               Horoscope guidance rooted in rhythm, intuition, and lived experience.
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-stone-200 md:text-base">
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-soft md:text-base">
               This horoscope desk draws from the same cosmic language familiar from major horoscope portals—sign archetypes, planetary mood, love tendencies, and practical timing—while keeping it tailored to a wellness-first cultural experience.
             </p>
           </div>
@@ -246,7 +246,7 @@ export default function HoroscopePage() {
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-[28px] border border-white/10 bg-stone-900/80 p-4 md:p-5">
+        <div className="rounded-[28px] border border-border bg-card/80 p-4 md:p-5">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {signs.map((sign) => {
               const isActive = selected.id === sign.id;
@@ -257,8 +257,8 @@ export default function HoroscopePage() {
                   onClick={() => setSelected(sign)}
                   className={`flex min-w-[126px] items-center gap-2 rounded-full border px-3 py-2 text-left text-sm font-medium transition ${
                     isActive
-                      ? "border-amber-400/70 bg-amber-300/12 text-amber-100 shadow-[0_0_18px_rgba(251,191,36,0.18)]"
-                      : "border-white/10 bg-white/2 text-stone-300 hover:border-amber-300/40 hover:text-white"
+                      ? "border-gold/70 bg-gold/12 text-gold-strong"
+                      : "border-border bg-foreground/2 text-soft hover:border-gold/40 hover:text-foreground"
                   }`}
                 >
                   <span className="text-lg">{sign.symbol}</span>
@@ -271,60 +271,60 @@ export default function HoroscopePage() {
           <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
             <div>
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400/20 to-orange-500/20 text-4xl shadow-inner shadow-amber-400/10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/20 to-warning/20 text-4xl shadow-inner">
                   {selected.symbol}
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">{selected.element}</p>
-                  <h2 className="text-3xl font-black text-white">{selected.name}</h2>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">{selected.element}</p>
+                  <h2 className="text-3xl font-bold text-foreground">{selected.name}</h2>
                 </div>
               </div>
 
-              <p className="mt-5 text-base leading-relaxed text-stone-200">{selected.summary}</p>
+              <p className="mt-5 text-base leading-relaxed text-soft">{selected.summary}</p>
 
-              <div className="mt-5 rounded-2xl border border-amber-400/20 bg-[#231b12] p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-300">Today&apos;s theme</p>
-                <h3 className="mt-2 text-xl font-bold text-white">{selected.theme}</h3>
+              <div className="mt-5 rounded-2xl border border-gold/20 bg-gold-soft p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Today&apos;s theme</p>
+                <h3 className="mt-2 text-xl font-bold text-foreground">{selected.theme}</h3>
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-amber-300">
+                <div className="rounded-2xl border border-border bg-foreground/3 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-gold">
                     <Heart size={15} />
                     <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">Love</span>
                   </div>
-                  <p className="text-sm leading-relaxed text-stone-200">{selected.love}</p>
+                  <p className="text-sm leading-relaxed text-soft">{selected.love}</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-amber-300">
+                <div className="rounded-2xl border border-border bg-foreground/3 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-gold">
                     <BriefcaseBusiness size={15} />
                     <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">Career</span>
                   </div>
-                  <p className="text-sm leading-relaxed text-stone-200">{selected.career}</p>
+                  <p className="text-sm leading-relaxed text-soft">{selected.career}</p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-amber-300">
+                <div className="rounded-2xl border border-border bg-foreground/3 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-gold">
                     <SunMedium size={15} />
                     <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">Wellness</span>
                   </div>
-                  <p className="text-sm leading-relaxed text-stone-200">{selected.wellness}</p>
+                  <p className="text-sm leading-relaxed text-soft">{selected.wellness}</p>
                 </div>
               </div>
             </div>
 
-            <aside className="rounded-[24px] border border-amber-300/20 bg-[#17140f] p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-300">Reading overview</p>
-              <ul className="mt-4 space-y-3 text-sm text-stone-200">
+            <aside className="rounded-[24px] border border-gold/20 bg-card p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Reading overview</p>
+              <ul className="mt-4 space-y-3 text-sm text-soft">
                 {selected.keywords.map((keyword) => (
                   <li key={keyword} className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    <span className="h-2 w-2 rounded-full bg-gold-fill" />
                     {keyword}
                   </li>
                 ))}
               </ul>
-              <div className="mt-5 rounded-2xl border border-white/10 bg-white/3 p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-300">Outlook</p>
-                <p className="mt-2 text-sm leading-relaxed text-stone-200">{selected.outlook}</p>
+              <div className="mt-5 rounded-2xl border border-border bg-foreground/3 p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Outlook</p>
+                <p className="mt-2 text-sm leading-relaxed text-soft">{selected.outlook}</p>
               </div>
             </aside>
           </div>
@@ -336,13 +336,13 @@ export default function HoroscopePage() {
             { label: "Weekly rhythm", note: "This week" },
             { label: "Monthly arc", note: "This month" },
           ].map((item) => (
-            <div key={item.label} className="rounded-[24px] border border-white/10 bg-stone-900/80 p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-300">{item.note}</p>
+            <div key={item.label} className="rounded-[24px] border border-border bg-card/80 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">{item.note}</p>
               <div className="mt-3 flex items-center justify-between gap-4">
-                <h3 className="text-lg font-bold text-white">{item.label}</h3>
-                <ChevronRight size={16} className="text-stone-400" />
+                <h3 className="text-lg font-bold text-foreground">{item.label}</h3>
+                <ChevronRight size={16} className="text-muted-foreground" />
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-stone-300">
+              <p className="mt-3 text-sm leading-relaxed text-soft">
                 {item.label === "Daily reading" && selected.summary}
                 {item.label === "Weekly rhythm" && "Your pace is strongest when you use consistency rather than intensity to build momentum and repair what needs attention."}
                 {item.label === "Monthly arc" && "A larger turning point favors aligning long-term goals with disciplined action and the relationships that genuinely support your next phase."}
@@ -350,12 +350,12 @@ export default function HoroscopePage() {
             </div>
           ))}
 
-          <div className="rounded-[24px] border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 to-amber-500/10 p-4">
-            <div className="mb-2 flex items-center gap-2 text-emerald-300">
+          <div className="rounded-[24px] border border-brand/20 bg-gradient-to-br from-brand/10 to-gold/10 p-4">
+            <div className="mb-2 flex items-center gap-2 text-brand">
               <ShieldCheck size={16} />
               <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">Guided lens</span>
             </div>
-            <p className="text-sm leading-relaxed text-stone-100">
+            <p className="text-sm leading-relaxed text-foreground">
               Use astrology as reflection and rhythm, not as a substitute for medical advice or urgent care decisions.
             </p>
           </div>
@@ -364,9 +364,9 @@ export default function HoroscopePage() {
 
       <section className="mt-8 grid gap-4 md:grid-cols-4">
         {horoscopeCategories.map((item) => (
-          <div key={item.title} className="rounded-[24px] border border-white/10 bg-stone-900/70 p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-300">{item.title}</p>
-            <p className="mt-3 text-sm leading-relaxed text-stone-300">{item.copy}</p>
+          <div key={item.title} className="rounded-[24px] border border-border bg-card/70 p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">{item.title}</p>
+            <p className="mt-3 text-sm leading-relaxed text-soft">{item.copy}</p>
           </div>
         ))}
       </section>

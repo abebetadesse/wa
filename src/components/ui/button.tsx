@@ -6,12 +6,12 @@ export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "des
 export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-primary-foreground shadow-sm hover:bg-brand-strong",
-  secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/70",
-  outline: "border border-input bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
-  ghost: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-  destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-  gold: "bg-gold text-inverse shadow-sm hover:bg-gold/90",
+  primary: "bg-primary text-primary-foreground shadow-soft hover:bg-brand-strong dark:hover:bg-brand-strong dark:hover:text-brand-foreground",
+  secondary: "border border-border bg-secondary text-secondary-foreground hover:bg-sunken",
+  outline: "border border-input bg-card text-foreground hover:bg-muted",
+  ghost: "text-muted-foreground hover:bg-muted hover:text-foreground",
+  destructive: "bg-danger text-danger-foreground hover:bg-danger-strong dark:hover:bg-danger-strong",
+  gold: "bg-gold-fill text-gold-foreground shadow-soft hover:bg-gold-fill/85",
 };
 
 const sizes: Record<ButtonSize, string> = {
@@ -23,7 +23,7 @@ const sizes: Record<ButtonSize, string> = {
 
 export function buttonClasses({ variant = "primary", size = "md", className }: { variant?: ButtonVariant; size?: ButtonSize; className?: string } = {}) {
   return cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors",
+    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:pointer-events-none disabled:opacity-50",
     variants[variant],

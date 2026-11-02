@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { BookOpenText, ChevronLeft, ChevronRight, FileText, Layers3 } from "lucide-react";
 import { AWUDE_CIRCLES } from "@/lib/cultural/awudeNegestEngine";
+import { assetUrl } from "@/lib/base-path";
 
 interface ManuscriptReaderProps {
   selectedCircleId: number;
@@ -32,11 +33,11 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
   const selectedCircle = AWUDE_CIRCLES.find((circle) => circle.id === selectedCircleId) ?? AWUDE_CIRCLES[0];
 
   return (
-    <div className="rounded-[26px] border border-stone-800 bg-stone-900/80 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
-      <div className="mb-4 flex flex-col gap-3 border-b border-stone-800 pb-4 md:flex-row md:items-center md:justify-between">
+    <div className="rounded-[26px] border border-border bg-card/80 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)]">
+      <div className="mb-4 flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Reader</p>
-          <h3 className="mt-1 text-xl font-bold text-white">{selectedCircle.geezTitle}</h3>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">Reader</p>
+          <h3 className="mt-1 text-xl font-bold text-foreground">{selectedCircle.geezTitle}</h3>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -45,8 +46,8 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
             onClick={() => setView("original")}
             className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
               view === "original"
-                ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
-                : "border-stone-700 bg-stone-950/40 text-stone-300"
+                ? "border-gold/40 bg-gold/10 text-gold-strong"
+                : "border-border bg-background/40 text-soft"
             }`}
           >
             <BookOpenText size={14} />
@@ -58,8 +59,8 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
             onClick={() => setView("structured")}
             className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
               view === "structured"
-                ? "border-amber-400/40 bg-amber-500/10 text-amber-200"
-                : "border-stone-700 bg-stone-950/40 text-stone-300"
+                ? "border-gold/40 bg-gold/10 text-gold-strong"
+                : "border-border bg-background/40 text-soft"
             }`}
           >
             <Layers3 size={14} />
@@ -68,9 +69,9 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
         </div>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-800 bg-stone-950/60 p-3">
-        <div className="flex items-center gap-2 text-sm text-stone-300">
-          <FileText size={16} className="text-amber-300" />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-background/60 p-3">
+        <div className="flex items-center gap-2 text-sm text-soft">
+          <FileText size={16} className="text-gold" />
           <span>Page {page}</span>
         </div>
 
@@ -78,7 +79,7 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
           <button
             type="button"
             onClick={() => changePage(page - 1)}
-            className="inline-flex items-center gap-1 rounded-xl border border-stone-700 bg-stone-900 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-200"
+            className="inline-flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft"
           >
             <ChevronLeft size={14} />
             Prev
@@ -86,7 +87,7 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
           <button
             type="button"
             onClick={() => changePage(page + 1)}
-            className="inline-flex items-center gap-1 rounded-xl border border-stone-700 bg-stone-900 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-200"
+            className="inline-flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft"
           >
             Next
             <ChevronRight size={14} />
@@ -94,37 +95,37 @@ export default function ManuscriptReader({ selectedCircleId, onPageChange }: Man
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[24px] border border-stone-800 bg-stone-950 shadow-inner shadow-black/30">
+      <div className="overflow-hidden rounded-[24px] border border-border bg-background shadow-inner shadow-black/30">
         {view === "original" ? (
           <iframe
             key={`frame-${selectedCircleId}-${page}`}
             title="Awde Negest manuscript viewer"
-            src={`${EMBED_URL}&page=${page}`}
-            className="h-[720px] w-full bg-stone-950"
+            src={assetUrl(`${EMBED_URL}&page=${page}`)}
+            className="h-[720px] w-full bg-background"
             loading="lazy"
           />
         ) : (
-          <div className="space-y-4 p-6 text-stone-200">
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300">Circle summary</p>
-              <h4 className="mt-2 text-2xl font-bold text-white">{selectedCircle.name}</h4>
-              <p className="mt-2 text-sm text-stone-300">{selectedCircle.generalProphecy}</p>
+          <div className="space-y-4 p-6 text-soft">
+            <div className="rounded-2xl border border-gold/20 bg-gold/5 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">Circle summary</p>
+              <h4 className="mt-2 text-2xl font-bold text-foreground">{selectedCircle.name}</h4>
+              <p className="mt-2 text-sm text-soft">{selectedCircle.generalProphecy}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Guardian Angel</p>
-                <p className="mt-2 text-lg font-semibold text-white">{selectedCircle.guardianAngel}</p>
+              <div className="rounded-2xl border border-border bg-background/60 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Guardian Angel</p>
+                <p className="mt-2 text-lg font-semibold text-foreground">{selectedCircle.guardianAngel}</p>
               </div>
-              <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Element</p>
-                <p className="mt-2 text-lg font-semibold text-white">{selectedCircle.elementalAffinity}</p>
+              <div className="rounded-2xl border border-border bg-background/60 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Element</p>
+                <p className="mt-2 text-lg font-semibold text-foreground">{selectedCircle.elementalAffinity}</p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-stone-800 bg-stone-950/60 p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Temperament</p>
-              <p className="mt-2 text-sm leading-relaxed text-stone-200">{selectedCircle.temperament}</p>
+            <div className="rounded-2xl border border-border bg-background/60 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Temperament</p>
+              <p className="mt-2 text-sm leading-relaxed text-soft">{selectedCircle.temperament}</p>
             </div>
           </div>
         )}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, Download, ExternalLink, FileText, Search, ShieldCheck } from "lucide-react";
 import { SUPPLIED_BOOKS } from "@/lib/cultural/suppliedBookCatalog";
+import { assetUrl } from "@/lib/base-path";
 
 function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
@@ -39,8 +40,8 @@ export default function SuppliedBooksLibrary() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm leading-relaxed text-stone-300">
-        <div className="mb-2 flex items-center gap-2 font-semibold text-amber-200">
+      <section className="rounded-2xl border border-gold/20 bg-gold/5 p-4 text-sm leading-relaxed text-soft">
+        <div className="mb-2 flex items-center gap-2 font-semibold text-gold-strong">
           <ShieldCheck size={16} />
           Supplied collection · rights authorized by the uploader
         </div>
@@ -53,7 +54,7 @@ export default function SuppliedBooksLibrary() {
         <Search
           size={17}
           aria-hidden="true"
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
         />
         <span className="sr-only">Search supplied books</span>
         <input
@@ -61,7 +62,7 @@ export default function SuppliedBooksLibrary() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search titles, Ge’ez, Amharic, author, ISBN, or subject"
-          className="w-full rounded-2xl border border-stone-700 bg-stone-950 py-3 pl-11 pr-4 text-sm text-stone-100 placeholder:text-stone-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20"
+          className="w-full rounded-2xl border border-border bg-background py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-subtle focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
         />
       </label>
 
@@ -72,10 +73,10 @@ export default function SuppliedBooksLibrary() {
           return (
             <article
               key={book.id}
-              className="overflow-hidden rounded-2xl border border-stone-800 bg-stone-900/70"
+              className="overflow-hidden rounded-2xl border border-border bg-card/70"
             >
               <div className="p-5">
-                <div className="mb-5 flex h-48 items-center justify-center overflow-hidden rounded-xl border border-stone-800 bg-stone-950">
+                <div className="mb-5 flex h-48 items-center justify-center overflow-hidden rounded-xl border border-border bg-background">
                   <Image
                     src={book.coverImage}
                     alt={`${book.title} cover`}
@@ -86,48 +87,48 @@ export default function SuppliedBooksLibrary() {
                 </div>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
                       {book.format} · {book.pages} pages
                     </p>
-                    <h2 className="mt-2 text-xl font-bold text-white">{book.titleAm}</h2>
-                    <p className="mt-1 text-sm text-stone-300">{book.title}</p>
+                    <h2 className="mt-2 text-xl font-bold text-foreground">{book.titleAm}</h2>
+                    <p className="mt-1 text-sm text-soft">{book.title}</p>
                   </div>
-                  <FileText size={20} aria-hidden="true" className="shrink-0 text-amber-300" />
+                  <FileText size={20} aria-hidden="true" className="shrink-0 text-gold" />
                 </div>
 
-                <p className="mt-4 text-sm leading-relaxed text-stone-400">{book.description}</p>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{book.description}</p>
 
                 <dl className="mt-4 grid gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
                   <div>
-                    <dt className="text-stone-500">Languages</dt>
-                    <dd className="mt-0.5 text-stone-200">{book.languages.join(" · ")}</dd>
+                    <dt className="text-subtle">Languages</dt>
+                    <dd className="mt-0.5 text-soft">{book.languages.join(" · ")}</dd>
                   </div>
                   <div>
-                    <dt className="text-stone-500">File size</dt>
-                    <dd className="mt-0.5 text-stone-200">{formatBytes(book.sizeBytes)}</dd>
+                    <dt className="text-subtle">File size</dt>
+                    <dd className="mt-0.5 text-soft">{formatBytes(book.sizeBytes)}</dd>
                   </div>
                   {book.author && (
                     <div>
-                      <dt className="text-stone-500">Author / metadata</dt>
-                      <dd className="mt-0.5 text-stone-200">{book.author}</dd>
+                      <dt className="text-subtle">Author / metadata</dt>
+                      <dd className="mt-0.5 text-soft">{book.author}</dd>
                     </div>
                   )}
                   {book.edition && (
                     <div>
-                      <dt className="text-stone-500">Edition</dt>
-                      <dd className="mt-0.5 text-stone-200">{book.edition}</dd>
+                      <dt className="text-subtle">Edition</dt>
+                      <dd className="mt-0.5 text-soft">{book.edition}</dd>
                     </div>
                   )}
                   {book.isbn && (
                     <div>
-                      <dt className="text-stone-500">ISBN</dt>
-                      <dd className="mt-0.5 text-stone-200">{book.isbn}</dd>
+                      <dt className="text-subtle">ISBN</dt>
+                      <dd className="mt-0.5 text-soft">{book.isbn}</dd>
                     </div>
                   )}
                   {book.metadataTitle && (
                     <div>
-                      <dt className="text-stone-500">PDF metadata title</dt>
-                      <dd className="mt-0.5 text-stone-200">{book.metadataTitle}</dd>
+                      <dt className="text-subtle">PDF metadata title</dt>
+                      <dd className="mt-0.5 text-soft">{book.metadataTitle}</dd>
                     </div>
                   )}
                 </dl>
@@ -136,34 +137,34 @@ export default function SuppliedBooksLibrary() {
                   {book.subjects.map((subject) => (
                     <span
                       key={subject}
-                      className="rounded-full border border-stone-700 px-2.5 py-1 text-[10px] text-stone-300"
+                      className="rounded-full border border-border px-2.5 py-1 text-[10px] text-soft"
                     >
                       {subject}
                     </span>
                   ))}
                 </div>
 
-                <p className="mt-4 text-xs text-stone-500">
+                <p className="mt-4 text-xs text-subtle">
                   {book.textStatus}
                 </p>
-                <p className="mt-1 break-all text-[10px] text-stone-600">
+                <p className="mt-1 break-all text-[10px] text-subtle">
                   Source file: {book.sourceFileName}
                 </p>
-                <details className="mt-3 text-[10px] text-stone-500">
-                  <summary className="cursor-pointer hover:text-stone-300">Source & file-integrity details</summary>
-                  <dl className="mt-2 space-y-1 rounded-lg border border-stone-800 bg-stone-950/70 p-3">
+                <details className="mt-3 text-[10px] text-subtle">
+                  <summary className="cursor-pointer hover:text-soft">Source & file-integrity details</summary>
+                  <dl className="mt-2 space-y-1 rounded-lg border border-border bg-background/70 p-3">
                     <div>
                       <dt className="inline">Exact file size: </dt>
-                      <dd className="inline text-stone-400">{book.sizeBytes.toLocaleString()} bytes</dd>
+                      <dd className="inline text-muted-foreground">{book.sizeBytes.toLocaleString()} bytes</dd>
                     </div>
                     <div>
                       <dt className="block">SHA-256</dt>
-                      <dd className="break-all font-mono text-stone-400">{book.sha256}</dd>
+                      <dd className="break-all font-mono text-muted-foreground">{book.sha256}</dd>
                     </div>
                     {book.pdfMetadata?.map((detail) => (
                       <div key={detail}>
                         <dt className="sr-only">PDF metadata</dt>
-                        <dd className="text-stone-400">{detail}</dd>
+                        <dd className="text-muted-foreground">{detail}</dd>
                       </div>
                     ))}
                   </dl>
@@ -174,25 +175,25 @@ export default function SuppliedBooksLibrary() {
                     type="button"
                     onClick={() => setOpenBookId(isOpen ? null : book.id)}
                     aria-expanded={isOpen}
-                    className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
+                    className="inline-flex items-center gap-2 rounded-xl border border-gold/30 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold-strong hover:bg-gold/20"
                   >
                     <BookOpen size={14} />
                     {isOpen ? "Close reader" : "Read full book"}
                   </button>
                   <a
-                    href={pdfUrl}
+                    href={assetUrl(pdfUrl)}
                     download={book.fileName}
-                    className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-soft hover:border-gold/40"
                   >
                     <Download size={14} />
                     Download PDF
                   </a>
                   {book.sourceUrl && (
                     <a
-                      href={book.sourceUrl}
+                      href={assetUrl(book.sourceUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-stone-950 px-3 py-2 text-xs font-semibold text-stone-200 hover:border-amber-500/40"
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-soft hover:border-gold/40"
                     >
                       <ExternalLink size={14} />
                       Publisher / source
@@ -204,8 +205,8 @@ export default function SuppliedBooksLibrary() {
               {isOpen && (
                 <iframe
                   title={`${book.title} — full PDF`}
-                  src={`${pdfUrl}#view=FitH`}
-                  className="h-[min(75vh,800px)] w-full border-t border-stone-800 bg-stone-950"
+                  src={assetUrl(`${pdfUrl}#view=FitH`)}
+                  className="h-[min(75vh,800px)] w-full border-t border-border bg-background"
                   loading="lazy"
                 />
               )}
@@ -215,16 +216,16 @@ export default function SuppliedBooksLibrary() {
       </div>
 
       {books.length === 0 && (
-        <p role="status" className="rounded-2xl border border-stone-800 bg-stone-900/70 p-6 text-center text-sm text-stone-400">
+        <p role="status" className="rounded-2xl border border-border bg-card/70 p-6 text-center text-sm text-muted-foreground">
           No books match that search.
         </p>
       )}
 
-      <div className="flex flex-wrap gap-3 border-t border-stone-800 pt-5 text-sm">
-        <Link href="/library/archangels" className="text-amber-300 hover:text-amber-200">
+      <div className="flex flex-wrap gap-3 border-t border-border pt-5 text-sm">
+        <Link href="/library/archangels" className="text-gold hover:text-gold-strong">
           Archangels Dirsan collection →
         </Link>
-        <Link href="/library" className="text-stone-400 hover:text-white">
+        <Link href="/library" className="text-muted-foreground hover:text-foreground">
           All library collections
         </Link>
       </div>

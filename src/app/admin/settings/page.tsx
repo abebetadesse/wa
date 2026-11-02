@@ -22,6 +22,7 @@ import {
   Server,
   Layers,
 } from "lucide-react";
+import { withBasePath } from '@/lib/base-path';
 
 interface SystemConfig {
   maintenance: {
@@ -66,7 +67,7 @@ export default function AdminSettingsPage() {
   // Load current settings from API
   const loadSettings = async () => {
     try {
-      const res = await fetch("/api/admin/system");
+      const res = await fetch(withBasePath("/api/admin/system"));
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || "Failed to load platform settings.");
       setConfig(json.data.config);
@@ -92,7 +93,7 @@ export default function AdminSettingsPage() {
     if (!config) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,7 +115,7 @@ export default function AdminSettingsPage() {
     if (!config) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/system", {
+      const res = await fetch(withBasePath("/api/admin/system"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -134,8 +135,8 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-xs text-slate-400">
-        <div className="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2" />
+      <div className="p-8 text-center text-xs text-muted-foreground">
+        <div className="inline-block w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin mb-2" />
         <p>Loading application configuration...</p>
       </div>
     );
@@ -143,7 +144,7 @@ export default function AdminSettingsPage() {
 
   if (!config) {
     return (
-      <div className="p-6 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs">
+      <div className="p-6 rounded-2xl bg-danger-soft border border-danger/40 text-danger-strong text-xs">
         <p>Unable to load configuration: {error || "Unknown error."}</p>
         <button onClick={loadSettings} className="mt-3 btn-primary text-xs px-3 py-1.5">
           Retry
@@ -156,40 +157,40 @@ export default function AdminSettingsPage() {
     <div className="space-y-6">
       {/* Toast Notice */}
       {notice && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 text-xs shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-3">
-          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-soft border border-brand/50 text-brand-strong text-xs shadow-raised backdrop-blur animate-in slide-in-from-bottom-3">
+          <CheckCircle2 size={16} className="text-brand shrink-0" />
           <span className="font-medium">{notice}</span>
         </div>
       )}
 
       {/* Header */}
-      <div className="border-b border-white/10 pb-5">
+      <div className="border-b border-border pb-5">
         <div className="flex items-center gap-2 mb-1">
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-purple-400/40 bg-purple-500/10 text-purple-300">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-plum/40 bg-plum/10 text-plum-strong">
             System Configuration
           </span>
-          <span className="text-xs text-slate-400 font-mono">Environment: {config.platform.environment}</span>
+          <span className="text-xs text-muted-foreground font-mono">Environment: {config.platform.environment}</span>
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Platform Configuration & Policy Settings</h1>
-        <p className="text-xs text-slate-400 mt-0.5">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Platform Configuration & Policy Settings</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">
           Manage regulatory rules, Stage 5 safety gate policies, authentication defaults, and literature automation.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200 flex items-center gap-2">
-          <AlertTriangle size={15} className="text-rose-400 shrink-0" />
+        <div className="rounded-xl border border-danger/40 bg-danger-soft p-3 text-xs text-danger-strong flex items-center gap-2">
+          <AlertTriangle size={15} className="text-danger shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Navigation Pills */}
-      <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+      <div className="flex items-center gap-2 border-b border-border pb-2">
         <button
           onClick={() => setActiveSection("general")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "general"
-            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
             }`}
         >
           <Building size={14} />
@@ -198,8 +199,8 @@ export default function AdminSettingsPage() {
         <button
           onClick={() => setActiveSection("safety")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "safety"
-            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
             }`}
         >
           <ShieldCheck size={14} />
@@ -208,8 +209,8 @@ export default function AdminSettingsPage() {
         <button
           onClick={() => setActiveSection("auth")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "auth"
-            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
             }`}
         >
           <Lock size={14} />
@@ -218,8 +219,8 @@ export default function AdminSettingsPage() {
         <button
           onClick={() => setActiveSection("literature")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${activeSection === "literature"
-            ? "bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 shadow-sm"
-            : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+            ? "bg-brand-soft border border-brand/40 text-brand-strong shadow-sm"
+            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"
             }`}
         >
           <BookOpen size={14} />
@@ -229,56 +230,56 @@ export default function AdminSettingsPage() {
 
       {/* SECTION 1: GENERAL & BRANDING */}
       {activeSection === "general" && (
-        <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
+        <div className="glass-panel p-6 rounded-2xl border border-border space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Building size={16} className="text-emerald-400" />
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Building size={16} className="text-brand" />
               <span>Platform Branding & Regional Localization</span>
             </h2>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-muted-foreground">
               Identity headers, institutional ownership, and default altitude calibration
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Platform Name</label>
+              <label className="text-xs text-soft block mb-1">Platform Name</label>
               <input
                 type="text"
                 value={config.platform.name}
                 onChange={(e) =>
                   setConfig({ ...config, platform: { ...config.platform, name: e.target.value } })
                 }
-                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500/50"
+                className="w-full p-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-brand/50"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Governing Organization / Sign-Off</label>
+              <label className="text-xs text-soft block mb-1">Governing Organization / Sign-Off</label>
               <input
                 type="text"
                 value={config.platform.organization}
                 onChange={(e) =>
                   setConfig({ ...config, platform: { ...config.platform, organization: e.target.value } })
                 }
-                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500/50"
+                className="w-full p-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-brand/50"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Compliance & Advisory Email</label>
+              <label className="text-xs text-soft block mb-1">Compliance & Advisory Email</label>
               <input
                 type="email"
                 value={config.platform.supportEmail}
                 onChange={(e) =>
                   setConfig({ ...config, platform: { ...config.platform, supportEmail: e.target.value } })
                 }
-                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500/50"
+                className="w-full p-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-brand/50"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Default Platform Language</label>
+              <label className="text-xs text-soft block mb-1">Default Platform Language</label>
               <select
                 value={config.flags.defaultLanguage}
                 onChange={(e) =>
@@ -287,18 +288,18 @@ export default function AdminSettingsPage() {
                     flags: { ...config.flags, defaultLanguage: e.target.value as any },
                   })
                 }
-                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white outline-none cursor-pointer"
+                className="w-full p-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-foreground outline-none cursor-pointer"
               >
-                <option value="en" className="bg-slate-900 text-white">English (en)</option>
-                <option value="am" className="bg-slate-900 text-white">አማርኛ - Amharic (am)</option>
-                <option value="om" className="bg-slate-900 text-white">Afaan Oromoo (om)</option>
-                <option value="ti" className="bg-slate-900 text-white">ትግርኛ - Tigrinya (ti)</option>
-                <option value="so" className="bg-slate-900 text-white">Af-Soomaali (so)</option>
+                <option value="en" className="bg-card text-foreground">English (en)</option>
+                <option value="am" className="bg-card text-foreground">አማርኛ - Amharic (am)</option>
+                <option value="om" className="bg-card text-foreground">Afaan Oromoo (om)</option>
+                <option value="ti" className="bg-card text-foreground">ትግርኛ - Tigrinya (ti)</option>
+                <option value="so" className="bg-card text-foreground">Af-Soomaali (so)</option>
               </select>
             </div>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">
+              <label className="text-xs text-soft block mb-1">
                 Default Altitude Calibration (Meters above sea level)
               </label>
               <input
@@ -310,25 +311,25 @@ export default function AdminSettingsPage() {
                     flags: { ...config.flags, altitudeCalibrationMeters: Number(e.target.value) },
                   })
                 }
-                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500/50 font-mono"
+                className="w-full p-2.5 rounded-xl bg-sunken/80 border border-border text-xs text-foreground placeholder:text-subtle outline-none focus:border-brand/50 font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[10px] text-muted-foreground mt-1 block">
                 Standard: 2,400m (Addis Ababa baseline for WHO iron intake calibration)
               </span>
             </div>
 
             <div>
-              <label className="text-xs text-slate-300 block mb-1">Release Version Tag</label>
+              <label className="text-xs text-soft block mb-1">Release Version Tag</label>
               <input
                 type="text"
                 disabled
                 value={config.platform.version}
-                className="w-full p-2.5 rounded-xl bg-black/20 border border-white/5 text-xs text-slate-400 font-mono"
+                className="w-full p-2.5 rounded-xl bg-sunken/50 border border-border text-xs text-muted-foreground font-mono"
               />
             </div>
           </div>
 
-          <div className="flex justify-end pt-3 border-t border-white/5">
+          <div className="flex justify-end pt-3 border-t border-border">
             <button
               onClick={handleSavePlatform}
               disabled={saving}
@@ -343,24 +344,24 @@ export default function AdminSettingsPage() {
 
       {/* SECTION 2: SCIENTIFIC & SAFETY GATES */}
       {activeSection === "safety" && (
-        <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
+        <div className="glass-panel p-6 rounded-2xl border border-border space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <ShieldCheck size={16} className="text-emerald-400" />
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <ShieldCheck size={16} className="text-brand" />
               <span>Scientific Herb-Drug Safety & Architectural Firewall</span>
             </h2>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-muted-foreground">
               Stage 5 Safety Gate release-blocking canaries and Domain A/B isolation rules
             </p>
           </div>
 
           <div className="space-y-4">
             {/* Safety Gate Strictness Selector */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-              <label className="text-xs font-semibold text-white block mb-1">
+            <div className="p-4 rounded-xl bg-sunken/50 border border-border">
+              <label className="text-xs font-semibold text-foreground block mb-1">
                 Stage 5 Safety Gate Strictness Level
               </label>
-              <p className="text-[11px] text-slate-400 mb-3">
+              <p className="text-[11px] text-muted-foreground mb-3">
                 Dictates how potential contraindications (e.g. Tena Adam + Warfarin, Kosso + Metformin) are blocked.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -391,22 +392,22 @@ export default function AdminSettingsPage() {
                       })
                     }
                     className={`p-3 rounded-xl text-left border transition-all ${config.flags.safetyGateStrictness === tier.id
-                      ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-200 shadow-md"
-                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                      ? "bg-brand-soft border-brand/60 text-brand-strong shadow-md"
+                      : "bg-foreground/5 border-border text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     <p className="font-bold text-xs">{tier.title}</p>
-                    <p className="text-[10px] mt-1 text-slate-400 leading-normal">{tier.desc}</p>
+                    <p className="text-[10px] mt-1 text-muted-foreground leading-normal">{tier.desc}</p>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Domain A/B Firewall Toggle */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-white">Domain A/B Architectural Firewall</p>
-                <p className="text-[11px] text-slate-400 max-w-xl">
+                <p className="text-xs font-semibold text-foreground">Domain A/B Architectural Firewall</p>
+                <p className="text-[11px] text-muted-foreground max-w-xl">
                   Enforces strict isolation between Domain A (biochemical EFCT evaluation engine) and Domain B
                   (cultural, lunar, astrological layers). Prevents cultural attributions from masquerading as Scientific diagnoses.
                 </p>
@@ -420,8 +421,8 @@ export default function AdminSettingsPage() {
                   })
                 }
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all ${config.flags.domainBEnforced
-                  ? "bg-emerald-600 text-white"
-                  : "bg-rose-950 text-rose-300 border border-rose-500/40"
+                  ? "bg-brand text-brand-foreground"
+                  : "bg-danger-soft text-danger-strong border border-danger/40"
                   }`}
               >
                 {config.flags.domainBEnforced ? "Firewall Enforced" : "Permissive (Testing)"}
@@ -429,7 +430,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <div className="flex justify-end pt-3 border-t border-white/5">
+          <div className="flex justify-end pt-3 border-t border-border">
             <button
               onClick={handleSaveFlags}
               disabled={saving}
@@ -444,32 +445,32 @@ export default function AdminSettingsPage() {
 
       {/* SECTION 3: ACCESS & SECURITY */}
       {activeSection === "auth" && (
-        <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
+        <div className="glass-panel p-6 rounded-2xl border border-border space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Lock size={16} className="text-sky-400" />
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Lock size={16} className="text-info" />
               <span>Authentication, Access & Audit Policies</span>
             </h2>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-muted-foreground">
               Registration availability, session lifetimes, and brute-force defenses
             </p>
           </div>
 
           <div className="space-y-4">
             {/* Sign-up and verification moved to their own page, stored in the database. */}
-            <a href="/admin/sign-up" className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between hover:border-emerald-500/40">
+            <a href={withBasePath("/admin/sign-up")} className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between hover:border-brand/40">
               <div>
-                <p className="text-xs font-semibold text-white">Sign-up &amp; Telegram verification</p>
-                <p className="text-[11px] text-slate-400">Open or pause registration and choose how Telegram verification is used.</p>
+                <p className="text-xs font-semibold text-foreground">Sign-up &amp; Telegram verification</p>
+                <p className="text-[11px] text-muted-foreground">Open or pause registration and choose how Telegram verification is used.</p>
               </div>
-              <span className="text-xs font-semibold text-emerald-400">Open →</span>
+              <span className="text-xs font-semibold text-brand">Open →</span>
             </a>
 
             {/* Session Timeout */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-white">Session Inactivity Expiry</p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-xs font-semibold text-foreground">Session Inactivity Expiry</p>
+                <p className="text-[11px] text-muted-foreground">
                   Refresh token duration before requiring explicit re-authentication (Hours)
                 </p>
               </div>
@@ -484,12 +485,12 @@ export default function AdminSettingsPage() {
                     flags: { ...config.flags, sessionTimeoutHours: Number(e.target.value) },
                   })
                 }
-                className="w-24 p-2 rounded-lg bg-black/40 border border-white/10 text-xs text-white text-center font-mono outline-none focus:border-emerald-500/50"
+                className="w-24 p-2 rounded-lg bg-sunken/80 border border-border text-xs text-foreground text-center font-mono outline-none focus:border-brand/50"
               />
             </div>
           </div>
 
-          <div className="flex justify-end pt-3 border-t border-white/5">
+          <div className="flex justify-end pt-3 border-t border-border">
             <button
               onClick={handleSaveFlags}
               disabled={saving}
@@ -504,22 +505,22 @@ export default function AdminSettingsPage() {
 
       {/* SECTION 4: LITERATURE SYNC AUTOMATION */}
       {activeSection === "literature" && (
-        <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-5">
+        <div className="glass-panel p-6 rounded-2xl border border-border space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <BookOpen size={16} className="text-purple-400" />
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <BookOpen size={16} className="text-plum" />
               <span>Scientific Literature & EFCT Synchronizer</span>
             </h2>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-muted-foreground">
               Automated ingestion pipelines pulling biomedical trials from PubMed, Europe PMC, and Ethiopian herb databases
             </p>
           </div>
 
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-sunken/50 border border-border flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-white">Automated Background Literature Sync</p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-xs font-semibold text-foreground">Automated Background Literature Sync</p>
+                <p className="text-[11px] text-muted-foreground">
                   Periodically queries PubMed API for new Scientific findings across Ethiopian indigenous botanicals.
                 </p>
               </div>
@@ -535,37 +536,37 @@ export default function AdminSettingsPage() {
                   })
                 }
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${config.flags.literatureAutoSync
-                  ? "bg-purple-600 text-white"
-                  : "bg-white/10 text-slate-400"
+                  ? "bg-plum text-plum-foreground"
+                  : "bg-foreground/10 text-muted-foreground"
                   }`}
               >
                 {config.flags.literatureAutoSync ? "Auto-Sync Active" : "Disabled"}
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-              <p className="text-xs font-semibold text-white mb-2">Connected Evidence Repositories</p>
+            <div className="p-4 rounded-xl bg-sunken/50 border border-border">
+              <p className="text-xs font-semibold text-foreground mb-2">Connected Evidence Repositories</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
-                  <p className="font-bold text-slate-200">PubMed / NCBI</p>
-                  <p className="text-[11px] text-slate-400">Clinical trials & mesh pharmacology</p>
-                  <span className="text-[10px] text-emerald-400 font-mono mt-1 block">Status: Connected</span>
+                <div className="p-3 rounded-lg bg-foreground/5 border border-border text-xs">
+                  <p className="font-bold text-soft">PubMed / NCBI</p>
+                  <p className="text-[11px] text-muted-foreground">Clinical trials & mesh pharmacology</p>
+                  <span className="text-[10px] text-brand font-mono mt-1 block">Status: Connected</span>
                 </div>
-                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
-                  <p className="font-bold text-slate-200">Europe PMC</p>
-                  <p className="text-[11px] text-slate-400">Open-access full texts & preprint mining</p>
-                  <span className="text-[10px] text-emerald-400 font-mono mt-1 block">Status: Connected</span>
+                <div className="p-3 rounded-lg bg-foreground/5 border border-border text-xs">
+                  <p className="font-bold text-soft">Europe PMC</p>
+                  <p className="text-[11px] text-muted-foreground">Open-access full texts & preprint mining</p>
+                  <span className="text-[10px] text-brand font-mono mt-1 block">Status: Connected</span>
                 </div>
-                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
-                  <p className="font-bold text-slate-200">ETM-DB & EFCT</p>
-                  <p className="text-[11px] text-slate-400">726 foods · 69 nutrients · 48 districts</p>
-                  <span className="text-[10px] text-emerald-400 font-mono mt-1 block">Status: Synced v3.0</span>
+                <div className="p-3 rounded-lg bg-foreground/5 border border-border text-xs">
+                  <p className="font-bold text-soft">ETM-DB & EFCT</p>
+                  <p className="text-[11px] text-muted-foreground">726 foods · 69 nutrients · 48 districts</p>
+                  <span className="text-[10px] text-brand font-mono mt-1 block">Status: Synced v3.0</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-3 border-t border-white/5">
+          <div className="flex justify-end pt-3 border-t border-border">
             <button
               onClick={handleSaveFlags}
               disabled={saving}

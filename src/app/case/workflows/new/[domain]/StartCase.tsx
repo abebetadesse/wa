@@ -32,6 +32,7 @@ import { QuestionField } from "@/features/cases/components";
 import { GeezKeyboard, GeezNamePreview } from "@/features/cases/GeezNameTools";
 import { PathwayPractitioners } from "@/features/cases/PathwayPractitioners";
 import { useGeezVoiceInput } from "@/hooks/useGeezVoiceInput";
+import { assetUrl } from "@/lib/base-path";
 
 interface DomainSummary {
   domain: WorkflowDomain;
@@ -448,7 +449,7 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border p-5 text-center transition-colors hover:border-brand/50">
                   {!mediaPreview && !answers.mediaId ? (
                     <div className="flex flex-col items-center gap-2">
-                      <div className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                      <div className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand-strong">
                         <UploadCloud className="size-6" aria-hidden="true" />
                       </div>
                       <p className="text-sm font-semibold text-foreground">Attach an image, audio note, or video</p>
@@ -486,8 +487,8 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                           <Trash2 className="size-4" aria-hidden="true" /> Remove
                         </Button>
                       </div>
-                      {mediaPreview?.kind === "audio" && <audio controls src={mediaPreview.url} className="w-full" />}
-                      {mediaPreview?.kind === "video" && <video controls src={mediaPreview.url} className="max-h-64 w-full rounded-xl" />}
+                      {mediaPreview?.kind === "audio" && <audio controls src={assetUrl(mediaPreview.url)} className="w-full" />}
+                      {mediaPreview?.kind === "video" && <video controls src={assetUrl(mediaPreview.url)} className="max-h-64 w-full rounded-xl" />}
                       {mediaPreview?.kind === "image" && <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-64 max-w-full rounded-xl object-contain" />}
                     </div>
                   )}
@@ -598,12 +599,12 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
               </div>
 
               {Boolean(answers.mediaId) && (answers.mediaKind === "image" || answers.mediaKind === "video") && (
-                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-500/30 bg-violet-950/10 p-4">
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-plum/30 bg-plum-soft/70 p-4">
                   <input
                     type="checkbox"
                     checked={consent.aiMediaAnalysis ?? false}
                     onChange={(event) => setConsent((current) => ({ ...current, aiMediaAnalysis: event.target.checked }))}
-                    className="mt-1 size-4 accent-violet-500"
+                    className="mt-1 size-4 accent-plum"
                   />
                   <span className="flex-1">
                     <span className="block text-sm font-semibold text-foreground">Optional AI analysis of this image/video</span>
@@ -725,9 +726,9 @@ export function StartCase({ domain }: { domain: WorkflowDomain }) {
                 <div className="flex flex-col gap-2 rounded-2xl border border-border p-4 bg-muted/20">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attached Media</span>
                   {mediaPreview.kind === "audio" ? (
-                    <audio controls src={mediaPreview.url} className="w-full mt-1" />
+                    <audio controls src={assetUrl(mediaPreview.url)} className="w-full mt-1" />
                   ) : mediaPreview.kind === "video" ? (
-                    <video controls src={mediaPreview.url} className="max-h-56 w-full rounded-xl mt-1" />
+                    <video controls src={assetUrl(mediaPreview.url)} className="max-h-56 w-full rounded-xl mt-1" />
                   ) : (
                     <NextImage src={mediaPreview.url} alt="Preview of attached case image" width={480} height={320} unoptimized className="max-h-56 max-w-full rounded-xl object-contain" />
                   )}

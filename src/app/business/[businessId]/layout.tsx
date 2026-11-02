@@ -30,6 +30,7 @@ import { useRealtimeState } from "@/features/realtime/RealtimeProvider";
 import type { Capability } from "@/server/marketplace/roles";
 import { roleCan } from "@/server/marketplace/roles";
 import { cn } from "@/lib/utils";
+import { assetUrl } from "@/lib/base-path";
 
 const NAV: { href: string; label: string; icon: typeof LayoutDashboard; capability: Capability }[] = [
   { href: "", label: "Dashboard", icon: LayoutDashboard, capability: "view" },
@@ -69,7 +70,7 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
             {data.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={data.logoUrl} alt="" className="size-11 rounded-xl object-cover" />
+              <img src={assetUrl(data.logoUrl)} alt="" className="size-11 rounded-xl object-cover" />
             ) : (
               <Monogram name={data.name} className="size-11 rounded-xl" />
             )}

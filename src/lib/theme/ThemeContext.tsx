@@ -31,7 +31,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!isHydrated || typeof window === "undefined") return;
 
     document.documentElement.classList.toggle("dark", theme === "dark");
-    document.documentElement.classList.toggle("contrast-mode", theme === "dark" && highContrast);
+    // High contrast applies in either theme (tokens.css: html.contrast-mode and html.dark.contrast-mode).
+    document.documentElement.classList.toggle("contrast-mode", highContrast);
     window.localStorage.setItem("Debtera-theme", theme);
     window.localStorage.setItem("Debtera-contrast", String(highContrast));
   }, [theme, highContrast, isHydrated]);

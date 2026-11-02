@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { DynamicQuestion } from "@/lib/case-workflow/spiritualQuestionEngine";
+import { withBasePath } from '@/lib/base-path';
 
 export function useDynamicFollowUps(
   currentQuestionId: string,
@@ -32,7 +33,7 @@ export function useDynamicFollowUps(
       setIsLoading(true);
       try {
         const currentGem = gematriaRef.current || {};
-        const response = await fetch("/api/case/spiritual/follow-ups", {
+        const response = await fetch(withBasePath("/api/case/spiritual/follow-ups"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
