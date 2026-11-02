@@ -77,7 +77,7 @@ export default function TeamPage() {
       <PageHeader
         title="Team"
         description="Everyone who works in this business, and what each role can do."
-        actions={isOwner ? <Button onClick={() => setInviting(true)}><UserPlus className="size-4" aria-hidden="true" /> Invite someone</Button> : undefined}
+        actions={isOwner ? <Button onClick={() => setInviting(true)}><UserPlus className="size-4" aria-hidden="true" /> Add someone</Button> : undefined}
         className="mb-0"
       />
 
@@ -158,10 +158,10 @@ export default function TeamPage() {
       </Card>
 
       {inviting && (
-        <InviteDialog
+        <AddMemberDialog
           onClose={() => setInviting(false)}
-          onInvited={(email, url) => {
-            setLink({ email, url });
+          onAdded={(email) => {
+            toast({ tone: "success", title: `${email} was added`, body: "They can sign in now. Nobody was emailed." });
             reload();
           }}
         />
@@ -175,7 +175,7 @@ export default function TeamPage() {
         description={removing?.userId === data.myUserId ? "You'll lose access to this workspace." : "They lose access immediately. Their past bookings and notes stay with the business."}
         footer={<><Button variant="ghost" onClick={() => setRemoving(null)}>Cancel</Button><Button variant="destructive" onClick={() => removing && remove(removing)}>{removing?.userId === data.myUserId ? "Leave" : "Remove"}</Button></>}
       >
-        <p className="text-sm text-muted-foreground">You can invite them again later.</p>
+        <p className="text-sm text-muted-foreground">You can add them again later.</p>
       </Dialog>
     </div>
   );
@@ -201,24 +201,26 @@ function CopyField({ value }: { value: string }) {
   );
 }
 
-function InviteDialog({ onClose, onInvited }: { onClose: () => void; onInvited: (email: string, url: string) => void }) {
+function AddMemberDialog({ onClose, onAdded }: { onClose: () => void; onAdded: (email: string) => void }) {
   const { business } = useWorkspace();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState("practitioner");
   const [title, setTitle] = useState("");
   const [bookable, setBookable] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function send() {
+  async function add() {
     setBusy(true);
     setError(null);
     try {
-      const result = await apiFetch<{ email: string; link: string }>(`/api/workspace/businesses/${business.id}/team`, {
+      const result = await apiFetch<{ email: string }>(`/api/workspace/businesses/${business.id}/team/members`, {
         method: "POST",
-        json: { email, role, title: title.trim() || undefined, isBookable: bookable },
+        json: { email, name: name.trim() || undefined, password: password || undefined, role, title: title.trim() || undefined, isBookable: bookable },
       });
-      onInvited(result.email, result.link);
+      onAdded(result.email);
       onClose();
     } catch (err) {
       setError(errorMessage(err));
@@ -228,9 +230,11 @@ function InviteDialog({ onClose, onInvited }: { onClose: () => void; onInvited: 
   }
 
   return (
-    <Dialog open onClose={onClose} title="Invite someone to your team" description="If they already have an account, they'll also see the invitation in their notifications." footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={send} disabled={busy || !email.includes("@")}>{busy ? "Creating…" : "Create invitation"}</Button></>}>
+    <Dialog open onClose={onClose} title="Add someone to your team" description="Give their email and a first password; the account works straight away and nobody is emailed. If the email already has an account, only the name and password are skipped." footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={add} disabled={busy || !email.includes("@")}>{busy ? "Adding…" : "Add to the team"}</Button></>}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Email" required className="sm:col-span-2">{(control) => <Input {...control} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}</Field>
+        <Field label="Email" required className="sm:col-span-2">{(control) => <Input {...control} type="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} />}</Field>
+        <Field label="Full name" hint="Needed for a new account.">{(control) => <Input {...control} autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} />}</Field>
+        <Field label="First password" hint="8+ characters with upper and lower case, a digit and a symbol.">{(control) => <Input {...control} type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />}</Field>
         <Field label="Role" hint={ROLE_INFO[role]}>
           {(control) => (
             <Select {...control} value={role} onChange={(e) => setRole(e.target.value)}>

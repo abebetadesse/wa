@@ -3,9 +3,10 @@ import crypto from "node:crypto";
 import { and, asc, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { businessInvitations, businessMembers, businesses, users } from "@/lib/db/schema";
+import { businessInvitations, businessMembers, businesses, roles, users } from "@/lib/db/schema";
 import { ApiError } from "@/lib/api/route";
-import type { AuthenticatedUser } from "@/lib/auth";
+import { hashPassword, type AuthenticatedUser } from "@/lib/auth";
+import { assertStrongPassword } from "@/server/auth/accounts";
 import { requireCapability } from "./access";
 import { notify } from "./notifications";
 import { businessChannel, publish, userChannel } from "@/server/realtime";
@@ -37,6 +38,15 @@ export const digestToken = (token: string) => crypto.createHash("sha256").update
 
 export const inviteInput = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email address."),
+  role: z.enum(ASSIGNABLE_ROLES),
+  title: z.string().trim().max(120).optional(),
+  isBookable: z.boolean().default(false),
+});
+
+export const directMemberInput = z.object({
+  email: z.string().trim().toLowerCase().email("Enter a valid email address."),
+  name: z.string().trim().min(2, "Enter the person's name.").max(120).optional(),
+  password: z.string().max(128).optional(),
   role: z.enum(ASSIGNABLE_ROLES),
   title: z.string().trim().max(120).optional(),
   isBookable: z.boolean().default(false),
@@ -105,6 +115,54 @@ export async function inviteMember(user: AuthenticatedUser, businessId: string, 
   });
 
   return { id: invitation.id, email: invitation.email, role: invitation.role, expiresAt: invitation.expiresAt, link };
+}
+
+/**
+ * Adds a person to the team directly: the owner gives their email and a first password, the account
+ * is ready at once and nobody is emailed. An email that already has an account is just added.
+ */
+export async function addMemberDirectly(user: AuthenticatedUser, businessId: string, raw: z.infer<typeof directMemberInput>) {
+  await requireCapability(user, businessId, "manageTeam");
+  const input = { ...raw, email: raw.email.trim().toLowerCase() };
+  const [business] = await db.select({ name: businesses.name }).from(businesses).where(eq(businesses.id, businessId)).limit(1);
+  if (!business) throw ApiError.notFound("Business");
+
+  const [existing] = await db.select({ id: users.id, isActive: users.isActive }).from(users).where(sql`lower(${users.email}) = ${input.email}`).limit(1);
+  if (existing) {
+    if (!existing.isActive) throw ApiError.conflict("That account is suspended or still waiting for approval.");
+    const [already] = await db.select({ id: businessMembers.id }).from(businessMembers).where(and(eq(businessMembers.businessId, businessId), eq(businessMembers.userId, existing.id))).limit(1);
+    if (already) throw ApiError.conflict("This person is already on your team.");
+  } else {
+    if (!input.name) throw ApiError.badRequest("Enter the person's name.");
+    if (!input.password) throw ApiError.badRequest("Give the person a first password.");
+    assertStrongPassword(input.password);
+  }
+
+  const member = await db.transaction(async (tx) => {
+    let userId = existing?.id;
+    if (!userId) {
+      const [userRole] = await tx.select({ id: roles.id }).from(roles).where(eq(roles.name, "user")).limit(1);
+      const [created] = await insertReturning(tx, users, {
+        email: input.email,
+        name: input.name!,
+        passwordHash: hashPassword(input.password!),
+        role: "user",
+        roleId: userRole?.id ?? null,
+        preferredLanguage: "en",
+        isVerified: true,
+        isActive: true,
+      }, { fields: { id: users.id } });
+      userId = created.id;
+    }
+    const [row] = await insertReturning(tx, businessMembers, { businessId, userId, role: input.role, title: input.title ?? null, isBookable: input.isBookable });
+    if (existing) {
+      await notify(userId, { type: "team.added", title: `You were added to ${business.name}`, body: `As ${input.role}.`, href: `/business/${businessId}/team` }, tx);
+    }
+    await publish(businessChannel(businessId), "team.updated", {}, tx);
+    return row;
+  });
+
+  return { id: member.id, email: input.email, role: input.role, existingAccount: Boolean(existing) };
 }
 
 export async function revokeInvitation(user: AuthenticatedUser, businessId: string, invitationId: string) {

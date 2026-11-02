@@ -40,7 +40,7 @@ export async function createReview(user: AuthenticatedUser, input: z.infer<typeo
 
 export async function listPublicReviews(businessId: string, limit = 20) {
   return db
-    .select({ id: reviews.id, rating: reviews.rating, comment: reviews.comment, response: reviews.response, respondedAt: reviews.respondedAt, createdAt: reviews.createdAt, author: sql<string>`coalesce(split_part(${users.name}, ' ', 1), 'Client')` })
+    .select({ id: reviews.id, rating: reviews.rating, comment: reviews.comment, response: reviews.response, respondedAt: reviews.respondedAt, createdAt: reviews.createdAt, author: sql<string>`coalesce(nullif(substring_index(${users.name}, ' ', 1), ''), 'Client')` })
     .from(reviews)
     .leftJoin(users, eq(users.id, reviews.authorId))
     .where(and(eq(reviews.businessId, businessId), eq(reviews.status, "published")))
@@ -143,7 +143,7 @@ export async function searchHerbs(query: string) {
   return db
     .select({ id: herbs.id, vernacularName: herbs.nameVernacular, scientificName: herbs.nameScientific, amharicName: herbs.nameAmharic, safetyLevel: herbs.safetyLevel, contraindications: herbs.contraindicationsGeneral })
     .from(herbs)
-    .where(sql`${herbs.nameVernacular} ilike ${pattern} or ${herbs.nameScientific} ilike ${pattern} or ${herbs.nameAmharic} ilike ${pattern}`)
+    .where(sql`${herbs.nameVernacular} like ${pattern} or ${herbs.nameScientific} like ${pattern} or ${herbs.nameAmharic} like ${pattern}`)
     .orderBy(asc(herbs.nameVernacular))
     .limit(20);
 }

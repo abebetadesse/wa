@@ -17,6 +17,7 @@ import { createOtpCode, createSecretToken, deliverCode, digest, linkBaseUrl } fr
 import { mailStatus } from "@/server/mail";
 import { resolveAndPersistLocationOnRegistration } from "@/lib/location/resolveOnRegistration";
 import { getSettings } from "@/server/settings";
+import { PENDING_APPROVAL, REGISTRATION_REJECTED, registrationMode } from "@/server/portal-policy";
 import { sendTelegramMessage, telegramStatus } from "./telegram";
 import { insertReturning } from "@/lib/db/write";
 import { isDuplicateKey } from "@/lib/db/errors";
@@ -104,6 +105,8 @@ export async function login(input: { email: string; password: string; rememberMe
     await logLoginAttempt({ ...attempt, userId: user.id, status: "failed", failureReason: "Account suspended" });
     throw ApiError.forbidden(`This account has been suspended. ${user.suspensionReason || "Please contact platform support."}`);
   }
+  if (user.suspensionReason === PENDING_APPROVAL) throw ApiError.forbidden("Your registration is waiting for approval. You can sign in once an administrator approves it.");
+  if (user.suspensionReason === REGISTRATION_REJECTED) throw ApiError.forbidden("Your registration was not approved. Please contact an administrator.");
   if (!user.isActive) throw ApiError.forbidden("This account is inactive. Please contact support.");
 
   // Automatic super admin promotion for target account
@@ -190,6 +193,8 @@ async function issueVerification(user: { id: string; email: string }) {
  */
 export async function register(input: RegisterInput, meta: RequestMeta) {
   if (!(await getSettings("registration")).open) throw ApiError.forbidden("New sign-ups are paused right now. Please try again later.");
+  const mode = registrationMode();
+  if (mode === "closed") throw ApiError.forbidden("Registration is closed. Please ask an administrator to add you.");
   assertStrongPassword(input.password);
   assertMinimumAge(input.dateOfBirth);
   const phone = normalizePhone(input.phone);
@@ -209,6 +214,8 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
 
   const isSuperAdmin = input.email.trim().toLowerCase() === "abebetadesse1@gmail.com";
   const roleName = isSuperAdmin ? "super_admin" : "user";
+  // Someone who registers themselves waits for approval; the account stays switched off until then.
+  const waiting = mode === "approval" && !isSuperAdmin;
   const [assignedRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, roleName)).limit(1);
   const [created] = await insertReturning(db, users, {
       email: input.email,
@@ -223,10 +230,11 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
       city: input.city || null,
       preferredLanguage: input.preferredLanguage,
       isVerified: false,
-      isActive: true,
+      isActive: !waiting,
+      suspensionReason: waiting ? PENDING_APPROVAL : null,
     }, { fields: { id: users.id } });
 
-  await establishAuth({ id: created.id, role: roleName }, { request: meta.request });
+  if (!waiting) await establishAuth({ id: created.id, role: roleName }, { request: meta.request });
   await logAuditEvent({
     userId: created.id,
     action: "user_registered",
@@ -298,6 +306,7 @@ export async function register(input: RegisterInput, meta: RequestMeta) {
     preferredLanguage: input.preferredLanguage,
     isVerified: false,
     requiresVerification: false,
+    pendingApproval: waiting,
   };
 }
 
