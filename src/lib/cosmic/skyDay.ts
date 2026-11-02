@@ -184,7 +184,7 @@ export interface CalendarObservance {
 }
 
 /** Commemorations kept on the same day of every Ethiopian month. */
-const MONTHLY_COMMEMORATIONS: Record<number, CalendarObservance & { major: boolean }> = {
+export const MONTHLY_COMMEMORATIONS: Record<number, CalendarObservance & { major: boolean }> = {
   1: { key: "lideta", name: "Lideta (Birth of Mary)", nameAm: "ልደታ ለማርያም", major: true },
   2: { key: "thaddeus", name: "Saint Thaddeus", nameAm: "ታዴዎስ ሐዋርያ", major: false },
   3: { key: "baata", name: "Ba'ata (Presentation of Mary)", nameAm: "በዓታ ለማርያም", major: false },
@@ -218,7 +218,7 @@ const MONTHLY_COMMEMORATIONS: Record<number, CalendarObservance & { major: boole
 };
 
 /** Fixed annual feasts by Ethiopian month and day. */
-const ANNUAL_FEASTS: { month: number; day: number; observance: CalendarObservance }[] = [
+export const ANNUAL_FEASTS: { month: number; day: number; observance: CalendarObservance }[] = [
   { month: 1, day: 1, observance: { key: "enkutatash", name: "Enkutatash (New Year)", nameAm: "እንቁጣጣሽ" } },
   { month: 1, day: 17, observance: { key: "meskel-feast", name: "Meskel (Finding of the True Cross)", nameAm: "መስቀል" } },
   { month: 4, day: 29, observance: { key: "genna", name: "Genna (Christmas)", nameAm: "ገና (ልደት)" } },
